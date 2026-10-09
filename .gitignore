@@ -147,3 +147,27 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Private operational data and scratch files (synthetic test fixtures live elsewhere)
+local-data/
+private-data/
+uploads/
+tmp/
+temp/
+*.local.csv
+*.local.xlsx
+
+# Local credentials, keys, and editor/system noise
+*.pem
+*.key
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Python tooling if needed later
+__pycache__/
+.pytest_cache/
+.venv/
+*.py[cod]
