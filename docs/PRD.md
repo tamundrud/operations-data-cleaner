@@ -229,7 +229,7 @@ The processing model is **parse source → inspect/schema-check → configure re
 - **Invalid record:** Violates at least one required rule; cannot be included in an export.
 - **Warning-only record:** No required rule failed, but there is a non-blocking concern; export permitted with visible warning.
 - **Valid record:** Meets configured requirements with no warnings.
-- **Partial export:** Deliberate, acknowledged selection of all valid and warning-only rows while invalid rows remain excluded. Report the exact excluded count against the full source dataset and offer an exception report. No auto-exclusion without confirmation.
+- **Partial export:** Deliberate, acknowledged selection of all valid and warning-only rows while invalid rows remain excluded. Show on-screen exception counts, the exact excluded count against the full source dataset, and excluded-row references. Offer a downloadable exception report when the SHOULD capability in FR-26 is included; it is not a release blocker. No auto-exclusion without confirmation.
 
 ### 8.4 Source schema compatibility
 
@@ -321,10 +321,10 @@ Compound Engineering should refine dependencies, but **do not postpone the workf
 1. **Slice 1 — Reliable minimal conversion.** Declare a versioned recipe/workflow model and row/issue representation first. Provide synthetic golden fixture from day one; load CSV, configure simple copy/reorder, show preview, and export. Introduce local-only network tests and restrictive CSP at this point.
 2. **Slice 2 — Target-ready transformations.** Add fixed values, split/combine, arithmetic with decimal semantics, explicit date reformat, CSV output settings, `.xlsx` one-sheet input/output, and associated fixtures.
 3. **Slice 3 — Save and rerun.** Browser persistence, portable JSON backup/import, version guards, and repeat-run schema compatibility. The core recurring use case should work here.
-4. **Slice 4 — Review and recover.** Configurable validation, valid/warning/invalid statuses, source-cell correction in-session, reupload, deliberate partial export, exception reporting, spreadsheet security checks.
+4. **Slice 4 — Review and recover.** Configurable validation, valid/warning/invalid statuses, source-cell correction in-session, reupload, deliberate partial export with mandatory on-screen exception counts and excluded-row references, downloadable exception reporting (SHOULD, FR-26), spreadsheet security checks.
 5. **Slice 5 — Differentiation and launch polish.** Logistics-aware deterministic suggestions, accessible graphical polish, contextual guidance, portfolio/demo messaging, user documentation, and any SHOULD capabilities that fit without jeopardizing correctness.
 
-Release an internal preview of earlier slices if useful; call the **full MVP complete only when all MUST requirements and acceptance scenarios pass**. If delivery time becomes a constraint, explicitly revise the PRD rather than silently omitting a MUST.
+Release an internal preview of earlier slices if useful; call the **full MVP complete only when all MUST requirements and their acceptance scenarios pass**. Acceptance scenarios for SHOULD capabilities apply when those capabilities are included in the release. If delivery time becomes a constraint, explicitly revise the PRD rather than silently omitting a MUST.
 
 ## 13. Future extensibility (guardrails, not features to build now)
 

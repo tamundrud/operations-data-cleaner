@@ -4,7 +4,7 @@ Applies to Codex and other coding agents working in this repository.
 
 ## Source of truth and decision rights
 
-- Read [PRD v0.2](docs/product/operations-data-cleaner-prd-v0.2.md) before planning or writing implementation code.
+- Read [PRD v0.2](docs/PRD.md) before planning or writing implementation code.
 - **This PRD is a draft for product review, not an approved engineering plan.** Do not begin implementation merely because it is in this repository.
 - Start with Compound Engineering document review (`ce-doc-review`), resolve material ambiguities, then produce a plan (`ce-plan`). Use installed command syntax for the actual CE environment.
 - Do not quietly rewrite business rules, acceptance criteria, or non-goals. Surface conflicts for product approval.
