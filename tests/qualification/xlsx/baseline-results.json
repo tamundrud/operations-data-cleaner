@@ -1,0 +1,5201 @@
+{
+  "date": "2026-10-12T01:06:30.890Z",
+  "baseline": true,
+  "node": "v22.23.2",
+  "platform": "linux",
+  "cpu": "13th Gen Intel(R) Core(TM) i9-13900H",
+  "logicalCpus": 20,
+  "ramBytes": 33250582528,
+  "fixtureBytes": {
+    "fidelity": 2700,
+    "representative": 796141
+  },
+  "browsers": [
+    {
+      "name": "chromium",
+      "results": [
+        {
+          "label": "raw/display/type/format/formula metadata",
+          "pass": true,
+          "observation": {
+            "cells": {
+              "!ref": "A1:N2",
+              "A2": {
+                "t": "s",
+                "v": "001234",
+                "z": "General",
+                "w": "001234",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              },
+              "B2": {
+                "t": "n",
+                "v": 1234,
+                "z": "000000",
+                "w": "001234"
+              },
+              "C2": {
+                "t": "n",
+                "v": 1234567890123456,
+                "z": "General",
+                "w": "1.23457E+15"
+              },
+              "D2": {
+                "t": "b",
+                "v": true,
+                "z": "General",
+                "w": "TRUE"
+              },
+              "E2": {
+                "t": "e",
+                "v": 7,
+                "w": "#DIV/0!",
+                "z": "General"
+              },
+              "F2": {
+                "t": "s",
+                "v": "  U1_PRIVATE_SENTINEL  ",
+                "z": "General",
+                "w": "  U1_PRIVATE_SENTINEL  "
+              },
+              "G2": {
+                "t": "n",
+                "v": 1234,
+                "z": "[DBNum1]General",
+                "w": "1234"
+              },
+              "H2": {
+                "t": "n",
+                "v": 7,
+                "f": "WEBSERVICE(\"https://example.invalid/U1_PRIVATE_SENTINEL\")",
+                "z": "General",
+                "w": "7"
+              },
+              "I2": {
+                "t": "z",
+                "f": "1+2",
+                "v": 0,
+                "z": "General"
+              },
+              "J2": {
+                "t": "e",
+                "v": 7,
+                "f": "1/0",
+                "w": "#DIV/0!",
+                "z": "General"
+              },
+              "K2": {
+                "t": "s",
+                "v": "001234",
+                "f": "\"001234\"",
+                "z": "General",
+                "w": "001234"
+              },
+              "L2": {
+                "t": "n",
+                "v": 0.1,
+                "z": "General",
+                "w": "0.1"
+              },
+              "M2": {
+                "t": "n",
+                "v": 2,
+                "f": "1+1",
+                "z": "General",
+                "w": "2"
+              },
+              "N2": {
+                "t": "n",
+                "v": 2,
+                "f": "1+1",
+                "z": "General",
+                "w": "2"
+              }
+            },
+            "interpretation": {
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "B2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "C2": {
+                "warnings": [
+                  "NUMERIC_IDENTIFIER_PRECISION"
+                ],
+                "cacheUsable": true
+              },
+              "D2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "E2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "F2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "G2": {
+                "warnings": [
+                  "UNSUPPORTED_IDENTIFIER_FORMAT"
+                ],
+                "cacheUsable": true
+              },
+              "H2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": true
+              },
+              "I2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": false
+              },
+              "J2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": false
+              },
+              "K2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": true
+              },
+              "L2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "M2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": true
+              },
+              "N2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": true
+              }
+            },
+            "ms": 14.199999999254942
+          }
+        },
+        {
+          "label": "date serial metadata epoch=false",
+          "pass": true,
+          "observation": {
+            "cells": {
+              "!ref": "A1:A13",
+              "A1": {
+                "t": "s",
+                "v": "Date",
+                "z": "General",
+                "w": "Date"
+              },
+              "A2": {
+                "t": "n",
+                "v": 0,
+                "z": "yyyy-mm-dd",
+                "w": "1900-01-00",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              },
+              "A3": {
+                "t": "n",
+                "v": 1,
+                "z": "yyyy-mm-dd",
+                "w": "1900-01-01"
+              },
+              "A4": {
+                "t": "n",
+                "v": 59,
+                "z": "yyyy-mm-dd",
+                "w": "1900-02-28"
+              },
+              "A5": {
+                "t": "n",
+                "v": 60,
+                "z": "yyyy-mm-dd",
+                "w": "1900-02-29"
+              },
+              "A6": {
+                "t": "n",
+                "v": 61,
+                "z": "yyyy-mm-dd",
+                "w": "1900-03-01"
+              },
+              "A7": {
+                "t": "n",
+                "v": 1462,
+                "z": "yyyy-mm-dd",
+                "w": "1904-01-01"
+              },
+              "A8": {
+                "t": "n",
+                "v": 45351,
+                "z": "yyyy-mm-dd",
+                "w": "2024-02-29"
+              },
+              "A9": {
+                "t": "n",
+                "v": 45352,
+                "z": "yyyy-mm-dd",
+                "w": "2024-03-01"
+              },
+              "A10": {
+                "t": "n",
+                "v": 45353,
+                "z": "yyyy-mm-dd",
+                "w": "2024-03-02"
+              },
+              "A11": {
+                "t": "n",
+                "v": 61.5,
+                "z": "yyyy-mm-dd",
+                "w": "1900-03-01"
+              },
+              "A12": {
+                "t": "n",
+                "v": -1,
+                "z": "yyyy-mm-dd",
+                "w": ""
+              },
+              "A13": {
+                "t": "n",
+                "v": 2958466,
+                "z": "yyyy-mm-dd",
+                "w": ""
+              }
+            },
+            "interpretation": {
+              "A1": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              },
+              "A3": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1900,
+                  "month": 1,
+                  "day": 1
+                }
+              },
+              "A4": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1900,
+                  "month": 2,
+                  "day": 28
+                }
+              },
+              "A5": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              },
+              "A6": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1900,
+                  "month": 3,
+                  "day": 1
+                }
+              },
+              "A7": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 1,
+                  "day": 1
+                }
+              },
+              "A8": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2024,
+                  "month": 2,
+                  "day": 29
+                }
+              },
+              "A9": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2024,
+                  "month": 3,
+                  "day": 1
+                }
+              },
+              "A10": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2024,
+                  "month": 3,
+                  "day": 2
+                }
+              },
+              "A11": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "UNSUPPORTED_TIME_COMPONENT"
+              },
+              "A12": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              },
+              "A13": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              }
+            },
+            "ms": 8.5
+          }
+        },
+        {
+          "label": "date serial metadata epoch=true",
+          "pass": true,
+          "observation": {
+            "cells": {
+              "!ref": "A1:A13",
+              "A1": {
+                "t": "s",
+                "v": "Date",
+                "z": "General",
+                "w": "Date"
+              },
+              "A2": {
+                "t": "n",
+                "v": 0,
+                "z": "yyyy-mm-dd",
+                "w": "1904-01-01",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              },
+              "A3": {
+                "t": "n",
+                "v": 1,
+                "z": "yyyy-mm-dd",
+                "w": "1904-01-02"
+              },
+              "A4": {
+                "t": "n",
+                "v": 59,
+                "z": "yyyy-mm-dd",
+                "w": "1904-02-29"
+              },
+              "A5": {
+                "t": "n",
+                "v": 60,
+                "z": "yyyy-mm-dd",
+                "w": "1904-03-01"
+              },
+              "A6": {
+                "t": "n",
+                "v": 61,
+                "z": "yyyy-mm-dd",
+                "w": "1904-03-02"
+              },
+              "A7": {
+                "t": "n",
+                "v": 1462,
+                "z": "yyyy-mm-dd",
+                "w": "1908-01-02"
+              },
+              "A8": {
+                "t": "n",
+                "v": 45351,
+                "z": "yyyy-mm-dd",
+                "w": "2028-03-01"
+              },
+              "A9": {
+                "t": "n",
+                "v": 45352,
+                "z": "yyyy-mm-dd",
+                "w": "2028-03-02"
+              },
+              "A10": {
+                "t": "n",
+                "v": 45353,
+                "z": "yyyy-mm-dd",
+                "w": "2028-03-03"
+              },
+              "A11": {
+                "t": "n",
+                "v": 61.5,
+                "z": "yyyy-mm-dd",
+                "w": "1904-03-02"
+              },
+              "A12": {
+                "t": "n",
+                "v": -1,
+                "z": "yyyy-mm-dd",
+                "w": ""
+              },
+              "A13": {
+                "t": "n",
+                "v": 2958466,
+                "z": "yyyy-mm-dd",
+                "w": ""
+              }
+            },
+            "interpretation": {
+              "A1": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 1,
+                  "day": 1
+                }
+              },
+              "A3": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 1,
+                  "day": 2
+                }
+              },
+              "A4": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 2,
+                  "day": 29
+                }
+              },
+              "A5": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 3,
+                  "day": 1
+                }
+              },
+              "A6": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 3,
+                  "day": 2
+                }
+              },
+              "A7": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1908,
+                  "month": 1,
+                  "day": 2
+                }
+              },
+              "A8": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2028,
+                  "month": 3,
+                  "day": 1
+                }
+              },
+              "A9": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2028,
+                  "month": 3,
+                  "day": 2
+                }
+              },
+              "A10": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2028,
+                  "month": 3,
+                  "day": 3
+                }
+              },
+              "A11": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "UNSUPPORTED_TIME_COMPONENT"
+              },
+              "A12": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              },
+              "A13": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              }
+            },
+            "ms": 7
+          }
+        },
+        {
+          "label": "fflate whole-push vs 1 KiB push allocation characterization",
+          "pass": true,
+          "observation": {
+            "whole": {
+              "ok": true,
+              "actual": 8388608,
+              "maxChunk": 8388608,
+              "ms": 42,
+              "wallMs": 88.89999999850988,
+              "ticks": 8,
+              "stages": []
+            },
+            "chunked": {
+              "ok": true,
+              "actual": 8388608,
+              "maxChunk": 1056768,
+              "ms": 41,
+              "wallMs": 79.20000000298023,
+              "ticks": 7,
+              "stages": []
+            }
+          }
+        },
+        {
+          "label": "direct reader characterization forged-small",
+          "pass": true,
+          "observation": {
+            "ok": true,
+            "interpretation": {
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true
+              }
+            },
+            "decimals": [
+              {
+                "text": "0.3",
+                "representable": true
+              },
+              {
+                "text": "12.5",
+                "representable": true
+              },
+              {
+                "text": "123456789012345.1",
+                "representable": false
+              },
+              {
+                "text": "12345678901234567",
+                "representable": false
+              },
+              {
+                "text": "0.30000000000000004",
+                "representable": false
+              }
+            ],
+            "sheets": [
+              "Synthetic",
+              "Other"
+            ],
+            "epoch": false,
+            "cells": {
+              "!ref": "A1:N2",
+              "A2": {
+                "t": "z",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              }
+            },
+            "count": 1,
+            "ms": 47.399999998509884,
+            "wallMs": 92.5,
+            "ticks": 9,
+            "stages": [
+              "parse-start"
+            ]
+          }
+        },
+        {
+          "label": "direct reader characterization duplicate",
+          "pass": true,
+          "observation": {
+            "ok": true,
+            "interpretation": {
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true
+              }
+            },
+            "decimals": [
+              {
+                "text": "0.3",
+                "representable": true
+              },
+              {
+                "text": "12.5",
+                "representable": true
+              },
+              {
+                "text": "123456789012345.1",
+                "representable": false
+              },
+              {
+                "text": "12345678901234567",
+                "representable": false
+              },
+              {
+                "text": "0.30000000000000004",
+                "representable": false
+              }
+            ],
+            "sheets": [
+              "Synthetic",
+              "Other"
+            ],
+            "epoch": false,
+            "cells": {
+              "!ref": "A1",
+              "A2": {
+                "t": "z",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              }
+            },
+            "count": 2,
+            "ms": 6,
+            "wallMs": 54.69999999925494,
+            "ticks": 5,
+            "stages": [
+              "parse-start"
+            ]
+          }
+        },
+        {
+          "label": "direct reader characterization crc-corrupt",
+          "pass": true,
+          "observation": {
+            "ok": true,
+            "interpretation": {
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true
+              }
+            },
+            "decimals": [
+              {
+                "text": "0.3",
+                "representable": true
+              },
+              {
+                "text": "12.5",
+                "representable": true
+              },
+              {
+                "text": "123456789012345.1",
+                "representable": false
+              },
+              {
+                "text": "12345678901234567",
+                "representable": false
+              },
+              {
+                "text": "0.30000000000000004",
+                "representable": false
+              }
+            ],
+            "sheets": [
+              "Synthetic",
+              "Other"
+            ],
+            "epoch": false,
+            "cells": {
+              "!ref": "A1",
+              "A2": {
+                "t": "z",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              }
+            },
+            "count": 2,
+            "ms": 5.699999999254942,
+            "wallMs": 50.80000000074506,
+            "ticks": 5,
+            "stages": [
+              "parse-start"
+            ]
+          }
+        },
+        {
+          "label": "direct reader characterization dimensions",
+          "pass": true,
+          "observation": {
+            "ok": true,
+            "interpretation": {
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true
+              }
+            },
+            "decimals": [
+              {
+                "text": "0.3",
+                "representable": true
+              },
+              {
+                "text": "12.5",
+                "representable": true
+              },
+              {
+                "text": "123456789012345.1",
+                "representable": false
+              },
+              {
+                "text": "12345678901234567",
+                "representable": false
+              },
+              {
+                "text": "0.30000000000000004",
+                "representable": false
+              }
+            ],
+            "sheets": [
+              "Synthetic",
+              "Other"
+            ],
+            "epoch": false,
+            "cells": {
+              "!ref": "A1:XFD1048576",
+              "A2": {
+                "t": "z",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              }
+            },
+            "count": 2,
+            "ms": 6,
+            "wallMs": 55.80000000074506,
+            "ticks": 5,
+            "stages": [
+              "parse-start"
+            ]
+          }
+        },
+        {
+          "label": "sheetRows is silent truncation, not a resource guard",
+          "pass": true,
+          "observation": {
+            "count": 200,
+            "ref": "A1:T10",
+            "fullref": "A1:T10001"
+          }
+        },
+        {
+          "label": "watchdog cancellation leaves main thread responsive",
+          "pass": true,
+          "observation": {
+            "ok": false,
+            "error": "WATCHDOG_CANCELLED",
+            "wallMs": 250.5,
+            "ticks": 25,
+            "stages": []
+          }
+        },
+        {
+          "label": "10,000 x 20 completeness and timing",
+          "pass": true,
+          "observation": [
+            {
+              "ms": 655.3999999985099,
+              "wallMs": 690.8000000007451,
+              "ticks": 69
+            },
+            {
+              "ms": 611.8999999985099,
+              "wallMs": 650,
+              "ticks": 64
+            },
+            {
+              "ms": 609.4000000022352,
+              "wallMs": 646.9000000022352,
+              "ticks": 64
+            },
+            {
+              "ms": 622.7999999970198,
+              "wallMs": 679.5,
+              "ticks": 67
+            },
+            {
+              "ms": 633.8000000007451,
+              "wallMs": 680.5,
+              "ticks": 68
+            },
+            {
+              "ms": 616.2000000029802,
+              "wallMs": 670.6999999992549,
+              "ticks": 67
+            }
+          ]
+        }
+      ],
+      "requests": [
+        {
+          "url": "http://127.0.0.1:38531/",
+          "headers": {
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36",
+            "sec-ch-ua": "\"Not:A-Brand\";v=\"8\", \"Chromium\";v=\"156\", \"HeadlessChrome\";v=\"156\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Linux\""
+          },
+          "path": "/",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/client.js",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36",
+            "sec-ch-ua": "\"Not:A-Brand\";v=\"8\", \"Chromium\";v=\"156\", \"HeadlessChrome\";v=\"156\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Linux\""
+          },
+          "path": "/client.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "accept": "*/*",
+            "origin": "http://127.0.0.1:38531",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        }
+      ],
+      "diagnostics": [],
+      "version": "156.0.8078.4",
+      "rendererRssPeakBytes": 243220480,
+      "rendererRssBeforeBytes": 0,
+      "outputXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"><dimension ref=\"A1:E2\"/><sheetViews><sheetView workbookViewId=\"0\"/></sheetViews><sheetData><row r=\"1\"><c r=\"A1\" t=\"str\"><v>Reference</v></c><c r=\"B1\" t=\"str\"><v>Formula-like</v></c><c r=\"C1\" t=\"str\"><v>Number</v></c><c r=\"D1\" t=\"str\"><v>Date</v></c><c r=\"E1\" t=\"str\"><v>Blank</v></c></row><row r=\"2\"><c r=\"A2\" t=\"str\"><v>001234</v></c><c r=\"B2\" t=\"str\"><v>=WEBSERVICE(&quot;https://example.invalid&quot;)</v></c><c r=\"C2\"><v>0.3</v></c><c r=\"D2\" s=\"1\"><v>45352</v></c></row></sheetData><ignoredErrors><ignoredError numberStoredAsText=\"1\" sqref=\"A1:E2\"/></ignoredErrors></worksheet>"
+    },
+    {
+      "name": "firefox",
+      "results": [
+        {
+          "label": "raw/display/type/format/formula metadata",
+          "pass": true,
+          "observation": {
+            "cells": {
+              "!ref": "A1:N2",
+              "A2": {
+                "t": "s",
+                "v": "001234",
+                "z": "General",
+                "w": "001234",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              },
+              "B2": {
+                "t": "n",
+                "v": 1234,
+                "z": "000000",
+                "w": "001234"
+              },
+              "C2": {
+                "t": "n",
+                "v": 1234567890123456,
+                "z": "General",
+                "w": "1.23457E+15"
+              },
+              "D2": {
+                "t": "b",
+                "v": true,
+                "z": "General",
+                "w": "TRUE"
+              },
+              "E2": {
+                "t": "e",
+                "v": 7,
+                "w": "#DIV/0!",
+                "z": "General"
+              },
+              "F2": {
+                "t": "s",
+                "v": "  U1_PRIVATE_SENTINEL  ",
+                "z": "General",
+                "w": "  U1_PRIVATE_SENTINEL  "
+              },
+              "G2": {
+                "t": "n",
+                "v": 1234,
+                "z": "[DBNum1]General",
+                "w": "1234"
+              },
+              "H2": {
+                "t": "n",
+                "v": 7,
+                "f": "WEBSERVICE(\"https://example.invalid/U1_PRIVATE_SENTINEL\")",
+                "z": "General",
+                "w": "7"
+              },
+              "I2": {
+                "t": "z",
+                "f": "1+2",
+                "v": 0,
+                "z": "General"
+              },
+              "J2": {
+                "t": "e",
+                "v": 7,
+                "f": "1/0",
+                "w": "#DIV/0!",
+                "z": "General"
+              },
+              "K2": {
+                "t": "s",
+                "v": "001234",
+                "f": "\"001234\"",
+                "z": "General",
+                "w": "001234"
+              },
+              "L2": {
+                "t": "n",
+                "v": 0.1,
+                "z": "General",
+                "w": "0.1"
+              },
+              "M2": {
+                "t": "n",
+                "v": 2,
+                "f": "1+1",
+                "z": "General",
+                "w": "2"
+              },
+              "N2": {
+                "t": "n",
+                "v": 2,
+                "f": "1+1",
+                "z": "General",
+                "w": "2"
+              }
+            },
+            "interpretation": {
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "B2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "C2": {
+                "warnings": [
+                  "NUMERIC_IDENTIFIER_PRECISION"
+                ],
+                "cacheUsable": true
+              },
+              "D2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "E2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "F2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "G2": {
+                "warnings": [
+                  "UNSUPPORTED_IDENTIFIER_FORMAT"
+                ],
+                "cacheUsable": true
+              },
+              "H2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": true
+              },
+              "I2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": false
+              },
+              "J2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": false
+              },
+              "K2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": true
+              },
+              "L2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "M2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": true
+              },
+              "N2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": true
+              }
+            },
+            "ms": 20
+          }
+        },
+        {
+          "label": "date serial metadata epoch=false",
+          "pass": true,
+          "observation": {
+            "cells": {
+              "!ref": "A1:A13",
+              "A1": {
+                "t": "s",
+                "v": "Date",
+                "z": "General",
+                "w": "Date"
+              },
+              "A2": {
+                "t": "n",
+                "v": 0,
+                "z": "yyyy-mm-dd",
+                "w": "1900-01-00",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              },
+              "A3": {
+                "t": "n",
+                "v": 1,
+                "z": "yyyy-mm-dd",
+                "w": "1900-01-01"
+              },
+              "A4": {
+                "t": "n",
+                "v": 59,
+                "z": "yyyy-mm-dd",
+                "w": "1900-02-28"
+              },
+              "A5": {
+                "t": "n",
+                "v": 60,
+                "z": "yyyy-mm-dd",
+                "w": "1900-02-29"
+              },
+              "A6": {
+                "t": "n",
+                "v": 61,
+                "z": "yyyy-mm-dd",
+                "w": "1900-03-01"
+              },
+              "A7": {
+                "t": "n",
+                "v": 1462,
+                "z": "yyyy-mm-dd",
+                "w": "1904-01-01"
+              },
+              "A8": {
+                "t": "n",
+                "v": 45351,
+                "z": "yyyy-mm-dd",
+                "w": "2024-02-29"
+              },
+              "A9": {
+                "t": "n",
+                "v": 45352,
+                "z": "yyyy-mm-dd",
+                "w": "2024-03-01"
+              },
+              "A10": {
+                "t": "n",
+                "v": 45353,
+                "z": "yyyy-mm-dd",
+                "w": "2024-03-02"
+              },
+              "A11": {
+                "t": "n",
+                "v": 61.5,
+                "z": "yyyy-mm-dd",
+                "w": "1900-03-01"
+              },
+              "A12": {
+                "t": "n",
+                "v": -1,
+                "z": "yyyy-mm-dd",
+                "w": ""
+              },
+              "A13": {
+                "t": "n",
+                "v": 2958466,
+                "z": "yyyy-mm-dd",
+                "w": ""
+              }
+            },
+            "interpretation": {
+              "A1": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              },
+              "A3": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1900,
+                  "month": 1,
+                  "day": 1
+                }
+              },
+              "A4": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1900,
+                  "month": 2,
+                  "day": 28
+                }
+              },
+              "A5": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              },
+              "A6": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1900,
+                  "month": 3,
+                  "day": 1
+                }
+              },
+              "A7": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 1,
+                  "day": 1
+                }
+              },
+              "A8": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2024,
+                  "month": 2,
+                  "day": 29
+                }
+              },
+              "A9": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2024,
+                  "month": 3,
+                  "day": 1
+                }
+              },
+              "A10": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2024,
+                  "month": 3,
+                  "day": 2
+                }
+              },
+              "A11": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "UNSUPPORTED_TIME_COMPONENT"
+              },
+              "A12": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              },
+              "A13": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              }
+            },
+            "ms": 11
+          }
+        },
+        {
+          "label": "date serial metadata epoch=true",
+          "pass": true,
+          "observation": {
+            "cells": {
+              "!ref": "A1:A13",
+              "A1": {
+                "t": "s",
+                "v": "Date",
+                "z": "General",
+                "w": "Date"
+              },
+              "A2": {
+                "t": "n",
+                "v": 0,
+                "z": "yyyy-mm-dd",
+                "w": "1904-01-01",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              },
+              "A3": {
+                "t": "n",
+                "v": 1,
+                "z": "yyyy-mm-dd",
+                "w": "1904-01-02"
+              },
+              "A4": {
+                "t": "n",
+                "v": 59,
+                "z": "yyyy-mm-dd",
+                "w": "1904-02-29"
+              },
+              "A5": {
+                "t": "n",
+                "v": 60,
+                "z": "yyyy-mm-dd",
+                "w": "1904-03-01"
+              },
+              "A6": {
+                "t": "n",
+                "v": 61,
+                "z": "yyyy-mm-dd",
+                "w": "1904-03-02"
+              },
+              "A7": {
+                "t": "n",
+                "v": 1462,
+                "z": "yyyy-mm-dd",
+                "w": "1908-01-02"
+              },
+              "A8": {
+                "t": "n",
+                "v": 45351,
+                "z": "yyyy-mm-dd",
+                "w": "2028-03-01"
+              },
+              "A9": {
+                "t": "n",
+                "v": 45352,
+                "z": "yyyy-mm-dd",
+                "w": "2028-03-02"
+              },
+              "A10": {
+                "t": "n",
+                "v": 45353,
+                "z": "yyyy-mm-dd",
+                "w": "2028-03-03"
+              },
+              "A11": {
+                "t": "n",
+                "v": 61.5,
+                "z": "yyyy-mm-dd",
+                "w": "1904-03-02"
+              },
+              "A12": {
+                "t": "n",
+                "v": -1,
+                "z": "yyyy-mm-dd",
+                "w": ""
+              },
+              "A13": {
+                "t": "n",
+                "v": 2958466,
+                "z": "yyyy-mm-dd",
+                "w": ""
+              }
+            },
+            "interpretation": {
+              "A1": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 1,
+                  "day": 1
+                }
+              },
+              "A3": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 1,
+                  "day": 2
+                }
+              },
+              "A4": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 2,
+                  "day": 29
+                }
+              },
+              "A5": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 3,
+                  "day": 1
+                }
+              },
+              "A6": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 3,
+                  "day": 2
+                }
+              },
+              "A7": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1908,
+                  "month": 1,
+                  "day": 2
+                }
+              },
+              "A8": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2028,
+                  "month": 3,
+                  "day": 1
+                }
+              },
+              "A9": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2028,
+                  "month": 3,
+                  "day": 2
+                }
+              },
+              "A10": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2028,
+                  "month": 3,
+                  "day": 3
+                }
+              },
+              "A11": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "UNSUPPORTED_TIME_COMPONENT"
+              },
+              "A12": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              },
+              "A13": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              }
+            },
+            "ms": 11
+          }
+        },
+        {
+          "label": "fflate whole-push vs 1 KiB push allocation characterization",
+          "pass": true,
+          "observation": {
+            "whole": {
+              "ok": true,
+              "actual": 8388608,
+              "maxChunk": 8388608,
+              "ms": 27,
+              "wallMs": 92,
+              "ticks": 8,
+              "stages": []
+            },
+            "chunked": {
+              "ok": true,
+              "actual": 8388608,
+              "maxChunk": 1056768,
+              "ms": 31,
+              "wallMs": 79,
+              "ticks": 7,
+              "stages": []
+            }
+          }
+        },
+        {
+          "label": "direct reader characterization forged-small",
+          "pass": true,
+          "observation": {
+            "ok": true,
+            "interpretation": {
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true
+              }
+            },
+            "decimals": [
+              {
+                "text": "0.3",
+                "representable": true
+              },
+              {
+                "text": "12.5",
+                "representable": true
+              },
+              {
+                "text": "123456789012345.1",
+                "representable": false
+              },
+              {
+                "text": "12345678901234567",
+                "representable": false
+              },
+              {
+                "text": "0.30000000000000004",
+                "representable": false
+              }
+            ],
+            "sheets": [
+              "Synthetic",
+              "Other"
+            ],
+            "epoch": false,
+            "cells": {
+              "!ref": "A1:N2",
+              "A2": {
+                "t": "z",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              }
+            },
+            "count": 1,
+            "ms": 19,
+            "wallMs": 87,
+            "ticks": 8,
+            "stages": [
+              "parse-start"
+            ]
+          }
+        },
+        {
+          "label": "direct reader characterization duplicate",
+          "pass": true,
+          "observation": {
+            "ok": true,
+            "interpretation": {
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true
+              }
+            },
+            "decimals": [
+              {
+                "text": "0.3",
+                "representable": true
+              },
+              {
+                "text": "12.5",
+                "representable": true
+              },
+              {
+                "text": "123456789012345.1",
+                "representable": false
+              },
+              {
+                "text": "12345678901234567",
+                "representable": false
+              },
+              {
+                "text": "0.30000000000000004",
+                "representable": false
+              }
+            ],
+            "sheets": [
+              "Synthetic",
+              "Other"
+            ],
+            "epoch": false,
+            "cells": {
+              "!ref": "A1",
+              "A2": {
+                "t": "z",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              }
+            },
+            "count": 2,
+            "ms": 8,
+            "wallMs": 64,
+            "ticks": 6,
+            "stages": [
+              "parse-start"
+            ]
+          }
+        },
+        {
+          "label": "direct reader characterization crc-corrupt",
+          "pass": true,
+          "observation": {
+            "ok": true,
+            "interpretation": {
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true
+              }
+            },
+            "decimals": [
+              {
+                "text": "0.3",
+                "representable": true
+              },
+              {
+                "text": "12.5",
+                "representable": true
+              },
+              {
+                "text": "123456789012345.1",
+                "representable": false
+              },
+              {
+                "text": "12345678901234567",
+                "representable": false
+              },
+              {
+                "text": "0.30000000000000004",
+                "representable": false
+              }
+            ],
+            "sheets": [
+              "Synthetic",
+              "Other"
+            ],
+            "epoch": false,
+            "cells": {
+              "!ref": "A1",
+              "A2": {
+                "t": "z",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              }
+            },
+            "count": 2,
+            "ms": 8,
+            "wallMs": 59,
+            "ticks": 5,
+            "stages": [
+              "parse-start"
+            ]
+          }
+        },
+        {
+          "label": "direct reader characterization dimensions",
+          "pass": true,
+          "observation": {
+            "ok": true,
+            "interpretation": {
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true
+              }
+            },
+            "decimals": [
+              {
+                "text": "0.3",
+                "representable": true
+              },
+              {
+                "text": "12.5",
+                "representable": true
+              },
+              {
+                "text": "123456789012345.1",
+                "representable": false
+              },
+              {
+                "text": "12345678901234567",
+                "representable": false
+              },
+              {
+                "text": "0.30000000000000004",
+                "representable": false
+              }
+            ],
+            "sheets": [
+              "Synthetic",
+              "Other"
+            ],
+            "epoch": false,
+            "cells": {
+              "!ref": "A1:XFD1048576",
+              "A2": {
+                "t": "z",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              }
+            },
+            "count": 2,
+            "ms": 9,
+            "wallMs": 77,
+            "ticks": 7,
+            "stages": [
+              "parse-start"
+            ]
+          }
+        },
+        {
+          "label": "sheetRows is silent truncation, not a resource guard",
+          "pass": true,
+          "observation": {
+            "count": 200,
+            "ref": "A1:T10",
+            "fullref": "A1:T10001"
+          }
+        },
+        {
+          "label": "watchdog cancellation leaves main thread responsive",
+          "pass": true,
+          "observation": {
+            "ok": false,
+            "error": "WATCHDOG_CANCELLED",
+            "wallMs": 251,
+            "ticks": 24,
+            "stages": []
+          }
+        },
+        {
+          "label": "10,000 x 20 completeness and timing",
+          "pass": true,
+          "observation": [
+            {
+              "ms": 514,
+              "wallMs": 581,
+              "ticks": 57
+            },
+            {
+              "ms": 508,
+              "wallMs": 558,
+              "ticks": 54
+            },
+            {
+              "ms": 518,
+              "wallMs": 583,
+              "ticks": 57
+            },
+            {
+              "ms": 522,
+              "wallMs": 580,
+              "ticks": 56
+            },
+            {
+              "ms": 513,
+              "wallMs": 564,
+              "ticks": 55
+            },
+            {
+              "ms": 514,
+              "wallMs": 574,
+              "ticks": 55
+            }
+          ]
+        }
+      ],
+      "requests": [
+        {
+          "url": "http://127.0.0.1:38531/",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "upgrade-insecure-requests": "1",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "none",
+            "sec-fetch-user": "?1",
+            "connection": "keep-alive"
+          },
+          "path": "/",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/client.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "script",
+            "sec-fetch-mode": "no-cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/client.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "host": "127.0.0.1:38531",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "accept": "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "connection": "keep-alive"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        }
+      ],
+      "diagnostics": [
+        "[JavaScript Error: \"Content-Security-Policy: The page’s settings blocked the loading of a resource (img-src) at http://127.0.0.1:38531/favicon.ico because it violates the following directive: “default-src 'none'”\" {file: \"resource:///modules/FaviconLoader.sys.mjs\" line: 232}]"
+      ],
+      "version": "157.0",
+      "outputXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"><dimension ref=\"A1:E2\"/><sheetViews><sheetView workbookViewId=\"0\"/></sheetViews><sheetData><row r=\"1\"><c r=\"A1\" t=\"str\"><v>Reference</v></c><c r=\"B1\" t=\"str\"><v>Formula-like</v></c><c r=\"C1\" t=\"str\"><v>Number</v></c><c r=\"D1\" t=\"str\"><v>Date</v></c><c r=\"E1\" t=\"str\"><v>Blank</v></c></row><row r=\"2\"><c r=\"A2\" t=\"str\"><v>001234</v></c><c r=\"B2\" t=\"str\"><v>=WEBSERVICE(&quot;https://example.invalid&quot;)</v></c><c r=\"C2\"><v>0.3</v></c><c r=\"D2\" s=\"1\"><v>45352</v></c></row></sheetData><ignoredErrors><ignoredError numberStoredAsText=\"1\" sqref=\"A1:E2\"/></ignoredErrors></worksheet>"
+    },
+    {
+      "name": "webkit",
+      "results": [
+        {
+          "label": "raw/display/type/format/formula metadata",
+          "pass": true,
+          "observation": {
+            "cells": {
+              "!ref": "A1:N2",
+              "A2": {
+                "t": "s",
+                "v": "001234",
+                "z": "General",
+                "w": "001234",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              },
+              "B2": {
+                "t": "n",
+                "v": 1234,
+                "z": "000000",
+                "w": "001234"
+              },
+              "C2": {
+                "t": "n",
+                "v": 1234567890123456,
+                "z": "General",
+                "w": "1.23457E+15"
+              },
+              "D2": {
+                "t": "b",
+                "v": true,
+                "z": "General",
+                "w": "TRUE"
+              },
+              "E2": {
+                "t": "e",
+                "v": 7,
+                "w": "#DIV/0!",
+                "z": "General"
+              },
+              "F2": {
+                "t": "s",
+                "v": "  U1_PRIVATE_SENTINEL  ",
+                "z": "General",
+                "w": "  U1_PRIVATE_SENTINEL  "
+              },
+              "G2": {
+                "t": "n",
+                "v": 1234,
+                "z": "[DBNum1]General",
+                "w": "1234"
+              },
+              "H2": {
+                "t": "n",
+                "v": 7,
+                "f": "WEBSERVICE(\"https://example.invalid/U1_PRIVATE_SENTINEL\")",
+                "z": "General",
+                "w": "7"
+              },
+              "I2": {
+                "t": "z",
+                "f": "1+2",
+                "v": 0,
+                "z": "General"
+              },
+              "J2": {
+                "t": "e",
+                "v": 7,
+                "f": "1/0",
+                "w": "#DIV/0!",
+                "z": "General"
+              },
+              "K2": {
+                "t": "s",
+                "v": "001234",
+                "f": "\"001234\"",
+                "z": "General",
+                "w": "001234"
+              },
+              "L2": {
+                "t": "n",
+                "v": 0.1,
+                "z": "General",
+                "w": "0.1"
+              },
+              "M2": {
+                "t": "n",
+                "v": 2,
+                "f": "1+1",
+                "z": "General",
+                "w": "2"
+              },
+              "N2": {
+                "t": "n",
+                "v": 2,
+                "f": "1+1",
+                "z": "General",
+                "w": "2"
+              }
+            },
+            "interpretation": {
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "B2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "C2": {
+                "warnings": [
+                  "NUMERIC_IDENTIFIER_PRECISION"
+                ],
+                "cacheUsable": true
+              },
+              "D2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "E2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "F2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "G2": {
+                "warnings": [
+                  "UNSUPPORTED_IDENTIFIER_FORMAT"
+                ],
+                "cacheUsable": true
+              },
+              "H2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": true
+              },
+              "I2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": false
+              },
+              "J2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": false
+              },
+              "K2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": true
+              },
+              "L2": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "M2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": true
+              },
+              "N2": {
+                "warnings": [
+                  "STALE_FORMULA_CACHE"
+                ],
+                "cacheUsable": true
+              }
+            },
+            "ms": 20
+          }
+        },
+        {
+          "label": "date serial metadata epoch=false",
+          "pass": true,
+          "observation": {
+            "cells": {
+              "!ref": "A1:A13",
+              "A1": {
+                "t": "s",
+                "v": "Date",
+                "z": "General",
+                "w": "Date"
+              },
+              "A2": {
+                "t": "n",
+                "v": 0,
+                "z": "yyyy-mm-dd",
+                "w": "1900-01-00",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              },
+              "A3": {
+                "t": "n",
+                "v": 1,
+                "z": "yyyy-mm-dd",
+                "w": "1900-01-01"
+              },
+              "A4": {
+                "t": "n",
+                "v": 59,
+                "z": "yyyy-mm-dd",
+                "w": "1900-02-28"
+              },
+              "A5": {
+                "t": "n",
+                "v": 60,
+                "z": "yyyy-mm-dd",
+                "w": "1900-02-29"
+              },
+              "A6": {
+                "t": "n",
+                "v": 61,
+                "z": "yyyy-mm-dd",
+                "w": "1900-03-01"
+              },
+              "A7": {
+                "t": "n",
+                "v": 1462,
+                "z": "yyyy-mm-dd",
+                "w": "1904-01-01"
+              },
+              "A8": {
+                "t": "n",
+                "v": 45351,
+                "z": "yyyy-mm-dd",
+                "w": "2024-02-29"
+              },
+              "A9": {
+                "t": "n",
+                "v": 45352,
+                "z": "yyyy-mm-dd",
+                "w": "2024-03-01"
+              },
+              "A10": {
+                "t": "n",
+                "v": 45353,
+                "z": "yyyy-mm-dd",
+                "w": "2024-03-02"
+              },
+              "A11": {
+                "t": "n",
+                "v": 61.5,
+                "z": "yyyy-mm-dd",
+                "w": "1900-03-01"
+              },
+              "A12": {
+                "t": "n",
+                "v": -1,
+                "z": "yyyy-mm-dd",
+                "w": ""
+              },
+              "A13": {
+                "t": "n",
+                "v": 2958466,
+                "z": "yyyy-mm-dd",
+                "w": ""
+              }
+            },
+            "interpretation": {
+              "A1": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              },
+              "A3": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1900,
+                  "month": 1,
+                  "day": 1
+                }
+              },
+              "A4": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1900,
+                  "month": 2,
+                  "day": 28
+                }
+              },
+              "A5": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              },
+              "A6": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1900,
+                  "month": 3,
+                  "day": 1
+                }
+              },
+              "A7": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 1,
+                  "day": 1
+                }
+              },
+              "A8": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2024,
+                  "month": 2,
+                  "day": 29
+                }
+              },
+              "A9": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2024,
+                  "month": 3,
+                  "day": 1
+                }
+              },
+              "A10": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2024,
+                  "month": 3,
+                  "day": 2
+                }
+              },
+              "A11": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "UNSUPPORTED_TIME_COMPONENT"
+              },
+              "A12": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              },
+              "A13": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              }
+            },
+            "ms": 8
+          }
+        },
+        {
+          "label": "date serial metadata epoch=true",
+          "pass": true,
+          "observation": {
+            "cells": {
+              "!ref": "A1:A13",
+              "A1": {
+                "t": "s",
+                "v": "Date",
+                "z": "General",
+                "w": "Date"
+              },
+              "A2": {
+                "t": "n",
+                "v": 0,
+                "z": "yyyy-mm-dd",
+                "w": "1904-01-01",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              },
+              "A3": {
+                "t": "n",
+                "v": 1,
+                "z": "yyyy-mm-dd",
+                "w": "1904-01-02"
+              },
+              "A4": {
+                "t": "n",
+                "v": 59,
+                "z": "yyyy-mm-dd",
+                "w": "1904-02-29"
+              },
+              "A5": {
+                "t": "n",
+                "v": 60,
+                "z": "yyyy-mm-dd",
+                "w": "1904-03-01"
+              },
+              "A6": {
+                "t": "n",
+                "v": 61,
+                "z": "yyyy-mm-dd",
+                "w": "1904-03-02"
+              },
+              "A7": {
+                "t": "n",
+                "v": 1462,
+                "z": "yyyy-mm-dd",
+                "w": "1908-01-02"
+              },
+              "A8": {
+                "t": "n",
+                "v": 45351,
+                "z": "yyyy-mm-dd",
+                "w": "2028-03-01"
+              },
+              "A9": {
+                "t": "n",
+                "v": 45352,
+                "z": "yyyy-mm-dd",
+                "w": "2028-03-02"
+              },
+              "A10": {
+                "t": "n",
+                "v": 45353,
+                "z": "yyyy-mm-dd",
+                "w": "2028-03-03"
+              },
+              "A11": {
+                "t": "n",
+                "v": 61.5,
+                "z": "yyyy-mm-dd",
+                "w": "1904-03-02"
+              },
+              "A12": {
+                "t": "n",
+                "v": -1,
+                "z": "yyyy-mm-dd",
+                "w": ""
+              },
+              "A13": {
+                "t": "n",
+                "v": 2958466,
+                "z": "yyyy-mm-dd",
+                "w": ""
+              }
+            },
+            "interpretation": {
+              "A1": {
+                "warnings": [],
+                "cacheUsable": true
+              },
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 1,
+                  "day": 1
+                }
+              },
+              "A3": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 1,
+                  "day": 2
+                }
+              },
+              "A4": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 2,
+                  "day": 29
+                }
+              },
+              "A5": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 3,
+                  "day": 1
+                }
+              },
+              "A6": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1904,
+                  "month": 3,
+                  "day": 2
+                }
+              },
+              "A7": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 1908,
+                  "month": 1,
+                  "day": 2
+                }
+              },
+              "A8": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2028,
+                  "month": 3,
+                  "day": 1
+                }
+              },
+              "A9": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2028,
+                  "month": 3,
+                  "day": 2
+                }
+              },
+              "A10": {
+                "warnings": [],
+                "cacheUsable": true,
+                "date": {
+                  "year": 2028,
+                  "month": 3,
+                  "day": 3
+                }
+              },
+              "A11": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "UNSUPPORTED_TIME_COMPONENT"
+              },
+              "A12": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              },
+              "A13": {
+                "warnings": [],
+                "cacheUsable": true,
+                "dateError": "INVALID_EXCEL_DATE"
+              }
+            },
+            "ms": 8
+          }
+        },
+        {
+          "label": "fflate whole-push vs 1 KiB push allocation characterization",
+          "pass": true,
+          "observation": {
+            "whole": {
+              "ok": true,
+              "actual": 8388608,
+              "maxChunk": 8388608,
+              "ms": 69,
+              "wallMs": 117,
+              "ticks": 10,
+              "stages": []
+            },
+            "chunked": {
+              "ok": true,
+              "actual": 8388608,
+              "maxChunk": 1056768,
+              "ms": 64,
+              "wallMs": 104,
+              "ticks": 9,
+              "stages": []
+            }
+          }
+        },
+        {
+          "label": "direct reader characterization forged-small",
+          "pass": true,
+          "observation": {
+            "ok": true,
+            "interpretation": {
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true
+              }
+            },
+            "decimals": [
+              {
+                "text": "0.3",
+                "representable": true
+              },
+              {
+                "text": "12.5",
+                "representable": true
+              },
+              {
+                "text": "123456789012345.1",
+                "representable": false
+              },
+              {
+                "text": "12345678901234567",
+                "representable": false
+              },
+              {
+                "text": "0.30000000000000004",
+                "representable": false
+              }
+            ],
+            "sheets": [
+              "Synthetic",
+              "Other"
+            ],
+            "epoch": false,
+            "cells": {
+              "!ref": "A1:N2",
+              "A2": {
+                "t": "z",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              }
+            },
+            "count": 1,
+            "ms": 34,
+            "wallMs": 76,
+            "ticks": 7,
+            "stages": [
+              "parse-start"
+            ]
+          }
+        },
+        {
+          "label": "direct reader characterization duplicate",
+          "pass": true,
+          "observation": {
+            "ok": true,
+            "interpretation": {
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true
+              }
+            },
+            "decimals": [
+              {
+                "text": "0.3",
+                "representable": true
+              },
+              {
+                "text": "12.5",
+                "representable": true
+              },
+              {
+                "text": "123456789012345.1",
+                "representable": false
+              },
+              {
+                "text": "12345678901234567",
+                "representable": false
+              },
+              {
+                "text": "0.30000000000000004",
+                "representable": false
+              }
+            ],
+            "sheets": [
+              "Synthetic",
+              "Other"
+            ],
+            "epoch": false,
+            "cells": {
+              "!ref": "A1",
+              "A2": {
+                "t": "z",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              }
+            },
+            "count": 2,
+            "ms": 6,
+            "wallMs": 51,
+            "ticks": 5,
+            "stages": [
+              "parse-start"
+            ]
+          }
+        },
+        {
+          "label": "direct reader characterization crc-corrupt",
+          "pass": true,
+          "observation": {
+            "ok": true,
+            "interpretation": {
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true
+              }
+            },
+            "decimals": [
+              {
+                "text": "0.3",
+                "representable": true
+              },
+              {
+                "text": "12.5",
+                "representable": true
+              },
+              {
+                "text": "123456789012345.1",
+                "representable": false
+              },
+              {
+                "text": "12345678901234567",
+                "representable": false
+              },
+              {
+                "text": "0.30000000000000004",
+                "representable": false
+              }
+            ],
+            "sheets": [
+              "Synthetic",
+              "Other"
+            ],
+            "epoch": false,
+            "cells": {
+              "!ref": "A1",
+              "A2": {
+                "t": "z",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              }
+            },
+            "count": 2,
+            "ms": 6,
+            "wallMs": 51,
+            "ticks": 5,
+            "stages": [
+              "parse-start"
+            ]
+          }
+        },
+        {
+          "label": "direct reader characterization dimensions",
+          "pass": true,
+          "observation": {
+            "ok": true,
+            "interpretation": {
+              "A2": {
+                "warnings": [],
+                "cacheUsable": true
+              }
+            },
+            "decimals": [
+              {
+                "text": "0.3",
+                "representable": true
+              },
+              {
+                "text": "12.5",
+                "representable": true
+              },
+              {
+                "text": "123456789012345.1",
+                "representable": false
+              },
+              {
+                "text": "12345678901234567",
+                "representable": false
+              },
+              {
+                "text": "0.30000000000000004",
+                "representable": false
+              }
+            ],
+            "sheets": [
+              "Synthetic",
+              "Other"
+            ],
+            "epoch": false,
+            "cells": {
+              "!ref": "A1:XFD1048576",
+              "A2": {
+                "t": "z",
+                "l": {
+                  "ref": "A2",
+                  "id": "external",
+                  "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                  "Rel": {
+                    "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+                    "Target": "https://example.invalid/U1_PRIVATE_SENTINEL",
+                    "Id": "external",
+                    "TargetMode": "External"
+                  }
+                }
+              }
+            },
+            "count": 2,
+            "ms": 6,
+            "wallMs": 48,
+            "ticks": 4,
+            "stages": [
+              "parse-start"
+            ]
+          }
+        },
+        {
+          "label": "sheetRows is silent truncation, not a resource guard",
+          "pass": true,
+          "observation": {
+            "count": 200,
+            "ref": "A1:T10",
+            "fullref": "A1:T10001"
+          }
+        },
+        {
+          "label": "watchdog cancellation leaves main thread responsive",
+          "pass": true,
+          "observation": {
+            "ok": false,
+            "error": "WATCHDOG_CANCELLED",
+            "wallMs": 250,
+            "ticks": 21,
+            "stages": []
+          }
+        },
+        {
+          "label": "10,000 x 20 completeness and timing",
+          "pass": true,
+          "observation": [
+            {
+              "ms": 480,
+              "wallMs": 533,
+              "ticks": 45
+            },
+            {
+              "ms": 481,
+              "wallMs": 523,
+              "ticks": 44
+            },
+            {
+              "ms": 499,
+              "wallMs": 550,
+              "ticks": 46
+            },
+            {
+              "ms": 467,
+              "wallMs": 508,
+              "ticks": 42
+            },
+            {
+              "ms": 470,
+              "wallMs": 519,
+              "ticks": 44
+            },
+            {
+              "ms": 461,
+              "wallMs": 521,
+              "ticks": 43
+            }
+          ]
+        }
+      ],
+      "requests": [
+        {
+          "url": "http://127.0.0.1:38531/",
+          "headers": {
+            "cache-control": "no-cache",
+            "pragma": "no-cache",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "upgrade-insecure-requests": "1",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "none",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15"
+          },
+          "path": "/",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/client.js",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "script",
+            "sec-fetch-mode": "no-cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/client.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/worker.mjs",
+          "headers": {
+            "accept": "*/*",
+            "referer": "http://127.0.0.1:38531/",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "same-origin",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/worker.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/xlsx/xlsx.mjs",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/xlsx/xlsx.mjs",
+          "method": "GET",
+          "body": null
+        },
+        {
+          "url": "http://127.0.0.1:38531/node_modules/fflate/esm/browser.js",
+          "headers": {
+            "referer": "http://127.0.0.1:38531/worker.mjs",
+            "accept": "*/*",
+            "sec-fetch-dest": "worker",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+          },
+          "path": "/node_modules/fflate/esm/browser.js",
+          "method": "GET",
+          "body": null
+        }
+      ],
+      "diagnostics": [],
+      "version": "27.2",
+      "outputXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"><dimension ref=\"A1:E2\"/><sheetViews><sheetView workbookViewId=\"0\"/></sheetViews><sheetData><row r=\"1\"><c r=\"A1\" t=\"str\"><v>Reference</v></c><c r=\"B1\" t=\"str\"><v>Formula-like</v></c><c r=\"C1\" t=\"str\"><v>Number</v></c><c r=\"D1\" t=\"str\"><v>Date</v></c><c r=\"E1\" t=\"str\"><v>Blank</v></c></row><row r=\"2\"><c r=\"A2\" t=\"str\"><v>001234</v></c><c r=\"B2\" t=\"str\"><v>=WEBSERVICE(&quot;https://example.invalid&quot;)</v></c><c r=\"C2\"><v>0.3</v></c><c r=\"D2\" s=\"1\"><v>45352</v></c></row></sheetData><ignoredErrors><ignoredError numberStoredAsText=\"1\" sqref=\"A1:E2\"/></ignoredErrors></worksheet>"
+    }
+  ],
+  "failures": 0
+}
