@@ -1,0 +1,1 @@
+Browser-local files and corrections only; deterministic explicit transformations; preserve schema/provenance and injection protections. Synthetic data only. Scope U2 UX revision; no engine/schema/worker/session changes or U3. No stale or incomplete export. Review only staged diff against bd89c6a. Exclude untracked .codex and docs/design/u2 entirely; do not read them.

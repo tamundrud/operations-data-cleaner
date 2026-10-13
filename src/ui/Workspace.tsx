@@ -9,6 +9,7 @@ import {
 } from "../engine/workflow";
 import { displayValue } from "../engine/values";
 import { exportText, type SafetyChoice } from "../formats/spreadsheet-safety";
+import MappingRows from "./MappingRows";
 import sampleSource from "../../examples/u2/source.csv?raw";
 import sampleConfig from "../../examples/u2/workflow.json?raw";
 function saveDownload(bytes: Uint8Array) {
@@ -29,17 +30,31 @@ export default function Workspace() {
   const [delimiter, setDelimiter] = useState<"auto" | "," | ";" | "\t">("auto");
   const [choice, setChoice] = useState<SafetyChoice>();
   const [exceptions, setExceptions] = useState(false);
-  const [manual, setManual] = useState("");
+  const draftGeneration = useRef(0);
+  const pendingGeneration = useRef<number | undefined>(undefined);
+  const failedGeneration = useRef<number | undefined>(undefined);
   const nextID = useRef(0);
   const statusRef = useRef<HTMLParagraphElement>(null);
   useEffect(() => {
     session.onState = (s) => {
       setState(s);
-      if (!s.busy) setExceptions(s.view?.exceptions ?? false);
+      if (!s.busy) {
+        setExceptions(s.view?.exceptions ?? false);
+        const completed = pendingGeneration.current;
+        if (completed !== undefined) {
+          pendingGeneration.current = undefined;
+          if (s.error || s.recoverable)
+            failedGeneration.current = draftGeneration.current;
+          else if (completed === draftGeneration.current) setDirty(false);
+        }
+      }
       if (s.error) statusRef.current?.focus();
     };
     session.onDownload = saveDownload;
     session.onWorkflow = (w) => {
+      draftGeneration.current++;
+      pendingGeneration.current = undefined;
+      failedGeneration.current = undefined;
       setWorkflow(w);
       setDirty(false);
       setChoice(undefined);
@@ -52,42 +67,50 @@ export default function Workspace() {
   const view = state.view;
   const busy = Boolean(state.busy);
   const change = (fields: Field[]) => {
+    draftGeneration.current++;
+    failedGeneration.current = undefined;
     setWorkflow((w) => ({ ...w, fields }));
     setDirty(true);
     setChoice(undefined);
   };
-  session.onTemplate = (headers) =>
-    change(
-      headers.map((header) => ({
-        id: `manual-${nextID.current++}`,
-        header,
-        type: "text",
-        required: false,
-      })),
-    );
-  const update = (id: string, patch: Partial<Field>) =>
-    change(workflow.fields.map((f) => (f.id === id ? { ...f, ...patch } : f)));
-  const move = (index: number, direction: number) => {
-    const fields = [...workflow.fields];
-    [fields[index], fields[index + direction]] = [
-      fields[index + direction],
-      fields[index],
-    ];
-    change(fields);
-  };
-  const preview = () => {
-    const w = {
-      ...workflow,
-      source: {
-        ...workflow.source,
-        referencedHeaders: referencedHeaders(workflow.fields),
-      },
-    };
-    setWorkflow(w);
-    setDirty(false);
-    setChoice(undefined);
-    session.configure(w);
-  };
+  const makeFields = (headers: string[]): Field[] =>
+    headers.map((header) => ({
+      id: `manual-${nextID.current++}`,
+      header,
+      type: "text",
+      required: false,
+    }));
+  session.onTemplate = (headers) => change(makeFields(headers));
+  useEffect(() => {
+    if (
+      !dirty ||
+      busy ||
+      !view ||
+      state.recoverable ||
+      !workflow.fields.length ||
+      failedGeneration.current === draftGeneration.current
+    )
+      return;
+    const generation = draftGeneration.current;
+    const timer = setTimeout(() => {
+      if (
+        session.state.busy ||
+        session.state.recoverable ||
+        generation !== draftGeneration.current
+      )
+        return;
+      const current = {
+        ...workflow,
+        source: {
+          ...workflow.source,
+          referencedHeaders: referencedHeaders(workflow.fields),
+        },
+      };
+      pendingGeneration.current = generation;
+      session.configure(current);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [dirty, busy, view, state.recoverable, workflow, session]);
   const sample = async () => {
     setChoice(undefined);
     await session.upload(
@@ -116,7 +139,7 @@ export default function Workspace() {
       <header className="masthead">
         <div>
           <p className="eyebrow">OPERATIONS DATA CLEANER · CSV PREVIEW</p>
-          <h1>Make your columns fit.</h1>
+          <h1>Match your columns.</h1>
           <p>Map a source table to the columns your import needs.</p>
         </div>
         <div className="privacy">
@@ -178,6 +201,9 @@ export default function Workspace() {
             <button
               disabled={busy}
               onClick={() => {
+                draftGeneration.current++;
+                pendingGeneration.current = undefined;
+                failedGeneration.current = undefined;
                 session.end();
                 setWorkflow(makeWorkflow([]));
                 setDirty(true);
@@ -215,6 +241,7 @@ export default function Workspace() {
           <button
             onClick={() => {
               setChoice(undefined);
+              failedGeneration.current = undefined;
               void session.retry();
             }}
           >
@@ -224,221 +251,77 @@ export default function Workspace() {
       </div>
       {view && (
         <div className="workspace">
-          <section className="panel source" aria-labelledby="source-title">
-            <h2 id="source-title">Source table</h2>
-            <p>
-              Original values · first {view.sourceRows.length} rows · read only
-            </p>
-            <div
-              className="table-scroll"
-              tabIndex={0}
-              role="region"
-              aria-label="Source table, scroll horizontally"
-            >
-              <table>
-                <caption>
-                  Uploaded source columns and original record references
-                </caption>
-                <thead>
-                  <tr>
-                    <th>Source record / line</th>
-                    {view.columns.map((c) => (
-                      <th key={c.key}>{c.header}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {view.sourceRows.map((r) => (
-                    <tr key={r.id}>
-                      <th>
-                        {r.record} / {r.line}
-                      </th>
+          <details className="panel source-inspection">
+            <summary>Inspect original source table</summary>
+            <section aria-labelledby="source-title">
+              <h2 id="source-title">Source table</h2>
+              <p>
+                Original values · first {view.sourceRows.length} rows · read
+                only
+              </p>
+              <div
+                className="table-scroll"
+                tabIndex={0}
+                role="region"
+                aria-label="Source table, scroll horizontally"
+              >
+                <table>
+                  <caption>
+                    Uploaded source columns and original record references
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th>Source record / line</th>
                       {view.columns.map((c) => (
-                        <td key={c.key}>
-                          {r.cells[c.position]?.display ?? ""}
-                        </td>
+                        <th key={c.key}>{c.header}</th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-          <section className="panel mapping" aria-labelledby="map-title">
-            <h2 id="map-title">2. Define output columns</h2>
-            <p>
-              Enter the names your import expects, then choose a source for
-              each. Nothing is mapped automatically.
-            </p>
-            <fieldset disabled={busy}>
-              <legend>Destination columns</legend>
-              <label>
-                Upload destination CSV template
-                <input
-                  type="file"
-                  accept=".csv,text/csv"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file)
-                      void session.upload(file, delimiter, { template: true });
-                    e.target.value = "";
-                  }}
-                />
-              </label>
-              <form
-                className="manual"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const headers = manual.split("\n").filter((h) => h.trim());
-                  if (headers.length) {
-                    change([
-                      ...workflow.fields,
-                      ...headers.map((header) => ({
-                        id: `manual-${nextID.current++}`,
-                        header,
-                        type: "text" as const,
-                        required: false,
-                      })),
-                    ]);
-                    setManual("");
-                  }
-                }}
-              >
-                <label>
-                  New column names (one per line)
-                  <textarea
-                    value={manual}
-                    onChange={(e) => setManual(e.target.value)}
-                    rows={2}
-                    placeholder={"Reference\nConsignee"}
-                  />
-                </label>
-                <button
-                  type="submit"
-                  disabled={!manual.trim() || workflow.fields.length >= 200}
-                >
-                  Add columns
-                </button>
-              </form>
-              <ol className="fields">
-                {workflow.fields.map((f, i) => (
-                  <li key={f.id} className="field-card">
-                    <div className="field-top">
-                      <span className="number">{i + 1}</span>
-                      <label>
-                        Output column name
-                        <input
-                          value={f.header}
-                          onChange={(e) =>
-                            update(f.id, { header: e.target.value })
-                          }
-                        />
-                      </label>
-                      <span className="badge">
-                        {f.recipe ? "Confirmed" : "Unmapped"}
-                      </span>
-                    </div>
-                    <label>
-                      Copy from source
-                      <select
-                        aria-label={`Copy source for ${f.header || `column ${i + 1}`}`}
-                        value={f.recipe?.kind === "copy" ? f.recipe.source : ""}
-                        onChange={(e) =>
-                          update(f.id, {
-                            recipe: e.target.value
-                              ? { kind: "copy", source: e.target.value }
-                              : undefined,
-                          })
-                        }
-                      >
-                        <option value="">Choose a source column…</option>
+                  </thead>
+                  <tbody>
+                    {view.sourceRows.map((r) => (
+                      <tr key={r.id}>
+                        <th>
+                          {r.record} / {r.line}
+                        </th>
                         {view.columns.map((c) => (
-                          <option key={c.key} value={c.key}>
-                            {c.header}
-                          </option>
+                          <td key={c.key}>
+                            {r.cells[c.position]?.display ?? ""}
+                          </td>
                         ))}
-                      </select>
-                    </label>
-                    <p className="small">
-                      Type: text · no trimming or conversion
-                    </p>
-                    <details>
-                      <summary>Validation (optional)</summary>
-                      <label className="check">
-                        <input
-                          type="checkbox"
-                          checked={f.required}
-                          onChange={(e) =>
-                            update(f.id, { required: e.target.checked })
-                          }
-                        />
-                        Required value
-                      </label>
-                      <label>
-                        Maximum characters
-                        <input
-                          type="number"
-                          min="1"
-                          max="1000000"
-                          value={f.maxLength ?? ""}
-                          onChange={(e) =>
-                            update(f.id, {
-                              maxLength:
-                                e.target.value === ""
-                                  ? undefined
-                                  : Number(e.target.value),
-                            })
-                          }
-                        />
-                      </label>
-                    </details>
-                    <div className="field-actions">
-                      <button
-                        aria-label={`Move ${f.header} up`}
-                        disabled={i === 0}
-                        onClick={() => move(i, -1)}
-                      >
-                        Move up
-                      </button>
-                      <button
-                        aria-label={`Move ${f.header} down`}
-                        disabled={i === workflow.fields.length - 1}
-                        onClick={() => move(i, 1)}
-                      >
-                        Move down
-                      </button>
-                      <button
-                        aria-label={`Remove ${f.header}`}
-                        onClick={() =>
-                          change(workflow.fields.filter((x) => x.id !== f.id))
-                        }
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-              <button
-                className="primary"
-                onClick={preview}
-                disabled={!workflow.fields.length}
-              >
-                Preview all rows
-              </button>
-            </fieldset>
-          </section>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </details>
+          <MappingRows
+            view={view}
+            fields={workflow.fields}
+            disabled={busy && state.busy !== "Checking all rows…"}
+            importing={busy}
+            change={change}
+            makeFields={makeFields}
+            importTemplate={(file) => {
+              setChoice(undefined);
+              void session.upload(file, delimiter, { template: true });
+            }}
+          />
           <section className="panel review" aria-labelledby="preview-title">
             <h2 id="preview-title">3. Preview & download</h2>
             <p className="export-settings">
               <strong>CSV export:</strong> UTF-8 · no BOM · comma · header row ·
               CRLF
             </p>
-            {dirty || busy ? (
+            {!workflow.fields.length ? (
+              <p className="notice">
+                Add an output column or import a template to start matching.
+              </p>
+            ) : dirty || busy ? (
               <p className="notice">
                 {busy
                   ? "Preparing the current preview… Download is blocked until processing finishes."
-                  : "Choose your mappings, then select Preview all rows. Changes need a fresh preview before download."}
+                  : "Updating preview automatically… Download stays blocked until the current mappings are checked."}
               </p>
             ) : (
               <>

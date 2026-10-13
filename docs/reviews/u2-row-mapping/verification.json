@@ -1,0 +1,123 @@
+{
+  "date": "2026-10-13",
+  "node": "24.21.0",
+  "os": "Linux-6.8.0-146-generic-x86_64-with-glibc2.39",
+  "browser_stats": {
+    "startTime": "2026-10-13T23:24:56.297Z",
+    "duration": 143143.588,
+    "expected": 48,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "projects": [
+    "chromium",
+    "firefox"
+  ],
+  "unit_tests": 41,
+  "checks": {
+    "typecheck": "pass",
+    "lint": "pass",
+    "build": "pass",
+    "unit": "pass",
+    "production_browser": "48 passed",
+    "privacy": "both included and passed",
+    "performance": "both included and passed"
+  },
+  "measurements": [
+    {
+      "test": "10000 x 20 rows remain intact; record cold and five warm full-pipeline runs",
+      "project": "chromium",
+      "measurement": {
+        "browserName": "chromium",
+        "version": "156.0.8078.4",
+        "rows": 10000,
+        "columns": 20,
+        "coldIncludingManualSetupMs": 3227.528524000001,
+        "warmMs": [
+          940.7808420000001,
+          952.3833089999971,
+          1020.030404000001,
+          961.4466009999996,
+          926.2204010000023
+        ],
+        "medianMs": 952.3833089999971,
+        "worstMs": 1020.030404000001,
+        "environment": "Codex cloud runner; not reference laptop qualification"
+      }
+    },
+    {
+      "test": "499 x 20 import to preview stays under the one-second smoke budget",
+      "project": "chromium",
+      "measurement": {
+        "browserName": "chromium",
+        "version": "156.0.8078.4",
+        "rows": 499,
+        "columns": 20,
+        "coldImportPlusEvaluationExcludingManualMappingMs": 703.2614849999991,
+        "warmImportThroughPreviewMs": [
+          274.30648199999996,
+          239.79523300000074,
+          223.72147399999812,
+          211.81517800000074,
+          258.85318499999994
+        ],
+        "medianMs": 239.79523300000074,
+        "worstMs": 274.30648199999996,
+        "environment": "cloud runner; UI automation overhead included; reference laptop pending"
+      }
+    },
+    {
+      "test": "10000 x 20 rows remain intact; record cold and five warm full-pipeline runs",
+      "project": "firefox",
+      "measurement": {
+        "browserName": "firefox",
+        "version": "157.0",
+        "rows": 10000,
+        "columns": 20,
+        "coldIncludingManualSetupMs": 3855.2405069999986,
+        "warmMs": [
+          915.2016069999991,
+          970.9263380000011,
+          856.8535059999995,
+          837.886684000001,
+          862.2928059999977
+        ],
+        "medianMs": 862.2928059999977,
+        "worstMs": 970.9263380000011,
+        "environment": "Codex cloud runner; not reference laptop qualification"
+      }
+    },
+    {
+      "test": "499 x 20 import to preview stays under the one-second smoke budget",
+      "project": "firefox",
+      "measurement": {
+        "browserName": "firefox",
+        "version": "157.0",
+        "rows": 499,
+        "columns": 20,
+        "coldImportPlusEvaluationExcludingManualMappingMs": 813.809030999997,
+        "warmImportThroughPreviewMs": [
+          412.8495370000019,
+          320.39514500000223,
+          312.52059400000144,
+          429.8578869999983,
+          314.9043329999986
+        ],
+        "medianMs": 320.39514500000223,
+        "worstMs": 429.8578869999983,
+        "environment": "cloud runner; UI automation overhead included; reference laptop pending"
+      }
+    }
+  ],
+  "limitations": [
+    "WebKit could not launch: missing libavif.so.16; no application assertions ran.",
+    "Reference laptop qualification remains pending.",
+    "U2 user/operator UX acceptance remains pending."
+  ],
+  "assets": [
+    "index-B6AOGeKW.css",
+    "index-DqFelsUU.js",
+    "processing.worker-DfWuXNIO.js"
+  ]
+}

@@ -113,14 +113,12 @@ test("cancellation terminates an active parsing worker and retries the original 
       (_, i) =>
         `${String(i).padStart(6, "0")},${Array(19).fill("synthetic").join(",")}`,
     ).join("\n");
-  await page
-    .getByLabel("Upload source CSV")
-    .setInputFiles({
-      name: "large-replacement.csv",
-      mimeType: "text/csv",
-      buffer: Buffer.from(csv),
-    });
-  await expect(page.getByRole("status")).toContainText(
+  await page.getByLabel("Upload source CSV").setInputFiles({
+    name: "large-replacement.csv",
+    mimeType: "text/csv",
+    buffer: Buffer.from(csv),
+  });
+  await expect(page.locator(".status-bar [role=status]")).toContainText(
     "Importing and checking CSV",
   );
   await page.getByRole("button", { name: "Cancel processing" }).click();

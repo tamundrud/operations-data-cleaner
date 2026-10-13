@@ -1,0 +1,12 @@
+{
+  "correctness|src/ui/Workspace.tsx|90|empty destinations leave preview permanently updating": {
+    "why_it_matters": "After uploading a first source, or removing the final destination row, users see 'Updating preview automatically' indefinitely although no preview run is scheduled. The empty-field guard skips evaluation while dirty remains true, so the preview area never reaches a truthful idle or incomplete state. Render an explicit add-output-columns state for zero destinations while continuing to block download; this avoids inviting users to wait for processing that cannot finish.",
+    "evidence": [
+      "src/ui/Workspace.tsx:90 --       !workflow.fields.length ||",
+      "src/ui/Workspace.tsx:310 --             {dirty || busy ? (",
+      "src/ui/Workspace.tsx:314 --                   : \"Updating preview automatically\u2026 Download stays blocked until the current mappings are checked.\"}",
+      "src/ui/Workspace.tsx:28 --   const [workflow, setWorkflow] = useState<Workflow>(() => makeWorkflow([]));",
+      "src/ui/Workspace.tsx:29 --   const [dirty, setDirty] = useState(true);"
+    ]
+  }
+}

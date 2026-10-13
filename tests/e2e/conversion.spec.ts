@@ -82,7 +82,7 @@ test("unmapped and invalid rows block download, all exceptions are reachable", a
     page.getByRole("button", { name: "Download converted CSV" }),
   ).toBeDisabled();
   await page.getByRole("button", { name: "Remove Extra", exact: true }).click();
-  await page.locator("summary").click();
+  await page.locator(".row-settings summary").click();
   await page.getByLabel("Required value").check();
   await preview(page);
   await expect(
@@ -121,6 +121,7 @@ test("formula headers and text block export until explicit choice, representatio
     .getByLabel("Preserve raw text for TMS import", { exact: false })
     .check();
   expect((await download(page)).toString()).toBe("=Header\r\n=1+1\r\n");
+  await map(page, "=Header", "id");
   await preview(page);
   await expect(
     page.getByRole("button", { name: "Download converted CSV" }),
@@ -134,13 +135,11 @@ test("failed replacement retains active file and valid mapping; ending session c
   await add(page, ["Reference"]);
   await map(page, "Reference", "id");
   await preview(page);
-  await page
-    .getByLabel("Upload source CSV")
-    .setInputFiles({
-      name: "broken.csv",
-      mimeType: "text/csv",
-      buffer: Buffer.from("ID,id\n1,2"),
-    });
+  await page.getByLabel("Upload source CSV").setInputFiles({
+    name: "broken.csv",
+    mimeType: "text/csv",
+    buffer: Buffer.from("ID,id\n1,2"),
+  });
   await expect(page.getByRole("alert")).toContainText(
     "duplicate source headers",
   );

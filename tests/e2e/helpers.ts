@@ -5,11 +5,14 @@ export async function upload(page: Page, text: string, name = "synthetic.csv") {
     .getByLabel("Upload source CSV")
     .setInputFiles({ name, mimeType: "text/csv", buffer: Buffer.from(text) });
   await expect(
-    page.getByRole("heading", { name: "Source table", exact: true }),
+    page.getByRole("heading", { name: "2. Match your columns", exact: true }),
   ).toBeVisible();
   await expect(page.getByLabel("Upload source CSV")).toBeEnabled();
 }
 export async function add(page: Page, headers: string[]) {
+  const bulk = page.locator("details.bulk-columns");
+  if ((await bulk.getAttribute("open")) === null)
+    await bulk.locator("summary").click();
   await page.getByLabel("New column names").fill(headers.join("\n"));
   await page.getByRole("button", { name: "Add columns", exact: true }).click();
 }
@@ -19,12 +22,6 @@ export async function map(page: Page, header: string, source: string) {
     .selectOption(source);
 }
 export async function preview(page: Page) {
-  await page
-    .getByRole("button", { name: "Preview all rows", exact: true })
-    .click();
-  await expect(
-    page.getByRole("button", { name: "Preview all rows", exact: true }),
-  ).toBeEnabled();
   await expect(page.getByLabel("Full dataset counts")).toBeVisible();
 }
 export async function download(page: Page) {

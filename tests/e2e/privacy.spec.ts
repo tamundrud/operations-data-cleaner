@@ -47,7 +47,17 @@ test("production journey sends no customer values, file names or IDs and stores 
   );
   await add(page, ["Reference", "Note"]);
   await map(page, "Reference", "id");
+  await page.getByLabel("Search source columns").fill("note");
+  await page
+    .getByRole("button", { name: "Select source Note", exact: true })
+    .dragTo(page.getByLabel("Mapping position for Note"));
+  await page.getByLabel("Search source columns").fill("");
+  await page.getByRole("button", { name: "Unlink Note", exact: true }).click();
   await map(page, "Note", "note");
+  await page.getByRole("button", { name: "Move Note up", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Move Note down", exact: true })
+    .click();
   await preview(page);
   expect((await download(page)).toString()).toContain(sentinel);
   await page
@@ -57,9 +67,7 @@ test("production journey sends no customer values, file names or IDs and stores 
   await preview(page);
   await download(page);
   await page.getByLabel("Show only rows with exceptions").check();
-  await expect(
-    page.getByRole("button", { name: "Preview all rows" }),
-  ).toBeEnabled();
+  await expect(page.getByLabel("Full dataset counts")).toBeVisible();
   const storage = await page.evaluate(async () => ({
     local: Object.keys(localStorage),
     session: Object.keys(sessionStorage),

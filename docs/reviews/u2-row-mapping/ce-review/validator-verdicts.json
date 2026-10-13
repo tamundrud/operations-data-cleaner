@@ -1,0 +1,10 @@
+{
+  "verdicts": [
+    {
+      "#": 1,
+      "status": "confirmed",
+      "protected_subject": null,
+      "reason": "A first source upload leaves the initial empty workflow dirty, and removing the last destination calls change([]) in MappingRows.tsx:72; Workspace.tsx:90 then prevents any automatic preview run while lines 310\u2013314 indefinitely render Updating preview automatically, newly introduced by this diff (reachable callers verified; incidence not measured)."
+    }
+  ]
+}

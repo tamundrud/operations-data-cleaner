@@ -1,0 +1,79 @@
+{
+  "branch": "feat/u2-csv-conversion",
+  "completed_at": "2026-10-13T23:23:31.632356+00:00",
+  "cost": {
+    "host": "codex",
+    "scope": {
+      "changed_lines": 1428,
+      "depth": "full",
+      "exec_nontest_lines": 760,
+      "size_band": "large",
+      "unclassified_lines": 454
+    },
+    "stages": [
+      {
+        "elapsed_seconds": 43.466,
+        "ended_at": "2026-10-13T21:36:00.516356+00:00",
+        "facts": {
+          "changed_lines": 1428,
+          "depth": "full",
+          "exec_nontest_lines": 760,
+          "size_band": "large",
+          "unclassified_lines": 454
+        },
+        "stage": "scope",
+        "started_at": "2026-10-13T21:35:17.050830+00:00"
+      },
+      {
+        "elapsed_seconds": 11.834,
+        "ended_at": "2026-10-13T21:36:12.350809+00:00",
+        "reviewers": 7,
+        "stage": "select",
+        "started_at": "2026-10-13T21:36:00.516356+00:00"
+      },
+      {
+        "elapsed_seconds": 5910.109,
+        "ended_at": "2026-10-13T23:14:36.285736+00:00",
+        "stage": "peer",
+        "started_at": "2026-10-13T21:36:06.176533+00:00"
+      },
+      {
+        "candidates": 1,
+        "elapsed_seconds": 6217.385,
+        "ended_at": "2026-10-13T23:19:49.735853+00:00",
+        "stage": "dispatch",
+        "started_at": "2026-10-13T21:36:12.350809+00:00"
+      },
+      {
+        "candidates": 1,
+        "elapsed_seconds": 39.107,
+        "ended_at": "2026-10-13T23:21:19.257473+00:00",
+        "stage": "merge",
+        "started_at": "2026-10-13T23:20:40.150756+00:00"
+      },
+      {
+        "elapsed_seconds": 43.675,
+        "ended_at": "2026-10-13T23:22:12.579255+00:00",
+        "stage": "validate",
+        "started_at": "2026-10-13T23:21:28.904383+00:00"
+      },
+      {
+        "elapsed_seconds": 31.269,
+        "ended_at": "2026-10-13T23:23:31.676202+00:00",
+        "stage": "report",
+        "started_at": "2026-10-13T23:23:00.407680+00:00"
+      }
+    ],
+    "status": "complete",
+    "totals": {
+      "artifact_bytes": 116051,
+      "candidates": 1,
+      "elapsed_seconds": 12296.845,
+      "reviewers": 7
+    },
+    "truncated_events": 0
+  },
+  "head_sha": "bd89c6a17c4f7a33b81a733038f9e3e36757227e",
+  "run_id": "u2-20261013",
+  "verdict": "Ready with fixes"
+}

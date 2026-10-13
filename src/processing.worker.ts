@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+import "./schema-runtime";
 declare const self: DedicatedWorkerGlobalScope;
 import { parseCsv, serializeCsv } from "./formats/csv";
 import { evaluate, type Run, type ResultRow } from "./engine/recipes";
