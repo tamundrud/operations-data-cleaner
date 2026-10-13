@@ -1,0 +1,26 @@
+{
+  "reviewer": "maintainability",
+  "findings": [
+    {
+      "title": "Bind sample configuration to its import result",
+      "severity": "P2",
+      "file": "src/ui/Workspace.tsx",
+      "line": 100,
+      "why_it_matters": "The pending sample flag is fulfilled by any idle view. If a sample import fails while a previous dataset is open, Session keeps that old view, and the effect applies the bundled workflow to the old dataset. This also splits a single sample transaction across a button handler, a ref, and an effect, making future import failure handling easy to miss.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:100:     if (samplePending.current && view && !busy) {",
+        "src/ui/Workspace.tsx:102:       session.configure(decodeWorkflow(sampleConfig));",
+        "src/session/controller.ts:60:         this.update({ busy: \"\", error: m.message });",
+        "src/session/controller.ts:68:         this.update({ busy: \"\", view: m.view, error: \"\", recoverable: false });"
+      ],
+      "pre_existing": false,
+      "suggested_fix": "Make sample import and configuration one Session operation or return an import completion result carrying the new dataset ID. Configure the bundled workflow only after that specific import succeeds; clear pending sample state on error. Add a browser test with an existing file, a failed sample import, and verification that the existing mapping remains active."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

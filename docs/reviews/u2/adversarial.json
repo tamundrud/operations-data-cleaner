@@ -1,0 +1,27 @@
+{
+  "reviewer": "adversarial",
+  "findings": [
+    {
+      "title": "Trying sample after four-field preview crashes the workspace",
+      "severity": "P2",
+      "file": "src/ui/Workspace.tsx",
+      "line": 90,
+      "why_it_matters": "A normal switch from an existing conversion to the sample mixes the three-field sample workflow with the previous run's four-or-more values. Rendering dereferences an absent field ID, throwing a TypeError and unmounting the application; the user's in-memory conversion becomes inaccessible until reload.",
+      "autofix_class": "manual",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:88-90: setWorkflow(w); setChoice(undefined); setDirty(false);",
+        "Trigger: upload ID\\n001234, add four distinct output fields, map each to id, and preview successfully. The previous View now has four values in each result row.",
+        "Click Try sample data. examples/u2/workflow.json has exactly three destination fields. sample() immediately installs those fields and clears dirty; Session.upload() retains state.view while awaiting file.arrayBuffer() (src/session/controller.ts:124-126).",
+        "The review branch uses dirty alone (src/ui/Workspace.tsx:441), so the busy render still renders the old View with the new workflow. src/ui/Workspace.tsx:591-592: {r.values.map((v, i) => ( <td key={workflow.fields[i].id}> ; at i=3 workflow.fields[3] is undefined and accessing .id throws.",
+        "src/main.tsx directly renders Workspace through createRoot without an error boundary. The later samplePending effect cannot repair a failed render."
+      ],
+      "pre_existing": false,
+      "suggested_fix": "Reset the previous session/view before installing the sample workflow (for example call session.end() at the start of sample()), then import and configure the sample. Keep preview hidden or dirty until the sample's finalized run is installed. Verify Try sample data after a successful four-field conversion produces golden bytes without page errors."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

@@ -1,0 +1,13 @@
+{
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [
+    "All five findings were confirmed by source inspection with reachable controls/orderings; incidence was not measured and no discriminating runtime reproduction was supplied by the validator.",
+    "The observed operator/user UX checkpoint is pending. This code review does not accept U2 or authorize U3."
+  ],
+  "testing_gaps": [
+    "The formula-choice browser test clears the choice by re-previewing the same source, but does not select a choice, upload a new formula-like source, and assert export remains blocked until a fresh choice. The upload handler resets choice in src/ui/Workspace.tsx:168, so this is a narrow missing cross-run regression check.",
+    "Production privacy interception and formula-warning/download behavior have local Chromium evidence only; Firefox and WebKit execution remains unverified because browser installation was blocked. The configured three-browser CI run should supply that evidence."
+  ]
+}

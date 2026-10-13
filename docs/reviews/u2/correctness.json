@@ -1,0 +1,50 @@
+{
+  "reviewer": "correctness",
+  "findings": [
+    {
+      "title": "Repreviewing after column removal crashes the workspace",
+      "severity": "P1",
+      "file": "src/ui/Workspace.tsx",
+      "line": 592,
+      "why_it_matters": "After previewing two mapped output columns, remove one and click Preview all rows. preview() clears dirty before the asynchronous worker returns, while Session.send() retains the previous view. The output table therefore maps the previous two values against the current one-field workflow; workflow.fields[1] is undefined and reading its id throws, unmounting the workspace and losing the session. Trying the three-column sample from a previously previewed workflow with more than three fields has the same failure.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 100,
+      "evidence": [
+        "src/ui/Workspace.tsx:592:                                 <td key={workflow.fields[i].id}>",
+        "src/ui/Workspace.tsx:82:     setDirty(false);",
+        "src/ui/Workspace.tsx:84:     session.configure(w);",
+        "src/ui/Workspace.tsx:444:             {dirty ? (",
+        "src/ui/Workspace.tsx:591:                               {r.values.map((v, i) => (",
+        "src/session/controller.ts:85:     this.update({ busy, error: \"\", recoverable: false });",
+        "The output table branch at Workspace.tsx:546 checks only previous view.workflowIssues.length; busy gates downloading but does not gate rendering old result rows with current fields."
+      ],
+      "pre_existing": false,
+      "suggested_fix": "Keep the result table hidden while a new configuration is being evaluated, or retain the workflow snapshot associated with each View and render that snapshot. Do not expose the new fields as the completed preview until the corresponding worker result arrives. Verify a valid two-column preview followed by removal and repreview, and switching a four-column preview to the sample."
+    },
+    {
+      "title": "Cancelled sample import leaves the displayed workflow mismatched",
+      "severity": "P2",
+      "file": "src/ui/Workspace.tsx",
+      "line": 88,
+      "why_it_matters": "Start with a valid custom one-column workflow, choose Try sample data, cancel during file reading/import, then Retry active file. sample() has already replaced the UI workflow and marked it clean, but cancellation clears samplePending and Session retains the prior active file and prior workflow. Retry evaluates that prior workflow. The recovered preview shows the sample's three headers with the original workflow's one output value, and Download is enabled even though its CSV uses the original header and does not match the displayed configuration. This persists after recovery, independently of the transient rendering crash.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:88:     setWorkflow(w);",
+        "src/ui/Workspace.tsx:90:     setDirty(false);",
+        "src/ui/Workspace.tsx:212:               samplePending.current = false;",
+        "src/session/controller.ts:135:             workflow: this.workflow,",
+        "src/session/controller.ts:210:     if (this.active) await this.upload(this.active.file, this.active.delimiter);",
+        "Session.stop() at src/session/controller.ts:190-202 clears candidate/view but preserves active and workflow; the cancelled sample never reaches session.configure(sampleConfig). Workspace renders headers from workflow.fields at line 579 and enables export solely from clean dirty state and the recovered view at lines 105-119."
+      ],
+      "pre_existing": false,
+      "suggested_fix": "Treat sample loading as a replacement transaction: preserve the previous UI workflow and dirty state, commit the sample configuration only with its successful matching worker view, and restore the snapshot on cancellation or failure. Keep export blocked until UI workflow and recovered View share the same configuration."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

@@ -1,0 +1,93 @@
+{
+  "branch": "feat/u2-csv-conversion",
+  "completed_at": "2026-10-13T18:14:53.451526+00:00",
+  "cost": {
+    "host": "codex",
+    "scope": {
+      "changed_lines": 5823,
+      "depth": "full",
+      "exec_nontest_lines": 1802,
+      "size_band": "large",
+      "unclassified_lines": {
+        "": 4,
+        ".css": 408,
+        ".csv": 9,
+        ".html": 2,
+        ".json": 2641,
+        ".md": 87,
+        ".txt": 104,
+        ".yml": 32
+      }
+    },
+    "stages": [
+      {
+        "elapsed_seconds": 6.066,
+        "ended_at": "2026-10-13T18:03:03.423903+00:00",
+        "facts": {
+          "changed_lines": 5823,
+          "depth": "full",
+          "exec_nontest_lines": 1802,
+          "size_band": "large",
+          "unclassified_lines": {
+            "": 4,
+            ".css": 408,
+            ".csv": 9,
+            ".html": 2,
+            ".json": 2641,
+            ".md": 87,
+            ".txt": 104,
+            ".yml": 32
+          }
+        },
+        "stage": "scope",
+        "started_at": "2026-10-13T18:02:57.357563+00:00"
+      },
+      {
+        "elapsed_seconds": 50.063,
+        "ended_at": "2026-10-13T18:03:53.486686+00:00",
+        "reviewers": 9,
+        "stage": "select",
+        "started_at": "2026-10-13T18:03:03.423903+00:00"
+      },
+      {
+        "candidates": 7,
+        "elapsed_seconds": 251.039,
+        "ended_at": "2026-10-13T18:08:04.526093+00:00",
+        "stage": "dispatch",
+        "started_at": "2026-10-13T18:03:53.486686+00:00"
+      },
+      {
+        "candidates": 5,
+        "elapsed_seconds": 86.084,
+        "ended_at": "2026-10-13T18:10:26.770514+00:00",
+        "stage": "merge",
+        "started_at": "2026-10-13T18:09:00.686345+00:00"
+      },
+      {
+        "candidates": 5,
+        "elapsed_seconds": 82.791,
+        "ended_at": "2026-10-13T18:12:09.118105+00:00",
+        "stage": "validate",
+        "started_at": "2026-10-13T18:10:46.327260+00:00"
+      },
+      {
+        "candidates": 5,
+        "elapsed_seconds": 96.252,
+        "ended_at": "2026-10-13T18:14:53.479867+00:00",
+        "stage": "report",
+        "started_at": "2026-10-13T18:13:17.227478+00:00"
+      }
+    ],
+    "status": "complete",
+    "totals": {
+      "artifact_bytes": 796986,
+      "candidates": 7,
+      "elapsed_seconds": 572.295,
+      "reviewers": 9
+    },
+    "truncated_events": 0
+  },
+  "head_sha": "a4440c7dccbc63c37d90060b84c2443e4c155efc",
+  "run_id": "20261013-180257-5ccda4b0",
+  "verdict": "Ready with fixes"
+}

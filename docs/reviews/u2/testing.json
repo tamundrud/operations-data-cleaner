@@ -1,0 +1,29 @@
+{
+  "reviewer": "testing",
+  "findings": [
+    {
+      "title": "Worker failure recovery has no test",
+      "severity": "P2",
+      "file": "src/session/controller.ts",
+      "line": 38,
+      "why_it_matters": "A worker crash, unreadable response, or timeout removes the current preview and blocks export until the active file is reparsed. The existing cancellation tests do not trigger these failure handlers, so a regression that loses the active file or leaves recovery stuck would pass the suite.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 75,
+      "evidence": [
+        "src/session/controller.ts:38:     this.worker.onerror = (event) => {",
+        "src/session/controller.ts:44:     this.worker.onmessageerror = () =>",
+        "src/session/controller.ts:83:     this.timer = setTimeout(",
+        "tests/e2e/performance.spec.ts:66: test(\"busy cancel and retry preserve the active mapping and full downloaded data\", async ({",
+        "tests/e2e/performance.spec.ts:102: test('cancellation terminates an active parsing worker and retries the original file', async ({ page }) => {"
+      ],
+      "pre_existing": false,
+      "suggested_fix": "Add a focused session-controller test with a controllable Worker and fake clock: complete an initial import and mapping, trigger onerror, onmessageerror, and the 30-second timer in separate cases, then assert recoverable state, retry of the original File, restored preview, and identical export bytes."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": [
+    "The formula-choice browser test clears the choice by re-previewing the same source, but does not select a choice, upload a new formula-like source, and assert export remains blocked until a fresh choice. The upload handler resets choice in src/ui/Workspace.tsx:168, so this is a narrow missing cross-run regression check."
+  ]
+}

@@ -1,0 +1,191 @@
+import { test, expect } from "@playwright/test";
+import { upload, add, map, preview, download } from "./helpers";
+import Papa from "papaparse";
+test("10000 x 20 rows remain intact; record cold and five warm full-pipeline runs", async ({
+  page,
+  browserName,
+  browser,
+}, testInfo) => {
+  test.setTimeout(120000);
+  const headers = Array.from({ length: 20 }, (_, i) => `Col${i}`);
+  const csv =
+    headers.join(",") +
+    "\r\n" +
+    Array.from({ length: 10000 }, (_, r) =>
+      headers
+        .map((_, c) =>
+          c === 0 ? String(r).padStart(6, "0") : `synthetic-${r}-${c}`,
+        )
+        .join(","),
+    ).join("\r\n") +
+    "\r\n";
+  const timings: number[] = [];
+  await page.goto("/");
+  for (let i = 0; i < 6; i++) {
+    const start = performance.now();
+    await upload(page, csv);
+    if (i === 0) {
+      await add(page, headers);
+      for (const h of headers) await map(page, h, h.toLowerCase());
+      await preview(page);
+    }
+    const bytes = await download(page);
+    const elapsed = performance.now() - start;
+    // Trial 0 includes manual setup, reported separately; repeats exercise the active mappings.
+    timings.push(elapsed);
+    const records = Papa.parse<string[]>(bytes.toString(), {
+      skipEmptyLines: true,
+    }).data;
+    expect(records.length).toBe(10001);
+    expect(records[1][0]).toBe("000000");
+    expect(records[10000][19]).toBe("synthetic-9999-19");
+    expect(bytes.subarray(0, 3)).not.toEqual(Buffer.from([239, 187, 191]));
+    await expect(page.getByLabel("Full dataset counts")).toContainText("10000");
+  }
+  const warm = timings.slice(1).sort((a, b) => a - b);
+  await testInfo.attach("timings.json", {
+    body: JSON.stringify(
+      {
+        browserName,
+        version: browser.version(),
+        rows: 10000,
+        columns: 20,
+        coldIncludingManualSetupMs: timings[0],
+        warmMs: timings.slice(1),
+        medianMs: warm[2],
+        worstMs: warm[4],
+        environment: "Codex cloud runner; not reference laptop qualification",
+      },
+      null,
+      2,
+    ),
+    contentType: "application/json",
+  });
+  expect(warm[4]).toBeLessThan(5000);
+});
+test("busy cancel and retry preserve the active mapping and full downloaded data", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await upload(page, "ID\n001234");
+  await add(page, ["Reference"]);
+  await map(page, "Reference", "id");
+  await preview(page);
+  // Slow file reading deterministically to observe a real in-flight import and cancellation.
+  await page.evaluate(() => {
+    const original = File.prototype.arrayBuffer;
+    File.prototype.arrayBuffer = async function () {
+      await new Promise((r) => setTimeout(r, 600));
+      return original.call(this);
+    };
+  });
+  await page.getByLabel("Upload source CSV").setInputFiles({
+    name: "replacement.csv",
+    mimeType: "text/csv",
+    buffer: Buffer.from("ID\n009999"),
+  });
+  const cancel = page.getByRole("button", { name: "Cancel processing" });
+  await expect(cancel).toBeVisible();
+  const start = performance.now();
+  await cancel.click();
+  await expect(page.getByRole("alert")).toContainText("cancelled");
+  expect(performance.now() - start).toBeLessThan(1000);
+  await page.getByRole("button", { name: "Retry active file" }).click();
+  await expect(
+    page.getByRole("button", { name: "Download converted CSV" }),
+  ).toBeEnabled();
+  expect((await download(page)).toString()).toBe("Reference\r\n001234\r\n");
+});
+
+test("cancellation terminates an active parsing worker and retries the original file", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await upload(page, "ID\n001234");
+  await add(page, ["Reference"]);
+  await map(page, "Reference", "id");
+  await preview(page);
+  const csv =
+    ["ID", ...Array.from({ length: 19 }, (_, i) => `X${i}`)].join(",") +
+    "\n" +
+    Array.from(
+      { length: 90000 },
+      (_, i) =>
+        `${String(i).padStart(6, "0")},${Array(19).fill("synthetic").join(",")}`,
+    ).join("\n");
+  await page
+    .getByLabel("Upload source CSV")
+    .setInputFiles({
+      name: "large-replacement.csv",
+      mimeType: "text/csv",
+      buffer: Buffer.from(csv),
+    });
+  await expect(page.getByRole("status")).toContainText(
+    "Importing and checking CSV",
+  );
+  await page.getByRole("button", { name: "Cancel processing" }).click();
+  await expect(page.getByRole("alert")).toContainText("cancelled");
+  await page.getByRole("button", { name: "Retry active file" }).click();
+  await expect(
+    page.getByRole("button", { name: "Download converted CSV" }),
+  ).toBeEnabled();
+  expect((await download(page)).toString()).toBe("Reference\r\n001234\r\n");
+});
+
+test("499 x 20 import to preview stays under the one-second smoke budget", async ({
+  page,
+  browser,
+  browserName,
+}, testInfo) => {
+  const headers = Array.from({ length: 20 }, (_, i) => `Col${i}`),
+    csv =
+      headers.join(",") +
+      "\n" +
+      Array.from({ length: 499 }, (_, r) =>
+        headers
+          .map((_, c) =>
+            c === 0 ? String(r).padStart(6, "0") : `synthetic-${r}-${c}`,
+          )
+          .join(","),
+      ).join("\n");
+  const timings: number[] = [];
+  await page.goto("/");
+  for (let i = 0; i < 6; i++) {
+    const start = performance.now();
+    await upload(page, csv);
+    const importMs = performance.now() - start;
+    if (i === 0) {
+      await add(page, headers);
+      for (const h of headers) await map(page, h, h.toLowerCase());
+      const runStart = performance.now();
+      await preview(page);
+      timings.push(importMs + performance.now() - runStart);
+    } else timings.push(importMs);
+    const records = Papa.parse<string[]>((await download(page)).toString(), {
+      skipEmptyLines: true,
+    }).data;
+    expect(records.length).toBe(500);
+    expect(records[499][19]).toBe("synthetic-498-19");
+  }
+  const warm = timings.slice(1).sort((a, b) => a - b);
+  await testInfo.attach("small-timings.json", {
+    body: JSON.stringify(
+      {
+        browserName,
+        version: browser.version(),
+        rows: 499,
+        columns: 20,
+        coldImportPlusEvaluationExcludingManualMappingMs: timings[0],
+        warmImportThroughPreviewMs: timings.slice(1),
+        medianMs: warm[2],
+        worstMs: warm[4],
+        environment:
+          "cloud runner; UI automation overhead included; reference laptop pending",
+      },
+      null,
+      2,
+    ),
+    contentType: "application/json",
+  });
+  expect(warm[4]).toBeLessThan(1000);
+});

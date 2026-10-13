@@ -1,0 +1,391 @@
+{
+  "run_id": "20261013-180257-5ccda4b0",
+  "run_dir": "/tmp/compound-engineering-1000/ce-code-review/20261013-180257-5ccda4b0",
+  "selected_findings": [
+    {
+      "#": 1,
+      "autofix_class": "manual",
+      "confidence": 100,
+      "evidence": [
+        "src/ui/Workspace.tsx:592:                                 <td key={workflow.fields[i].id}>",
+        "src/ui/Workspace.tsx:82:     setDirty(false);",
+        "src/ui/Workspace.tsx:84:     session.configure(w);",
+        "src/ui/Workspace.tsx:444:             {dirty ? (",
+        "src/ui/Workspace.tsx:591:                               {r.values.map((v, i) => (",
+        "src/session/controller.ts:81:     this.update({ busy, error: \"\", recoverable: false });",
+        "The output table branch at Workspace.tsx:546 checks only previous view.workflowIssues.length; busy gates downloading but does not gate rendering old result rows with current fields.",
+        "src/ui/Workspace.tsx:88-90: setWorkflow(w); setChoice(undefined); setDirty(false);",
+        "Trigger: upload ID\\n001234, add four distinct output fields, map each to id, and preview successfully. The previous View now has four values in each result row.",
+        "Click Try sample data. examples/u2/workflow.json has exactly three destination fields. sample() immediately installs those fields and clears dirty; Session.upload() retains state.view while awaiting file.arrayBuffer() (src/session/controller.ts:114-117).",
+        "The review branch uses dirty alone (src/ui/Workspace.tsx:444), so the busy render still renders the old View with the new workflow. src/ui/Workspace.tsx:591-592: {r.values.map((v, i) => ( <td key={workflow.fields[i].id}> ; at i=3 workflow.fields[3] is undefined and accessing .id throws.",
+        "src/main.tsx directly renders Workspace through createRoot without an error boundary. The later samplePending effect cannot repair a failed render."
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:592:                                 <td key={workflow.fields[i].id}>",
+      "independent_reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "line": 592,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "severity": "P1",
+      "suggested_fix": "Keep the result table hidden while a new configuration is being evaluated, or retain the workflow snapshot associated with each View and render that snapshot. Do not expose the new fields as the completed preview until the corresponding worker result arrives. Verify a valid two-column preview followed by removal and repreview, and switching a four-column preview to the sample.",
+      "title": "Repreviewing after column removal crashes the workspace",
+      "why_it_matters": "After previewing two mapped output columns, remove one and click Preview all rows. preview() clears dirty before the asynchronous worker returns, while Session.send() retains the previous view. The output table therefore maps the previous two values against the current one-field workflow; workflow.fields[1] is undefined and reading its id throws, unmounting the workspace and losing the session. Trying the three-column sample from a previously previewed workflow with more than three fields has the same failure. The sample switch is corroborated by the in-process adversarial reviewer; both triggers share the same stale-view/current-fields render defect."
+    },
+    {
+      "#": 2,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/session/controller.ts:140:     } catch {",
+        "src/session/controller.ts:141-145: The catch unconditionally calls this.update({ busy: \"\", error: ... }).",
+        "src/session/controller.ts:117:       if (request !== this.sequence) return; \u2014 the success path has the stale-request guard that the catch path lacks.",
+        "src/session/controller.ts:190-191: stop() increments sequence on cancel, but cannot cancel an already pending File.arrayBuffer() rejection."
+      ],
+      "file": "src/session/controller.ts",
+      "first_evidence": "src/session/controller.ts:140:     } catch {",
+      "independent_reviewers": [
+        "julik-frontend-races"
+      ],
+      "line": 140,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "julik-frontend-races"
+      ],
+      "severity": "P2",
+      "suggested_fix": "In the catch block, return when request !== this.sequence before updating state. Add a targeted test with a deferred file read that rejects after cancel and after a new upload begins; verify the new operation stays busy and completes normally.",
+      "title": "Canceled file-read failures can clear a newer operation",
+      "why_it_matters": "If an earlier File.arrayBuffer() rejects after cancellation and a retry or different upload has started, this catch clears the newer operation's busy state and replaces its status message. Controls become enabled while its worker request is still active, so another upload can overwrite the pending request and discard the newer result."
+    },
+    {
+      "#": 3,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/session/controller.ts:38:     this.worker.onerror = (event) => {",
+        "src/session/controller.ts:44:     this.worker.onmessageerror = () =>",
+        "src/session/controller.ts:83:     this.timer = setTimeout(",
+        "tests/e2e/performance.spec.ts:66: test(\"busy cancel and retry preserve the active mapping and full downloaded data\", async ({",
+        "tests/e2e/performance.spec.ts:102: test('cancellation terminates an active parsing worker and retries the original file', async ({ page }) => {",
+        "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md:514: Failure tests include worker cancellation/crash, parser/import failures, storage denial/quota/corruption, conflicting workflow imports, stale requests, oversized hostile inputs, no eligible export rows and acknowledged export invalidation."
+      ],
+      "file": "src/session/controller.ts",
+      "first_evidence": "src/session/controller.ts:38:     this.worker.onerror = (event) => {",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 38,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Add a focused session-controller test with a controllable Worker and fake clock: complete an initial import and mapping, trigger onerror, onmessageerror, and the 30-second timer in separate cases, then assert recoverable state, retry of the original File, restored preview, and identical export bytes.",
+      "title": "Worker failure recovery has no test",
+      "why_it_matters": "A worker crash, unreadable response, or timeout removes the current preview and blocks export until the active file is reparsed. The existing cancellation tests do not trigger these failure handlers, so a regression that loses the active file or leaves recovery stuck would pass the suite."
+    },
+    {
+      "#": 4,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:100:     if (samplePending.current && view && !busy) {",
+        "src/ui/Workspace.tsx:102:       session.configure(decodeWorkflow(sampleConfig));",
+        "src/ui/Workspace.tsx:88:     setWorkflow(w);",
+        "src/ui/Workspace.tsx:90:     setDirty(false);",
+        "src/session/controller.ts:58-61: an import error clears the candidate and busy flag but retains the previous view and active file",
+        "src/session/controller.ts:60:         this.update({ busy: \"\", error: m.message });",
+        "src/session/controller.ts:68:         this.update({ busy: \"\", view: m.view, error: \"\", recoverable: false });"
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:100:     if (samplePending.current && view && !busy) {",
+      "independent_reviewers": [
+        "maintainability",
+        "reliability"
+      ],
+      "line": 100,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "maintainability",
+        "reliability"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Commit the sample workflow only after the sample import's own successful view response. Clear samplePending on upload error, cancellation, and End session; make the pending marker identify the sample request or dataset so an old view cannot satisfy it. Keep the existing workflow and dirty state until that success is confirmed. Add a browser test that fails sample import after a valid active conversion and checks that the active mapping and export remain intact.",
+      "title": "Failed sample import overwrites the active mapping",
+      "why_it_matters": "After a user has a valid active CSV, a failed sample import leaves the old view in place. This effect treats that old view as a successful sample import and runs the sample mapping against the old file, replacing the user's current mapping and potentially hiding the import error. If the source headers happen to match, the user can download a conversion of the old file while believing the sample was loaded."
+    },
+    {
+      "#": 5,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:88:     setWorkflow(w);",
+        "src/ui/Workspace.tsx:90:     setDirty(false);",
+        "src/ui/Workspace.tsx:214:               samplePending.current = false;",
+        "src/session/controller.ts:135:             workflow: this.workflow,",
+        "src/session/controller.ts:210:     if (this.active) await this.upload(this.active.file, this.active.delimiter);",
+        "Session.stop() at src/session/controller.ts:190-202 clears candidate/view but preserves active and workflow; the cancelled sample never reaches session.configure(sampleConfig). Workspace renders headers from workflow.fields at line 579 and enables export solely from clean dirty state and the recovered view at lines 105-119."
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:88:     setWorkflow(w);",
+      "independent_reviewers": [
+        "correctness"
+      ],
+      "line": 88,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Treat sample loading as a replacement transaction: preserve the previous UI workflow and dirty state, commit the sample configuration only with its successful matching worker view, and restore the snapshot on cancellation or failure. Keep export blocked until UI workflow and recovered View share the same configuration.",
+      "title": "Cancelled sample import leaves the displayed workflow mismatched",
+      "why_it_matters": "Start with a valid custom one-column workflow, choose Try sample data, cancel during file reading/import, then Retry active file. sample() has already replaced the UI workflow and marked it clean, but cancellation clears samplePending and Session retains the prior active file and prior workflow. Retry evaluates that prior workflow. The recovered preview shows the sample's three headers with the original workflow's one output value, and Download is enabled even though its CSV uses the original header and does not match the displayed configuration. This persists after recovery, independently of the transient rendering crash."
+    }
+  ],
+  "findings": [
+    {
+      "#": 1,
+      "autofix_class": "manual",
+      "confidence": 100,
+      "evidence": [
+        "src/ui/Workspace.tsx:592:                                 <td key={workflow.fields[i].id}>",
+        "src/ui/Workspace.tsx:82:     setDirty(false);",
+        "src/ui/Workspace.tsx:84:     session.configure(w);",
+        "src/ui/Workspace.tsx:444:             {dirty ? (",
+        "src/ui/Workspace.tsx:591:                               {r.values.map((v, i) => (",
+        "src/session/controller.ts:81:     this.update({ busy, error: \"\", recoverable: false });",
+        "The output table branch at Workspace.tsx:546 checks only previous view.workflowIssues.length; busy gates downloading but does not gate rendering old result rows with current fields.",
+        "src/ui/Workspace.tsx:88-90: setWorkflow(w); setChoice(undefined); setDirty(false);",
+        "Trigger: upload ID\\n001234, add four distinct output fields, map each to id, and preview successfully. The previous View now has four values in each result row.",
+        "Click Try sample data. examples/u2/workflow.json has exactly three destination fields. sample() immediately installs those fields and clears dirty; Session.upload() retains state.view while awaiting file.arrayBuffer() (src/session/controller.ts:114-117).",
+        "The review branch uses dirty alone (src/ui/Workspace.tsx:444), so the busy render still renders the old View with the new workflow. src/ui/Workspace.tsx:591-592: {r.values.map((v, i) => ( <td key={workflow.fields[i].id}> ; at i=3 workflow.fields[3] is undefined and accessing .id throws.",
+        "src/main.tsx directly renders Workspace through createRoot without an error boundary. The later samplePending effect cannot repair a failed render."
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:592:                                 <td key={workflow.fields[i].id}>",
+      "independent_reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "line": 592,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "severity": "P1",
+      "suggested_fix": "Keep the result table hidden while a new configuration is being evaluated, or retain the workflow snapshot associated with each View and render that snapshot. Do not expose the new fields as the completed preview until the corresponding worker result arrives. Verify a valid two-column preview followed by removal and repreview, and switching a four-column preview to the sample.",
+      "title": "Repreviewing after column removal crashes the workspace",
+      "why_it_matters": "After previewing two mapped output columns, remove one and click Preview all rows. preview() clears dirty before the asynchronous worker returns, while Session.send() retains the previous view. The output table therefore maps the previous two values against the current one-field workflow; workflow.fields[1] is undefined and reading its id throws, unmounting the workspace and losing the session. Trying the three-column sample from a previously previewed workflow with more than three fields has the same failure. The sample switch is corroborated by the in-process adversarial reviewer; both triggers share the same stale-view/current-fields render defect."
+    },
+    {
+      "#": 2,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/session/controller.ts:140:     } catch {",
+        "src/session/controller.ts:141-145: The catch unconditionally calls this.update({ busy: \"\", error: ... }).",
+        "src/session/controller.ts:117:       if (request !== this.sequence) return; \u2014 the success path has the stale-request guard that the catch path lacks.",
+        "src/session/controller.ts:190-191: stop() increments sequence on cancel, but cannot cancel an already pending File.arrayBuffer() rejection."
+      ],
+      "file": "src/session/controller.ts",
+      "first_evidence": "src/session/controller.ts:140:     } catch {",
+      "independent_reviewers": [
+        "julik-frontend-races"
+      ],
+      "line": 140,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "julik-frontend-races"
+      ],
+      "severity": "P2",
+      "suggested_fix": "In the catch block, return when request !== this.sequence before updating state. Add a targeted test with a deferred file read that rejects after cancel and after a new upload begins; verify the new operation stays busy and completes normally.",
+      "title": "Canceled file-read failures can clear a newer operation",
+      "why_it_matters": "If an earlier File.arrayBuffer() rejects after cancellation and a retry or different upload has started, this catch clears the newer operation's busy state and replaces its status message. Controls become enabled while its worker request is still active, so another upload can overwrite the pending request and discard the newer result."
+    },
+    {
+      "#": 3,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/session/controller.ts:38:     this.worker.onerror = (event) => {",
+        "src/session/controller.ts:44:     this.worker.onmessageerror = () =>",
+        "src/session/controller.ts:83:     this.timer = setTimeout(",
+        "tests/e2e/performance.spec.ts:66: test(\"busy cancel and retry preserve the active mapping and full downloaded data\", async ({",
+        "tests/e2e/performance.spec.ts:102: test('cancellation terminates an active parsing worker and retries the original file', async ({ page }) => {",
+        "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md:514: Failure tests include worker cancellation/crash, parser/import failures, storage denial/quota/corruption, conflicting workflow imports, stale requests, oversized hostile inputs, no eligible export rows and acknowledged export invalidation."
+      ],
+      "file": "src/session/controller.ts",
+      "first_evidence": "src/session/controller.ts:38:     this.worker.onerror = (event) => {",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 38,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Add a focused session-controller test with a controllable Worker and fake clock: complete an initial import and mapping, trigger onerror, onmessageerror, and the 30-second timer in separate cases, then assert recoverable state, retry of the original File, restored preview, and identical export bytes.",
+      "title": "Worker failure recovery has no test",
+      "why_it_matters": "A worker crash, unreadable response, or timeout removes the current preview and blocks export until the active file is reparsed. The existing cancellation tests do not trigger these failure handlers, so a regression that loses the active file or leaves recovery stuck would pass the suite."
+    },
+    {
+      "#": 4,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:100:     if (samplePending.current && view && !busy) {",
+        "src/ui/Workspace.tsx:102:       session.configure(decodeWorkflow(sampleConfig));",
+        "src/ui/Workspace.tsx:88:     setWorkflow(w);",
+        "src/ui/Workspace.tsx:90:     setDirty(false);",
+        "src/session/controller.ts:58-61: an import error clears the candidate and busy flag but retains the previous view and active file",
+        "src/session/controller.ts:60:         this.update({ busy: \"\", error: m.message });",
+        "src/session/controller.ts:68:         this.update({ busy: \"\", view: m.view, error: \"\", recoverable: false });"
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:100:     if (samplePending.current && view && !busy) {",
+      "independent_reviewers": [
+        "maintainability",
+        "reliability"
+      ],
+      "line": 100,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "maintainability",
+        "reliability"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Commit the sample workflow only after the sample import's own successful view response. Clear samplePending on upload error, cancellation, and End session; make the pending marker identify the sample request or dataset so an old view cannot satisfy it. Keep the existing workflow and dirty state until that success is confirmed. Add a browser test that fails sample import after a valid active conversion and checks that the active mapping and export remain intact.",
+      "title": "Failed sample import overwrites the active mapping",
+      "why_it_matters": "After a user has a valid active CSV, a failed sample import leaves the old view in place. This effect treats that old view as a successful sample import and runs the sample mapping against the old file, replacing the user's current mapping and potentially hiding the import error. If the source headers happen to match, the user can download a conversion of the old file while believing the sample was loaded."
+    },
+    {
+      "#": 5,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:88:     setWorkflow(w);",
+        "src/ui/Workspace.tsx:90:     setDirty(false);",
+        "src/ui/Workspace.tsx:214:               samplePending.current = false;",
+        "src/session/controller.ts:135:             workflow: this.workflow,",
+        "src/session/controller.ts:210:     if (this.active) await this.upload(this.active.file, this.active.delimiter);",
+        "Session.stop() at src/session/controller.ts:190-202 clears candidate/view but preserves active and workflow; the cancelled sample never reaches session.configure(sampleConfig). Workspace renders headers from workflow.fields at line 579 and enables export solely from clean dirty state and the recovered view at lines 105-119."
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:88:     setWorkflow(w);",
+      "independent_reviewers": [
+        "correctness"
+      ],
+      "line": 88,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Treat sample loading as a replacement transaction: preserve the previous UI workflow and dirty state, commit the sample configuration only with its successful matching worker view, and restore the snapshot on cancellation or failure. Keep export blocked until UI workflow and recovered View share the same configuration.",
+      "title": "Cancelled sample import leaves the displayed workflow mismatched",
+      "why_it_matters": "Start with a valid custom one-column workflow, choose Try sample data, cancel during file reading/import, then Retry active file. sample() has already replaced the UI workflow and marked it clean, but cancellation clears samplePending and Session retains the prior active file and prior workflow. Retry evaluates that prior workflow. The recovered preview shows the sample's three headers with the original workflow's one output value, and Download is enabled even though its CSV uses the original header and does not match the displayed configuration. This persists after recovery, independently of the transient rendering crash."
+    }
+  ],
+  "selected_count": 5,
+  "skip_count": 0,
+  "skipped_findings": [],
+  "skip_evidence_basis": "No independently verified adversarial-provider artifact; all corroboration is in-process same-model.",
+  "batch_count": 1,
+  "batch_cap": 8,
+  "scope": {
+    "mode": "standalone",
+    "base": "a4440c7dccbc63c37d90060b84c2443e4c155efc",
+    "diff_a": "a4440c7dccbc63c37d90060b84c2443e4c155efc",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u2-csv-conversion",
+    "head_sha": "a4440c7dccbc63c37d90060b84c2443e4c155efc",
+    "files": "/tmp/compound-engineering-1000/ce-code-review/20261013-180257-5ccda4b0/files.txt",
+    "diff": "/tmp/compound-engineering-1000/ce-code-review/20261013-180257-5ccda4b0/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": []
+  },
+  "scope_context": {
+    "mode": "standalone",
+    "workspace": "/workspace/operations-data-cleaner",
+    "base": "a4440c7dccbc63c37d90060b84c2443e4c155efc",
+    "reviewed_head": "a4440c7dccbc63c37d90060b84c2443e4c155efc",
+    "tree_is_reviewed_head": true,
+    "diff_b": null,
+    "includes": "Tracked staged plus working-tree changes"
+  },
+  "diff_path": "/tmp/compound-engineering-1000/ce-code-review/20261013-180257-5ccda4b0/full.diff",
+  "files_path": "/tmp/compound-engineering-1000/ce-code-review/20261013-180257-5ccda4b0/files.txt",
+  "intent": {
+    "summary": "Deliver only Unit U2: browser-only CSV copy mapping with manual/template destination, rename/reorder, required text/max-length checks, complete counts/provenance, actual byte-correct CSV download and explicit formula handling. Establish independent deterministic engine and complete finite version-1 grammar with later capabilities rejected. U1 merged; U3+ excluded; user UX checkpoint pending genuine observed feedback, not accepted.",
+    "confidence": "explicit"
+  },
+  "plan": {
+    "path": "/workspace/operations-data-cleaner/docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "source": "explicit",
+    "requirements": [
+      "| R1 | FR-01\u201306, FR-35\u201337 | CSV/XLSX input, destination definition, row and cell fidelity |",
+      "| R2 | FR-07\u201310, FR-38\u201339 | Graphical independent recipes, confirmed suggestions, compatible headers |",
+      "| R3 | FR-12\u201317, FR-40\u201341, FR-43 | Constants, trim, split/combine, arithmetic, dates |",
+      "| R4 | FR-19\u201325, FR-44 | Full-dataset validation, corrections, acknowledged exclusions |",
+      "| R5 | FR-29\u201334, FR-46 | Ad hoc use, versioned local workflows, portable backup, synthetic examples |",
+      "| R6 | FR-27\u201328, FR-45, FR-47 | Preview, output bytes/types, explicit spreadsheet safety |",
+      "| R7 | NFR-01\u201306 | Local processing, ephemeral source data, hostile-content protection |",
+      "| R8 | NFR-07\u201310 | Responsiveness, 10,000-row qualification, round trips and counts |",
+      "| R9 | NFR-11\u201314 | Desktop-first, accessible visual controls and actionable messages |",
+      "| R10 | NFR-15\u201316; PRD \u00a711 | Same hosted/local app, documentation and public demonstration |"
+    ],
+    "implementation_units": [
+      "U2: Reliable minimal CSV-to-CSV conversion; R1/R2/R4\u2013R10 baseline; FR-01,03\u201307,17,19\u201322,27,29,34\u201339,44\u201347; AC-01,08 CSV,11,16 defaults,17 CSV,20\u201322 baseline. Only U2 claimed; remaining variants excluded."
+    ],
+    "settled_decisions": []
+  },
+  "constraints": [
+    "Scope ONLY Unit U2, U1 merged, U3+ explicitly excluded.",
+    "No edits, fixes, commits, push or PR; report-only review artifacts in /tmp only.",
+    "User UX checkpoint explicitly pending real user feedback; do not demand U3 or claim U2 accepted.",
+    "Local three-browser evidence incomplete: Chromium passed, Firefox/WebKit installation blocked by network policy; CI configured all three.",
+    "Review staged plus working tree against supplied base.",
+    "Canonical checkout /workspace/operations-data-cleaner branch feat/u2-csv-conversion.",
+    "PRD is review criteria."
+  ],
+  "validator_template": "/home/agent/.agents/skills/ce-code-review/references/validator-batch-template.md",
+  "verdicts_path": "/tmp/compound-engineering-1000/ce-code-review/20261013-180257-5ccda4b0/validator-verdicts.json"
+}
