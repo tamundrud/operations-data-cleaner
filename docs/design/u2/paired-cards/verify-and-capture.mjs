@@ -1,0 +1,17 @@
+// Design-only interaction check and evidence regeneration. Requires repo Playwright dependencies.
+import {chromium} from '../../../../node_modules/@playwright/test/index.mjs';
+import {fileURLToPath} from 'node:url';
+import {mkdtemp} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+const root=fileURLToPath(new URL('.',import.meta.url)).replace(/\/$/,'');
+const recordings=await mkdtemp(join(tmpdir(),'paired-card-recordings-'));
+const b=await chromium.launch({headless:true});const p=await b.newPage({viewport:{width:1440,height:1600},recordVideo:{dir:recordings,size:{width:1440,height:1600}}});const errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto('file://'+root+'/prototype.html');await p.locator('.preview-table').waitFor();
+await p.waitForTimeout(600);await p.screenshot({path:root+'/evidence/desktop-1440.png',fullPage:true});
+const order=()=>p.locator('#order-chips').innerText();const initial=await order();await p.locator('#sources [data-id="notes"]').dragTo(p.locator('#unmatched [data-id="o2"]'));await p.locator('#matched .pair[data-id="o2"]').waitFor();if(await order()!==initial)throw Error('matching changed order');await p.waitForTimeout(600);await p.screenshot({path:root+'/evidence/source-to-output.png',fullPage:true});
+await p.locator('#unmatched [data-id="o4"]').dragTo(p.locator('#sources [data-id="date"]'));await p.locator('#matched .pair[data-id="o4"]').waitFor();if(await order()!==initial)throw Error('reverse matching changed order');await p.waitForTimeout(600);await p.screenshot({path:root+'/evidence/output-to-source.png',fullPage:true});
+await p.locator('#sources [data-id="po"]').dragTo(p.locator('#unmatched [data-id="o5"]'));await p.locator('#matched .pair[data-id="o5"]').waitFor();if(!(await p.locator('#sources [data-id="po"]').textContent()).includes('Used in 2 outputs'))throw Error('source reuse');
+await p.getByRole('button',{name:'Reorder pair Service Type',exact:true}).dragTo(p.locator('.pair[data-id="o4"]'));if((await order())===initial)throw Error('reorder did not change order');await p.waitForTimeout(600);await p.screenshot({path:root+'/evidence/reordered-pair.png',fullPage:true});
+await p.getByRole('button',{name:'Unlink Service Type',exact:true}).click();await p.locator('#unmatched [data-id="o5"]').waitFor();await p.waitForTimeout(600);await p.screenshot({path:root+'/evidence/unlinked-pair.png',fullPage:true});
+await p.getByRole('button',{name:'Select source Service',exact:true}).press('Enter');await p.getByRole('button',{name:'Select output Service Type',exact:true}).press('Enter');await p.locator('#matched .pair[data-id="o5"]').waitFor();await p.getByRole('button',{name:'Reorder pair Service Type',exact:true}).press('Alt+ArrowDown');
+await p.locator('.preview-table').waitFor();await p.getByRole('button',{name:'25 sources / 30 outputs',exact:true}).click();await p.setViewportSize({width:1024,height:900});await p.locator('.preview-table').waitFor();await p.waitForTimeout(600);await p.screenshot({path:root+'/evidence/laptop-1024-25x30.png',fullPage:true});console.log(JSON.stringify({errors,matched:await p.locator('.pair').count(),sources:await p.locator('#sources .card').count(),unmatched:await p.locator('#unmatched .card').count(),overflow:await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth)}));const video=p.video();await p.close();await video.saveAs(root+'/evidence/interaction-demo.webm');await b.close();
