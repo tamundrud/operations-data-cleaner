@@ -1,8 +1,8 @@
 # U2 paired-card matching design
 
-Status: **proposed; awaiting design approval**. The U2 UX checkpoint remains open. No U3 work is authorized by this artifact.
+Status: **user-approved design direction for implementation (October 14, 2026); final polish and application acceptance pending**. The U2 UX checkpoint remains open. No U3 work is authorized by this artifact.
 
-This is the latest design reference. It supersedes the interaction and preview-refresh proposals in the parent folder's original matching-board mockup. Neither design is an approved implementation contract yet.
+This is the latest design reference. It supersedes the interaction and preview-refresh proposals in the parent folder's original matching-board mockup. [SPECIFICATION.md](SPECIFICATION.md) is the approved implementation contract, with this prototype as its visual and interaction reference.
 
 ## Review artifacts
 
@@ -30,20 +30,20 @@ The original temporary files were no longer present on October 14. The HTML was 
 8. Switch to the 25-source/30-output example; search sources and scroll the sections independently.
 9. Use contextual ⋯ settings for rename, source choice, movement and removal. Add output and confirmed synthetic-template replacement are secondary controls.
 
-## Ordering decision requiring approval
+## Approved ordering behavior
 
 Matching, rematching, searching and unlinking preserve configured export order. The Matched section is a filtered view of confirmed fields, sorted by schema position.
 
-The prototype proposes that deliberate pair reordering permutes the export slots occupied by matched fields, while unmatched fields stay fixed. A matched A, unmatched B, matched C schema becomes C, B, A after dragging C above A. The separate Output order control can move any output through the complete schema. This rule needs explicit product approval before implementation.
+The approved prototype specifies that deliberate pair reordering permutes the export slots occupied by matched fields, while unmatched fields stay fixed. A matched A, unmatched B, matched C schema becomes C, B, A after dragging C above A. The separate Output order control can move any output through the complete schema. The user approved the latest prototype’s interaction model; retain this rule in U2.
 
-## Implementation handoff after approval
+## Authorized U2 implementation handoff
 
 - Replace the primary mapping forms with matched source/destination cards above the reusable source and unmatched output areas. Keep field settings contextual and preview below the board.
 - Derive pairing from existing destination-field recipes and export order from the workflow's `fields` array. Do not persist a second graph or visual-order model.
 - Keep the current engine, data contracts, source fidelity, validation, formula-injection protection and browser-only privacy guarantees.
 - Reuse the production debounced, revision-safe scheduler. No mandatory Update Preview button. Export must remain blocked during pending processing, stale results, incomplete configuration or blocking errors.
 - Future recipes can show a short destination-card summary and open a contextual editor. They are outside this U2 revision.
-- Amend PRD mapping/accessibility acceptance and plan KTD-09's dropdown-primary presentation only after approval. Record automatic refresh as the user-selected direction. Preserve business rules and engine acceptance tests.
+- Amend PRD mapping/accessibility acceptance and plan KTD-09's dropdown-primary presentation under the October 14 user approval. Record automatic refresh as the user-selected direction. Preserve business rules and engine acceptance tests.
 - Verify both drag directions, replacement, unlink, reuse, keyboard focus/status, pair/full-schema ordering, template confirmation and contextual editing. Check 1440px and 1024px with 25 sources/30 outputs. Preserve privacy interception, exact exported-byte/data, stale-result and 10,000-row tests.
 - Complete the mandatory Compound Engineering code review for application changes, documenting any incomplete steps. Keep the existing PR draft and the UX checkpoint pending personal testing. Stop before U3.
 

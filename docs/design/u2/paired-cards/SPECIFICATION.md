@@ -1,9 +1,9 @@
 # Operations Data Cleaner — Column Matching UX Specification
 
-**Version:** Draft 1.0
-**Status:** Proposed — awaiting design approval
+**Version:** 1.0 — user-approved design direction, October 14, 2026
+**Status:** Approved for U2 implementation; visual polish and implemented UX acceptance pending hands-on review
 **Scope:** U2 column-mapping interface redesign
-**Reference:** Original `matching-board-desktop.png` prototype
+**Reference:** [Approved interactive paired-card prototype](prototype.html) and its [evidence](README.md). This specification is the design source of truth; the earlier connector-line and row-form designs are superseded.
 
 ## 1. Design objective
 
@@ -108,7 +108,9 @@ An explicit reorder changes the configured destination export order. The updated
 
 **Important:** Simply creating a match must not silently change an imported destination template's export order. Visual grouping and export order are distinct concepts.
 
-When pairs are initially matched, they should retain their relative positions from the defined destination schema unless the user deliberately reorders them.
+When pairs are initially matched, they retain their relative positions from the defined destination schema unless the user deliberately reorders them.
+
+Use the approved prototype’s reorder rule: permute the export slots occupied by matched fields; unmatched fields stay fixed. For matched A, unmatched B, matched C, dragging C above A yields C, B, A. The secondary Output order control can move any field through the complete schema.
 
 ### 4.3 Change an existing match
 

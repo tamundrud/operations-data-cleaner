@@ -7,6 +7,8 @@ execution: code
 
 # U2 row-aligned mapping revision
 
+> Historical implementation plan. Its row-form presentation is superseded by [the approved paired-card implementation plan](2026-10-14-u2-paired-card-matching.md). Preserve its automatic-preview safeguards.
+
 ## Approved scope
 
 The user's 2026-10-13 implementation instruction supersedes KTD-09's dropdown-primary adjacent panels and the unapproved connecting-board proposal. Implement on existing draft PR #2, branch `feat/u2-csv-conversion`. Keep U2 acceptance pending hands-on approval; no U3, merge, publication or ready-for-review transition.

@@ -263,7 +263,7 @@ Portable JSON and stored workflows use the same versioned codec. Import validate
 
 ### KTD-09 — Visual workspace and suggestions
 
-Workspace areas: source table, ordered destination field cards, and output/review panel. Each card shows header, type, required flag, recipe summary and Edit. Copy mapping is a dropdown; transformations open small labelled forms with concrete examples, not a node graph or expression editor. Use Move up/down, remove and rename controls. Advanced validation/precision is revealed as needed. Confirmed/suggested/unmapped states have text labels, not color alone.
+U2 follows the [approved paired-card specification](../design/u2/paired-cards/SPECIFICATION.md) and [implementation addendum](2026-10-14-u2-paired-card-matching.md). Matched source/output cards share a row above unmatched sources and outputs. Match in either drag direction or by selecting counterparts; reuse sources, unlink and reorder complete pairs. Matching preserves schema order; explicit pair reorder permutes matched slots. Keep all-column movement, rename/remove, native source choice and validation in contextual controls. Automatically refresh through the existing revision-safe debounce scheduler; block stale/incomplete exports. Inspect original source rows in a secondary disclosure. No connector lines, node graph or persistent row forms. Confirmed/suggested/unmapped states use text as well as color.
 
 Keep preview to paginated pages (initially 50 rows), with full counts always visible and filters/navigation for every exception. Basic keyboard navigation, focus/error announcements and laptop layouts are part of every unit, not late polish. Daily operators see saved-workflow upload/review/export first; opening the editor is optional.
 

@@ -1,8 +1,8 @@
 # U2 matching board — design proposal
 
-> Historical proposal. The latest paired-card design, complete specification, screenshots and interaction recording are in [paired-cards/README.md](paired-cards/README.md). Its automatic-preview direction supersedes the manual Update Preview proposal below. Design approval and the U2 UX checkpoint remain pending.
+> Historical proposal. The latest paired-card design, complete specification, screenshots and interaction recording are in [paired-cards/README.md](paired-cards/README.md). Its automatic-preview direction supersedes the manual Update Preview proposal below. The paired-card design direction is user-approved for implementation; the implemented U2 UX checkpoint remains pending.
 
-Date: 2026-10-13. Status: **proposed for user review**. U2 UX checkpoint: **open**. U3: **not started**.
+Date: 2026-10-13. Status: **superseded historical proposal — do not implement**. U2 UX checkpoint: **open**. U3: **not started**.
 
 This is an isolated synthetic mockup and a proposed UX contract. It does not amend the authoritative PRD/plan, change application UI or transformation code, or establish operator usability acceptance.
 
