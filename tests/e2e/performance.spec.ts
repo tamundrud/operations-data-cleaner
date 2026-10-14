@@ -1,5 +1,12 @@
 import { test, expect } from "@playwright/test";
-import { upload, add, map, preview, download } from "./helpers";
+import {
+  upload,
+  add,
+  map,
+  preview,
+  download,
+  mapForPerformance,
+} from "./helpers";
 import Papa from "papaparse";
 test("10000 x 20 rows remain intact; record cold and five warm full-pipeline runs", async ({
   page,
@@ -25,9 +32,14 @@ test("10000 x 20 rows remain intact; record cold and five warm full-pipeline run
     const start = performance.now();
     await upload(page, csv);
     if (i === 0) {
+      await page.clock.install();
+      await page.clock.pauseAt(new Date(Date.now() + 1000));
       await add(page, headers);
-      for (const h of headers) await map(page, h, h.toLowerCase());
+      for (const h of headers)
+        await mapForPerformance(page, h, h.toLowerCase());
+      await page.clock.runFor(250);
       await preview(page);
+      await page.clock.resume();
     }
     const bytes = await download(page);
     const elapsed = performance.now() - start;
@@ -71,11 +83,14 @@ test("busy cancel and retry preserve the active mapping and full downloaded data
   await add(page, ["Reference"]);
   await map(page, "Reference", "id");
   await preview(page);
-  // Slow file reading deterministically to observe a real in-flight import and cancellation.
+  // Hold only the replacement read until the real cancellation action completes.
   await page.evaluate(() => {
     const original = File.prototype.arrayBuffer;
     File.prototype.arrayBuffer = async function () {
-      await new Promise((r) => setTimeout(r, 600));
+      if (this.name === "replacement.csv")
+        await new Promise<void>((resolve) => {
+          Reflect.set(window, "releaseSyntheticRead", resolve);
+        });
       return original.call(this);
     };
   });
@@ -88,6 +103,7 @@ test("busy cancel and retry preserve the active mapping and full downloaded data
   await expect(cancel).toBeVisible();
   const start = performance.now();
   await cancel.click();
+  await page.evaluate(() => Reflect.get(window, "releaseSyntheticRead")?.());
   await expect(page.getByRole("alert")).toContainText("cancelled");
   expect(performance.now() - start).toBeLessThan(1000);
   await page.getByRole("button", { name: "Retry active file" }).click();
@@ -153,11 +169,16 @@ test("499 x 20 import to preview stays under the one-second smoke budget", async
     await upload(page, csv);
     const importMs = performance.now() - start;
     if (i === 0) {
+      await page.clock.install();
+      await page.clock.pauseAt(new Date(Date.now() + 1000));
       await add(page, headers);
-      for (const h of headers) await map(page, h, h.toLowerCase());
+      for (const h of headers)
+        await mapForPerformance(page, h, h.toLowerCase());
       const runStart = performance.now();
+      await page.clock.runFor(250);
       await preview(page);
       timings.push(importMs + performance.now() - runStart);
+      await page.clock.resume();
     } else timings.push(importMs);
     const records = Papa.parse<string[]>((await download(page)).toString(), {
       skipEmptyLines: true,

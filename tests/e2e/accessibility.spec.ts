@@ -1,17 +1,19 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { upload, add, map, preview } from "./helpers";
+import { upload, add, preview, edit, closeSettings } from "./helpers";
 test("labelled keyboard controls, laptop/mobile layouts and automated accessibility", async ({
   page,
 }) => {
   await page.goto("/");
   await upload(page, "ID,Name\n001234,Depot");
   await add(page, ["Reference"]);
+  await edit(page, "Reference");
   const select = page.getByLabel("Copy source for Reference", { exact: true });
   await select.focus();
   await select.press("ArrowDown");
   await select.press("Enter");
-  await map(page, "Reference", "id");
+  await select.selectOption("id");
+  await closeSettings(page);
   await preview(page);
   const button = page.getByRole("button", { name: "Download converted CSV" });
   await button.focus();

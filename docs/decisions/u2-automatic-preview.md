@@ -1,5 +1,7 @@
 # U2 automatic preview and row matching
 
+> The October 14 [approved paired-card specification](../design/u2/paired-cards/SPECIFICATION.md) supersedes the row-form presentation below. The scheduler, schema and safeguards described here remain binding; keyboard matching now selects either card followed by its counterpart, and validation is contextual.
+
 Date: 2026-10-13. Scope: existing U2 draft PR; operator UX acceptance remains pending.
 
 The user directed row-aligned source/output matching and automatic preview refresh. The rejected connector-board mockup and KTD-09's original dropdown-primary form cards do not prescribe this revision. There are no connection lines or separate graph state; each source slot reads the destination field's existing copy recipe. Stable field IDs preserve rename/reorder relationships. Source buttons are reusable, searchable, and show original display samples. Native selects and source-select/Match actions provide keyboard alternatives; validation stays in a row disclosure. Template replacement is deliberate and failed template parsing preserves the active draft.

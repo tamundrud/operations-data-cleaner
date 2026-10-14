@@ -1,0 +1,17 @@
+{
+  "browserName": "chromium",
+  "version": "154.0.8037.57",
+  "rows": 10000,
+  "columns": 20,
+  "coldIncludingManualSetupMs": 12696.708869999999,
+  "warmMs": [
+    3007.4471440000016,
+    1611.733565999999,
+    1715.6517380000005,
+    1896.397745000002,
+    1593.7670340000004
+  ],
+  "medianMs": 1715.6517380000005,
+  "worstMs": 3007.4471440000016,
+  "environment": "Codex cloud runner; not reference laptop qualification"
+}

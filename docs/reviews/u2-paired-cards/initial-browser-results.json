@@ -1,0 +1,1244 @@
+{
+  "config": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/workspace/operations-data-cleaner/node_modules/.bin/playwright",
+      "test",
+      "--config=tmp/playwright.local.config.ts",
+      "--project=chromium",
+      "--timeout=180000",
+      "--reporter=list,json"
+    ],
+    "configFile": "/workspace/operations-data-cleaner/tmp/playwright.local.config.ts",
+    "rootDir": "/workspace/operations-data-cleaner/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/workspace/operations-data-cleaner/tmp/local-test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 180000
+      },
+      {
+        "outputDir": "/workspace/operations-data-cleaner/tmp/local-test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 180000
+      },
+      {
+        "outputDir": "/workspace/operations-data-cleaner/tmp/local-test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/workspace/operations-data-cleaner/tmp/local-test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "snapshotDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 180000,
+        "use": {
+          "baseURL": "http://127.0.0.1:4173",
+          "serviceWorkers": "block",
+          "trace": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium",
+          "launchOptions": {
+            "executablePath": "/usr/lib/chromium/chromium"
+          }
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run preview",
+      "url": "http://127.0.0.1:4173",
+      "reuseExistingServer": true
+    }
+  },
+  "suites": [
+    {
+      "title": "accessibility.spec.ts",
+      "file": "accessibility.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "labelled keyboard controls, laptop/mobile layouts and automated accessibility",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 37630,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T14:55:29.224Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ddd864604af8a6a0198f-8541934cb8b2e41a384c",
+          "file": "accessibility.spec.ts",
+          "line": 4,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "conversion.spec.ts",
+      "file": "conversion.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "upload template, keyboard map, rename, reorder, preview and verify actual bytes",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 58736,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeDisabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('button', { name: 'Download converted CSV' })\nExpected: disabled\nReceived: enabled\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeDisabled\" getByRole('button', { name: 'Download converted CSV' }) with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Download converted CSV' })\u001b[22m\n\u001b[2m    27 × locator resolved to <button class=\"primary download\">Download converted CSV</button>\u001b[22m\n\u001b[2m       - unexpected value \"enabled\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeDisabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('button', { name: 'Download converted CSV' })\nExpected: disabled\nReceived: enabled\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeDisabled\" getByRole('button', { name: 'Download converted CSV' }) with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Download converted CSV' })\u001b[22m\n\u001b[2m    27 × locator resolved to <button class=\"primary download\">Download converted CSV</button>\u001b[22m\n\u001b[2m       - unexpected value \"enabled\"\u001b[22m\n\n    at /workspace/operations-data-cleaner/tests/e2e/conversion.spec.ts:50:5",
+                    "location": {
+                      "file": "/workspace/operations-data-cleaner/tests/e2e/conversion.spec.ts",
+                      "column": 5,
+                      "line": 50
+                    },
+                    "snippet": "  48 |   await expect(\n  49 |     page.getByRole(\"button\", { name: \"Download converted CSV\" }),\n> 50 |   ).toBeDisabled();\n     |     ^\n  51 |   await preview(page);\n  52 |   expect((await download(page)).toString()).toContain(\"Renamed,Reference\\r\\n\");\n  53 | });"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/operations-data-cleaner/tests/e2e/conversion.spec.ts",
+                        "column": 5,
+                        "line": 50
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeDisabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('button', { name: 'Download converted CSV' })\nExpected: disabled\nReceived: enabled\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeDisabled\" getByRole('button', { name: 'Download converted CSV' }) with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Download converted CSV' })\u001b[22m\n\u001b[2m    27 × locator resolved to <button class=\"primary download\">Download converted CSV</button>\u001b[22m\n\u001b[2m       - unexpected value \"enabled\"\u001b[22m\n\n\n  48 |   await expect(\n  49 |     page.getByRole(\"button\", { name: \"Download converted CSV\" }),\n> 50 |   ).toBeDisabled();\n     |     ^\n  51 |   await preview(page);\n  52 |   expect((await download(page)).toString()).toContain(\"Renamed,Reference\\r\\n\");\n  53 | });\n    at /workspace/operations-data-cleaner/tests/e2e/conversion.spec.ts:50:5"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T14:56:09.384Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/operations-data-cleaner/tmp/local-test-results/conversion-upload-template-4fc22-iew-and-verify-actual-bytes-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/operations-data-cleaner/tmp/local-test-results/conversion-upload-template-4fc22-iew-and-verify-actual-bytes-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/operations-data-cleaner/tests/e2e/conversion.spec.ts",
+                    "column": 5,
+                    "line": 50
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "222f7e5d85987e089f07-fd5e474624aef79fd7fb",
+          "file": "conversion.spec.ts",
+          "line": 15,
+          "column": 1
+        },
+        {
+          "title": "sample produces golden bytes without any customer file",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 16307,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T14:57:20.321Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "222f7e5d85987e089f07-009b8d530204a891843a",
+          "file": "conversion.spec.ts",
+          "line": 54,
+          "column": 1
+        },
+        {
+          "title": "unmapped and invalid rows block download, all exceptions are reachable",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 20207,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T14:57:39.621Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "222f7e5d85987e089f07-153fae414d5f156b521f",
+          "file": "conversion.spec.ts",
+          "line": 66,
+          "column": 1
+        },
+        {
+          "title": "formula headers and text block export until explicit choice, representation matches bytes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 23939,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T14:58:00.259Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "222f7e5d85987e089f07-970c06600e7a0be98727",
+          "file": "conversion.spec.ts",
+          "line": 111,
+          "column": 1
+        },
+        {
+          "title": "failed replacement retains active file and valid mapping; ending session clears it",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 23460,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T14:58:24.392Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "222f7e5d85987e089f07-146b69ff2a6400a0b0d9",
+          "file": "conversion.spec.ts",
+          "line": 137,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "performance.spec.ts",
+      "file": "performance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "10000 x 20 rows remain intact; record cold and five warm full-pipeline runs",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 166323,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/operations-data-cleaner/tests/e2e/helpers.ts",
+                        "column": 82,
+                        "line": 56
+                      },
+                      "message": "Error: locator.click: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.source-grid [data-source-key=\"col19\"]')\u001b[22m\n\n\n   at helpers.ts:56\n\n  54 | }\n  55 | export async function map(page: Page, header: string, source: string) {\n> 56 |   await page.locator(`.source-grid [data-source-key=${JSON.stringify(source)}]`).click();\n     |                                                                                  ^\n  57 |   await page.getByRole(\"button\", { name: `Select output ${header}`, exact: true }).click();\n  58 | }\n  59 | export async function preview(page: Page) {\n    at map (/workspace/operations-data-cleaner/tests/e2e/helpers.ts:56:82)\n    at /workspace/operations-data-cleaner/tests/e2e/performance.spec.ts:29:38"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T14:58:48.688Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/operations-data-cleaner/tmp/local-test-results/performance-10000-x-20-row-cdfcb-ive-warm-full-pipeline-runs-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/operations-data-cleaner/tmp/local-test-results/performance-10000-x-20-row-cdfcb-ive-warm-full-pipeline-runs-chromium/trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "b15d6361b2fc38288977-08791083335f335ae6dc",
+          "file": "performance.spec.ts",
+          "line": 4,
+          "column": 1
+        },
+        {
+          "title": "busy cancel and retry preserve the active mapping and full downloaded data",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 180694,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 180000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 180000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 180000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/operations-data-cleaner/tests/e2e/performance.spec.ts",
+                        "column": 16,
+                        "line": 90
+                      },
+                      "message": "Error: locator.click: Test timeout of 180000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Cancel processing' })\u001b[22m\n\u001b[2m    - locator resolved to <button>Cancel processing</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is not stable\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m  - element was detached from the DOM, retrying\u001b[22m\n\n\n  88 |   await expect(cancel).toBeVisible();\n  89 |   const start = performance.now();\n> 90 |   await cancel.click();\n     |                ^\n  91 |   await page.evaluate(() => Reflect.get(window, \"releaseSyntheticRead\")?.());\n  92 |   await expect(page.getByRole(\"alert\")).toContainText(\"cancelled\");\n  93 |   expect(performance.now() - start).toBeLessThan(1000);\n    at /workspace/operations-data-cleaner/tests/e2e/performance.spec.ts:90:16"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:01:40.668Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/operations-data-cleaner/tmp/local-test-results/performance-busy-cancel-an-d4c4b-ng-and-full-downloaded-data-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/operations-data-cleaner/tmp/local-test-results/performance-busy-cancel-an-d4c4b-ng-and-full-downloaded-data-chromium/trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "b15d6361b2fc38288977-170bb9e044ace2075d68",
+          "file": "performance.spec.ts",
+          "line": 66,
+          "column": 1
+        },
+        {
+          "title": "cancellation terminates an active parsing worker and retries the original file",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 33177,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:04:49.032Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b15d6361b2fc38288977-965c5bc89e6d3b6b487f",
+          "file": "performance.spec.ts",
+          "line": 100,
+          "column": 1
+        },
+        {
+          "title": "499 x 20 import to preview stays under the one-second smoke budget",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 80163,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m1000\u001b[39m\nReceived:   \u001b[31m3529.44959199999\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m1000\u001b[39m\nReceived:   \u001b[31m3529.44959199999\u001b[39m\n    at /workspace/operations-data-cleaner/tests/e2e/performance.spec.ts:188:19",
+                    "location": {
+                      "file": "/workspace/operations-data-cleaner/tests/e2e/performance.spec.ts",
+                      "column": 19,
+                      "line": 188
+                    },
+                    "snippet": "  186 |         coldImportPlusEvaluationExcludingManualMappingMs: timings[0],\n  187 |         warmImportThroughPreviewMs: timings.slice(1),\n> 188 |         medianMs: warm[2],\n      |                   ^\n  189 |         worstMs: warm[4],\n  190 |         environment:\n  191 |           \"cloud runner; UI automation overhead included; reference laptop pending\","
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/operations-data-cleaner/tests/e2e/performance.spec.ts",
+                        "column": 19,
+                        "line": 188
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m1000\u001b[39m\nReceived:   \u001b[31m3529.44959199999\u001b[39m\n\n  186 |         coldImportPlusEvaluationExcludingManualMappingMs: timings[0],\n  187 |         warmImportThroughPreviewMs: timings.slice(1),\n> 188 |         medianMs: warm[2],\n      |                   ^\n  189 |         worstMs: warm[4],\n  190 |         environment:\n  191 |           \"cloud runner; UI automation overhead included; reference laptop pending\",\n    at /workspace/operations-data-cleaner/tests/e2e/performance.spec.ts:188:19"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:05:23.204Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "small-timings.json",
+                      "contentType": "application/json",
+                      "body": "ewogICJicm93c2VyTmFtZSI6ICJjaHJvbWl1bSIsCiAgInZlcnNpb24iOiAiMTU0LjAuODAzNy41NyIsCiAgInJvd3MiOiA0OTksCiAgImNvbHVtbnMiOiAyMCwKICAiY29sZEltcG9ydFBsdXNFdmFsdWF0aW9uRXhjbHVkaW5nTWFudWFsTWFwcGluZ01zIjogMjEzOC4xMTAyNjU5OTk5ODg4LAogICJ3YXJtSW1wb3J0VGhyb3VnaFByZXZpZXdNcyI6IFsKICAgIDM1MjkuNDQ5NTkxOTk5OTksCiAgICAyNjE2LjA1MjkwMzAwMDAwMzQsCiAgICAxOTUxLjg2MjU4MjAwMDAwMTYsCiAgICAyOTE3LjYzNjAxMjAwMDAwMjcsCiAgICAxMTg0LjgyODE1Njk5OTk5NjMKICBdLAogICJtZWRpYW5NcyI6IDI2MTYuMDUyOTAzMDAwMDAzNCwKICAid29yc3RNcyI6IDM1MjkuNDQ5NTkxOTk5OTksCiAgImVudmlyb25tZW50IjogImNsb3VkIHJ1bm5lcjsgVUkgYXV0b21hdGlvbiBvdmVyaGVhZCBpbmNsdWRlZDsgcmVmZXJlbmNlIGxhcHRvcCBwZW5kaW5nIgp9"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/operations-data-cleaner/tmp/local-test-results/performance-499-x-20-impor-7eb0f-the-one-second-smoke-budget-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/operations-data-cleaner/tmp/local-test-results/performance-499-x-20-impor-7eb0f-the-one-second-smoke-budget-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/operations-data-cleaner/tests/e2e/performance.spec.ts",
+                    "column": 19,
+                    "line": 188
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "b15d6361b2fc38288977-cde643714459b7613694",
+          "file": "performance.spec.ts",
+          "line": 133,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "privacy.spec.ts",
+      "file": "privacy.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "production journey sends no customer values, file names or IDs and stores no source data",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 51859,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:06:57.723Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "62491902cb946290adea-d66ddcfc559e9d6031a6",
+          "file": "privacy.spec.ts",
+          "line": 12,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "review-regressions.spec.ts",
+      "file": "review-regressions.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "CE #1: removing a previewed field and repreviewing cannot render stale values",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 30547,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:07:51.807Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "70295784855ab916a09e-ac536822fa52132d7250",
+          "file": "review-regressions.spec.ts",
+          "line": 11,
+          "column": 1
+        },
+        {
+          "title": "CE #1: sample transaction replaces a wider completed preview",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 15454,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:08:22.466Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "70295784855ab916a09e-43a06715e335ffa79fc2",
+          "file": "review-regressions.spec.ts",
+          "line": 27,
+          "column": 1
+        },
+        {
+          "title": "CE #4: failed sample read retains the prior active mapping and visible failure",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 18204,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:08:38.071Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "70295784855ab916a09e-2d72f0dd403d67943e14",
+          "file": "review-regressions.spec.ts",
+          "line": 46,
+          "column": 1
+        },
+        {
+          "title": "CE #5: cancelled sample and active-file retry keep matching preview and output",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 15088,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:08:57.607Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "70295784855ab916a09e-3730bf42a85b6b12705e",
+          "file": "review-regressions.spec.ts",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "new source upload requires a fresh CSV safety choice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 16701,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:09:12.783Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "70295784855ab916a09e-db36a1f0acf1468e4d94",
+          "file": "review-regressions.spec.ts",
+          "line": 103,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "row-mapping.spec.ts",
+      "file": "row-mapping.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "both drag directions, grouping, source reuse, replacement and unlink preserve export order",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 98081,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Reference,Copy,Customer\u001b[43m\r\u001b[49m\u001b[22m\n\u001b[32m- 001234,\u001b[7mDepot\u001b[27m,Depot\u001b[43m\r\u001b[49m\u001b[39m\n\u001b[31m+ 001234,\u001b[7m001234\u001b[27m,Depot\u001b[43m\r\u001b[49m\u001b[39m\n\u001b[2m  ↵\u001b[22m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Reference,Copy,Customer\u001b[43m\r\u001b[49m\u001b[22m\n\u001b[32m- 001234,\u001b[7mDepot\u001b[27m,Depot\u001b[43m\r\u001b[49m\u001b[39m\n\u001b[31m+ 001234,\u001b[7m001234\u001b[27m,Depot\u001b[43m\r\u001b[49m\u001b[39m\n\u001b[2m  ↵\u001b[22m\n    at /workspace/operations-data-cleaner/tests/e2e/row-mapping.spec.ts:45:45",
+                    "location": {
+                      "file": "/workspace/operations-data-cleaner/tests/e2e/row-mapping.spec.ts",
+                      "column": 45,
+                      "line": 45
+                    },
+                    "snippet": "  43 |   await source(page, \"Name\").dragTo(output(page, \"Copy\"));\n  44 |   await preview(page);\n> 45 |   expect((await download(page)).toString()).toBe(\n     |                                             ^\n  46 |     \"Reference,Copy,Customer\\r\\n001234,Depot,Depot\\r\\n\",\n  47 |   );\n  48 |   await page.getByRole(\"button\", { name: \"Unlink Copy\", exact: true }).click();"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/operations-data-cleaner/tests/e2e/row-mapping.spec.ts",
+                        "column": 45,
+                        "line": 45
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Reference,Copy,Customer\u001b[43m\r\u001b[49m\u001b[22m\n\u001b[32m- 001234,\u001b[7mDepot\u001b[27m,Depot\u001b[43m\r\u001b[49m\u001b[39m\n\u001b[31m+ 001234,\u001b[7m001234\u001b[27m,Depot\u001b[43m\r\u001b[49m\u001b[39m\n\u001b[2m  ↵\u001b[22m\n\n  43 |   await source(page, \"Name\").dragTo(output(page, \"Copy\"));\n  44 |   await preview(page);\n> 45 |   expect((await download(page)).toString()).toBe(\n     |                                             ^\n  46 |     \"Reference,Copy,Customer\\r\\n001234,Depot,Depot\\r\\n\",\n  47 |   );\n  48 |   await page.getByRole(\"button\", { name: \"Unlink Copy\", exact: true }).click();\n    at /workspace/operations-data-cleaner/tests/e2e/row-mapping.spec.ts:45:45"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:09:29.693Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/operations-data-cleaner/tmp/local-test-results/row-mapping-both-drag-dire-6c7e1-nlink-preserve-export-order-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/operations-data-cleaner/tmp/local-test-results/row-mapping-both-drag-dire-6c7e1-nlink-preserve-export-order-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/operations-data-cleaner/tests/e2e/row-mapping.spec.ts",
+                    "column": 45,
+                    "line": 45
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-dd36becc2ab7ec5fd27a",
+          "file": "row-mapping.spec.ts",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "keyboard counterpart selection in both directions, Escape and pair reordering retain focus",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 52844,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:11:25.281Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-b104e1e0d51c6b82580e",
+          "file": "row-mapping.spec.ts",
+          "line": 63,
+          "column": 1
+        },
+        {
+          "title": "25 sources and 30 outputs stay searchable and aligned at desktop and laptop widths",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 67084,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:12:22.577Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-dc723e52e0d12533a088",
+          "file": "row-mapping.spec.ts",
+          "line": 112,
+          "column": 1
+        },
+        {
+          "title": "rapid edits debounce and never enable an old export",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10176,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:13:29.828Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-d06fd5fb7dd4fa05dc71",
+          "file": "row-mapping.spec.ts",
+          "line": 166,
+          "column": 1
+        },
+        {
+          "title": "edits during an older worker evaluation queue the latest draft",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 15089,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:13:40.097Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-6ea9b03fc66bd5eafd0a",
+          "file": "row-mapping.spec.ts",
+          "line": 187,
+          "column": 1
+        },
+        {
+          "title": "template replacement is deliberate and failed parsing preserves mapped columns",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 25519,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:13:55.329Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-24ac17760be3977c2bf9",
+          "file": "row-mapping.spec.ts",
+          "line": 234,
+          "column": 1
+        },
+        {
+          "title": "automatic evaluation waits for a fresh 250 ms quiet period",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 17782,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:14:21.063Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-f1fd180620a19b47d56e",
+          "file": "row-mapping.spec.ts",
+          "line": 292,
+          "column": 1
+        },
+        {
+          "title": "a failed automatic evaluation stops until explicit recovery",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 183503,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 180000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 180000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 180000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/operations-data-cleaner/tests/e2e/helpers.ts",
+                        "column": 82,
+                        "line": 56
+                      },
+                      "message": "Error: locator.click: Test timeout of 180000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.source-grid [data-source-key=\"id\"]')\u001b[22m\n\n\n   at helpers.ts:56\n\n  54 | }\n  55 | export async function map(page: Page, header: string, source: string) {\n> 56 |   await page\n     |             ^\n  57 |     .locator(`.source-grid [data-source-key=${JSON.stringify(source)}]`)\n  58 |     .click();\n  59 |   await page\n    at map (/workspace/operations-data-cleaner/tests/e2e/helpers.ts:56:82)\n    at /workspace/operations-data-cleaner/tests/e2e/row-mapping.spec.ts:366:9"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:14:39.586Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/operations-data-cleaner/tmp/local-test-results/row-mapping-a-failed-autom-51ce4-ops-until-explicit-recovery-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/operations-data-cleaner/tmp/local-test-results/row-mapping-a-failed-autom-51ce4-ops-until-explicit-recovery-chromium/trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-5a3edffbc3f5eead8956",
+          "file": "row-mapping.spec.ts",
+          "line": 333,
+          "column": 1
+        },
+        {
+          "title": "zero output columns give an actionable empty state rather than a pending preview",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12797,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T15:17:55.161Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-51f1da4369f0d00b4f22",
+          "file": "row-mapping.spec.ts",
+          "line": 384,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-14T14:55:17.951Z",
+    "duration": 1375489.554,
+    "expected": 19,
+    "skipped": 0,
+    "unexpected": 6,
+    "flaky": 0
+  }
+}

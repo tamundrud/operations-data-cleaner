@@ -1,0 +1,37 @@
+[
+  [
+    "correctness",
+    "session",
+    "logic and paired/export ordering"
+  ],
+  [
+    "project-standards",
+    "mid",
+    "AGENTS.md governs changed paths"
+  ],
+  [
+    "testing",
+    "mid",
+    "behavior tests and deterministic worker/clock harnesses changed"
+  ],
+  [
+    "maintainability",
+    "mid",
+    "large component restructuring"
+  ],
+  [
+    "security",
+    "session",
+    "untrusted headers/files and in-app drop boundary"
+  ],
+  [
+    "julik-frontend-races",
+    "mid",
+    "DOM regrouping, modal focus and asynchronous preview interaction"
+  ],
+  [
+    "adversarial",
+    "session",
+    "ordering/data mutation and silent-pass test harness risks"
+  ]
+]

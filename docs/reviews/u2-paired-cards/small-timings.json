@@ -1,0 +1,17 @@
+{
+  "browserName": "chromium",
+  "version": "154.0.8037.57",
+  "rows": 499,
+  "columns": 20,
+  "coldImportPlusEvaluationExcludingManualMappingMs": 3284.5906680000007,
+  "warmImportThroughPreviewMs": [
+    613.2841450000014,
+    617.3803189999999,
+    832.0077010000023,
+    1475.0280669999993,
+    844.6004299999986
+  ],
+  "medianMs": 832.0077010000023,
+  "worstMs": 1475.0280669999993,
+  "environment": "cloud runner; UI automation overhead included; reference laptop pending"
+}

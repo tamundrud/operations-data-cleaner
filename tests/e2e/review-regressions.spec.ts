@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
-import { upload, add, map, preview, download } from "./helpers";
+import { upload, add, map, preview, download, remove } from "./helpers";
 test("CE #1: removing a previewed field and repreviewing cannot render stale values", async ({
   page,
 }) => {
@@ -12,9 +12,7 @@ test("CE #1: removing a previewed field and repreviewing cannot render stale val
   await map(page, "Reference", "id");
   await map(page, "Customer", "name");
   await preview(page);
-  await page
-    .getByRole("button", { name: "Remove Customer", exact: true })
-    .click();
+  await remove(page, "Customer");
   await preview(page);
   expect((await download(page)).toString()).toBe("Reference\r\n001234\r\n");
   expect(errors).toEqual([]);
@@ -57,8 +55,11 @@ test("CE #4: failed sample read retains the prior active mapping and visible fai
   await page.getByRole("button", { name: "Try sample data" }).click();
   await expect(page.getByRole("alert")).toContainText("could not be read");
   await expect(
-    page.getByLabel("Output column name", { exact: true }),
-  ).toHaveValue("My reference");
+    page.getByRole("button", {
+      name: "Select output My reference",
+      exact: true,
+    }),
+  ).toContainText("My reference");
   expect((await download(page)).toString()).toBe("My reference\r\n001234\r\n");
 });
 test("CE #5: cancelled sample and active-file retry keep matching preview and output", async ({
@@ -84,8 +85,11 @@ test("CE #5: cancelled sample and active-file retry keep matching preview and ou
     page.getByRole("button", { name: "Download converted CSV" }),
   ).toBeEnabled();
   await expect(
-    page.getByLabel("Output column name", { exact: true }),
-  ).toHaveValue("My reference");
+    page.getByRole("button", {
+      name: "Select output My reference",
+      exact: true,
+    }),
+  ).toContainText("My reference");
   expect((await download(page)).toString()).toBe("My reference\r\n001234\r\n");
 });
 

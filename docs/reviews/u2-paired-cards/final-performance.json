@@ -1,0 +1,246 @@
+{
+  "config": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/workspace/operations-data-cleaner/node_modules/.bin/playwright",
+      "test",
+      "--config=tmp/playwright.local.config.ts",
+      "--project=chromium",
+      "--timeout=180000",
+      "--grep",
+      "10000 x|499 x",
+      "--output=tmp/final-performance",
+      "--reporter=list,json"
+    ],
+    "configFile": "/workspace/operations-data-cleaner/tmp/playwright.local.config.ts",
+    "rootDir": "/workspace/operations-data-cleaner/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/workspace/operations-data-cleaner/tmp/final-performance",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 180000
+      },
+      {
+        "outputDir": "/workspace/operations-data-cleaner/tmp/final-performance",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 180000
+      },
+      {
+        "outputDir": "/workspace/operations-data-cleaner/tmp/final-performance",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/workspace/operations-data-cleaner/tmp/final-performance",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "snapshotDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 180000,
+        "use": {
+          "baseURL": "http://127.0.0.1:4173",
+          "serviceWorkers": "block",
+          "trace": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium",
+          "launchOptions": {
+            "executablePath": "/usr/lib/chromium/chromium"
+          }
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run preview",
+      "url": "http://127.0.0.1:4173",
+      "reuseExistingServer": true
+    }
+  },
+  "suites": [
+    {
+      "title": "performance.spec.ts",
+      "file": "performance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "10000 x 20 rows remain intact; record cold and five warm full-pipeline runs",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 26113,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T18:24:30.001Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "timings.json",
+                      "contentType": "application/json",
+                      "body": "ewogICJicm93c2VyTmFtZSI6ICJjaHJvbWl1bSIsCiAgInZlcnNpb24iOiAiMTU0LjAuODAzNy41NyIsCiAgInJvd3MiOiAxMDAwMCwKICAiY29sdW1ucyI6IDIwLAogICJjb2xkSW5jbHVkaW5nTWFudWFsU2V0dXBNcyI6IDEyNjk2LjcwODg2OTk5OTk5OSwKICAid2FybU1zIjogWwogICAgMzAwNy40NDcxNDQwMDAwMDE2LAogICAgMTYxMS43MzM1NjU5OTk5OTksCiAgICAxNzE1LjY1MTczODAwMDAwMDUsCiAgICAxODk2LjM5Nzc0NTAwMDAwMiwKICAgIDE1OTMuNzY3MDM0MDAwMDAwNAogIF0sCiAgIm1lZGlhbk1zIjogMTcxNS42NTE3MzgwMDAwMDA1LAogICJ3b3JzdE1zIjogMzAwNy40NDcxNDQwMDAwMDE2LAogICJlbnZpcm9ubWVudCI6ICJDb2RleCBjbG91ZCBydW5uZXI7IG5vdCByZWZlcmVuY2UgbGFwdG9wIHF1YWxpZmljYXRpb24iCn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b15d6361b2fc38288977-08791083335f335ae6dc",
+          "file": "performance.spec.ts",
+          "line": 11,
+          "column": 1
+        },
+        {
+          "title": "499 x 20 import to preview stays under the one-second smoke budget",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12463,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T18:24:57.141Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "small-timings.json",
+                      "contentType": "application/json",
+                      "body": "ewogICJicm93c2VyTmFtZSI6ICJjaHJvbWl1bSIsCiAgInZlcnNpb24iOiAiMTU0LjAuODAzNy41NyIsCiAgInJvd3MiOiA0OTksCiAgImNvbHVtbnMiOiAyMCwKICAiY29sZEltcG9ydFBsdXNFdmFsdWF0aW9uRXhjbHVkaW5nTWFudWFsTWFwcGluZ01zIjogMTIxNy4wNDIxMDA5OTk5OTE4LAogICJ3YXJtSW1wb3J0VGhyb3VnaFByZXZpZXdNcyI6IFsKICAgIDYyOS42MTIyNDQ5OTk5OTY2LAogICAgNDA1LjEzNjc0NjAwMDAwMzc3LAogICAgNDI1LjgzNzE2Mzk5OTk5Njg1LAogICAgNTAwLjkwNjM4ODAwMDAwMzA2LAogICAgNDQzLjMzMTY1NjAwMDAwMjEKICBdLAogICJtZWRpYW5NcyI6IDQ0My4zMzE2NTYwMDAwMDIxLAogICJ3b3JzdE1zIjogNjI5LjYxMjI0NDk5OTk5NjYsCiAgImVudmlyb25tZW50IjogImNsb3VkIHJ1bm5lcjsgVUkgYXV0b21hdGlvbiBvdmVyaGVhZCBpbmNsdWRlZDsgcmVmZXJlbmNlIGxhcHRvcCBwZW5kaW5nIgp9"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b15d6361b2fc38288977-cde643714459b7613694",
+          "file": "performance.spec.ts",
+          "line": 149,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-14T18:24:26.706Z",
+    "duration": 43151.55,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

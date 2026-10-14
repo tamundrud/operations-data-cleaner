@@ -1,3 +1,4 @@
+/* global document, innerWidth */
 // Design-only interaction check and evidence regeneration. Requires repo Playwright dependencies.
 import {chromium} from '../../../../node_modules/@playwright/test/index.mjs';
 import {fileURLToPath} from 'node:url';

@@ -1,6 +1,17 @@
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
-import { upload, add, map, preview, download } from "./helpers";
+import {
+  upload,
+  add,
+  map,
+  preview,
+  download,
+  edit,
+  closeSettings,
+  rename,
+  remove,
+  move,
+} from "./helpers";
 test("upload template, keyboard map, rename, reorder, preview and verify actual bytes", async ({
   page,
 }) => {
@@ -13,36 +24,33 @@ test("upload template, keyboard map, rename, reorder, preview and verify actual 
     .getByLabel("Upload destination CSV template")
     .setInputFiles("examples/u2/template.csv");
   await expect(
-    page.getByLabel("Copy source for Reference", { exact: true }),
+    page.getByRole("button", { name: "Select output Reference", exact: true }),
   ).toBeVisible();
   await map(page, "Reference", "id");
   await map(page, "Consignee", "name");
-  await page
-    .getByRole("button", { name: "Remove Delivery Notes", exact: true })
-    .click();
-  const name = page.getByLabel("Output column name", { exact: true }).nth(1);
-  await name.fill("Customer");
+  await remove(page, "Delivery Notes");
+  await rename(page, "Consignee", "Customer");
+  await edit(page, "Customer");
   const selector = page.getByLabel("Copy source for Customer", { exact: true });
   await selector.focus();
   await expect(selector).toBeFocused();
   await selector.press("ArrowUp");
   await selector.press("ArrowDown");
-  await map(page, "Customer", "name");
-  await page
-    .getByRole("button", { name: "Move Customer up", exact: true })
-    .click();
+  await selector.selectOption("name");
+  await closeSettings(page);
+  await move(page, "Customer", "up");
   await preview(page);
   expect((await download(page)).toString("utf8")).toBe(
     'Customer,Reference\r\n" ACME, ""North""\nDock ",001234\r\n',
   );
   // A draft edit cannot reuse the prior export or safety decision.
-  await page
-    .getByLabel("Output column name", { exact: true })
-    .first()
-    .fill("Renamed");
+  await page.clock.install();
+  await page.clock.pauseAt(new Date(Date.now() + 1000));
+  await rename(page, "Customer", "Renamed");
   await expect(
     page.getByRole("button", { name: "Download converted CSV" }),
   ).toBeDisabled();
+  await page.clock.runFor(250);
   await preview(page);
   expect((await download(page)).toString()).toContain("Renamed,Reference\r\n");
 });
@@ -81,9 +89,11 @@ test("unmapped and invalid rows block download, all exceptions are reachable", a
   await expect(
     page.getByRole("button", { name: "Download converted CSV" }),
   ).toBeDisabled();
-  await page.getByRole("button", { name: "Remove Extra", exact: true }).click();
-  await page.locator(".row-settings summary").click();
+  await remove(page, "Extra");
+  await edit(page, "Reference");
+  await page.locator(".column-validation summary").click();
   await page.getByLabel("Required value").check();
+  await closeSettings(page);
   await preview(page);
   await expect(
     page.getByText("Download blocked: 1 invalid rows.", { exact: false }),

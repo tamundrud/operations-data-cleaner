@@ -1,11 +1,13 @@
 import { test, expect } from "@playwright/test";
 import { readdir } from "node:fs/promises";
-import { upload, add, map, preview, download } from "./helpers";
+import { upload, add, map, preview, download, rename, move } from "./helpers";
 test("production journey sends no customer values, file names or IDs and stores no source data", async ({
   context,
   page,
 }) => {
   const sentinel = "PRIVATE_U2_SENTINEL_9X";
+  const headerSentinel = "PRIVATE_U2_HEADER_SENTINEL_Z7";
+  const privateValues = [sentinel, headerSentinel];
   const unexpected: string[] = [];
   const seen: string[] = [];
   const diagnostics: string[] = [];
@@ -20,7 +22,7 @@ test("production journey sends no customer values, file names or IDs and stores 
       payload = JSON.stringify([r.url(), r.headers(), r.postData()]);
     seen.push(r.url());
     if (
-      payload.includes(sentinel) ||
+      privateValues.some((value) => payload.includes(value)) ||
       url.origin !== "http://127.0.0.1:4173" ||
       r.method() !== "GET" ||
       !assets.has(url.pathname) ||
@@ -53,22 +55,19 @@ test("production journey sends no customer values, file names or IDs and stores 
   await page.getByLabel("Search source columns").fill("note");
   await page
     .getByRole("button", { name: "Select source Note", exact: true })
-    .dragTo(page.getByLabel("Mapping position for Note"));
+    .dragTo(
+      page.getByRole("button", { name: "Select output Note", exact: true }),
+    );
   await page.getByLabel("Search source columns").fill("");
   await page.getByRole("button", { name: "Unlink Note", exact: true }).click();
   await map(page, "Note", "note");
-  await page.getByRole("button", { name: "Move Note up", exact: true }).click();
-  await page
-    .getByRole("button", { name: "Move Note down", exact: true })
-    .click();
+  await move(page, "Note", "up");
+  await move(page, "Note", "down");
   await preview(page);
   expect((await download(page)).toString()).toContain(sentinel);
-  await page
-    .getByLabel("Output column name", { exact: true })
-    .first()
-    .fill(`${sentinel}_Header`);
+  await rename(page, "Note", headerSentinel);
   await preview(page);
-  await download(page);
+  expect((await download(page)).toString()).toContain(headerSentinel);
   await page.getByLabel("Show only rows with exceptions").check();
   await expect(page.getByLabel("Full dataset counts")).toBeVisible();
   const storage = await page.evaluate(async () => ({
@@ -80,7 +79,9 @@ test("production journey sends no customer values, file names or IDs and stores 
   expect(storage).toEqual({ local: [], session: [], dbs: [], caches: [] });
   expect(await page.locator("img").count()).toBe(0);
   expect(unexpected).toEqual([]);
-  expect(diagnostics.filter((s) => s.includes(sentinel))).toEqual([]);
+  expect(
+    diagnostics.filter((s) => privateValues.some((value) => s.includes(value))),
+  ).toEqual([]);
   // WebKit emits this exact blocked-style diagnostic during native file/form
   // interaction under our strict CSP. It does not correspond to an application
   // inline stylesheet (verified below); all other diagnostics remain failures.
@@ -89,14 +90,19 @@ test("production journey sends no customer values, file names or IDs and stores 
   expect(
     diagnostics.filter(
       (message) =>
-        !(test.info().project.name === "webkit" && message === webkitBlockedStyle),
+        !(
+          test.info().project.name === "webkit" &&
+          message === webkitBlockedStyle
+        ),
     ),
   ).toEqual([]);
   // Preserve a positive style check so the WebKit exception cannot silently
   // hide loss of the actual external application stylesheet.
   expect(await page.locator("style, [style]").count()).toBe(0);
   expect(
-    await page.locator(".matching").evaluate((el) => getComputedStyle(el).backgroundColor),
+    await page
+      .locator(".matching")
+      .evaluate((el) => getComputedStyle(el).backgroundColor),
   ).toBe("rgb(255, 255, 255)");
   expect(seen.some((s) => s.includes("processing.worker"))).toBe(true);
   await page.reload();

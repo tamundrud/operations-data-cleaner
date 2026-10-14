@@ -1,0 +1,131 @@
+{
+  "run_id": "u2-paired-20261014",
+  "run_dir": "/tmp/compound-engineering-1000/ce-code-review/u2-paired-20261014",
+  "selected_findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "tests/e2e/row-mapping.spec.ts:78 --   await expect(source(page, \"ID\")).toHaveAttribute(\"aria-pressed\", \"false\");",
+        "src/ui/MappingRows.tsx:103 --         selected?.id === card.id && selected.kind === card.kind",
+        "src/ui/MappingRows.tsx:109 --           ? `${card.kind === \"source\" ? columnByKey.get(card.id)?.header : fields.find((f) => f.id === card.id)?.header} selected. Select its counterpart, or press Escape to cancel.`",
+        "docs/plans/2026-10-14-u2-paired-card-matching.md:19 -- Verification contract explicitly includes selected/target states and focus/status; inspected e2e specs contain no assertion against the mapping live-region messages or active aria-pressed=true."
+      ],
+      "file": "tests/e2e/row-mapping.spec.ts",
+      "first_evidence": "tests/e2e/row-mapping.spec.ts:78 --   await expect(source(page, \"ID\")).toHaveAttribute(\"aria-pressed\", \"false\");",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 78,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Extend the existing keyboard counterpart test to assert aria-pressed=true immediately after selecting a source/output, false after matching and Escape, and the mapping live-region messages after selection, matching, cancellation and pair reorder. Add a select-again case proving same-card cancellation; verify opposite-kind cards expose the intended valid-target state.",
+      "title": "Assert active selection and accessible action announcements",
+      "why_it_matters": "The keyboard acceptance test would still pass if every card permanently exposed aria-pressed=false and the matching live region never announced an action. A screen-reader user would then lose confirmation of which card is selected, whether Escape cancelled it, and whether a match or reorder succeeded. The plan explicitly requires selected/target states and focus/status verification; extend this existing interaction test so those regressions fail."
+    }
+  ],
+  "findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "tests/e2e/row-mapping.spec.ts:78 --   await expect(source(page, \"ID\")).toHaveAttribute(\"aria-pressed\", \"false\");",
+        "src/ui/MappingRows.tsx:103 --         selected?.id === card.id && selected.kind === card.kind",
+        "src/ui/MappingRows.tsx:109 --           ? `${card.kind === \"source\" ? columnByKey.get(card.id)?.header : fields.find((f) => f.id === card.id)?.header} selected. Select its counterpart, or press Escape to cancel.`",
+        "docs/plans/2026-10-14-u2-paired-card-matching.md:19 -- Verification contract explicitly includes selected/target states and focus/status; inspected e2e specs contain no assertion against the mapping live-region messages or active aria-pressed=true."
+      ],
+      "file": "tests/e2e/row-mapping.spec.ts",
+      "first_evidence": "tests/e2e/row-mapping.spec.ts:78 --   await expect(source(page, \"ID\")).toHaveAttribute(\"aria-pressed\", \"false\");",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 78,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Extend the existing keyboard counterpart test to assert aria-pressed=true immediately after selecting a source/output, false after matching and Escape, and the mapping live-region messages after selection, matching, cancellation and pair reorder. Add a select-again case proving same-card cancellation; verify opposite-kind cards expose the intended valid-target state.",
+      "title": "Assert active selection and accessible action announcements",
+      "why_it_matters": "The keyboard acceptance test would still pass if every card permanently exposed aria-pressed=false and the matching live region never announced an action. A screen-reader user would then lose confirmation of which card is selected, whether Escape cancelled it, and whether a match or reorder succeeded. The plan explicitly requires selected/target states and focus/status verification; extend this existing interaction test so those regressions fail."
+    }
+  ],
+  "selected_numbers": [
+    1
+  ],
+  "selected_count": 1,
+  "skip_count": 0,
+  "shortcut_skipped": 0,
+  "skip_evidence_basis": "No findings have both a quote and independently verified cross-model corroboration; the in-process adversarial fallback is not independent-serving-family evidence.",
+  "scope": {
+    "mode": "standalone",
+    "base": "f253df46481fac73cb9818c8ab5f50b06fa748f1",
+    "diff_a": "f253df46481fac73cb9818c8ab5f50b06fa748f1",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u2-csv-conversion",
+    "head_sha": "a8eea369905fd15678bb9c0d6756f21302a5539b",
+    "files": "/tmp/compound-engineering-1000/ce-code-review/u2-paired-20261014/files.txt",
+    "diff": "/tmp/compound-engineering-1000/ce-code-review/u2-paired-20261014/review.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": []
+  },
+  "scope_mode_and_remote_refs": "standalone; base f253df46481fac73cb9818c8ab5f50b06fa748f1; current working tree is reviewed head, including staged and unstaged changes; dispatch HEAD a8eea369905fd15678bb9c0d6756f21302a5539b; no remote refs. Read-only project inspection is authorized.",
+  "repo": "/workspace/operations-data-cleaner",
+  "diff": "/tmp/compound-engineering-1000/ce-code-review/u2-paired-20261014/review.diff",
+  "intent": {
+    "summary": "Implement the paired-card U2 matching UX: bidirectional drag and accessible counterpart selection, grouped reusable source/output pairs, deliberate matched-slot reorder with template order otherwise preserved. Retain automatic revision-safe preview and all existing engine/schema/privacy/export safeguards; U2 hands-on acceptance stays pending, with no U3, merge or deployment.",
+    "confidence": "explicit"
+  },
+  "plan": {
+    "path": "docs/plans/2026-10-14-u2-paired-card-matching.md",
+    "source": "explicit",
+    "requirements": [
+      "Paired matched cards above unmatched reusable/searchable source and output cards",
+      "Both drag directions, replacement, unlink, reuse and accessible selection/focus/status",
+      "Pair drag/keyboard reorder permutes matched slots; matching/unlink preserve schema order; all-schema movement is secondary",
+      "Contextual field settings, template confirmation and recovery",
+      "Existing engine/schema/validation/privacy/export and automatic preview scheduler retained",
+      "Desktop/laptop 25-source/30-output screenshots and browser data/byte/privacy/accessibility/race checks",
+      "CE review and accurate verification limits in draft PR; hands-on acceptance remains pending"
+    ],
+    "implementation_units": [],
+    "settled_decisions": []
+  },
+  "constraints": [
+    "Implement the approved UX in the existing U2 application and draft PR #2.",
+    "Reuse the existing transformation engine, workflow schema, validation, privacy and export safeguards.",
+    "Prioritize faithful reproduction of the approved layout and interactions over additional features.",
+    "Visual styling can receive minor improvements, but avoid substantial redesign or speculative polish.",
+    "Do not substitute informal self-review for a completed CE review.",
+    "Fix confirmed findings, rerun relevant verification, and include review evidence and limitations in the draft PR description. Do not claim full completion without the required evidence.",
+    "Keep U2 implementation acceptance pending the user\u2019s hands-on review.",
+    "Do not begin U3, merge, or deploy.",
+    "mode:agent is report-only; caller applies justified fixes after this review."
+  ],
+  "verdicts_path": "/tmp/compound-engineering-1000/ce-code-review/u2-paired-20261014/validator-verdicts.json",
+  "budget": {
+    "wall_clock_minutes": 15,
+    "normal_cap": 8,
+    "batch_count": 1
+  }
+}

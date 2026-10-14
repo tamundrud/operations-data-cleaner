@@ -1,0 +1,9 @@
+{
+  "reviewer": "adversarial",
+  "findings": [],
+  "residual_risks": [
+    "Native drag/drop and modal focus behavior remain unqualified in Firefox/WebKit: context.json records missing browser executables and denied downloads. This leaf covered all four material divisions statically and did not run a shared browser/server; caller Chromium rechecks and hands-on U2 acceptance remain separate evidence.",
+    "Performance qualification remains unresolved: context.json reports a 16.1-second worst warm 10,000-row trial against the 5-second budget and a 3.53-second initial 499-row trial against the 1-second budget. The changed clock/held-worker setup still submits genuine production worker requests, resumes real time before warm trials, and retains downloaded data assertions; those harness changes do not establish passing budgets."
+  ],
+  "testing_gaps": []
+}

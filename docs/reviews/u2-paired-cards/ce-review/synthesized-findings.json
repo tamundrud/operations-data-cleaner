@@ -1,0 +1,125 @@
+{
+  "run_id": "u2-paired-20261014",
+  "findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "tests/e2e/row-mapping.spec.ts:78 --   await expect(source(page, \"ID\")).toHaveAttribute(\"aria-pressed\", \"false\");",
+        "src/ui/MappingRows.tsx:103 --         selected?.id === card.id && selected.kind === card.kind",
+        "src/ui/MappingRows.tsx:109 --           ? `${card.kind === \"source\" ? columnByKey.get(card.id)?.header : fields.find((f) => f.id === card.id)?.header} selected. Select its counterpart, or press Escape to cancel.`",
+        "docs/plans/2026-10-14-u2-paired-card-matching.md:19 -- Verification contract explicitly includes selected/target states and focus/status; inspected e2e specs contain no assertion against the mapping live-region messages or active aria-pressed=true."
+      ],
+      "file": "tests/e2e/row-mapping.spec.ts",
+      "first_evidence": "tests/e2e/row-mapping.spec.ts:78 --   await expect(source(page, \"ID\")).toHaveAttribute(\"aria-pressed\", \"false\");",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 78,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Extend the existing keyboard counterpart test to assert aria-pressed=true immediately after selecting a source/output, false after matching and Escape, and the mapping live-region messages after selection, matching, cancellation and pair reorder. Add a select-again case proving same-card cancellation; verify opposite-kind cards expose the intended valid-target state.",
+      "title": "Assert active selection and accessible action announcements",
+      "why_it_matters": "The keyboard acceptance test would still pass if every card permanently exposed aria-pressed=false and the matching live region never announced an action. A screen-reader user would then lose confirmation of which card is selected, whether Escape cancelled it, and whether a match or reorder succeeded. The plan explicitly requires selected/target states and focus/status verification; extend this existing interaction test so those regressions fail."
+    }
+  ],
+  "pre_existing_findings": [],
+  "triage_groups": [],
+  "residual_risks": [
+    "Firefox and WebKit configured production suites could not run because executables were missing and downloads were denied. Chromium checks do not establish native bidirectional drag, modal focus, accessibility, privacy/CSP or export behavior in those browsers. Hands-on U2 acceptance remains pending.",
+    "Performance qualification remains unresolved: both the warm 10,000-row/20-column 5-second budget and initial 499-row/20-column 1-second budget failed during caller rechecks. All six trials passed downloaded-data assertions before timing assertions failed. The review does not establish a new implementation regression or passing performance budgets."
+  ],
+  "testing_gaps": [
+    "tests/e2e/privacy.spec.ts:66 replaces the prior sentinel-bearing output-header rename with Notes. Restore a distinct private sentinel in the renamed destination header and include it in request/diagnostic checks so user-entered output names remain covered.",
+    "tests/e2e/row-mapping.spec.ts:79-102 exercises upward keyboard/grip pair reorder, then restores the original order before downloading. Add downward keyboard/grip reorder and assert preview/export data while the schema remains C,Gap,A to cover the new downward branch and preserved source associations."
+  ],
+  "suppressed_findings": [],
+  "suppressed_by_confidence": {},
+  "malformed_findings": 0,
+  "malformed_returns": 0,
+  "first_evidence_backfilled": 0,
+  "missing_first_evidence_demotions": 0,
+  "mode_aware_demotions": 0,
+  "rejected_claims": [],
+  "settlement_suppressed": 0,
+  "peer": {
+    "selected": true,
+    "target": null,
+    "route": null,
+    "preference_source": "default",
+    "outcome": "in-process-fallback",
+    "artifact": null,
+    "coverage": "Cross-model pass not run: Codex host attested by active harness; only codex CLI is installed. No different-provider route installed. Checkout configs absent (auto); local adversarial fallback selected. No job started or content sent."
+  },
+  "peer_fold_in_outcome": "in-process-fallback",
+  "coverage": [
+    "Scope: base:f253df4 on current checkout, staged and unstaged tree. All local reviewers received equivalent local-aligned working-tree scope, no remote-file reads.",
+    "Project standards uses root AGENTS.md fallback; no CODING_STANDARDS.md or nested criteria exists.",
+    "No relevant matching/preview UI solution corpus entry and no declared packs; learnings not selected.",
+    "Previous-comments not selected: standalone base scope, no PR metadata gathered by CE Stage 1.",
+    "Typecheck, lint, unit 41 tests and build pass. Initial Chromium 19/25; deterministic rechecks now 5/7 pass with only two performance budgets failed. All six 10,000x20 and 499x20 downloaded-data trials passed their data assertions before timing assertions failed. Firefox/WebKit missing executables, download forbidden; no cross-browser application assertions ran.",
+    "Caller still must apply confirmed findings, verify fixes, archive review evidence and update draft PR. These post-review shipping actions are not claimed complete here. No merge/deploy or U3; hands-on acceptance is pending.",
+    "Cross-model pass not run: Codex host attested by active harness; only codex CLI is installed. No different-provider route installed. Checkout configs absent (auto); local adversarial fallback selected. No job started or content sent.",
+    "Synthesis retained one material P2 test-coverage finding backed by the explicit selected/target and focus/status verification contract. No semantic duplicates, settlement conflicts, protected-artifact cleanup findings or malformed detail were retained.",
+    "Confidence suppression: 0; malformed findings: 0; malformed returns: 0; first_evidence_backfilled: 0; missing-first-evidence demotions: 0; mode-aware demotions: 0.",
+    "Validator shortcut-skipped: 0. The one actionable finding lacks independent cross-model corroboration and is selected for one deterministic validator batch; launch and outcome belong to dispatch."
+  ],
+  "coverage_notes": [
+    "Scope: base:f253df4 on current checkout, staged and unstaged tree. All local reviewers received equivalent local-aligned working-tree scope, no remote-file reads.",
+    "Project standards uses root AGENTS.md fallback; no CODING_STANDARDS.md or nested criteria exists.",
+    "No relevant matching/preview UI solution corpus entry and no declared packs; learnings not selected.",
+    "Previous-comments not selected: standalone base scope, no PR metadata gathered by CE Stage 1.",
+    "Typecheck, lint, unit 41 tests and build pass. Initial Chromium 19/25; deterministic rechecks now 5/7 pass with only two performance budgets failed. All six 10,000x20 and 499x20 downloaded-data trials passed their data assertions before timing assertions failed. Firefox/WebKit missing executables, download forbidden; no cross-browser application assertions ran.",
+    "Caller still must apply confirmed findings, verify fixes, archive review evidence and update draft PR. These post-review shipping actions are not claimed complete here. No merge/deploy or U3; hands-on acceptance is pending.",
+    "Cross-model pass not run: Codex host attested by active harness; only codex CLI is installed. No different-provider route installed. Checkout configs absent (auto); local adversarial fallback selected. No job started or content sent.",
+    "Synthesis retained one material P2 test-coverage finding backed by the explicit selected/target and focus/status verification contract. No semantic duplicates, settlement conflicts, protected-artifact cleanup findings or malformed detail were retained.",
+    "Confidence suppression: 0; malformed findings: 0; malformed returns: 0; first_evidence_backfilled: 0; missing-first-evidence demotions: 0; mode-aware demotions: 0.",
+    "Validator shortcut-skipped: 0. The one actionable finding lacks independent cross-model corroboration and is selected for one deterministic validator batch; launch and outcome belong to dispatch."
+  ],
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "source_detail_map": "/tmp/compound-engineering-1000/ce-code-review/u2-paired-20261014/source-detail-map.json",
+  "actionable_findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "tests/e2e/row-mapping.spec.ts:78 --   await expect(source(page, \"ID\")).toHaveAttribute(\"aria-pressed\", \"false\");",
+        "src/ui/MappingRows.tsx:103 --         selected?.id === card.id && selected.kind === card.kind",
+        "src/ui/MappingRows.tsx:109 --           ? `${card.kind === \"source\" ? columnByKey.get(card.id)?.header : fields.find((f) => f.id === card.id)?.header} selected. Select its counterpart, or press Escape to cancel.`",
+        "docs/plans/2026-10-14-u2-paired-card-matching.md:19 -- Verification contract explicitly includes selected/target states and focus/status; inspected e2e specs contain no assertion against the mapping live-region messages or active aria-pressed=true."
+      ],
+      "file": "tests/e2e/row-mapping.spec.ts",
+      "first_evidence": "tests/e2e/row-mapping.spec.ts:78 --   await expect(source(page, \"ID\")).toHaveAttribute(\"aria-pressed\", \"false\");",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 78,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Extend the existing keyboard counterpart test to assert aria-pressed=true immediately after selecting a source/output, false after matching and Escape, and the mapping live-region messages after selection, matching, cancellation and pair reorder. Add a select-again case proving same-card cancellation; verify opposite-kind cards expose the intended valid-target state.",
+      "title": "Assert active selection and accessible action announcements",
+      "why_it_matters": "The keyboard acceptance test would still pass if every card permanently exposed aria-pressed=false and the matching live region never announced an action. A screen-reader user would then lose confirmation of which card is selected, whether Escape cancelled it, and whether a match or reorder succeeded. The plan explicitly requires selected/target states and focus/status verification; extend this existing interaction test so those regressions fail."
+    }
+  ],
+  "validation_selection": {
+    "selected_numbers": [
+      1
+    ],
+    "shortcut_skipped": 0,
+    "shortcut_evidence_basis": "No independently verified adversarial-provider artifact; local same-model agreement grants no shortcut."
+  }
+}

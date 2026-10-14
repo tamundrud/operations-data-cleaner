@@ -1,0 +1,84 @@
+{
+  "branch": "feat/u2-csv-conversion",
+  "completed_at": "2026-10-14T15:42:08.960792+00:00",
+  "cost": {
+    "host": "codex",
+    "scope": {
+      "changed_lines": 3417,
+      "depth": "full",
+      "exec_nontest_lines": 982,
+      "size_band": "large",
+      "unclassified_lines": {
+        ".css": 671,
+        ".html": 2,
+        ".json": 1244,
+        ".md": 69
+      }
+    },
+    "stages": [
+      {
+        "elapsed_seconds": 47.018,
+        "ended_at": "2026-10-14T15:26:14.048362+00:00",
+        "facts": {
+          "changed_lines": 3417,
+          "depth": "full",
+          "exec_nontest_lines": 982,
+          "size_band": "large",
+          "unclassified_lines": {
+            ".css": 671,
+            ".html": 2,
+            ".json": 1244,
+            ".md": 69
+          }
+        },
+        "stage": "scope",
+        "started_at": "2026-10-14T15:25:27.030019+00:00"
+      },
+      {
+        "elapsed_seconds": 142.159,
+        "ended_at": "2026-10-14T15:28:36.207162+00:00",
+        "reviewers": 7,
+        "stage": "select",
+        "started_at": "2026-10-14T15:26:14.048362+00:00"
+      },
+      {
+        "candidates": 1,
+        "elapsed_seconds": 370.552,
+        "ended_at": "2026-10-14T15:34:46.758679+00:00",
+        "stage": "dispatch",
+        "started_at": "2026-10-14T15:28:36.207162+00:00"
+      },
+      {
+        "candidates": 1,
+        "elapsed_seconds": 77.237,
+        "ended_at": "2026-10-14T15:37:28.475786+00:00",
+        "stage": "merge",
+        "started_at": "2026-10-14T15:36:11.238570+00:00"
+      },
+      {
+        "elapsed_seconds": 123.768,
+        "ended_at": "2026-10-14T15:39:50.217587+00:00",
+        "stage": "validate",
+        "started_at": "2026-10-14T15:37:46.449699+00:00"
+      },
+      {
+        "candidates": 1,
+        "elapsed_seconds": 64.661,
+        "ended_at": "2026-10-14T15:42:09.366714+00:00",
+        "stage": "report",
+        "started_at": "2026-10-14T15:41:04.705875+00:00"
+      }
+    ],
+    "status": "complete",
+    "totals": {
+      "artifact_bytes": 602216,
+      "candidates": 1,
+      "elapsed_seconds": 825.395,
+      "reviewers": 7
+    },
+    "truncated_events": 0
+  },
+  "head_sha": "a8eea369905fd15678bb9c0d6756f21302a5539b",
+  "run_id": "u2-paired-20261014",
+  "verdict": "Not ready"
+}
