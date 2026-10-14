@@ -40,6 +40,9 @@ test("production journey sends no customer values, file names or IDs and stores 
   expect(response!.headers()["content-security-policy"]).toContain(
     "connect-src 'none'",
   );
+  expect(response!.headers()["content-security-policy"]).toContain(
+    "style-src 'self'",
+  );
   await upload(
     page,
     `ID,Note\n${sentinel},"<img src=x onerror=alert(1)>"`,
@@ -78,7 +81,23 @@ test("production journey sends no customer values, file names or IDs and stores 
   expect(await page.locator("img").count()).toBe(0);
   expect(unexpected).toEqual([]);
   expect(diagnostics.filter((s) => s.includes(sentinel))).toEqual([]);
-  expect(diagnostics).toEqual([]);
+  // WebKit emits this exact blocked-style diagnostic during native file/form
+  // interaction under our strict CSP. It does not correspond to an application
+  // inline stylesheet (verified below); all other diagnostics remain failures.
+  const webkitBlockedStyle =
+    "Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' does not appear in the style-src directive of the Content Security Policy.";
+  expect(
+    diagnostics.filter(
+      (message) =>
+        !(test.info().project.name === "webkit" && message === webkitBlockedStyle),
+    ),
+  ).toEqual([]);
+  // Preserve a positive style check so the WebKit exception cannot silently
+  // hide loss of the actual external application stylesheet.
+  expect(await page.locator("style, [style]").count()).toBe(0);
+  expect(
+    await page.locator(".matching").evaluate((el) => getComputedStyle(el).backgroundColor),
+  ).toBe("rgb(255, 255, 255)");
   expect(seen.some((s) => s.includes("processing.worker"))).toBe(true);
   await page.reload();
   await expect(
