@@ -1,0 +1,10 @@
+{
+  "reviewer": "correctness",
+  "findings": [],
+  "residual_risks": [
+    "Firefox and WebKit verification remains unavailable in the supplied context; native bidirectional dragging, modal dialog focus and keyboard interaction therefore lack completed cross-browser evidence. This leaf performed static review only and did not run shared browsers or servers."
+  ],
+  "testing_gaps": [
+    "tests/e2e/privacy.spec.ts replaces the prior sentinel-bearing output-header rename with the ordinary header Notes. Restore a distinct private sentinel in the renamed output header so request and diagnostic interception continues to verify confidentiality of user-entered destination names as well as source data and file names."
+  ]
+}

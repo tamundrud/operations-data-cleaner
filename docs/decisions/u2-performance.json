@@ -1,0 +1,51 @@
+{
+  "timings.json": {
+    "browserName": "chromium",
+    "version": "154.0.8037.57",
+    "rows": 10000,
+    "columns": 20,
+    "coldIncludingManualSetupMs": 1664.7626439999985,
+    "warmMs": [
+      641.6257710000009,
+      649.0271239999984,
+      684.6599900000001,
+      682.628725999999,
+      656.2937190000011
+    ],
+    "medianMs": 656.2937190000011,
+    "worstMs": 684.6599900000001,
+    "environment": "Codex cloud runner; not reference laptop qualification"
+  },
+  "small-timings.json": {
+    "browserName": "chromium",
+    "version": "154.0.8037.57",
+    "rows": 499,
+    "columns": 20,
+    "coldImportPlusEvaluationExcludingManualMappingMs": 447.6052799999961,
+    "warmImportThroughPreviewMs": [
+      181.62099099999978,
+      180.81097099999897,
+      194.10631200000353,
+      176.5903610000023,
+      208.05955899999753
+    ],
+    "medianMs": 181.62099099999978,
+    "worstMs": 208.05955899999753,
+    "environment": "cloud runner; UI automation overhead included; reference laptop pending"
+  },
+  "environment": {
+    "os": "Debian GNU/Linux 13 (trixie)",
+    "cpu": "AMD EPYC 9V74, 3 exposed vCPUs",
+    "memoryLimitBytes": 8589934592,
+    "node": "24.19.0",
+    "npm": "11.9.0",
+    "browser": "system Chromium 154.0.8037.57",
+    "playwright": "1.64.0",
+    "buildSha256": {
+      "dist/index.html": "cabfafd97d22263b3564e6fc04c8332a6eb6cb17857e7ef5b93c1a6c6412db5e",
+      "dist/assets/index-B5_rMvam.js": "2963f2d000c8df49d616e7f35e911bd0104dbf87170e1f23aa1d5b463ccc2821",
+      "dist/assets/processing.worker-MenWI7zt.js": "d60f2270ab5b8a8769665a991a3bb4f7017f1a9a71e02dcffd9f29b0686f96c2",
+      "dist/assets/index-LEIfwquR.css": "f0e7e12c96fc85fb50e2a8267bd0bb4acceba498da3499fed4b04d4a2bfbb3e1"
+    }
+  }
+}

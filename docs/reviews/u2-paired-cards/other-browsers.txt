@@ -1,0 +1,62 @@
+
+> operations-data-cleaner@0.2.0 test:e2e
+> playwright test --config=tmp/playwright.local.config.ts --project=firefox --project=webkit --grep sample produces golden bytes --reporter=list --output=tmp/other-browser-results
+
+
+Running 2 tests using 1 worker
+
+(node:2593) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [firefox] › tests/e2e/conversion.spec.ts:57:1 › sample produces golden bytes without any customer file (81ms)
+(node:2606) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [webkit] › tests/e2e/conversion.spec.ts:57:1 › sample produces golden bytes without any customer file (102ms)
+
+
+  1) [firefox] › tests/e2e/conversion.spec.ts:57:1 › sample produces golden bytes without any customer file 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/firefox-1555/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: tmp/other-browser-results/conversion-sample-produces-e268c-s-without-any-customer-file-firefox/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    tmp/other-browser-results/conversion-sample-produces-e268c-s-without-any-customer-file-firefox/trace.zip
+    Usage:
+
+        npx playwright show-trace tmp/other-browser-results/conversion-sample-produces-e268c-s-without-any-customer-file-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [webkit] › tests/e2e/conversion.spec.ts:57:1 › sample produces golden bytes without any customer file 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/webkit-2370/pw_run.sh
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: tmp/other-browser-results/conversion-sample-produces-e268c-s-without-any-customer-file-webkit/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    tmp/other-browser-results/conversion-sample-produces-e268c-s-without-any-customer-file-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace tmp/other-browser-results/conversion-sample-produces-e268c-s-without-any-customer-file-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [firefox] › tests/e2e/conversion.spec.ts:57:1 › sample produces golden bytes without any customer file 
+    [webkit] › tests/e2e/conversion.spec.ts:57:1 › sample produces golden bytes without any customer file 

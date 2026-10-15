@@ -1,0 +1,260 @@
+{
+  "status": "complete",
+  "verdict": "Not ready",
+  "scope": {
+    "base": "f253df46481fac73cb9818c8ab5f50b06fa748f1",
+    "branch": "feat/u2-csv-conversion",
+    "head_sha": "a8eea369905fd15678bb9c0d6756f21302a5539b",
+    "pr_url": null,
+    "files_changed": 28,
+    "mode": "standalone"
+  },
+  "intent": "Implement the paired-card U2 matching UX: bidirectional drag and accessible counterpart selection, grouped reusable source/output pairs, deliberate matched-slot reorder with template order otherwise preserved. Retain automatic revision-safe preview and all existing engine/schema/privacy/export safeguards; U2 hands-on acceptance stays pending, with no U3, merge or deployment.",
+  "intent_confidence": "explicit",
+  "reviewers": [
+    "correctness",
+    "project-standards",
+    "testing",
+    "maintainability",
+    "security",
+    "julik-frontend-races",
+    "adversarial"
+  ],
+  "findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "tests/e2e/row-mapping.spec.ts:78 --   await expect(source(page, \"ID\")).toHaveAttribute(\"aria-pressed\", \"false\");",
+        "src/ui/MappingRows.tsx:103 --         selected?.id === card.id && selected.kind === card.kind",
+        "src/ui/MappingRows.tsx:109 --           ? `${card.kind === \"source\" ? columnByKey.get(card.id)?.header : fields.find((f) => f.id === card.id)?.header} selected. Select its counterpart, or press Escape to cancel.`",
+        "docs/plans/2026-10-14-u2-paired-card-matching.md:19 -- Verification contract explicitly includes selected/target states and focus/status; inspected e2e specs contain no assertion against the mapping live-region messages or active aria-pressed=true."
+      ],
+      "file": "tests/e2e/row-mapping.spec.ts",
+      "first_evidence": "tests/e2e/row-mapping.spec.ts:78 --   await expect(source(page, \"ID\")).toHaveAttribute(\"aria-pressed\", \"false\");",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 78,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Extend the existing keyboard counterpart test to assert aria-pressed=true immediately after selecting a source/output, false after matching and Escape, and the mapping live-region messages after selection, matching, cancellation and pair reorder. Add a select-again case proving same-card cancellation; verify opposite-kind cards expose the intended valid-target state.",
+      "title": "Assert active selection and accessible action announcements",
+      "why_it_matters": "The keyboard acceptance test would still pass if every card permanently exposed aria-pressed=false and the matching live region never announced an action. A screen-reader user would then lose confirmation of which card is selected, whether Escape cancelled it, and whether a match or reorder succeeded. The plan explicitly requires selected/target states and focus/status verification; extend this existing interaction test so those regressions fail.",
+      "validation_status": "confirmed",
+      "validation_reason": "The new keyboard scenario in tests/e2e/row-mapping.spec.ts:69-97 reaches selection, matching, Escape and reordering but asserts only focus/order and aria-pressed=false, and inspection of the e2e/unit tests found no active pressed, valid-target or mapping-status assertions, so regressions that keep aria-pressed false or suppress announcements remain uncovered despite the explicit selected/target and focus/status verification contract in docs/plans/2026-10-14-u2-paired-card-matching.md:19."
+    }
+  ],
+  "actionable_findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "tests/e2e/row-mapping.spec.ts:78 --   await expect(source(page, \"ID\")).toHaveAttribute(\"aria-pressed\", \"false\");",
+        "src/ui/MappingRows.tsx:103 --         selected?.id === card.id && selected.kind === card.kind",
+        "src/ui/MappingRows.tsx:109 --           ? `${card.kind === \"source\" ? columnByKey.get(card.id)?.header : fields.find((f) => f.id === card.id)?.header} selected. Select its counterpart, or press Escape to cancel.`",
+        "docs/plans/2026-10-14-u2-paired-card-matching.md:19 -- Verification contract explicitly includes selected/target states and focus/status; inspected e2e specs contain no assertion against the mapping live-region messages or active aria-pressed=true."
+      ],
+      "file": "tests/e2e/row-mapping.spec.ts",
+      "first_evidence": "tests/e2e/row-mapping.spec.ts:78 --   await expect(source(page, \"ID\")).toHaveAttribute(\"aria-pressed\", \"false\");",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 78,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Extend the existing keyboard counterpart test to assert aria-pressed=true immediately after selecting a source/output, false after matching and Escape, and the mapping live-region messages after selection, matching, cancellation and pair reorder. Add a select-again case proving same-card cancellation; verify opposite-kind cards expose the intended valid-target state.",
+      "title": "Assert active selection and accessible action announcements",
+      "why_it_matters": "The keyboard acceptance test would still pass if every card permanently exposed aria-pressed=false and the matching live region never announced an action. A screen-reader user would then lose confirmation of which card is selected, whether Escape cancelled it, and whether a match or reorder succeeded. The plan explicitly requires selected/target states and focus/status verification; extend this existing interaction test so those regressions fail.",
+      "validation_status": "confirmed",
+      "validation_reason": "The new keyboard scenario in tests/e2e/row-mapping.spec.ts:69-97 reaches selection, matching, Escape and reordering but asserts only focus/order and aria-pressed=false, and inspection of the e2e/unit tests found no active pressed, valid-target or mapping-status assertions, so regressions that keep aria-pressed false or suppress announcements remain uncovered despite the explicit selected/target and focus/status verification contract in docs/plans/2026-10-14-u2-paired-card-matching.md:19."
+    }
+  ],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "requirements_completeness": {
+    "plan_path": "docs/plans/2026-10-14-u2-paired-card-matching.md",
+    "plan_source": "explicit",
+    "requirements": [
+      {
+        "id": "R1",
+        "requirement": "Paired matched cards above unmatched reusable/searchable source and output cards",
+        "status": "met",
+        "evidence": "MappingRows.tsx derives paired cards from field recipes, above reusable searchable source and unmatched output lists."
+      },
+      {
+        "id": "R2",
+        "requirement": "Both drag directions, replacement, unlink, reuse and accessible selection/focus/status",
+        "status": "partially addressed",
+        "evidence": "Both drag directions, replacement, unlink, reuse and counterpart selection are implemented and exercised. Active selection, valid-target and mapping announcements need assertions in confirmed finding #1."
+      },
+      {
+        "id": "R3",
+        "requirement": "Pair drag/keyboard reorder permutes matched slots; matching/unlink preserve schema order; all-schema movement is secondary",
+        "status": "met",
+        "evidence": "reorderPair permutes matched fields within their occupied schema slots; matching and unlink update recipes only. Full-schema movement remains in Output order."
+      },
+      {
+        "id": "R4",
+        "requirement": "Contextual field settings, template confirmation and recovery",
+        "status": "met",
+        "evidence": "Contextual settings and template confirmation/recovery remain; row-mapping tests exercise failed replacement and focus restoration."
+      },
+      {
+        "id": "R5",
+        "requirement": "Existing engine/schema/validation/privacy/export and automatic preview scheduler retained",
+        "status": "met",
+        "evidence": "Existing Workspace scheduler, engine, schema, validation and exporter remain. Adapted browser checks retain data/byte/privacy assertions and cover preview races."
+      },
+      {
+        "id": "R6",
+        "requirement": "Desktop/laptop 25-source/30-output screenshots and browser data/byte/privacy/accessibility/race checks",
+        "status": "partially addressed",
+        "evidence": "Sample and 25-source/30-output screenshots exist at 1440px and 1024px. Chromium verification ran, but two performance budgets failed. Firefox/WebKit were attempted but lacked executables and downloads were denied."
+      },
+      {
+        "id": "R7",
+        "requirement": "CE review and accurate verification limits in draft PR; hands-on acceptance remains pending",
+        "status": "partially addressed",
+        "evidence": "Prescribed CE reviewers, synthesis and validator completed; this receipt completes report generation. Caller fixes, affected verification, evidence archival and draft PR update follow receipt. Hands-on acceptance remains pending."
+      }
+    ],
+    "implementation_units": [],
+    "unrequested_behavior_rules": [],
+    "reverse_check": "Inspected approved plan and paired-card changes: no additional unrequested behavior rule identified. Implementation is present; remaining gaps concern verification and caller shipping actions, not an omitted implementation unit."
+  },
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [
+    "Firefox and WebKit configured production suites could not run because executables were missing and downloads were denied. Chromium checks do not establish native bidirectional drag, modal focus, accessibility, privacy/CSP or export behavior in those browsers. Hands-on U2 acceptance remains pending.",
+    "Performance qualification remains unresolved: both the warm 10,000-row/20-column 5-second budget and initial 499-row/20-column 1-second budget failed during caller rechecks. All six trials passed downloaded-data assertions before timing assertions failed. The review does not establish a new implementation regression or passing performance budgets."
+  ],
+  "testing_gaps": [
+    "tests/e2e/privacy.spec.ts:66 replaces the prior sentinel-bearing output-header rename with Notes. Restore a distinct private sentinel in the renamed destination header and include it in request/diagnostic checks so user-entered output names remain covered.",
+    "tests/e2e/row-mapping.spec.ts:79-102 exercises upward keyboard/grip pair reorder, then restores the original order before downloading. Add downward keyboard/grip reorder and assert preview/export data while the schema remains C,Gap,A to cover the new downward branch and preserved source associations."
+  ],
+  "coverage": {
+    "depth": "full",
+    "mode": "agent report-only",
+    "reviewer_selection": [
+      {
+        "reviewer": "correctness",
+        "tier": "session",
+        "reason": "logic and paired/export ordering"
+      },
+      {
+        "reviewer": "project-standards",
+        "tier": "mid",
+        "reason": "AGENTS.md governs changed paths"
+      },
+      {
+        "reviewer": "testing",
+        "tier": "mid",
+        "reason": "behavior tests and deterministic worker/clock harnesses changed"
+      },
+      {
+        "reviewer": "maintainability",
+        "tier": "mid",
+        "reason": "large component restructuring"
+      },
+      {
+        "reviewer": "security",
+        "tier": "session",
+        "reason": "untrusted headers/files and in-app drop boundary"
+      },
+      {
+        "reviewer": "julik-frontend-races",
+        "tier": "mid",
+        "reason": "DOM regrouping, modal focus and asynchronous preview interaction"
+      },
+      {
+        "reviewer": "adversarial",
+        "tier": "session",
+        "reason": "ordering/data mutation and silent-pass test harness risks"
+      }
+    ],
+    "notes": [
+      "Scope: base:f253df4 on current checkout, staged and unstaged tree. All local reviewers received equivalent local-aligned working-tree scope, no remote-file reads.",
+      "Project standards uses root AGENTS.md fallback; no CODING_STANDARDS.md or nested criteria exists.",
+      "No relevant matching/preview UI solution corpus entry and no declared packs; learnings not selected.",
+      "Previous-comments not selected: standalone base scope, no PR metadata gathered by CE Stage 1.",
+      "Typecheck, lint, unit 41 tests and build pass. Initial Chromium 19/25; deterministic rechecks now 5/7 pass with only two performance budgets failed. All six 10,000x20 and 499x20 downloaded-data trials passed their data assertions before timing assertions failed. Firefox/WebKit missing executables, download forbidden; no cross-browser application assertions ran.",
+      "Caller still must apply confirmed findings, verify fixes, archive review evidence and update draft PR. These post-review shipping actions are not claimed complete here. No merge/deploy or U3; hands-on acceptance is pending.",
+      "Cross-model pass not run: Codex host attested by active harness; only codex CLI is installed. No different-provider route installed. Checkout configs absent (auto); local adversarial fallback selected. No job started or content sent.",
+      "Synthesis retained one material P2 test-coverage finding backed by the explicit selected/target and focus/status verification contract. No semantic duplicates, settlement conflicts, protected-artifact cleanup findings or malformed detail were retained.",
+      "Confidence suppression: 0; malformed findings: 0; malformed returns: 0; first_evidence_backfilled: 0; missing-first-evidence demotions: 0; mode-aware demotions: 0."
+    ],
+    "suppressed_by_confidence": {},
+    "suppressed_count": 0,
+    "malformed_findings": 0,
+    "malformed_returns": 0,
+    "first_evidence_backfilled": 0,
+    "missing_first_evidence_demotions": 0,
+    "mode_aware_demotions": 0,
+    "settlement_suppressed": 0,
+    "validator": {
+      "outcome": "verdicts",
+      "batch_count": 1,
+      "selected": [
+        1
+      ],
+      "confirmed": 1,
+      "rejected": 0,
+      "unresolved": 0,
+      "malformed": 0,
+      "failed": 0,
+      "shortcut_skipped": 0,
+      "bound_exceeded": false,
+      "protected_subject_reclassifications": 0,
+      "classification": "Finding #1 alleges an accessibility test gap; none of the eight protected subjects applies.",
+      "note": "One deterministic validator batch returned a valid confirmed verdict for #1 inside the bound. No independent cross-model shortcut was used."
+    },
+    "cross_model": {
+      "selected": true,
+      "target": null,
+      "route": null,
+      "preference_source": "default",
+      "outcome": "in-process-fallback",
+      "artifact": null,
+      "coverage": "Cross-model pass not run: Codex host attested by active harness; only codex CLI is installed. No different-provider route installed. Checkout configs absent (auto); local adversarial fallback selected. No job started or content sent."
+    },
+    "failed_reviewers": [],
+    "timed_out_reviewers": [],
+    "compound_packs": {
+      "roots": [],
+      "errors": [],
+      "warnings": []
+    },
+    "verification": {
+      "typecheck": "passed",
+      "lint": "passed",
+      "unit_tests": "41 passed",
+      "build": "passed",
+      "chromium_initial": "19/25 passed",
+      "chromium_deterministic_rechecks": "5/7 passed; two performance budgets failed",
+      "downloaded_data_trials": "All six 10,000x20 and 499x20 trials passed data assertions before timing assertions failed.",
+      "firefox": "No application assertions ran: missing executable; download denied.",
+      "webkit": "No application assertions ran: missing executable; download denied."
+    },
+    "apply": "Skipped: mode:agent is report-only. No source changes, commit, push, merge, deployment or U3 performed by this review."
+  },
+  "artifact_path": "/tmp/compound-engineering-1000/ce-code-review/u2-paired-20261014",
+  "run_id": "u2-paired-20261014",
+  "verdict_reason": "The CE review is complete, but engineering completion is not established. Fix confirmed P2 #1 and rerun affected checks. Both performance budgets failed; Firefox/WebKit application behavior remains unverified. Caller must archive the receipt and limits and update draft PR #2. U2 hands-on acceptance remains pending; no merge, deployment or U3 is authorized.",
+  "fix_order": [
+    1
+  ]
+}

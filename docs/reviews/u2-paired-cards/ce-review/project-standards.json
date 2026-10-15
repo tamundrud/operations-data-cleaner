@@ -1,0 +1,8 @@
+{
+  "reviewer": "project-standards",
+  "findings": [],
+  "residual_risks": [],
+  "testing_gaps": [
+    "Configured Firefox and WebKit production suites remain unverified: context.json records missing browser executables and denied downloads. Chromium evidence does not establish cross-browser drag, modal-focus, privacy or export behavior."
+  ]
+}

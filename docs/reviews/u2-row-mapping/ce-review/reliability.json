@@ -1,0 +1,8 @@
+{
+  "reviewer": "reliability",
+  "findings": [],
+  "residual_risks": [],
+  "testing_gaps": [
+    "The new editable-during-evaluation path is tested for successful latest-generation completion (tests/e2e/row-mapping.spec.ts:126), while cancellation/retry tests cover replacement imports with an already settled mapping (tests/e2e/performance.spec.ts:66,100). Add a delayed-run test that edits the draft, cancels the older evaluation, retries the active file, and asserts the newest headers and downloaded bytes only become available after its evaluation; this exercises pendingGeneration/failedGeneration recovery and the preserved session workflow together."
+  ]
+}

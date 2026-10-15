@@ -1,0 +1,8 @@
+{
+  "reviewer": "security",
+  "findings": [],
+  "residual_risks": [],
+  "testing_gaps": [
+    "Firefox and WebKit production privacy/CSP coverage for the new paired-card journey remains unverified: context.json reports missing browser executables and denied downloads. The committed initial-browser-results.json records a passing Chromium privacy journey only."
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "reviewer": "julik-frontend-races",
+  "findings": [],
+  "residual_risks": [],
+  "testing_gaps": [
+    "The delayed-run test covers successful completion of an older generation, while the existing cancellation test cancels a source replacement. Add a regression that cancels an evaluation after editing a newer draft, retries the active file, and asserts that only the newest draft becomes exportable; this exercises pendingGeneration/failedGeneration and recovery together."
+  ]
+}

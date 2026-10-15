@@ -1,0 +1,29 @@
+{
+  "reviewer": "correctness",
+  "findings": [
+    {
+      "title": "Empty destinations leave preview permanently updating",
+      "severity": "P2",
+      "file": "src/ui/Workspace.tsx",
+      "line": 90,
+      "why_it_matters": "After uploading a first source, or removing the final destination row, users see 'Updating preview automatically' indefinitely although no preview run is scheduled. The empty-field guard skips evaluation while dirty remains true, so the preview area never reaches a truthful idle or incomplete state. Render an explicit add-output-columns state for zero destinations while continuing to block download; this avoids inviting users to wait for processing that cannot finish.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "suggested_fix": "Keep the empty-field evaluation guard and export blocking, but render a distinct zero-destination message before the dirty/busy preview branch, such as 'Add an output column or import a template to start the preview.' Cover first upload and removal of the last output in a browser regression.",
+      "confidence": 100,
+      "evidence": [
+        "src/ui/Workspace.tsx:90 --       !workflow.fields.length ||",
+        "src/ui/Workspace.tsx:310 --             {dirty || busy ? (",
+        "src/ui/Workspace.tsx:314 --                   : \"Updating preview automatically… Download stays blocked until the current mappings are checked.\"}",
+        "src/ui/Workspace.tsx:28 --   const [workflow, setWorkflow] = useState<Workflow>(() => makeWorkflow([]));",
+        "src/ui/Workspace.tsx:29 --   const [dirty, setDirty] = useState(true);"
+      ],
+      "pre_existing": false
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": [
+    "The introduced template-replacement confirmation has no regression covering Keep current columns, successful replacement, or failed template parsing preserving existing fields; current conversion coverage imports a template only into an empty destination list."
+  ]
+}

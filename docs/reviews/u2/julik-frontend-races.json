@@ -1,0 +1,26 @@
+{
+  "reviewer": "julik-frontend-races",
+  "findings": [
+    {
+      "title": "Canceled file-read failures can clear a newer operation",
+      "severity": "P2",
+      "file": "src/session/controller.ts",
+      "line": 140,
+      "why_it_matters": "If an earlier File.arrayBuffer() rejects after cancellation and a retry or different upload has started, this catch clears the newer operation's busy state and replaces its status message. Controls become enabled while its worker request is still active, so another upload can overwrite the pending request and discard the newer result.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "suggested_fix": "In the catch block, return when request !== this.sequence before updating state. Add a targeted test with a deferred file read that rejects after cancel and after a new upload begins; verify the new operation stays busy and completes normally.",
+      "confidence": 75,
+      "evidence": [
+        "src/session/controller.ts:140:     } catch {",
+        "src/session/controller.ts:141-145: The catch unconditionally calls this.update({ busy: \"\", error: ... }).",
+        "src/session/controller.ts:117:       if (request !== this.sequence) return; — the success path has the stale-request guard that the catch path lacks.",
+        "src/session/controller.ts:190-191: stop() increments sequence on cancel, but cannot cancel an already pending File.arrayBuffer() rejection."
+      ],
+      "pre_existing": false
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

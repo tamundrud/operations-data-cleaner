@@ -1,44 +1,49 @@
 # Operations Data Cleaner
 
-**Status: planning — not yet implemented.**
+U2 internal preview: a browser application that converts a CSV into an explicitly mapped, reordered CSV. Upload your source, enter destination columns or upload a CSV header template, choose each copy mapping, preview all rows, then download. Identifiers and whitespace remain text. Nothing needs an account or a saved workflow.
 
-Operations Data Cleaner is a planned free, open-source browser application for preparing operational CSV and Excel data for import into other systems. The initial use case is converting customer or partner order exports into a transportation management system (TMS) import format.
+## Run locally
 
-## Intended workflow
+Use Node 24 LTS (implementation environment: Node 24.19.0, npm 11.9.0).
 
-1. Load a CSV or Excel (`.xlsx`) source file.
-2. Define output columns using a sample template, manual schema, or saved workflow.
-3. Confirm field mappings and apply explicit transformations.
-4. Review output, warnings, and invalid records.
-5. Export a configured CSV or Excel file and optionally save the workflow locally for reuse.
+```sh
+npm ci
+npm run build
+npm run preview
+```
 
-**These are proposed requirements, not shipped capabilities.** The PRD is still a draft pending document review, product decisions, and engineering planning.
+Open **http://127.0.0.1:4173**. This serves the production application and privacy policy. `npm run dev` starts Vite for development; its HMR traffic and styles conflict with the restrictive production CSP, so use build/preview for product verification. No deployment or server-side file processing is involved.
 
-## Privacy objective
+## Working synthetic example
 
-The MVP is designed to process customer data entirely on the user's device without an account, upload API, or server-side data processing. This is an implementation and test requirement, **not yet a demonstrated guarantee**. Network-interception tests will be necessary before publishing privacy claims for a running application.
+Select **Try sample data** to run the bundled, fictional order conversion. Download should match [expected.csv](examples/u2/expected.csv), including `001234`, quoted commas, an embedded newline, and preserved spaces.
 
-## Project documentation
+For a personal usability check, start a fresh session and use [source.csv](examples/u2/source.csv) and [template.csv](examples/u2/template.csv). Try mapping, renaming/reordering, inspecting the result and downloading using only the interface. The ready-made [workflow.json](examples/u2/workflow.json) is the bundled configuration, not an import/persistence feature in this build. Please report where the next action, source/output distinction, errors, export settings or keyboard controls were unclear. **User UX approval is pending**; automated tests cannot close it.
 
-- [Product requirements v0.2](docs/product/operations-data-cleaner-prd-v0.2.md) — full draft specification and acceptance scenarios.
-- [Agent instructions](AGENTS.md) — guardrails for Codex and implementation agents.
-- [Engineering plans](docs/plans/README.md) — Compound Engineering plans after product review.
-- [Engineering decisions](docs/decisions/README.md) — significant architecture decisions and trade-offs.
-- [Engineering learnings](docs/solutions/README.md) — reusable discoveries during implementation.
-- [Repository owner checklist](REPO_SETUP.md) — GitHub settings requiring manual configuration.
+## Delivered limits and privacy
 
-## Local development
+- UTF-8 CSV with optional input BOM; comma, semicolon or tab input. First nonblank record is the header; normalized empty/duplicate headers and malformed quotes/extra cells fail explicitly.
+- Copy mapping only; all output fields must be mapped. Text type, optional required/max-length validation, no automatic trimming or numeric conversion. Invalid rows block the whole download; fix/reupload or change your rules.
+- Default output: UTF-8, no BOM, comma, headers, standard quoting, CRLF. Formula-like text/headers require an explicit escaped/raw choice; preview shows the selected representation. Escaping changes text and cannot promise protection in every spreadsheet/importer. Raw text may be unsafe to open in spreadsheets.
+- Full dataset counts with paginated output and exception rows (50 per page). Nonblank totals are ordinary candidates. No silent record truncation. Limits: 25 MiB source, 200 columns, 2 million inspected cells, 30-second cancellable worker watchdog.
+- Files and parsed data stay in browser memory and are cleared by reload or End session. No localStorage, IndexedDB, service worker, analytics, remote fonts, or upload endpoint. Static application code/assets still use ordinary host requests and metadata. Processing runs in a local Web Worker.
+- Excel, constants, advanced recipes, export options, saved workflows, suggestions, source correction and partial export belong to later units. This is not the full MVP or certified TMS interoperability.
 
-No application stack or build commands are committed yet. These will be added after `ce-doc-review` and `ce-plan` establish an approved implementation approach.
+## Verify
 
-## Commercial positioning
+```sh
+npm run typecheck
+npm run lint
+npm run test:unit
+npm run build
+npx playwright install --with-deps chromium firefox webkit
+npm run test:e2e
+npm run test:privacy
+npm run test:performance
+```
 
-The open-source application is distinct from potential future paid implementation services, integrations, hosted processing, or optional decision services. None of those services belongs in the MVP without a separate decision.
+Tests serve the production build and check real download bytes. `U2_CHROMIUM_PATH=/usr/bin/chromium npm run test:e2e -- --project=chromium` uses an existing system Chromium when supplied. CI runs all three browsers. Performance artifacts distinguish cloud smoke timing from the pending reference-laptop qualification.
 
-## Contributing and security
+See [PRD](docs/PRD.md), [implementation plan](docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md), [U1 qualification](docs/decisions/excel-fidelity.md), and [browser processing decision](docs/decisions/browser-processing.md). Use synthetic data only in published examples, issues and tests. See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md). Only fictional/synthetic files should be published in examples, tests, issues, and pull requests.
-
-## License
-
-Licensed under the [Apache License, Version 2.0](LICENSE), which permits commercial use, modification and redistribution subject to its terms.
+Licensed under [Apache-2.0](LICENSE). Dependency license files are retained in npm packages; redistribution details are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

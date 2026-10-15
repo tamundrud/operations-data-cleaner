@@ -1,0 +1,27 @@
+{
+  "reviewer": "reliability",
+  "findings": [
+    {
+      "title": "Failed sample import overwrites the active mapping",
+      "severity": "P2",
+      "file": "src/ui/Workspace.tsx",
+      "line": 100,
+      "why_it_matters": "After a user has a valid active CSV, a failed sample import leaves the old view in place. This effect treats that old view as a successful sample import and runs the sample mapping against the old file, replacing the user's current mapping and potentially hiding the import error. If the source headers happen to match, the user can download a conversion of the old file while believing the sample was loaded.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:100:     if (samplePending.current && view && !busy) {",
+        "src/ui/Workspace.tsx:102:       session.configure(decodeWorkflow(sampleConfig));",
+        "src/ui/Workspace.tsx:88:     setWorkflow(w);",
+        "src/ui/Workspace.tsx:90:     setDirty(false);",
+        "src/session/controller.ts:58-61: an import error clears the candidate and busy flag but retains the previous view and active file"
+      ],
+      "pre_existing": false,
+      "suggested_fix": "Commit the sample workflow only after the sample import's own successful view response. Clear samplePending on upload error, cancellation, and End session; make the pending marker identify the sample request or dataset so an old view cannot satisfy it. Keep the existing workflow and dirty state until that success is confirmed. Add a browser test that fails sample import after a valid active conversion and checks that the active mapping and export remain intact."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

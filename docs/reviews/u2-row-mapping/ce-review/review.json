@@ -1,0 +1,148 @@
+{
+  "status": "complete",
+  "verdict": "Ready with fixes",
+  "verdict_reason": "Fix #1 so a source with zero destinations shows an explicit add-output state instead of indefinite updating. This code-review verdict does not accept the U2 UX checkpoint; hands-on approval remains pending and U3 is excluded.",
+  "scope": {
+    "base": "bd89c6a",
+    "branch": "feat/u2-csv-conversion",
+    "head_sha": "bd89c6a17c4f7a33b81a733038f9e3e36757227e",
+    "pr_url": null,
+    "files_changed": 12
+  },
+  "intent": "Replace form mapping cards with searchable reusable source palette and ordered row-aligned destination mapping. Drag/click/native select and direct output editing; automatic 250ms preview with draft-generation safeguards prevents stale/incomplete export. Preserve transformation contracts and privacy; U2 only, UX acceptance pending.",
+  "intent_confidence": "explicit",
+  "reviewers": [
+    "correctness",
+    "project-standards",
+    "testing",
+    "maintainability",
+    "security",
+    "reliability",
+    "julik-frontend-races",
+    "adversarial"
+  ],
+  "findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 100,
+      "evidence": [
+        "src/ui/Workspace.tsx:90 --       !workflow.fields.length ||",
+        "src/ui/Workspace.tsx:310 --             {dirty || busy ? (",
+        "src/ui/Workspace.tsx:314 --                   : \"Updating preview automatically\u2026 Download stays blocked until the current mappings are checked.\"}",
+        "src/ui/Workspace.tsx:28 --   const [workflow, setWorkflow] = useState<Workflow>(() => makeWorkflow([]));",
+        "src/ui/Workspace.tsx:29 --   const [dirty, setDirty] = useState(true);"
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:90 --       !workflow.fields.length ||",
+      "independent_reviewers": [
+        "correctness"
+      ],
+      "line": 90,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Keep the empty-field evaluation guard and export blocking, but render a distinct zero-destination message before the dirty/busy preview branch, such as 'Add an output column or import a template to start the preview.' Cover first upload and removal of the last output in a browser regression.",
+      "title": "Empty destinations leave preview permanently updating",
+      "why_it_matters": "After uploading a first source, or removing the final destination row, users see 'Updating preview automatically' indefinitely although no preview run is scheduled. The empty-field guard skips evaluation while dirty remains true, so the preview area never reaches a truthful idle or incomplete state. Render an explicit add-output-columns state for zero destinations while continuing to block download; this avoids inviting users to wait for processing that cannot finish.",
+      "validation_status": "confirmed",
+      "validation_reason": "A first source upload leaves the initial empty workflow dirty, and removing the last destination calls change([]) in MappingRows.tsx:72; Workspace.tsx:90 then prevents any automatic preview run while lines 310\u2013314 indefinitely render Updating preview automatically, newly introduced by this diff (reachable callers verified; incidence not measured)."
+    }
+  ],
+  "actionable_findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 100,
+      "evidence": [
+        "src/ui/Workspace.tsx:90 --       !workflow.fields.length ||",
+        "src/ui/Workspace.tsx:310 --             {dirty || busy ? (",
+        "src/ui/Workspace.tsx:314 --                   : \"Updating preview automatically\u2026 Download stays blocked until the current mappings are checked.\"}",
+        "src/ui/Workspace.tsx:28 --   const [workflow, setWorkflow] = useState<Workflow>(() => makeWorkflow([]));",
+        "src/ui/Workspace.tsx:29 --   const [dirty, setDirty] = useState(true);"
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:90 --       !workflow.fields.length ||",
+      "independent_reviewers": [
+        "correctness"
+      ],
+      "line": 90,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Keep the empty-field evaluation guard and export blocking, but render a distinct zero-destination message before the dirty/busy preview branch, such as 'Add an output column or import a template to start the preview.' Cover first upload and removal of the last output in a browser regression.",
+      "title": "Empty destinations leave preview permanently updating",
+      "why_it_matters": "After uploading a first source, or removing the final destination row, users see 'Updating preview automatically' indefinitely although no preview run is scheduled. The empty-field guard skips evaluation while dirty remains true, so the preview area never reaches a truthful idle or incomplete state. Render an explicit add-output-columns state for zero destinations while continuing to block download; this avoids inviting users to wait for processing that cannot finish.",
+      "validation_status": "confirmed",
+      "validation_reason": "A first source upload leaves the initial empty workflow dirty, and removing the last destination calls change([]) in MappingRows.tsx:72; Workspace.tsx:90 then prevents any automatic preview run while lines 310\u2013314 indefinitely render Updating preview automatically, newly introduced by this diff (reachable callers verified; incidence not measured)."
+    }
+  ],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "requirements_completeness": {
+    "plan": "docs/plans/2026-10-13-u2-row-mapping-revision.md",
+    "plan_source": "explicit",
+    "requirements": [],
+    "implementation_units": [
+      {
+        "unit": "U2 scoped UX revision: compact reusable sources/row mapping, native keyboard alternative, inline management/template confirmation, 250ms latest-generation auto preview/export gating, preserved source/provenance/safety, 25/30 layout, behavior/privacy/race/template tests and desktop/laptop screenshots.",
+        "status": "met",
+        "evidence": "MappingRows implements searchable reusable sources, row matching, native select/click and inline field/template management. Workspace schedules 250 ms generation-checked previews and gates stale/incomplete export. CSS bounds 25/30 lists. Browser changes cover mapping/reuse/keyboard/search/management/template replacement/debounce/cancel/retry/byte assertions/privacy. Screenshot delivery and hands-on acceptance are caller-level evidence outside this code-review scope."
+      }
+    ],
+    "reverse_check": "No unrequested product behavior rule found. Narrow shared Zod jitless startup configuration preserves schema validation under the existing CSP rather than changing data contracts.",
+    "acceptance": "U2 UX approval pending; no U3 review or acceptance."
+  },
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [],
+  "testing_gaps": [],
+  "coverage": {
+    "depth": "full",
+    "notes": [
+      "Prior usage-limit interruption occurred after scope/selection before local dispatch; resumed with native reviewer capacity restored.",
+      "Project standards use AGENTS.md fallback for all changed paths.",
+      "Untracked .codex/ and docs/design/u2/ excluded.",
+      "Scope refreshed during review to include narrow Zod jitless startup configuration in UI and worker; active reviewers received update.",
+      "No plausible module/pattern match in docs/solutions (only XLSX qualification) so learnings not selected.",
+      "No API contract/migration/agent surface changed; performance specialist not selected because transform algorithm unchanged.",
+      "Review test gaps for template replacement/debounce/retry suppression were addressed during review and rechecked by standards/testing personas. Final plan coverage uses latest diff; root reports unit41/type/lint/build and Chromium+Firefox20each pass, WebKit unavailable missing libavif.so16.",
+      "adversarial lens: in-process fallback (cross-model peer not run: pre-egress shared npm ETARGET fetching acpx@0.19.4; no reviewed code reached Claude). Requested claude-opus-5-5 at high effort; no serving receipt.",
+      "Stage 5 merged 1 primary finding; no semantic duplicates, settled preference conflicts, pre-existing findings, protected-artifact removals, or mode-aware demotions.",
+      "first_evidence_backfilled: 0; quote-gate demotions: 0; malformed findings/returns: 0; suppressed_by_confidence: {}.",
+      "Three reviewer testing-gap statements are obsolete against the final diff: tests/e2e/row-mapping.spec.ts:180 covers template keep/replace/failure; its delayed-worker test now edits, cancels, retries and verifies Recovered CSV bytes. No retained testing gaps.",
+      "Validator shortcut-skipped: 0. The one P2 actionable finding lacks independent cross-model corroboration and is selected for one validator batch."
+    ],
+    "validation": {
+      "outcome": "verdicts",
+      "confirmed": 1,
+      "rejected": 0,
+      "unresolved": 0,
+      "malformed": 0,
+      "failed": 0,
+      "shortcut_skipped": 0,
+      "protected_subject_reclassifications": 0,
+      "batch": "One bounded validator batch returned a matched valid verdict for #1. The finding concerns misleading empty-state feedback, not a protected concurrency/data-loss/public-contract failure; incidence was not measured."
+    },
+    "suppressed_by_confidence": {},
+    "mode_aware_demotions": 0,
+    "first_evidence_backfilled": 0,
+    "quote_gate_demotions": 0,
+    "failed_reviewers": [],
+    "peer_outcome": "in-process-fallback",
+    "peer_coverage": "adversarial lens: in-process fallback (cross-model peer not run: pre-egress shared npm ETARGET fetching acpx@0.19.4; no reviewed code reached Claude). Requested claude-opus-5-5 at high effort; no serving receipt.",
+    "apply": "Stage 5c skipped: mode:agent and apply_local=false. No project edits, commits, pushes, or PR mutations performed.",
+    "testing": "Caller reports 41 unit tests, typecheck, lint, build, and 20 browser tests each on Chromium and Firefox pass; WebKit unavailable because libavif.so16 is missing. This report leaf did not rerun those suites."
+  },
+  "artifact_path": "/tmp/compound-engineering-1000/ce-code-review/u2-20261013",
+  "run_id": "u2-20261013"
+}

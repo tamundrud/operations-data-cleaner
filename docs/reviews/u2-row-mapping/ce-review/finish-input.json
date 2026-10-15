@@ -1,0 +1,160 @@
+{
+  "run_id": "u2-20261013",
+  "run_dir": "/tmp/compound-engineering-1000/ce-code-review/u2-20261013",
+  "skill_dir": "/home/trevor/.codex/plugins/cache/compound-engineering-plugin/compound-engineering/3.30.5/skills/ce-code-review",
+  "docs_root": "docs",
+  "mode": {
+    "agent": true,
+    "apply_local": false,
+    "grouping": "auto",
+    "depth": "auto"
+  },
+  "invocation": {
+    "arguments": "ce-code-review mode:agent base:bd89c6a plan:docs/plans/2026-10-13-u2-row-mapping-revision.md",
+    "constraints": [
+      "Review CURRENT U2 UX revision only.",
+      "EXCLUDE pre-existing untracked .codex/ and docs/design/u2/ files entirely; no review/edit/publish of them.",
+      "Do not edit production/tests, commit, push or alter PR.",
+      "Keep U2 UX approval pending; do not begin U3."
+    ]
+  },
+  "scope": {
+    "mode": "standalone",
+    "base": "bd89c6a",
+    "diff_a": "bd89c6a",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u2-csv-conversion",
+    "head_sha": "bd89c6a17c4f7a33b81a733038f9e3e36757227e",
+    "files": "/tmp/compound-engineering-1000/ce-code-review/u2-20261013/files.txt",
+    "diff": "/tmp/compound-engineering-1000/ce-code-review/u2-20261013/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": [
+      ".codex/",
+      "docs/design/u2/"
+    ]
+  },
+  "intent": {
+    "summary": "Replace form mapping cards with searchable reusable source palette and ordered row-aligned destination mapping. Drag/click/native select and direct output editing; automatic 250ms preview with draft-generation safeguards prevents stale/incomplete export. Preserve transformation contracts and privacy; U2 only, UX acceptance pending.",
+    "confidence": "explicit"
+  },
+  "plan": {
+    "path": "docs/plans/2026-10-13-u2-row-mapping-revision.md",
+    "source": "explicit",
+    "requirements": [],
+    "implementation_units": [
+      "U2 scoped UX revision: compact reusable sources/row mapping, native keyboard alternative, inline management/template confirmation, 250ms latest-generation auto preview/export gating, preserved source/provenance/safety, 25/30 layout, behavior/privacy/race/template tests and desktop/laptop screenshots."
+    ],
+    "settled_decisions": []
+  },
+  "roster": {
+    "selected": [
+      {
+        "reviewer": "correctness",
+        "tier": "session",
+        "reason": "always-on"
+      },
+      {
+        "reviewer": "project-standards",
+        "tier": "mid",
+        "reason": "AGENTS.md fallback"
+      },
+      {
+        "reviewer": "testing",
+        "tier": "mid",
+        "reason": "behavior and test changes"
+      },
+      {
+        "reviewer": "maintainability",
+        "tier": "mid",
+        "reason": "760 executable line structural UI revision"
+      },
+      {
+        "reviewer": "security",
+        "tier": "session",
+        "reason": "untrusted drop/input handling"
+      },
+      {
+        "reviewer": "reliability",
+        "tier": "mid",
+        "reason": "async evaluation errors/cancel/retry"
+      },
+      {
+        "reviewer": "julik-frontend-races",
+        "tier": "mid",
+        "reason": "debounce and in-flight state transitions"
+      },
+      {
+        "reviewer": "adversarial",
+        "tier": "session",
+        "reason": "cross-component generation/export safety fallback"
+      }
+    ],
+    "standards": {
+      "criteria": [
+        {
+          "path": "AGENTS.md",
+          "files": [
+            "docs/plans/2026-10-13-u2-row-mapping-revision.md",
+            "src/main.tsx",
+            "src/processing.worker.ts",
+            "src/schema-runtime.ts",
+            "src/ui/MappingRows.tsx",
+            "src/ui/Workspace.tsx",
+            "src/ui/styles.css",
+            "tests/e2e/conversion.spec.ts",
+            "tests/e2e/helpers.ts",
+            "tests/e2e/performance.spec.ts",
+            "tests/e2e/privacy.spec.ts",
+            "tests/e2e/row-mapping.spec.ts"
+          ]
+        }
+      ],
+      "fallback_named": true,
+      "not_run_reason": null
+    },
+    "packs": {
+      "roots": [],
+      "errors": [],
+      "warnings": []
+    }
+  },
+  "collection": {
+    "returns": "/tmp/compound-engineering-1000/ce-code-review/u2-20261013/raw-returns.json",
+    "unstructured_returns": [],
+    "failed_reviewers": [],
+    "bound_exceeded": [],
+    "fast_pass": {
+      "emitted_preliminary": false,
+      "candidates": []
+    }
+  },
+  "peer": {
+    "selected": true,
+    "target": "claude",
+    "route": "claude",
+    "preference_source": "default",
+    "outcome": "in-process-fallback",
+    "artifact": null,
+    "coverage": "adversarial lens: in-process fallback (cross-model peer not run: pre-egress shared npm ETARGET fetching acpx@0.19.4; no reviewed code reached Claude). Requested claude-opus-5-5 at high effort; no serving receipt."
+  },
+  "coverage_notes": [
+    "Prior usage-limit interruption occurred after scope/selection before local dispatch; resumed with native reviewer capacity restored.",
+    "Project standards use AGENTS.md fallback for all changed paths.",
+    "Untracked .codex/ and docs/design/u2/ excluded.",
+    "Scope refreshed during review to include narrow Zod jitless startup configuration in UI and worker; active reviewers received update.",
+    "No plausible module/pattern match in docs/solutions (only XLSX qualification) so learnings not selected.",
+    "No API contract/migration/agent surface changed; performance specialist not selected because transform algorithm unchanged.",
+    "Review test gaps for template replacement/debounce/retry suppression were addressed during review and rechecked by standards/testing personas. Final plan coverage uses latest diff; root reports unit41/type/lint/build and Chromium+Firefox20each pass, WebKit unavailable missing libavif.so16."
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "verdicts": [
+    {
+      "#": 1,
+      "status": "confirmed",
+      "protected_subject": null,
+      "reason": "The new keyboard scenario in tests/e2e/row-mapping.spec.ts:69-97 reaches selection, matching, Escape and reordering but asserts only focus/order and aria-pressed=false, and inspection of the e2e/unit tests found no active pressed, valid-target or mapping-status assertions, so regressions that keep aria-pressed false or suppress announcements remain uncovered despite the explicit selected/target and focus/status verification contract in docs/plans/2026-10-14-u2-paired-card-matching.md:19."
+    }
+  ]
+}

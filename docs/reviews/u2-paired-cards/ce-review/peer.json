@@ -1,0 +1,5 @@
+{
+  "outcome": "not_run",
+  "artifact": null,
+  "coverage": "Cross-model pass not run: Codex host attested by active harness; only codex CLI is installed. No different-provider route installed. Checkout configs absent (auto); local adversarial fallback selected. No job started or content sent."
+}

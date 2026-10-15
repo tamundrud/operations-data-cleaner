@@ -1,0 +1,108 @@
+{
+  "run_id": "u2-20261013",
+  "run_dir": "/tmp/compound-engineering-1000/ce-code-review/u2-20261013",
+  "selected_findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 100,
+      "evidence": [
+        "src/ui/Workspace.tsx:90 --       !workflow.fields.length ||",
+        "src/ui/Workspace.tsx:310 --             {dirty || busy ? (",
+        "src/ui/Workspace.tsx:314 --                   : \"Updating preview automatically\u2026 Download stays blocked until the current mappings are checked.\"}",
+        "src/ui/Workspace.tsx:28 --   const [workflow, setWorkflow] = useState<Workflow>(() => makeWorkflow([]));",
+        "src/ui/Workspace.tsx:29 --   const [dirty, setDirty] = useState(true);"
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:90 --       !workflow.fields.length ||",
+      "independent_reviewers": [
+        "correctness"
+      ],
+      "line": 90,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Keep the empty-field evaluation guard and export blocking, but render a distinct zero-destination message before the dirty/busy preview branch, such as 'Add an output column or import a template to start the preview.' Cover first upload and removal of the last output in a browser regression.",
+      "title": "Empty destinations leave preview permanently updating",
+      "why_it_matters": "After uploading a first source, or removing the final destination row, users see 'Updating preview automatically' indefinitely although no preview run is scheduled. The empty-field guard skips evaluation while dirty remains true, so the preview area never reaches a truthful idle or incomplete state. Render an explicit add-output-columns state for zero destinations while continuing to block download; this avoids inviting users to wait for processing that cannot finish."
+    }
+  ],
+  "findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 100,
+      "evidence": [
+        "src/ui/Workspace.tsx:90 --       !workflow.fields.length ||",
+        "src/ui/Workspace.tsx:310 --             {dirty || busy ? (",
+        "src/ui/Workspace.tsx:314 --                   : \"Updating preview automatically\u2026 Download stays blocked until the current mappings are checked.\"}",
+        "src/ui/Workspace.tsx:28 --   const [workflow, setWorkflow] = useState<Workflow>(() => makeWorkflow([]));",
+        "src/ui/Workspace.tsx:29 --   const [dirty, setDirty] = useState(true);"
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:90 --       !workflow.fields.length ||",
+      "independent_reviewers": [
+        "correctness"
+      ],
+      "line": 90,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Keep the empty-field evaluation guard and export blocking, but render a distinct zero-destination message before the dirty/busy preview branch, such as 'Add an output column or import a template to start the preview.' Cover first upload and removal of the last output in a browser regression.",
+      "title": "Empty destinations leave preview permanently updating",
+      "why_it_matters": "After uploading a first source, or removing the final destination row, users see 'Updating preview automatically' indefinitely although no preview run is scheduled. The empty-field guard skips evaluation while dirty remains true, so the preview area never reaches a truthful idle or incomplete state. Render an explicit add-output-columns state for zero destinations while continuing to block download; this avoids inviting users to wait for processing that cannot finish."
+    }
+  ],
+  "skip_count": 0,
+  "shortcut_skipped": 0,
+  "skip_evidence_basis": "None: in-process reviewers share one serving family; cross-model peer did not run.",
+  "scope": {
+    "mode": "standalone",
+    "base": "bd89c6a",
+    "diff_a": "bd89c6a",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u2-csv-conversion",
+    "head_sha": "bd89c6a17c4f7a33b81a733038f9e3e36757227e",
+    "files": "/tmp/compound-engineering-1000/ce-code-review/u2-20261013/files.txt",
+    "diff": "/tmp/compound-engineering-1000/ce-code-review/u2-20261013/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": [
+      ".codex/",
+      "docs/design/u2/"
+    ]
+  },
+  "scope_context": {
+    "mode": "standalone",
+    "base": "bd89c6a",
+    "tree_is_reviewed_head": true,
+    "diff": "/tmp/compound-engineering-1000/ce-code-review/u2-20261013/full.diff",
+    "constraints": [
+      "Review CURRENT U2 UX revision only.",
+      "EXCLUDE pre-existing untracked .codex/ and docs/design/u2/ files entirely; no review/edit/publish of them.",
+      "Do not edit production/tests, commit, push or alter PR.",
+      "Keep U2 UX approval pending; do not begin U3."
+    ]
+  },
+  "diff": "/tmp/compound-engineering-1000/ce-code-review/u2-20261013/full.diff",
+  "normal_cap": 8,
+  "selected_count": 1
+}

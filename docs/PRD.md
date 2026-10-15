@@ -155,7 +155,7 @@ Priority terms: **MUST** = required for the full MVP; **SHOULD** = useful but ma
 
 ### 7.2 Mapping, recipes, and logistics-aware suggestions
 
-- **FR-07 (MUST):** Provide graphical controls for associating each destination field with a source field or supported recipe. Users can replace and remove mappings without code; all required interactions have labeled alternatives to drag-and-drop.
+- **FR-07 (MUST):** Follow the [user-approved paired-card design](design/u2/paired-cards/SPECIFICATION.md): drag source onto output or output onto source, or select either card then its counterpart. Confirmed pairs appear together above visible unmatched columns; sources remain reusable. Pair reordering explicitly changes matched export slots, while matching/unlinking preserve destination order. Keep labeled keyboard/click alternatives and contextual configuration; preview refreshes automatically with stale exports blocked. Supported recipes remain independent.
 - **FR-08 (MUST):** Propose deterministic field matches using normalized header names and a curated logistics terminology dictionary. Examples: `Ship To` ↔ `Consignee` and `PO #` ↔ `Purchase Order Reference`, when context supports them. Do not assert ambiguous logistics terms are identical merely because they are related.
 - **FR-09 (MUST):** Visually distinguish suggested, confirmed, and unmapped fields. A user explicitly accepts or changes a suggestion during setup; suggestions do not become confirmed silently.
 - **FR-10 (MUST):** Save confirmed mappings and recipes with the workflow and identify incompatible source headers on subsequent runs.
@@ -277,7 +277,7 @@ The processing model is **parse source → inspect/schema-check → configure re
 
 All examples must be implemented with synthetic fixtures; tests should check actual downloaded file content, error status, and transformed data—not just UI snapshots or code inspection.
 
-- **AC-01 — Basic conversion:** Given a customer CSV and destination header template, a user can visually map, rename, reorder, preview, and export **exactly** the selected columns in order.
+- **AC-01 — Basic conversion:** Given a customer CSV and destination header template, a user can visually match in both directions, reuse sources, unlink, rename and reorder paired columns using drag or accessible alternatives; grouped pairs preserve imported export order until explicit reorder. Automatically preview and export **exactly** the selected columns in order.
 - **AC-02 — Suggestions:** `Ship To` suggests `Consignee`; the user can accept or reject it. Related-but-not-equivalent identifiers are not silently confirmed.
 - **AC-03 — Address split:** `123 Main St, Vancouver, BC, V5K 0A1` splits into four trimmed fields under an explicit comma rule; an unexpected fifth or missing required segment becomes invalid.
 - **AC-04 — Combine:** Selected source text fields concatenate in the configured order with the selected separator.

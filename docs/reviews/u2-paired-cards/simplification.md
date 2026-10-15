@@ -1,0 +1,3 @@
+# CE simplification
+
+Scope: current paired-card UI/CSS and changed browser tests versus f253df4. All three read-only reviewers completed using the ce-simplify-code persona assets. Reuse: no findings. Quality: removed an unused name-input ref (autofocus preserved) and superseded CSS declarations (final cascade preserved). Efficiency: precomputed source-use counts and field positions and passed the paired field directly instead of repeated array searches. Four findings applied; zero skipped. No export, selection, ordering, validation or accessibility guard was removed. Type/lint/build and relevant browser verification are recorded in README.md.

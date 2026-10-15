@@ -1,0 +1,8 @@
+{
+  "reviewer": "security",
+  "findings": [],
+  "residual_risks": [],
+  "testing_gaps": [
+    "Production privacy interception and formula-warning/download behavior have local Chromium evidence only; Firefox and WebKit execution remains unverified because browser installation was blocked. The configured three-browser CI run should supply that evidence."
+  ]
+}

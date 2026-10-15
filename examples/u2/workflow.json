@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "id": "synthetic-example",
+  "name": "Fictional order conversion",
+  "source": {
+    "format": "csv",
+    "delimiter": ",",
+    "referencedHeaders": [
+      "po #",
+      "ship to",
+      "notes"
+    ]
+  },
+  "fields": [
+    {
+      "id": "0",
+      "header": "Reference",
+      "type": "text",
+      "required": true,
+      "recipe": {
+        "kind": "copy",
+        "source": "po #"
+      }
+    },
+    {
+      "id": "1",
+      "header": "Consignee",
+      "type": "text",
+      "required": false,
+      "recipe": {
+        "kind": "copy",
+        "source": "ship to"
+      }
+    },
+    {
+      "id": "2",
+      "header": "Delivery Notes",
+      "type": "text",
+      "required": false,
+      "recipe": {
+        "kind": "copy",
+        "source": "notes"
+      }
+    }
+  ],
+  "output": {
+    "format": "csv",
+    "delimiter": ",",
+    "bom": false,
+    "header": true,
+    "lineEnding": "CRLF",
+    "dateSystem": "1900"
+  }
+}
