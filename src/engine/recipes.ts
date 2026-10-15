@@ -1,5 +1,5 @@
 import type { Workflow } from "./workflow";
-import type { SourceTable, Value } from "./values";
+import { displayValue, type SourceTable, type Value } from "./values";
 import type { Issue } from "./issues";
 import { validateWorkflow } from "./validation";
 import { riskyText } from "../formats/spreadsheet-safety";
@@ -8,7 +8,8 @@ export type ResultRow = {
   record: number;
   line: number;
   values: Value[];
-  provenance: { field: string; source: string; row: string }[];
+  provenance: ({ field: string; row: string; trim?: true } &
+    ({ source: string } | { constant: Value }))[];
   issues: Issue[];
   status: "valid" | "warning" | "invalid";
 };
@@ -47,7 +48,7 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
       excluded: 0,
     },
     riskyHeaders: workflow.fields
-      .filter((f) => riskyText(f.header))
+      .filter((f) => workflow.output.header && riskyText(f.header))
       .map((f) => f.header),
   };
   if (workflowIssues.length) return run;
@@ -56,10 +57,21 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
     const issues: Issue[] = [],
       provenance: ResultRow["provenance"] = [];
     const values: Value[] = workflow.fields.map((f) => {
-      if (f.recipe?.kind !== "copy") throw new Error("Unvalidated recipe");
-      const sourceKey = f.recipe.source;
-      const text = row.cells[positions.get(sourceKey)!]?.raw ?? "";
-      provenance.push({ field: f.id, source: sourceKey, row: row.id });
+      const recipe = f.recipe;
+      if (!recipe || (recipe.kind !== "copy" && recipe.kind !== "constant"))
+        throw new Error("Unvalidated recipe");
+      const sourceKey = recipe.kind === "copy" ? recipe.source : undefined;
+      let value: Value = recipe.kind === "constant"
+        ? { ...recipe.value }
+        : { kind: "text", text: row.cells[positions.get(recipe.source)!]?.raw ?? "" };
+      provenance.push({
+        field: f.id,
+        row: row.id,
+        ...(recipe.kind === "copy" ? { source: recipe.source } : { constant: { ...recipe.value } }),
+        ...(f.trim ? { trim: true as const } : {}),
+      });
+      if (f.trim && value.kind === "text") value = { kind: "text", text: value.text.trim() };
+      const text = displayValue(value);
       const add = (
         code: string,
         severity: "error" | "warning",
@@ -92,14 +104,14 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
           `${f.header} exceeds ${f.maxLength} characters.`,
           "Correct the source file or increase the maximum length.",
         );
-      if (riskyText(text))
+      if (value.kind === "text" && riskyText(text))
         add(
           "csv-risk",
           "warning",
           `${f.header} may be interpreted as a spreadsheet formula.`,
           "Choose escaped output or raw TMS text before download.",
         );
-      return text === "" ? { kind: "blank" } : { kind: "text", text };
+      return value.kind === "text" && text === "" ? { kind: "blank" } : value;
     });
     const status = issues.some((i) => i.severity === "error")
       ? "invalid"

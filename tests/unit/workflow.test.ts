@@ -30,10 +30,8 @@ test("strict versioned schema rejects extra executable properties and unknown ve
   );
   expect(() => decodeWorkflow(" ".repeat(1024 * 1024 + 1))).toThrow(/1 MiB/);
 });
-test("complete finite grammar accepts valid later variants but never executes them in U2", () => {
+test("finite grammar accepts future variants but never executes unsupported recipes", () => {
   const variants = [
-    { kind: "constant", value: { kind: "number", decimal: "0.10" } },
-    { kind: "constant", value: { kind: "blank" } },
     {
       kind: "split",
       source: "id",

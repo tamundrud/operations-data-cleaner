@@ -1,0 +1,32 @@
+{
+  "status": "complete",
+  "mode": "non-interactive",
+  "document": "docs/plans/2026-10-15-0233-feat-u3-fixed-trim-csv-plan.md",
+  "document_sha256": "85f0920c2b2ea7322e2762fe45fba025e2c1484033957d2896286c4127240b29",
+  "classification": "unified-plan",
+  "fixes_applied": 0,
+  "proposed_fixes_count": 0,
+  "decisions_count": 0,
+  "fyi_count": 0,
+  "findings": [],
+  "coverage": [
+    "coherence",
+    "feasibility",
+    "design-lens",
+    "security-lens",
+    "scope-guardian",
+    "adversarial"
+  ],
+  "failed_reviewers": [],
+  "cross_model": {
+    "outcome": "not run",
+    "host": "codex",
+    "installed_routes": [
+      "codex"
+    ],
+    "reason": "No installed attested-different provider route; no job started or content sent. Local adversarial reviewer completed; this is not actual cross-model evidence."
+  },
+  "confidence": "Passed: verified existing schema/values/validation/engine/CSV/controller/UI and U2 tests/review findings; three scoped implementation units and acceptance-specific verification; no section needs targeted deepening.",
+  "prerequisites": "No blocking requirements or implementation decisions remain.",
+  "hand_off": "User already authorizes ce-work; return to calling ce-work agent for implementation."
+}

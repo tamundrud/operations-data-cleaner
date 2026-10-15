@@ -1,0 +1,31 @@
+import { expect, test } from "vitest";
+import { makeWorkflow } from "../../src/engine/workflow";
+import { evaluate } from "../../src/engine/recipes";
+import { parseCsv, serializeCsv } from "../../src/formats/csv";
+test.each(["copy", "constant"] as const)("%s trims only explicitly, before validation, preserving originals", kind => {
+  const source = parseCsv(new TextEncoder().encode('ID\n"  A  B  "'), ",", "trim");
+  const w = makeWorkflow(["Name"]);
+  w.fields[0].recipe = kind === "copy" ? { kind, source: "id" } : { kind, value: { kind: "text", text: "  A  B  " } };
+  w.fields[0].required = true;
+  w.fields[0].maxLength = 4;
+  const before = structuredClone(source);
+  expect(evaluate(w, source).summary.invalid).toBe(1);
+  expect(evaluate(w, source).rows[0].values[0]).toEqual({ kind: "text", text: "  A  B  " });
+  w.fields[0].trim = true;
+  const run = evaluate(w, source);
+  expect(run.summary.valid).toBe(1);
+  expect(run.rows[0].values[0]).toEqual({ kind: "text", text: "A  B" });
+  expect(run.rows[0].provenance[0]).toMatchObject({ trim: true });
+  expect(new TextDecoder().decode(serializeCsv(w, run, undefined))).toBe("Name\r\nA  B\r\n");
+  expect(source).toEqual(before);
+});
+test("required whitespace stays invalid before and after explicit trim", () => {
+  const source = parseCsv(new TextEncoder().encode('ID\n"  "'), ",", "trim");
+  const w = makeWorkflow(["Name"]);
+  w.fields[0] = { ...w.fields[0], required: true, recipe: { kind: "copy", source: "id" } };
+  expect(evaluate(w, source).rows[0].values[0]).toEqual({ kind: "text", text: "  " });
+  w.fields[0].trim = true;
+  const run = evaluate(w, source);
+  expect(run.rows[0].values[0]).toEqual({ kind: "blank" });
+  expect(run.rows[0].issues[0].code).toBe("required");
+});

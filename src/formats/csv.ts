@@ -176,7 +176,9 @@ export function serializeCsv(
       "Choose escaped output or raw TMS text before downloading formula-like content.",
     );
   const records = [
-    workflow.fields.map((f) => exportText(f.header, choice)),
+    ...(workflow.output.header
+      ? [workflow.fields.map((f) => exportText(f.header, choice))]
+      : []),
     ...run.rows.map((r) =>
       r.values.map((v) =>
         v.kind === "text" ? exportText(v.text, choice) : displayValue(v),
@@ -184,7 +186,8 @@ export function serializeCsv(
     ),
   ];
   return new TextEncoder().encode(
-    Papa.unparse(records, { delimiter: ",", newline: "\r\n", quotes: false }) +
+    (workflow.output.bom ? "\ufeff" : "") +
+    Papa.unparse(records, { delimiter: workflow.output.delimiter, newline: "\r\n", quotes: false }) +
       "\r\n",
   );
 }

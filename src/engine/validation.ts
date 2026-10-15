@@ -30,15 +30,12 @@ export function validateWorkflow(
   }
   if (
     workflow.source.format !== "csv" ||
-    workflow.output.format !== "csv" ||
-    workflow.output.delimiter !== "," ||
-    workflow.output.bom ||
-    !workflow.output.header
+    workflow.output.format !== "csv"
   )
     add(
       "unsupported-format",
-      "This U2 build supports CSV with default export settings only.",
-      "Use UTF-8, comma, headers, no BOM and CRLF.",
+      "This build supports CSV input and output only.",
+      "Use UTF-8 CSV with comma, semicolon or tab and CRLF output.",
     );
   const keys = new Set(source.columns.map((c) => c.key));
   const ids = new Set<string>(),
@@ -61,16 +58,15 @@ export function validateWorkflow(
         "Choose a source column or remove this output column.",
         f.id,
       );
-    if (f.recipe && f.recipe.kind !== "copy")
+    if (f.recipe && f.recipe.kind !== "copy" && f.recipe.kind !== "constant")
       add(
         "unsupported-recipe",
-        `${f.recipe.kind} is not supported in this U2 build.`,
-        "Use a copy mapping.",
+        `${f.recipe.kind} is not supported in this build.`,
+        "Use a source copy or a fixed value.",
         f.id,
       );
     if (
-      f.type !== "text" ||
-      f.trim ||
+      (f.type !== "text" && !(f.type === "number" && f.recipe?.kind === "constant")) ||
       f.date ||
       f.rounding ||
       f.scale !== undefined ||
@@ -78,11 +74,15 @@ export function validateWorkflow(
     )
       add(
         "unsupported-settings",
-        "This U2 build copies text without conversion or trimming.",
-        "Use text with optional required/max-length validation.",
+        "This build supports text copies and typed fixed values without conversion, dates or rounding.",
+        "Use text or a fixed number, with supported validation settings.",
         f.id,
       );
     const r = f.recipe;
+    if (r?.kind === "constant" && r.value.kind !== "blank" && r.value.kind !== f.type)
+      add("constant-type", "The fixed value type must match the output type.", "Choose text for a text literal or number for a decimal literal.", f.id);
+    if (f.trim && f.type !== "text")
+      add("trim-type", "Trimming requires a text output.", "Use text or turn off whitespace trimming.", f.id);
     if (
       r?.kind === "split" &&
       (r.index >= r.segments || r.optionalEmpty.some((i) => i >= r.segments))
