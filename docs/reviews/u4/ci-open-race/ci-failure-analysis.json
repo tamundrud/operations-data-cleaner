@@ -1,0 +1,65 @@
+{
+  "base": "00a0bee9be174f244a8441205bac839282eff3e8",
+  "run": "https://github.com/tamundrud/operations-data-cleaner/actions/runs/38792057702",
+  "artifact_id": 12001810012,
+  "artifact_sha256": "6ad5b709f38da2f58ca572c4a832858c8da724f026c7fa40d4ed7b98eff948d5",
+  "results": {
+    "passed": 154,
+    "failed": 2
+  },
+  "traces": [
+    {
+      "test": "workflow-portability-a-del-22c97-rrent-newly-uploaded-source-chromium",
+      "calls": [
+        {
+          "method": "setInputFiles",
+          "time_ms": 84286.592,
+          "control": "internal:label=\"Import workflow\"s"
+        },
+        {
+          "method": "click",
+          "time_ms": 84470.153,
+          "control": "internal:role=button[name=\"Open workflow\"s]"
+        },
+        {
+          "method": "setInputFiles",
+          "time_ms": 84517.367,
+          "control": "internal:label=\"Import workflow\"s"
+        },
+        {
+          "method": "setInputFiles",
+          "time_ms": 84529.026,
+          "control": "internal:label=\"Upload source CSV\"i"
+        }
+      ],
+      "snapshot": "CSV successfully loaded; workflow name empty; Working configuration; zero configured outputs; no full dataset counts"
+    },
+    {
+      "test": "privacy-production-journey-180ce-s-and-stores-no-source-data-chromium",
+      "calls": [
+        {
+          "method": "setInputFiles",
+          "time_ms": 53827.478,
+          "control": "internal:label=\"Upload source CSV\"i"
+        },
+        {
+          "method": "click",
+          "time_ms": 56333.097,
+          "control": "internal:role=button[name=\"Open workflow\"s]"
+        },
+        {
+          "method": "setInputFiles",
+          "time_ms": 56364.085,
+          "control": "internal:label=\"Upload source CSV\"i"
+        }
+      ],
+      "snapshot": "CSV successfully loaded; workflow name empty; Working configuration; zero configured outputs; no full dataset counts"
+    }
+  ],
+  "controlled_pre_fix_reproduction": {
+    "upload_enabled_during_open": true,
+    "workflow_name_after_upload": "",
+    "empty_mapping_visible": true,
+    "full_dataset_counts": 0
+  }
+}

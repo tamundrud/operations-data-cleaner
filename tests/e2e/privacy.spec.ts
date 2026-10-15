@@ -119,6 +119,8 @@ test("production journey sends no customer values, file names or IDs and stores 
   await page.reload();
   await page.getByLabel("Saved workflows", { exact: true }).selectOption(saved[0].id);
   await page.getByRole("button", { name: "Open workflow", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Repeat workflow", exact: true })).toBeVisible();
+  await expect(page.getByLabel("Upload source CSV")).toBeEnabled();
   await page.getByLabel("Upload source CSV").setInputFiles({ name: `${sentinel}-repeat.csv`, mimeType: "text/csv", buffer: Buffer.from(`ID,Note\n${sentinel},repeat-note`) });
   await preview(page);
   expect((await download(page)).toString()).toContain(sentinel);

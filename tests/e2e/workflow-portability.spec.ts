@@ -112,6 +112,8 @@ test("saved source delimiter policy is committed independently of the next uploa
   await page.getByLabel("Saved workflows", { exact: true }).selectOption(id);
   page.once("dialog", (dialog) => dialog.accept());
   await page.getByRole("button", { name: "Open workflow", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Repeat workflow", exact: true })).toBeVisible();
+  await expect(page.getByLabel("Upload source CSV")).toBeEnabled();
   await expect(page.getByLabel("Source delimiter")).toHaveValue(";");
   await expect(page.getByLabel("Full dataset counts")).not.toBeVisible();
 });
@@ -165,6 +167,8 @@ test("a delayed workflow read confirms against the current newly uploaded source
   const id = await page.getByLabel("Saved workflows", { exact: true }).inputValue();
   await page.reload(); await page.getByLabel("Saved workflows", { exact: true }).selectOption(id);
   await page.getByRole("button", { name: "Open workflow", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Repeat workflow", exact: true })).toBeVisible();
+  await expect(page.getByLabel("Upload source CSV")).toBeEnabled();
   await page.evaluate(() => {
     const text = File.prototype.text;
     File.prototype.text = async function () {

@@ -93,6 +93,8 @@ test("10000 x 20 rows remain intact; record cold and five warm full-pipeline run
       await page.reload();
       await page.getByLabel("Saved workflows", { exact: true }).selectOption(id);
       await page.getByRole("button", { name: "Open workflow", exact: true }).click();
+      await expect(page.getByRole("region", { name: "Repeat workflow", exact: true })).toBeVisible();
+      await expect(page.getByLabel("Upload source CSV")).toBeEnabled();
     }
   }
   const warm = timings.slice(1).sort((a, b) => a - b);

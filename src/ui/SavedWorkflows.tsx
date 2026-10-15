@@ -7,6 +7,8 @@ interface Props {
   baseline?: StoredWorkflow;
   disabled: boolean;
   writePending: boolean;
+  openPending: boolean;
+  opening: (value: boolean) => void;
   generation: number;
   unsaved: boolean;
   name: (value: string) => void;
@@ -90,20 +92,23 @@ export default function SavedWorkflows(props: Props) {
     <h2>Save & repeat</h2>
     <p>Saved workflows belong to this browser and origin. Browser data can be cleared. Download a backup to recover or transfer your configuration.</p>
     <div className="workflow-actions">
-      <label>Saved workflows<select aria-label="Saved workflows" value={selected} disabled={props.disabled} onChange={(e) => { selection.current++; setSelected(e.target.value); }}><option value="">Choose a workflow</option>{listing.records.map((record) => <option key={record.id} value={record.id}>{record.workflow.name}</option>)}</select></label>
-      <button disabled={props.disabled || !selected} onClick={async () => {
+      <label>Saved workflows<select aria-label="Saved workflows" value={selected} disabled={props.disabled || props.openPending} onChange={(e) => { selection.current++; setSelected(e.target.value); }}><option value="">Choose a workflow</option>{listing.records.map((record) => <option key={record.id} value={record.id}>{record.workflow.name}</option>)}</select></label>
+      <button disabled={props.disabled || props.openPending || !selected} onClick={async () => {
         const revision = generation.current; const token = ++selection.current;
+        const abort = new AbortController(); operation.current?.abort(); operation.current = abort;
+        props.opening(true); setStatus("Opening workflow…");
         try {
-          const next = await store.list();
-          if (revision !== generation.current || token !== selection.current || currentProps.current.disabled) return;
+          const next = await store.list({ signal: abort.signal });
+          if (abort.signal.aborted || revision !== generation.current || token !== selection.current || currentProps.current.disabled) return;
           const record = next.records.find((r) => r.id === selected);
           if (!record) throw new Error("Saved workflow unavailable. Retry to refresh the list.");
           if (currentProps.current.activate(record.workflow, record)) { setStatus("Workflow opened. Upload a new source CSV."); setBackup(false); }
-        } catch (error) { if (revision === generation.current && token === selection.current) setStatus((error as Error).message); }
+        } catch (error) { if (!abort.signal.aborted && revision === generation.current && token === selection.current) setStatus((error as Error).message); }
+        finally { if (revision === generation.current && token === selection.current) currentProps.current.opening(false); }
       }}>Open workflow</button>
-      <label>Import workflow<input aria-label="Import workflow" type="file" accept=".json,application/json" disabled={props.disabled} onChange={async (e) => {
+      <label>Import workflow<input aria-label="Import workflow" type="file" accept=".json,application/json" disabled={props.disabled || props.openPending} onChange={async (e) => {
         const file = e.target.files?.[0]; e.target.value = "";
-        if (!file) return;
+        if (!file || currentProps.current.openPending) return;
         const revision = generation.current; const token = ++selection.current;
         try {
           if (file.size > 1024 * 1024) throw new Error("Workflow exceeds 1 MiB.");
@@ -125,7 +130,7 @@ export default function SavedWorkflows(props: Props) {
     {backup && <aside className="notice"><strong>Keep a portable backup.</strong> Download workflow now so you can recover it if browser data is cleared. <button onClick={download}>Download backup</button><button onClick={() => setBackup(false)}>Dismiss backup reminder</button></aside>}
     <p role="status">{status}</p>
     {listing.issues.map((issue, index) => <p key={index} role="status">{issue.message}</p>)}
-    <button disabled={props.disabled} onClick={() => { void refresh(); }}>Retry workflow storage</button>
+    <button disabled={props.disabled || props.openPending} onClick={() => { void refresh(); }}>Retry workflow storage</button>
     <dialog className="column-dialog" ref={dialog} aria-labelledby="workflow-conflict-title" onCancel={() => setConflict(undefined)} onClose={() => saveButton.current?.focus()}>
       <h2 id="workflow-conflict-title">Workflow already exists</h2>
       <p>Choose one saved target to replace, or enter a distinct Workflow name and save a copy.</p>

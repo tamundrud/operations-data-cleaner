@@ -40,6 +40,7 @@ export default function Workspace() {
   const failedGeneration = useRef<number | undefined>(undefined);
   const [baseline, setBaseline] = useState<StoredWorkflow>();
   const [saving, setSaving] = useState(false);
+  const [opening, setOpening] = useState(false);
   const [repeat, setRepeat] = useState(false);
   const [activation, setActivation] = useState(0);
   const durableID = useRef<string | undefined>(undefined);
@@ -111,6 +112,7 @@ export default function Workspace() {
     if (
       !dirty ||
       busy ||
+      opening ||
       !view ||
       state.recoverable ||
       !workflow.fields.length ||
@@ -121,6 +123,7 @@ export default function Workspace() {
     const timer = setTimeout(() => {
       if (
         session.state.busy ||
+        opening ||
         session.state.recoverable ||
         generation !== draftGeneration.current
       )
@@ -136,7 +139,7 @@ export default function Workspace() {
       session.configure(current);
     }, 250);
     return () => clearTimeout(timer);
-  }, [dirty, busy, view, state.recoverable, workflow, session]);
+  }, [dirty, busy, opening, view, state.recoverable, workflow, session]);
   let unsaved = workflow.fields.length > 0;
   if (baseline) {
     try { unsaved = encodeWorkflow({ ...workflow, source: { ...workflow.source, delimiter: activePolicy.current } }) !== baseline.json; }
@@ -145,6 +148,7 @@ export default function Workspace() {
   const confirmReplacement = () => !(unsaved || view || state.recoverable) || window.confirm("Replace the current conversion? Unsaved configuration and source data in this session will be discarded.");
   const resetWorking = () => {
     samplePending.current = false;
+    setOpening(false);
     draftGeneration.current++;
     pendingGeneration.current = undefined;
     failedGeneration.current = undefined;
@@ -199,6 +203,7 @@ export default function Workspace() {
     view &&
     !dirty &&
     !busy &&
+    !opening &&
     !state.recoverable &&
     view.workflowIssues.length === 0;
   const risk = Boolean(
@@ -228,7 +233,8 @@ export default function Workspace() {
         <span>2 · Map columns</span>
         <span>3 · Preview & download</span>
       </nav>
-      <SavedWorkflows workflow={workflow} baseline={baseline} disabled={busy || saving} writePending={saving}
+      <SavedWorkflows workflow={workflow} baseline={baseline} disabled={busy || saving} writePending={saving || opening}
+        openPending={opening} opening={setOpening}
         generation={activation} unsaved={unsaved}
         name={(name) => setWorkflow((w) => ({ ...w, name }))}
         snapshot={snapshot} activate={activate} saved={saved} saving={setSaving} reset={newConversion} />
@@ -250,7 +256,7 @@ export default function Workspace() {
             Source delimiter
             <select
               value={delimiter}
-              disabled={busy || saving}
+              disabled={busy || saving || opening}
               onChange={(e) => setDelimiter(e.target.value as typeof delimiter)}
             >
               <option value="auto">Detect automatically</option>
@@ -264,10 +270,10 @@ export default function Workspace() {
             <input
               type="file"
               accept=".csv,text/csv"
-              disabled={busy || saving}
+              disabled={busy || saving || opening}
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                if (file) {
+                if (file && !opening) {
                   setChoice(undefined);
                   void session.upload(file, delimiter);
                 }
@@ -276,19 +282,19 @@ export default function Workspace() {
             />
           </label>
           <button
-            disabled={busy || saving}
+            disabled={busy || saving || opening}
             onClick={() => {
               void sample();
             }}
           >
             Try sample data
           </button>
-          <button disabled={busy || saving} onClick={() => { void sample(true); }}>
+          <button disabled={busy || saving || opening} onClick={() => { void sample(true); }}>
             Try fixed fields example
           </button>
           {(view || state.recoverable) && (
             <button
-              disabled={busy || saving}
+              disabled={busy || saving || opening}
               onClick={() => {
                 resetWorking();
                 setWorkflow(makeWorkflow([]));
@@ -386,8 +392,8 @@ export default function Workspace() {
           {!repeat && <MappingRows key={activation}
             view={view}
             fields={workflow.fields}
-            disabled={busy && state.busy !== "Checking all rows…"}
-            importing={busy}
+            disabled={opening || (busy && state.busy !== "Checking all rows…")}
+            importing={busy || opening}
             change={change}
             makeFields={makeFields}
             importTemplate={(file) => {
@@ -397,7 +403,7 @@ export default function Workspace() {
           />}
           <section className="panel review" aria-labelledby="preview-title">
             <h2 id="preview-title">3. Preview & download</h2>
-            {!repeat && <fieldset className="csv-options" disabled={busy && state.busy !== "Checking all rows…"}>
+            {!repeat && <fieldset className="csv-options" disabled={opening || (busy && state.busy !== "Checking all rows…")}>
               <legend>CSV export settings</legend>
               <div className="csv-controls">
                 <label>CSV delimiter
@@ -483,7 +489,7 @@ export default function Workspace() {
                   </p>
                 )}
                 {risk && (
-                  <fieldset className="safety" disabled={busy || saving}>
+                  <fieldset className="safety" disabled={busy || saving || opening}>
                     <legend>
                       Spreadsheet formula warning — choose before download
                     </legend>
@@ -531,7 +537,7 @@ export default function Workspace() {
                     <label className="check">
                       <input
                         type="checkbox"
-                        disabled={busy || saving}
+                        disabled={busy || saving || opening}
                         checked={exceptions}
                         onChange={(e) => {
                           setExceptions(e.target.checked);
@@ -585,7 +591,7 @@ export default function Workspace() {
                     </div>
                     <div className="pagination">
                       <button
-                        disabled={busy || view.page === 0}
+                        disabled={busy || opening || view.page === 0}
                         onClick={() =>
                           session.page(view.page - 1, view.exceptions)
                         }
@@ -596,7 +602,7 @@ export default function Workspace() {
                         Page {view.page + 1} of {view.totalPages}
                       </span>
                       <button
-                        disabled={busy || view.page + 1 >= view.totalPages}
+                        disabled={busy || opening || view.page + 1 >= view.totalPages}
                         onClick={() =>
                           session.page(view.page + 1, view.exceptions)
                         }

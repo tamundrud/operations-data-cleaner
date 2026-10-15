@@ -1,0 +1,3 @@
+[cross-model] reachable cross-model candidates for adversarial: claude (host codex excluded; up to 1 successful peer(s))
+[cross-model] peer run: provider=claude route=claude model=claude-opus-5-5 (effort high) transport=acpx@0.19.5 lens=adversarial read-only in-tree (idle 480s / hard 1200s); reviewed code/diff egresses to this provider via this route
+[cross-model] transport unavailable (pre-egress, shared): npm error code ETARGET
