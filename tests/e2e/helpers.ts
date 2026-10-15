@@ -30,6 +30,19 @@ export async function closeSettings(page: Page) {
     .getByRole("button", { name: "Done", exact: true })
     .click();
 }
+export async function fixed(
+  page: Page,
+  header: string,
+  type: "text" | "number" | "blank",
+  value = "",
+) {
+  await edit(page, header);
+  await page.getByLabel("Use a fixed value", { exact: true }).check();
+  await page.getByLabel("Fixed value type", { exact: true }).selectOption(type);
+  if (type !== "blank")
+    await page.getByLabel(type === "number" ? "Fixed number" : "Fixed text", { exact: true }).fill(value);
+  await closeSettings(page);
+}
 export async function rename(page: Page, header: string, name: string) {
   await edit(page, header);
   await page.getByLabel("Output column name", { exact: true }).fill(name);
