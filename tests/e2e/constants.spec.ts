@@ -2,6 +2,52 @@ import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { add, closeSettings, download, edit, fixed, map, preview, upload } from "./helpers";
 
+test("switching trimmed max-length fixed text to number clears text-only settings", async ({ page }) => {
+  await page.goto("/");
+  await upload(page, "ID\n000007");
+  await add(page, ["Code"]);
+  await fixed(page, "Code", "text", " 0012 ");
+  await edit(page, "Code");
+  await page.getByLabel("Remove leading and trailing whitespace").check();
+  await page.locator(".column-validation summary").click();
+  await page.getByLabel("Maximum characters", { exact: true }).fill("4");
+  await closeSettings(page);
+  await preview(page);
+  expect((await download(page)).toString()).toBe("Code\r\n0012\r\n");
+  await fixed(page, "Code", "number", "12.50");
+  await edit(page, "Code");
+  await expect(page.getByLabel("Remove leading and trailing whitespace")).toHaveCount(0);
+  await expect(page.getByLabel("Maximum characters", { exact: true })).toHaveCount(0);
+  await closeSettings(page);
+  await preview(page);
+  await expect(page.locator(".review [role=alert]")).toHaveCount(0);
+  expect((await download(page)).toString()).toBe("Code\r\n12.50\r\n");
+});
+
+test("numeric constant clear and copy radio restore unmatched and faithful text states", async ({ page }) => {
+  await page.goto("/");
+  await upload(page, "ID\n000007");
+  await add(page, ["Code"]);
+  await fixed(page, "Code", "number", "12.50");
+  await preview(page);
+  await page.getByRole("button", { name: "Clear fixed value for Code", exact: true }).click();
+  await expect(page.locator(".dest-list")).toContainText("Code");
+  await expect(page.getByRole("button", { name: "Download converted CSV" })).toBeDisabled();
+  await preview(page);
+  await expect(page.locator(".review [role=alert]")).toContainText("Code is unmapped");
+  await fixed(page, "Code", "number", "12.50");
+  await edit(page, "Code");
+  const copy = page.getByLabel("Copy a source column", { exact: true });
+  await copy.press("Space");
+  await expect(copy).toBeChecked();
+  await expect(page.getByRole("button", { name: "Download converted CSV" })).toBeDisabled();
+  await page.getByLabel("Copy source for Code", { exact: true }).selectOption("id");
+  await closeSettings(page);
+  await preview(page);
+  expect((await download(page)).toString()).toBe("Code\r\n000007\r\n");
+  await expect(page.getByRole("button", { name: "Select source ID", exact: true })).toContainText("Used in 1 output");
+});
+
 test("U3 sample demonstrates constants, trim and nondefault CSV settings", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Try fixed fields example", exact: true }).click();

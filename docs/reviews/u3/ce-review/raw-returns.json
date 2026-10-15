@@ -1,0 +1,57 @@
+[
+  {
+    "reviewer": "correctness",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "project-standards",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "testing",
+    "findings": [],
+    "residual_risks": [
+      "Firefox and WebKit application behavior remains unverified locally: docs/reviews/u3/verification.md records missing executables and blocked browser downloads; all three projects remain configured in CI."
+    ],
+    "testing_gaps": [
+      "Add a contextual settings transition case that enables trim and maximum length on fixed text, switches directly to number, then verifies exact numeric export and removal of incompatible text modifiers. Current constants browser tests configure numeric fields from fresh outputs, so they do not exercise the modifier cleanup in MappingRows.tsx.",
+      "Exercise Clear fixed value and the Copy a source column radio after configuring a numeric constant: verify unmatched grouping, blocked download until a source is selected, and exact copied text afterward. Existing browser coverage replaces a numeric constant by clicking a source card, which does not execute either new settings/clear transition."
+    ]
+  },
+  {
+    "reviewer": "maintainability",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "security",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "performance",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "julik-frontend-races",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "adversarial",
+    "findings": [],
+    "residual_risks": [
+      "Firefox and WebKit application behavior remains unverified locally: docs/reviews/u3/other-browsers.json records launch failures because the browser binaries could not be downloaded. The unchanged three-browser CI production-build configuration is the remaining verification path."
+    ],
+    "testing_gaps": []
+  }
+]

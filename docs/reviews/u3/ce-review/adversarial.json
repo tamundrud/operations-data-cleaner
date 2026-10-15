@@ -1,0 +1,8 @@
+{
+  "reviewer": "adversarial",
+  "findings": [],
+  "residual_risks": [
+    "Firefox and WebKit application behavior remains unverified locally: docs/reviews/u3/other-browsers.json records launch failures because the browser binaries could not be downloaded. The unchanged three-browser CI production-build configuration is the remaining verification path."
+  ],
+  "testing_gaps": []
+}
