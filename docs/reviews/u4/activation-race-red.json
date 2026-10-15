@@ -1,0 +1,236 @@
+{
+  "config": {
+    "argv": [
+      "/home/trevor/.nvm/versions/node/v24.21.0/bin/node",
+      "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/node_modules/.bin/playwright",
+      "test",
+      "--project=chromium",
+      "tests/e2e/workflow-portability.spec.ts",
+      "--grep",
+      "delayed workflow read confirms",
+      "--reporter=line,json"
+    ],
+    "configFile": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/playwright.config.ts",
+    "rootDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+        "snapshotDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 30000,
+        "use": {
+          "baseURL": "http://127.0.0.1:4173",
+          "serviceWorkers": "block",
+          "trace": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium",
+          "launchOptions": {}
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "line"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run preview",
+      "url": "http://127.0.0.1:4173",
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "workflow-portability.spec.ts",
+      "file": "workflow-portability.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "a delayed workflow read confirms against the current newly uploaded source",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 6243,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m1\u001b[39m\nReceived: \u001b[31m0\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m1\u001b[39m\nReceived: \u001b[31m0\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate\n    at /home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/workflow-portability.spec.ts:183:42",
+                    "location": {
+                      "file": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/workflow-portability.spec.ts",
+                      "column": 42,
+                      "line": 183
+                    },
+                    "snippet": "  181 |   page.once(\"dialog\", async (dialog) => { confirmations++; await dialog.dismiss(); });\n  182 |   await page.evaluate(() => Reflect.get(window, \"releaseSyntheticLateImport\")());\n> 183 |   await expect.poll(() => confirmations).toBe(1);\n      |                                          ^\n  184 |   await expect(page.getByLabel(\"Workflow name\", { exact: true })).toHaveValue(\"Synthetic fixed fields and trim\");\n  185 |   await expect(page.getByLabel(\"Full dataset counts\")).toBeVisible();\n  186 |   expect(await download(page)).toEqual(previous);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/workflow-portability.spec.ts",
+                        "column": 42,
+                        "line": 183
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m1\u001b[39m\nReceived: \u001b[31m0\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate\n\n  181 |   page.once(\"dialog\", async (dialog) => { confirmations++; await dialog.dismiss(); });\n  182 |   await page.evaluate(() => Reflect.get(window, \"releaseSyntheticLateImport\")());\n> 183 |   await expect.poll(() => confirmations).toBe(1);\n      |                                          ^\n  184 |   await expect(page.getByLabel(\"Workflow name\", { exact: true })).toHaveValue(\"Synthetic fixed fields and trim\");\n  185 |   await expect(page.getByLabel(\"Full dataset counts\")).toBeVisible();\n  186 |   expect(await download(page)).toEqual(previous);\n    at /home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/workflow-portability.spec.ts:183:42"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T18:31:56.899Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results/workflow-portability-a-del-22c97-rrent-newly-uploaded-source-chromium/error-context.md"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results/workflow-portability-a-del-22c97-rrent-newly-uploaded-source-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results/workflow-portability-a-del-22c97-rrent-newly-uploaded-source-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/workflow-portability.spec.ts",
+                    "column": 42,
+                    "line": 183
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-67362837f59db920cf3e",
+          "file": "workflow-portability.spec.ts",
+          "line": 161,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-15T18:31:55.664Z",
+    "duration": 8068.071000000001,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "verdicts": [
+    {
+      "#": 1,
+      "status": "confirmed",
+      "protected_subject": "concurrency",
+      "reason": "The origin/main diff introduces captured props.activate calls at src/ui/SavedWorkflows.tsx:100/111; when an async Open/Import begins from a clean saved workflow and a name edit or source upload completes before its read resolves, unchanged activation/selection tokens and the now-false disabled guard allow the old Workspace.tsx:145/158–163 closure to bypass confirmation and clear the newer draft/source through Session.end(), and reachability is demonstrated on the reviewed 93ed147 plus staged tree by docs/reviews/u4/activation-race-red.json using Playwright 1.64.0, Node 24.21.0, Chromium 156.0.8078.4, local preview with service workers blocked, and a synthetic deferred File.text import released after source upload/preview/export, where workflow-portability.spec.ts:183 expected one confirmation and observed zero after 5000 ms (subsequent preservation assertions were not reached)."
+    }
+  ]
+}

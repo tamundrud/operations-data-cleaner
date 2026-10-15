@@ -37,6 +37,6 @@ createServer(async (req, res) => {
     res.writeHead(404);
     res.end();
   }
-}).listen(4173, "127.0.0.1", () =>
+}).listen(Number(process.env.ODC_PREVIEW_PORT ?? 4173), "127.0.0.1", () =>
   console.log("Production preview: http://127.0.0.1:4173"),
 );

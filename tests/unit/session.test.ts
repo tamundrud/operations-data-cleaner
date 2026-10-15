@@ -159,3 +159,17 @@ test("CE #2: rejection from a cancelled read cannot clear a newer busy operation
   expect(session.state.view?.summary.candidates).toBe(1);
   session.end();
 });
+
+test("activation releases the old run and installs configuration before a fresh upload", async () => {
+  const session = new Session();
+  await session.upload(file(), ","); latest().flush();
+  const old = latest();
+  session.activate(workflow());
+  expect(old.terminated).toBe(true);
+  expect(session.state).toMatchObject({ view: undefined, recoverable: false, busy: "" });
+  await session.retry();
+  expect(Transport.instances).toHaveLength(1);
+  await session.upload(file(), "auto"); latest().flush();
+  expect(session.state.view?.rows[0].values).toEqual([{ kind: "text", text: "001234" }]);
+  session.end();
+});

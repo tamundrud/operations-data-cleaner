@@ -10,6 +10,9 @@ import {
 import { displayValue } from "../engine/values";
 import { exportText, type SafetyChoice } from "../formats/spreadsheet-safety";
 import MappingRows from "./MappingRows";
+import SavedWorkflows from "./SavedWorkflows";
+import { snapshotWorkflow, encodeWorkflow } from "../workflows/codec";
+import type { StoredWorkflow } from "../workflows/indexeddb-store";
 import sampleSource from "../../examples/u2/source.csv?raw";
 import sampleConfig from "../../examples/u2/workflow.json?raw";
 import fixedSource from "../../examples/u3-source.csv?raw";
@@ -35,7 +38,15 @@ export default function Workspace() {
   const draftGeneration = useRef(0);
   const pendingGeneration = useRef<number | undefined>(undefined);
   const failedGeneration = useRef<number | undefined>(undefined);
-  const nextID = useRef(0);
+  const [baseline, setBaseline] = useState<StoredWorkflow>();
+  const [saving, setSaving] = useState(false);
+  const [repeat, setRepeat] = useState(false);
+  const [activation, setActivation] = useState(0);
+  const durableID = useRef<string | undefined>(undefined);
+  const samplePending = useRef(false);
+  const activePolicy = useRef<Workflow["source"]["delimiter"]>("auto");
+  const currentWorkflow = useRef(workflow);
+  currentWorkflow.current = workflow;
   const statusRef = useRef<HTMLParagraphElement>(null);
   useEffect(() => {
     session.onState = (s) => {
@@ -50,13 +61,25 @@ export default function Workspace() {
           else if (completed === draftGeneration.current) setDirty(false);
         }
       }
-      if (s.error) statusRef.current?.focus();
+      if (s.error) { samplePending.current = false; statusRef.current?.focus(); }
     };
     session.onDownload = saveDownload;
+    session.onSourcePolicy = (policy) => {
+      activePolicy.current = policy;
+      setWorkflow((w) => ({ ...w, source: { ...w.source, delimiter: policy } }));
+    };
     session.onWorkflow = (w) => {
+      if (samplePending.current) {
+        samplePending.current = false;
+        setBaseline(undefined);
+        durableID.current = undefined;
+        setRepeat(false);
+      }
       draftGeneration.current++;
       pendingGeneration.current = undefined;
       failedGeneration.current = undefined;
+      activePolicy.current = w.source.delimiter;
+      setDelimiter(w.source.delimiter);
       setWorkflow(w);
       setDirty(false);
       setChoice(undefined);
@@ -78,7 +101,7 @@ export default function Workspace() {
   const change = (fields: Field[]) => changeWorkflow({ fields });
   const makeFields = (headers: string[]): Field[] =>
     headers.map((header) => ({
-      id: `manual-${nextID.current++}`,
+      id: crypto.randomUUID(),
       header,
       type: "text",
       required: false,
@@ -114,8 +137,58 @@ export default function Workspace() {
     }, 250);
     return () => clearTimeout(timer);
   }, [dirty, busy, view, state.recoverable, workflow, session]);
+  let unsaved = workflow.fields.length > 0;
+  if (baseline) {
+    try { unsaved = encodeWorkflow({ ...workflow, source: { ...workflow.source, delimiter: activePolicy.current } }) !== baseline.json; }
+    catch { unsaved = true; }
+  }
+  const confirmReplacement = () => !(unsaved || view || state.recoverable) || window.confirm("Replace the current conversion? Unsaved configuration and source data in this session will be discarded.");
+  const resetWorking = () => {
+    samplePending.current = false;
+    draftGeneration.current++;
+    pendingGeneration.current = undefined;
+    failedGeneration.current = undefined;
+    setActivation((n) => n + 1);
+    setChoice(undefined);
+    setExceptions(false);
+    durableID.current = undefined;
+    setBaseline(undefined);
+    session.end();
+  };
+  const activate = (next: Workflow, record?: StoredWorkflow) => {
+    if (!confirmReplacement()) return false;
+    resetWorking();
+    setRepeat(true);
+    setBaseline(record);
+    session.activate(next);
+    return true;
+  };
+  const newConversion = () => {
+    if (!confirmReplacement()) return;
+    resetWorking();
+    activePolicy.current = "auto";
+    setDelimiter("auto");
+    setWorkflow(makeWorkflow([]));
+    setDirty(true);
+    setRepeat(false);
+  };
+  const snapshot = (copy = false) => {
+    const current = currentWorkflow.current;
+    const next = snapshotWorkflow({ ...current, source: { ...current.source, delimiter: activePolicy.current } });
+    if (copy) next.id = crypto.randomUUID();
+    else if (next.id === "draft") next.id = durableID.current ??= crypto.randomUUID();
+    return next;
+  };
+  const saved = (record: StoredWorkflow) => {
+    setBaseline(record);
+    durableID.current = record.id;
+    setWorkflow((w) => ({ ...w, id: record.id,
+      name: w.name?.trim() === record.workflow.name ? record.workflow.name : w.name }));
+  };
   const sample = async (fixed = false) => {
     setChoice(undefined);
+    setActivation((n) => n + 1);
+    samplePending.current = true;
     await session.upload(
       new File([fixed ? fixedSource : sampleSource], fixed ? "synthetic-fixed-fields.csv" : "synthetic-orders.csv", { type: "text/csv" }),
       ",",
@@ -155,6 +228,16 @@ export default function Workspace() {
         <span>2 · Map columns</span>
         <span>3 · Preview & download</span>
       </nav>
+      <SavedWorkflows workflow={workflow} baseline={baseline} disabled={busy || saving} writePending={saving}
+        generation={activation} unsaved={unsaved}
+        name={(name) => setWorkflow((w) => ({ ...w, name }))}
+        snapshot={snapshot} activate={activate} saved={saved} saving={setSaving} reset={newConversion} />
+      {repeat && <section className="panel repeat-summary" aria-label="Repeat workflow">
+        <h2>{workflow.name || "Imported workflow"}</h2>
+        <p>{workflow.fields.length} output columns. Upload a compatible source CSV, review the current results, then download.</p>
+        <p>CSV output: {workflow.output.delimiter === "\t" ? "tab" : workflow.output.delimiter === ";" ? "semicolon" : "comma"} · {workflow.output.bom ? "with BOM" : "no BOM"} · {workflow.output.header ? "with header" : "no header"}</p>
+        <button onClick={() => setRepeat(false)}>Edit workflow</button>
+      </section>}
       <section aria-labelledby="upload-title" className="panel upload">
         <div>
           <h2 id="upload-title">1. Choose your source</h2>
@@ -167,7 +250,7 @@ export default function Workspace() {
             Source delimiter
             <select
               value={delimiter}
-              disabled={busy}
+              disabled={busy || saving}
               onChange={(e) => setDelimiter(e.target.value as typeof delimiter)}
             >
               <option value="auto">Detect automatically</option>
@@ -181,7 +264,7 @@ export default function Workspace() {
             <input
               type="file"
               accept=".csv,text/csv"
-              disabled={busy}
+              disabled={busy || saving}
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) {
@@ -193,27 +276,26 @@ export default function Workspace() {
             />
           </label>
           <button
-            disabled={busy}
+            disabled={busy || saving}
             onClick={() => {
               void sample();
             }}
           >
             Try sample data
           </button>
-          <button disabled={busy} onClick={() => { void sample(true); }}>
+          <button disabled={busy || saving} onClick={() => { void sample(true); }}>
             Try fixed fields example
           </button>
           {(view || state.recoverable) && (
             <button
-              disabled={busy}
+              disabled={busy || saving}
               onClick={() => {
-                draftGeneration.current++;
-                pendingGeneration.current = undefined;
-                failedGeneration.current = undefined;
-                session.end();
+                resetWorking();
                 setWorkflow(makeWorkflow([]));
+                activePolicy.current = "auto";
+                setDelimiter("auto");
                 setDirty(true);
-                setChoice(undefined);
+                setRepeat(false);
               }}
             >
               End session
@@ -301,7 +383,7 @@ export default function Workspace() {
               </div>
             </section>
           </details>
-          <MappingRows
+          {!repeat && <MappingRows key={activation}
             view={view}
             fields={workflow.fields}
             disabled={busy && state.busy !== "Checking all rows…"}
@@ -312,10 +394,10 @@ export default function Workspace() {
               setChoice(undefined);
               void session.upload(file, delimiter, { template: true });
             }}
-          />
+          />}
           <section className="panel review" aria-labelledby="preview-title">
             <h2 id="preview-title">3. Preview & download</h2>
-            <fieldset className="csv-options" disabled={busy && state.busy !== "Checking all rows…"}>
+            {!repeat && <fieldset className="csv-options" disabled={busy && state.busy !== "Checking all rows…"}>
               <legend>CSV export settings</legend>
               <div className="csv-controls">
                 <label>CSV delimiter
@@ -336,7 +418,7 @@ export default function Workspace() {
               </div>
               <p className="helper">UTF-8 encoding · CRLF line endings. Settings update preview automatically.</p>
               {!workflow.output.header && <p className="helper">Column labels identify fields in preview only. The downloaded file has no header row.</p>}
-            </fieldset>
+            </fieldset>}
             {!workflow.fields.length ? (
               <p className="notice">
                 Add an output column or import a template to start matching.
@@ -401,7 +483,7 @@ export default function Workspace() {
                   </p>
                 )}
                 {risk && (
-                  <fieldset className="safety" disabled={busy}>
+                  <fieldset className="safety" disabled={busy || saving}>
                     <legend>
                       Spreadsheet formula warning — choose before download
                     </legend>
@@ -449,7 +531,7 @@ export default function Workspace() {
                     <label className="check">
                       <input
                         type="checkbox"
-                        disabled={busy}
+                        disabled={busy || saving}
                         checked={exceptions}
                         onChange={(e) => {
                           setExceptions(e.target.checked);
@@ -555,7 +637,7 @@ export default function Workspace() {
         </div>
       )}
       <footer>
-        U3 internal preview · CSV copies, fixed values and explicit trim. Data is cleared on reload
+        U4 internal preview · CSV conversion and reusable local workflows. Data is cleared on reload
         or End session. Source data and file names are never saved. Static
         application assets are requested from the host; customer file processing
         stays local.

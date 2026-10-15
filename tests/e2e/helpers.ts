@@ -5,7 +5,7 @@ export async function upload(page: Page, text: string, name = "synthetic.csv") {
     .getByLabel("Upload source CSV")
     .setInputFiles({ name, mimeType: "text/csv", buffer: Buffer.from(text) });
   await expect(
-    page.getByRole("heading", { name: "2. Match your columns", exact: true }),
+    page.locator(".workspace"),
   ).toBeVisible();
   await expect(page.getByLabel("Upload source CSV")).toBeEnabled();
 }

@@ -89,7 +89,40 @@ test("production journey sends no customer values, file names or IDs and stores 
     dbs: await indexedDB.databases(),
     caches: await caches.keys(),
   }));
-  expect(storage).toEqual({ local: [], session: [], dbs: [], caches: [] });
+  expect(storage.local).toEqual([]); expect(storage.session).toEqual([]); expect(storage.caches).toEqual([]);
+  expect(storage.dbs.map((db) => db.name)).toEqual(["operations-data-cleaner-workflows"]);
+  const readSaved = () => page.evaluate(async () => new Promise<{ id: string; json: string }[]>((resolve, reject) => {
+    const request = indexedDB.open("operations-data-cleaner-workflows", 1);
+    request.onsuccess = () => {
+      const db = request.result; const tx = db.transaction("workflows", "readonly");
+      const read = tx.objectStore("workflows").getAll();
+      tx.oncomplete = () => { db.close(); resolve(read.result); };
+      tx.onabort = () => { db.close(); reject(new Error("Cannot inspect synthetic workflow storage")); };
+    };
+  }));
+  expect(await readSaved()).toEqual([]);
+  await page.getByLabel("Workflow name", { exact: true }).fill("Synthetic private workflow");
+  await page.getByRole("button", { name: "Save workflow", exact: true }).click();
+  await expect(page.getByText("Saved in this browser.", { exact: true })).toBeVisible();
+  const saved = await readSaved();
+  expect(saved).toHaveLength(1);
+  expect(Object.keys(saved[0]).sort()).toEqual(["id", "json"]);
+  expect(saved[0].json).not.toContain(sentinel);
+  expect(saved[0].json).toContain(headerSentinel); expect(saved[0].json).toContain(constantSentinel);
+  const config = JSON.parse(saved[0].json);
+  expect(Object.keys(config).sort()).toEqual(["fields", "id", "name", "output", "source", "version"]);
+  const jsonEvent = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download workflow", exact: true }).click();
+  const jsonFile = await jsonEvent;
+  const { readFile } = await import("node:fs/promises");
+  expect(await readFile((await jsonFile.path())!, "utf8")).toBe(saved[0].json);
+  await page.reload();
+  await page.getByLabel("Saved workflows", { exact: true }).selectOption(saved[0].id);
+  await page.getByRole("button", { name: "Open workflow", exact: true }).click();
+  await page.getByLabel("Upload source CSV").setInputFiles({ name: `${sentinel}-repeat.csv`, mimeType: "text/csv", buffer: Buffer.from(`ID,Note\n${sentinel},repeat-note`) });
+  await preview(page);
+  expect((await download(page)).toString()).toContain(sentinel);
+  expect(await readSaved()).toEqual(saved);
   expect(await page.locator("img").count()).toBe(0);
   expect(unexpected).toEqual([]);
   expect(
@@ -112,6 +145,7 @@ test("production journey sends no customer values, file names or IDs and stores 
   // Preserve a positive style check so the WebKit exception cannot silently
   // hide loss of the actual external application stylesheet.
   expect(await page.locator("style, [style]").count()).toBe(0);
+  await page.getByRole("button", { name: "Edit workflow", exact: true }).click();
   expect(
     await page
       .locator(".matching")

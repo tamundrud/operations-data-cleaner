@@ -107,3 +107,70 @@ test("corrupt records stay untouched while intact saved definitions remain avail
   await expect(page.getByLabel("Workflow name", { exact: true })).toHaveValue("Synthetic reusable configuration");
   expect(await records(page)).toEqual(expect.arrayContaining([intact, { id: "corrupt-synthetic", json: "{" }]));
 });
+
+test("save acknowledges its submitted snapshot while newer name edits remain unsaved", async ({ page }) => {
+  await page.goto("/"); await importFixture(page);
+  await page.evaluate(() => {
+    const open = IDBFactory.prototype.open;
+    IDBFactory.prototype.open = function (...args: Parameters<IDBFactory["open"]>) {
+      const request = open.apply(this, args);
+      request.addEventListener("success", (event) => {
+        event.stopImmediatePropagation();
+        Reflect.set(window, "releaseSyntheticWorkflowOpen", () => request.dispatchEvent(new Event("success")));
+      }, { once: true });
+      IDBFactory.prototype.open = open;
+      return request;
+    };
+  });
+  await page.getByRole("button", { name: "Save workflow", exact: true }).click();
+  await expect.poll(() => page.evaluate(() => typeof Reflect.get(window, "releaseSyntheticWorkflowOpen"))).toBe("function");
+  await page.getByLabel("Workflow name", { exact: true }).fill("Newer unsaved name");
+  await page.evaluate(() => Reflect.get(window, "releaseSyntheticWorkflowOpen")());
+  await expect(page.getByText("Saved in this browser.", { exact: true })).toBeVisible();
+  const stored = await records(page);
+  expect(JSON.parse(stored[0].json).name).toBe("Synthetic reusable configuration");
+  await expect(page.getByLabel("Workflow name", { exact: true })).toHaveValue("Newer unsaved name");
+  await expect(page.getByText("Unsaved configuration", { exact: true })).toBeVisible();
+});
+
+test("storage denial keeps portable workflow download and ad hoc processing available", async ({ page }) => {
+  await page.addInitScript(() => { IDBFactory.prototype.open = () => { throw new DOMException("Synthetic denied storage", "SecurityError"); }; });
+  await page.goto("/"); await importFixture(page);
+  await page.getByRole("button", { name: "Save workflow", exact: true }).click();
+  await expect(page.getByRole("status").filter({ hasText: /storage is unavailable/i })).toBeVisible();
+  const event = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download workflow", exact: true }).click();
+  const file = await event;
+  expect(JSON.parse(await readFile((await file.path())!, "utf8")).fields).toHaveLength(8);
+  await page.getByLabel("Upload source CSV").setInputFiles({ name: "synthetic.csv", mimeType: "text/csv", buffer: Buffer.from("Order,Consignee,Note\n001234,Depot,note") });
+  await expect(page.getByLabel("Full dataset counts")).toBeVisible();
+});
+
+test("a delayed saved-workflow read uses current confirmation after a draft edit", async ({ page }) => {
+  await page.goto("/"); await importFixture(page); await save(page);
+  const initial = (await records(page))[0];
+  await page.reload(); await page.getByLabel("Saved workflows", { exact: true }).selectOption(initial.id);
+  await page.getByRole("button", { name: "Open workflow", exact: true }).click();
+  await expect(page.getByLabel("Workflow name", { exact: true })).toHaveValue("Synthetic reusable configuration");
+  await page.evaluate(() => {
+    const open = IDBFactory.prototype.open;
+    IDBFactory.prototype.open = function (...args: Parameters<IDBFactory["open"]>) {
+      const request = open.apply(this, args);
+      request.addEventListener("success", (event) => {
+        event.stopImmediatePropagation();
+        Reflect.set(window, "releaseSyntheticSavedRead", () => request.dispatchEvent(new Event("success")));
+      }, { once: true });
+      IDBFactory.prototype.open = open;
+      return request;
+    };
+  });
+  await page.getByRole("button", { name: "Open workflow", exact: true }).click();
+  await expect.poll(() => page.evaluate(() => typeof Reflect.get(window, "releaseSyntheticSavedRead"))).toBe("function");
+  await page.getByLabel("Workflow name", { exact: true }).fill("Latest unsaved draft");
+  let confirmations = 0;
+  page.once("dialog", async (dialog) => { confirmations++; await dialog.dismiss(); });
+  await page.evaluate(() => Reflect.get(window, "releaseSyntheticSavedRead")());
+  await expect.poll(() => confirmations).toBe(1);
+  await expect(page.getByLabel("Workflow name", { exact: true })).toHaveValue("Latest unsaved draft");
+  expect(await records(page)).toEqual([initial]);
+});

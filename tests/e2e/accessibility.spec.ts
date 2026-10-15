@@ -44,3 +44,39 @@ test("U3 fixed fields, CSV options and contextual trim controls remain accessibl
     if (header) await closeSettings(page);
   }
 });
+
+test("workflow metadata stays literal and keyboard collision cancellation restores focus", async ({ page }) => {
+  const { readFile } = await import("node:fs/promises");
+  const definition = JSON.parse(await readFile("examples/u3-workflow.json", "utf8"));
+  definition.name = "<svg onload=alert(1)>Synthetic</svg>";
+  definition.fields[0].header = "<img src=x onerror=alert(1)>";
+  definition.fields[1].recipe.value.text = "<script>alert(1)</script>";
+  const dialogs: string[] = [], diagnostics: string[] = [];
+  page.on("dialog", async (dialog) => { dialogs.push(dialog.message()); await dialog.dismiss(); });
+  page.on("pageerror", (error) => diagnostics.push(error.message));
+  await page.goto("/");
+  const importFile = { name: "synthetic-metadata.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(definition)) };
+  await page.getByLabel("Import workflow", { exact: true }).setInputFiles(importFile);
+  await page.getByRole("button", { name: "Save workflow", exact: true }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByText("Saved in this browser.", { exact: true })).toBeVisible();
+  const id = await page.getByLabel("Saved workflows", { exact: true }).inputValue();
+  await page.reload();
+  await page.getByLabel("Saved workflows", { exact: true }).selectOption(id);
+  const open = page.getByRole("button", { name: "Open workflow", exact: true });
+  await open.focus(); await page.keyboard.press("Enter");
+  await expect(page.getByLabel("Workflow name", { exact: true })).toHaveValue(definition.name);
+  await page.getByLabel("Import workflow", { exact: true }).setInputFiles(importFile);
+  const save = page.getByRole("button", { name: "Save workflow", exact: true });
+  await save.focus(); await page.keyboard.press("Enter");
+  const conflict = page.getByRole("dialog", { name: "Workflow already exists" });
+  await expect(conflict).toBeVisible();
+  await expect(conflict.getByLabel("Replace target", { exact: true })).toBeFocused();
+  expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
+  await page.keyboard.press("Escape");
+  await expect(conflict).not.toBeVisible(); await expect(save).toBeFocused();
+  await page.getByLabel("Upload source CSV").setInputFiles({ name: "synthetic.csv", mimeType: "text/csv", buffer: Buffer.from("Order,Consignee\n000003,Depot") });
+  await preview(page);
+  expect(await page.locator("img, svg, script:not([src])").count()).toBe(0);
+  expect(dialogs).toEqual([]); expect(diagnostics).toEqual([]);
+});

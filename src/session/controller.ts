@@ -25,6 +25,7 @@ export class Session {
   onState: (state: SessionState) => void = () => {};
   onTemplate: (headers: string[]) => void = () => {};
   onWorkflow: (workflow: Workflow) => void = () => {};
+  onSourcePolicy: (delimiter: "auto" | "," | ";" | "\t") => void = () => {};
   onDownload: (bytes: Uint8Array) => void = () => {};
   private update(patch: Partial<SessionState>) {
     this.state = { ...this.state, ...patch };
@@ -65,6 +66,7 @@ export class Session {
         if (this.candidate) {
           const { workflow: replacementWorkflow, ...active } = this.candidate;
           this.active = active;
+          this.onSourcePolicy(active.delimiter);
           this.candidate = undefined;
           if (replacementWorkflow) {
             this.workflow = replacementWorkflow;
@@ -156,6 +158,11 @@ export class Session {
           "The file could not be read. Select it again or try a local copy.",
       });
     }
+  }
+  activate(workflow: Workflow) {
+    this.end();
+    this.workflow = workflow;
+    this.onWorkflow(workflow);
   }
   configure(workflow: Workflow) {
     if (this.state.busy || !this.active) return;

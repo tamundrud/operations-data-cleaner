@@ -1,0 +1,31 @@
+[
+  {
+    "state": "editor",
+    "width": 1440,
+    "noPageOverflow": true
+  },
+  {
+    "state": "editor",
+    "width": 1024,
+    "noPageOverflow": true
+  },
+  {
+    "state": "editor",
+    "width": 390,
+    "noPageOverflow": true
+  },
+  {
+    "state": "repeat",
+    "width": 1440,
+    "noPageOverflow": true
+  },
+  {
+    "state": "repeat",
+    "width": 1024,
+    "noPageOverflow": true
+  },
+  {
+    "download": "converted.csv",
+    "errors": []
+  }
+]

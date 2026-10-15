@@ -11,6 +11,7 @@ import {
   closeSettings,
 } from "./helpers";
 import Papa from "papaparse";
+import { readFile } from "node:fs/promises";
 test("10000 U3 rows preserve every fixed value, exact decimal, trim result and original reference", async ({ page }) => {
   test.setTimeout(120000);
   await page.goto("/");
@@ -81,8 +82,18 @@ test("10000 x 20 rows remain intact; record cold and five warm full-pipeline run
     expect(records.length).toBe(10001);
     expect(records[1][0]).toBe("000000");
     expect(records[10000][19]).toBe("synthetic-9999-19");
+    expect(bytes).toEqual(Buffer.from(csv));
     expect(bytes.subarray(0, 3)).not.toEqual(Buffer.from([239, 187, 191]));
     await expect(page.getByLabel("Full dataset counts")).toContainText("10000");
+    if (i === 0) {
+      await page.getByLabel("Workflow name", { exact: true }).fill("Synthetic 10000-row repeat");
+      await page.getByRole("button", { name: "Save workflow", exact: true }).click();
+      await expect(page.getByText("Saved in this browser.", { exact: true })).toBeVisible();
+      const id = await page.getByLabel("Saved workflows", { exact: true }).inputValue();
+      await page.reload();
+      await page.getByLabel("Saved workflows", { exact: true }).selectOption(id);
+      await page.getByRole("button", { name: "Open workflow", exact: true }).click();
+    }
   }
   const warm = timings.slice(1).sort((a, b) => a - b);
   await testInfo.attach("timings.json", {
@@ -104,6 +115,18 @@ test("10000 x 20 rows remain intact; record cold and five warm full-pipeline run
     contentType: "application/json",
   });
   expect(warm[4]).toBeLessThan(5000);
+  const backupEvent = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download workflow", exact: true }).click();
+  const backup = await backupEvent;
+  const portable = await readFile((await backup.path())!);
+  const fresh = await browser.newContext({ baseURL: "http://127.0.0.1:4173", serviceWorkers: "block" });
+  try {
+    const next = await fresh.newPage(); await next.goto("/");
+    await next.getByLabel("Import workflow", { exact: true }).setInputFiles({ name: "synthetic-large-workflow.json", mimeType: "application/json", buffer: portable });
+    await upload(next, csv);
+    expect(await download(next)).toEqual(Buffer.from(csv));
+    await expect(next.getByLabel("Full dataset counts")).toContainText("10000");
+  } finally { await fresh.close(); }
 });
 test("busy cancel and retry preserve the active mapping and full downloaded data", async ({
   page,
