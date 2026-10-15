@@ -1,13 +1,14 @@
 import { test, expect } from "@playwright/test";
 import { readdir } from "node:fs/promises";
-import { upload, add, map, preview, download, rename, move } from "./helpers";
+import { upload, add, map, preview, download, rename, move, fixed, edit, closeSettings } from "./helpers";
 test("production journey sends no customer values, file names or IDs and stores no source data", async ({
   context,
   page,
 }) => {
   const sentinel = "PRIVATE_U2_SENTINEL_9X";
   const headerSentinel = "PRIVATE_U2_HEADER_SENTINEL_Z7";
-  const privateValues = [sentinel, headerSentinel];
+  const constantSentinel = "PRIVATE_U3_FIXED_SENTINEL_Q82";
+  const privateValues = [sentinel, headerSentinel, constantSentinel];
   const unexpected: string[] = [];
   const seen: string[] = [];
   const diagnostics: string[] = [];
@@ -68,6 +69,18 @@ test("production journey sends no customer values, file names or IDs and stores 
   await rename(page, "Note", headerSentinel);
   await preview(page);
   expect((await download(page)).toString()).toContain(headerSentinel);
+  await add(page, ["CustomerCode"]);
+  await fixed(page, "CustomerCode", "text", `  ${constantSentinel}  `);
+  await edit(page, "CustomerCode");
+  await page.getByLabel("Remove leading and trailing whitespace").check();
+  await closeSettings(page);
+  await page.getByLabel("CSV delimiter", { exact: true }).selectOption(";");
+  await page.getByLabel("Include UTF-8 BOM").check();
+  await page.getByLabel("Include header row").uncheck();
+  await preview(page);
+  const configuredBytes = await download(page);
+  expect(configuredBytes.subarray(0, 3)).toEqual(Buffer.from([239, 187, 191]));
+  expect(configuredBytes.toString()).toContain(`;${constantSentinel}\r\n`);
   await page.getByLabel("Show only rows with exceptions").check();
   await expect(page.getByLabel("Full dataset counts")).toBeVisible();
   const storage = await page.evaluate(async () => ({

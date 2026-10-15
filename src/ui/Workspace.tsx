@@ -12,6 +12,8 @@ import { exportText, type SafetyChoice } from "../formats/spreadsheet-safety";
 import MappingRows from "./MappingRows";
 import sampleSource from "../../examples/u2/source.csv?raw";
 import sampleConfig from "../../examples/u2/workflow.json?raw";
+import fixedSource from "../../examples/u3-source.csv?raw";
+import fixedConfig from "../../examples/u3-workflow.json?raw";
 function saveDownload(bytes: Uint8Array) {
   const url = URL.createObjectURL(
     new Blob([new Uint8Array(bytes)], { type: "text/csv;charset=utf-8" }),
@@ -112,12 +114,12 @@ export default function Workspace() {
     }, 250);
     return () => clearTimeout(timer);
   }, [dirty, busy, view, state.recoverable, workflow, session]);
-  const sample = async () => {
+  const sample = async (fixed = false) => {
     setChoice(undefined);
     await session.upload(
-      new File([sampleSource], "synthetic-orders.csv", { type: "text/csv" }),
+      new File([fixed ? fixedSource : sampleSource], fixed ? "synthetic-fixed-fields.csv" : "synthetic-orders.csv", { type: "text/csv" }),
       ",",
-      { workflow: decodeWorkflow(sampleConfig) },
+      { workflow: decodeWorkflow(fixed ? fixedConfig : sampleConfig) },
     );
   };
   const validPreview =
@@ -197,6 +199,9 @@ export default function Workspace() {
             }}
           >
             Try sample data
+          </button>
+          <button disabled={busy} onClick={() => { void sample(true); }}>
+            Try fixed fields example
           </button>
           {(view || state.recoverable) && (
             <button
@@ -550,7 +555,7 @@ export default function Workspace() {
         </div>
       )}
       <footer>
-        U2 internal preview · CSV copy mapping only. Data is cleared on reload
+        U3 internal preview · CSV copies, fixed values and explicit trim. Data is cleared on reload
         or End session. Source data and file names are never saved. Static
         application assets are requested from the host; customer file processing
         stays local.

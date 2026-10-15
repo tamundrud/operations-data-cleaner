@@ -1,5 +1,17 @@
 import { test, expect } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 import { add, closeSettings, download, edit, fixed, map, preview, upload } from "./helpers";
+
+test("U3 sample demonstrates constants, trim and nondefault CSV settings", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Try fixed fields example", exact: true }).click();
+  await preview(page);
+  expect(await download(page)).toEqual(await readFile("examples/u3-expected.csv"));
+  await expect(page.getByLabel("CSV delimiter", { exact: true })).toHaveValue(";");
+  await expect(page.getByLabel("Include UTF-8 BOM")).toBeChecked();
+  await expect(page.getByLabel("Include header row")).not.toBeChecked();
+  await expect(page.locator(".matched-scroll")).toContainText("No source needed");
+});
 
 test("fixed fields complete without sources, trim validates resulting text and reorder preserves values", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1200 });

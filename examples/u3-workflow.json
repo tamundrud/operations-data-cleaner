@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "id": "u3-synthetic",
+  "name": "Synthetic fixed fields and trim",
+  "source": {
+    "format": "csv",
+    "delimiter": ",",
+    "referencedHeaders": [
+      "order",
+      "consignee"
+    ]
+  },
+  "fields": [
+    {
+      "id": "reference",
+      "header": "Reference",
+      "type": "text",
+      "required": true,
+      "recipe": {
+        "kind": "copy",
+        "source": "order"
+      }
+    },
+    {
+      "id": "customer",
+      "header": "CustomerCode",
+      "type": "text",
+      "required": true,
+      "recipe": {
+        "kind": "constant",
+        "value": {
+          "kind": "text",
+          "text": "0012"
+        }
+      }
+    },
+    {
+      "id": "consignee",
+      "header": "Consignee",
+      "type": "text",
+      "required": true,
+      "maxLength": 80,
+      "trim": true,
+      "recipe": {
+        "kind": "copy",
+        "source": "consignee"
+      }
+    },
+    {
+      "id": "weight",
+      "header": "Weight",
+      "type": "number",
+      "required": true,
+      "recipe": {
+        "kind": "constant",
+        "value": {
+          "kind": "number",
+          "decimal": "12.50"
+        }
+      }
+    },
+    {
+      "id": "note",
+      "header": "OptionalNote",
+      "type": "text",
+      "required": false,
+      "recipe": {
+        "kind": "constant",
+        "value": {
+          "kind": "blank"
+        }
+      }
+    }
+  ],
+  "output": {
+    "format": "csv",
+    "delimiter": ";",
+    "bom": true,
+    "header": false,
+    "lineEnding": "CRLF",
+    "dateSystem": "1900"
+  }
+}

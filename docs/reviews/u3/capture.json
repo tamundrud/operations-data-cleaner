@@ -1,0 +1,19 @@
+{
+  "browser": "154.0.8037.57",
+  "results": [
+    {
+      "width": 1440,
+      "height": 900,
+      "overflow": false,
+      "pageErrors": [],
+      "exactSampleBytes": true
+    },
+    {
+      "width": 1024,
+      "height": 900,
+      "overflow": false,
+      "pageErrors": [],
+      "exactSampleBytes": true
+    }
+  ]
+}
