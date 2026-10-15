@@ -7,6 +7,7 @@ import {
 } from "../../src/engine/workflow";
 import { parseCsv } from "../../src/formats/csv";
 import { evaluate } from "../../src/engine/recipes";
+import { validateWorkflowConfiguration } from "../../src/engine/validation";
 const source = parseCsv(
   new TextEncoder().encode("ID,Extra\n001234,x"),
   ",",
@@ -121,4 +122,14 @@ test("required and max-length validate text without trimming or silently shorten
   expect(r.summary.invalid).toBe(2);
   expect(r.rows[0].values[0]).toEqual({ kind: "text", text: "  " });
   expect(r.rows[1].issues[0].code).toBe("max-length");
+});
+
+test("source-independent validation separates usable configuration from dataset compatibility", () => {
+  const w = copy();
+  expect(validateWorkflowConfiguration(w)).toEqual([]);
+  w.fields[0].recipe = { kind: "copy", source: "missing" };
+  expect(validateWorkflowConfiguration(w)).toEqual([]);
+  expect(evaluate(w, source).workflowIssues.map((issue) => issue.code)).toEqual(["missing-header"]);
+  delete w.fields[0].recipe;
+  expect(validateWorkflowConfiguration(w).map((issue) => issue.code)).toEqual(["unmapped"]);
 });

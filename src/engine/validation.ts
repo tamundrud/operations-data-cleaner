@@ -6,10 +6,7 @@ import {
 } from "./workflow";
 import type { SourceTable } from "./values";
 import type { Issue } from "./issues";
-export function validateWorkflow(
-  workflow: Workflow,
-  source: SourceTable,
-): Issue[] {
+export function validateWorkflowConfiguration(workflow: Workflow): Issue[] {
   const errors: Issue[] = [];
   const add = (code: string, reason: string, action: string, field?: string) =>
     errors.push({
@@ -37,7 +34,6 @@ export function validateWorkflow(
       "This build supports CSV input and output only.",
       "Use UTF-8 CSV with comma, semicolon or tab and CRLF output.",
     );
-  const keys = new Set(source.columns.map((c) => c.key));
   const ids = new Set<string>(),
     headers = new Set<string>();
   for (const f of workflow.fields) {
@@ -101,12 +97,21 @@ export function validateWorkflow(
         f.id,
       );
   }
+  return errors;
+}
+
+export function validateWorkflow(workflow: Workflow, source: SourceTable): Issue[] {
+  const errors = validateWorkflowConfiguration(workflow);
+  if (errors.some((issue) => issue.code === "schema")) return errors;
+  const keys = new Set(source.columns.map((c) => c.key));
   for (const ref of referencedHeaders(workflow.fields))
     if (!keys.has(ref))
-      add(
-        "missing-header",
-        `Referenced source header “${ref}” is missing.`,
-        "Choose an available source column or correct and reupload the CSV.",
-      );
+      errors.push({
+        code: "missing-header",
+        scope: "workflow",
+        severity: "error",
+        reason: `Referenced source header “${ref}” is missing.`,
+        action: "Choose an available source column or correct and reupload the CSV.",
+      });
   return errors;
 }

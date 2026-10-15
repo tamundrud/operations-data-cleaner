@@ -1,0 +1,3 @@
+Reference,CustomerCode,Consignee,Weight,OptionalNote,Again,Literal,Signed
+001234,0012,Acme,12.50,,001234," café,""quoted""
+next	end ",-999999999999999999999.0001
