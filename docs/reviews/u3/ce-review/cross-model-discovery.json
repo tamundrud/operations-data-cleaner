@@ -1,0 +1,1 @@
+{"host_harness": "codex", "host_family": "codex", "installed_routes": ["codex"], "mode": "auto", "outcome": "not-started", "reason": "No attested different-provider route installed (claude, grok, cursor-agent, opencode absent); local adversarial fallback selected."}

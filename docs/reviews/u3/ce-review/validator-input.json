@@ -1,0 +1,43 @@
+{
+  "selected_findings": [],
+  "findings": [],
+  "skip_count": 0,
+  "skip_evidence_basis": "No primary findings exist; no independent cross-model shortcut applied.",
+  "scope": {
+    "mode": "standalone",
+    "base": "7192c36290057c640a5542dc8ca4b61cfd4ad1db",
+    "diff_a": "7192c36290057c640a5542dc8ca4b61cfd4ad1db",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u3-fixed-trim-csv",
+    "head_sha": "0c7b5f98428c55012d1cd2bffb5e891361d1d9c9",
+    "files": "/tmp/compound-engineering-1000/ce-code-review/20261015-025600-10e91a70/files.txt",
+    "diff": "/tmp/compound-engineering-1000/ce-code-review/20261015-025600-10e91a70/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": [
+      "docs/reviews/u3/simplification.md"
+    ]
+  },
+  "scope_context": {
+    "mode": "standalone",
+    "tree_is_reviewed_head": true,
+    "base": "7192c36290057c640a5542dc8ca4b61cfd4ad1db",
+    "diff_a": "7192c36290057c640a5542dc8ca4b61cfd4ad1db",
+    "diff_b": null,
+    "head_sha": "0c7b5f98428c55012d1cd2bffb5e891361d1d9c9",
+    "diff": "/tmp/compound-engineering-1000/ce-code-review/20261015-025600-10e91a70/full.diff"
+  },
+  "run_dir": "/tmp/compound-engineering-1000/ce-code-review/20261015-025600-10e91a70",
+  "batch_cap": 8,
+  "selected_count": 0
+}

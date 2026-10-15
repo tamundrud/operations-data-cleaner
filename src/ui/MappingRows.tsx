@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type DragEvent } from "react";
 import type { Field } from "../engine/workflow";
+import { displayValue } from "../engine/values";
 import type { View } from "../session/worker-protocol";
 
 type Props = {
@@ -14,6 +15,13 @@ type Props = {
 type Card = { kind: "source" | "output" | "pair"; id: string };
 const sourceKey = (f: Field) =>
   f.recipe?.kind === "copy" ? f.recipe.source : "";
+const configured = (f: Field) => Boolean(sourceKey(f) || f.recipe?.kind === "constant");
+const fixedSummary = (f: Field) => {
+  if (f.recipe?.kind !== "constant") return "";
+  const value = f.recipe.value;
+  if (value.kind === "blank") return "Intentional blank";
+  return `Fixed ${value.kind} · ${value.kind === "text" ? JSON.stringify(value.text) : value.decimal}`;
+};
 
 export default function MappingRows({
   view,
@@ -40,13 +48,13 @@ export default function MappingRows({
   const cards = useRef(new Map<string, HTMLButtonElement>());
   const focus = (id: string) =>
     requestAnimationFrame(() => cards.current.get(id)?.focus());
-  const matched = fields.filter((f) => sourceKey(f));
-  const unmatched = fields.filter((f) => !sourceKey(f));
+  const matched = fields.filter(configured);
+  const unmatched = fields.filter((f) => !configured(f));
   const positions = new Map(fields.map((f, i) => [f, i + 1]));
   const usesBySource = new Map<string, number>();
   for (const f of matched) {
     const key = sourceKey(f);
-    usesBySource.set(key, (usesBySource.get(key) ?? 0) + 1);
+    if (key) usesBySource.set(key, (usesBySource.get(key) ?? 0) + 1);
   }
   const field = fields.find((f) => f.id === editing);
   const manualHeaders = manual.split("\n").filter((h) => h.trim());
@@ -83,7 +91,7 @@ export default function MappingRows({
     const f = fields.find((f) => f.id === id),
       c = columnByKey.get(key);
     if (disabled || !f || !c) return;
-    update(id, { recipe: { kind: "copy", source: key } });
+    update(id, { type: "text", recipe: { kind: "copy", source: key } });
     setAnnouncement(
       `${f.header || "Output column"} now copies ${c.header}. Export order unchanged.`,
     );
@@ -126,7 +134,7 @@ export default function MappingRows({
     if (from < 0 || to < 0 || from === to) return;
     reordered.splice(to, 0, reordered.splice(from, 1)[0]);
     let i = 0;
-    change(fields.map((f) => (sourceKey(f) ? reordered[i++] : f)));
+    change(fields.map((f) => (configured(f) ? reordered[i++] : f)));
     setAnnouncement(
       "Pair reordered. Export order updated; unmatched output positions stayed fixed.",
     );
@@ -244,9 +252,10 @@ export default function MappingRows({
         {f.header || "Name this output column"}
       </strong>
       <span className={paired ? "confirmed" : "waiting"}>
-        {paired
+        {f.recipe?.kind === "constant" ? fixedSummary(f) : paired
           ? `Confirmed · copies ${columnByKey.get(sourceKey(f))?.header ?? sourceKey(f)}`
           : "Unmatched · drop a source here"}
+        {f.trim && " · trims boundary whitespace"}
       </span>
     </button>
   );
@@ -356,6 +365,9 @@ export default function MappingRows({
             Drag the grip to reorder a pair · Alt+↑ / Alt+↓
           </span>
         </div>
+        {matched.some((f) => f.recipe?.kind === "constant") && (
+          <p className="helper">Completed outputs include fixed values. Fixed values need no source match and can be reordered with the pairs.</p>
+        )}
         <div className="matched-headings" aria-hidden="true">
           <span>Source column</span>
           <span>Output column · export position</span>
@@ -416,17 +428,22 @@ export default function MappingRows({
               >
                 ⠿
               </button>
-              {sourceCard(sourceKey(f), f)}
+              {f.recipe?.kind === "constant" ? (
+                <div className="fixed-summary">
+                  <strong>Fixed value</strong>
+                  <span>No source needed</span>
+                </div>
+              ) : sourceCard(sourceKey(f), f)}
               <span className="pair-mark" aria-hidden="true">
-                ↔
+                {f.recipe?.kind === "constant" ? "" : "↔"}
               </span>
               {outputCard(f, true)}
               <div className="pair-actions">
                 <button
                   className="unlink"
                   disabled={disabled}
-                  aria-label={`Unlink ${f.header}`}
-                  title="Unlink match"
+                  aria-label={f.recipe?.kind === "constant" ? `Clear fixed value for ${f.header}` : `Unlink ${f.header}`}
+                  title={f.recipe?.kind === "constant" ? "Clear fixed value" : "Unlink match"}
                   onClick={() => {
                     update(f.id, { recipe: undefined });
                     setSelected(undefined);
@@ -557,7 +574,7 @@ export default function MappingRows({
           {fields.map((f, i) => (
             <span
               key={f.id}
-              className={`order-chip ${sourceKey(f) ? "" : "missing"}`}
+              className={`order-chip ${configured(f) ? "" : "missing"}`}
             >
               {i + 1} · {f.header || "Unnamed"}
             </span>
@@ -584,7 +601,57 @@ export default function MappingRows({
                   onChange={(e) => update(field.id, { header: e.target.value })}
                 />
               </label>
-              <label>
+              <fieldset className="value-mode">
+                <legend>Output value</legend>
+                <label className="check">
+                  <input type="radio" name="value-mode" checked={field.recipe?.kind !== "constant"}
+                    onChange={() => update(field.id, { type: "text", recipe: undefined })} />
+                  Copy a source column
+                </label>
+                <label className="check">
+                  <input type="radio" name="value-mode" checked={field.recipe?.kind === "constant"}
+                    onChange={() => {
+                      update(field.id, { type: "text", recipe: { kind: "constant", value: { kind: "text", text: "" } } });
+                      setSelected(undefined);
+                      setAnnouncement(`${field.header} uses a fixed value. No source match needed.`);
+                    }} />
+                  Use a fixed value
+                </label>
+              </fieldset>
+              {field.recipe?.kind === "constant" ? (
+                <>
+                  <label>
+                    Fixed value type
+                    <select aria-label="Fixed value type" value={field.recipe.value.kind} onChange={(e) => {
+                      const kind = e.target.value as "text" | "number" | "blank";
+                      const text = field.recipe?.kind === "constant" ? displayValue(field.recipe.value) : "";
+                      update(field.id, {
+                        type: kind === "number" ? "number" : "text",
+                        trim: kind === "number" ? undefined : field.trim,
+                        maxLength: kind === "number" ? undefined : field.maxLength,
+                        recipe: { kind: "constant", value: kind === "blank" ? { kind } : kind === "number" ? { kind, decimal: text } : { kind, text } },
+                      });
+                    }}>
+                      <option value="text">Text — preserve exactly</option>
+                      <option value="number">Number — exact decimal</option>
+                      <option value="blank">Intentional blank</option>
+                    </select>
+                  </label>
+                  {field.recipe.value.kind === "text" && (
+                    <label>Fixed text
+                      <textarea aria-label="Fixed text" rows={2} maxLength={4096} value={field.recipe.value.text}
+                        onChange={(e) => update(field.id, { recipe: { kind: "constant", value: { kind: "text", text: e.target.value } } })} />
+                    </label>
+                  )}
+                  {field.recipe.value.kind === "number" && (
+                    <label>Fixed number
+                      <input type="text" inputMode="decimal" maxLength={1000} value={field.recipe.value.decimal}
+                        onChange={(e) => update(field.id, { recipe: { kind: "constant", value: { kind: "number", decimal: e.target.value } } })} />
+                    </label>
+                  )}
+                  <p className="helper">{field.recipe.value.kind === "blank" ? "An empty value in every row. Required outputs cannot be blank." : field.recipe.value.kind === "number" ? "Use a decimal such as 12.50. No commas, currency symbols or exponents; digits and decimal places are preserved exactly." : "The same text in every row. Leading zeros and whitespace are preserved unless you enable trimming."}</p>
+                </>
+              ) : <label>
                 Copy source for {field.header || "unnamed column"}
                 <select
                   aria-label={`Copy source for ${field.header || "unnamed column"}`}
@@ -604,10 +671,14 @@ export default function MappingRows({
                     </option>
                   ))}
                 </select>
-              </label>
+              </label>}
+              {field.type === "text" && <label className="check">
+                <input type="checkbox" checked={field.trim ?? false}
+                  onChange={(e) => update(field.id, { trim: e.target.checked })} />
+                Remove leading and trailing whitespace
+              </label>}
               <p className="helper">
-                Changes update preview automatically. Text copied exactly · no
-                trimming or conversion.
+                Changes update preview automatically. {field.trim ? "Only boundary whitespace is removed; internal spacing and original source values stay unchanged." : "Trimming is off. Text keeps its original whitespace."}
               </p>
               <details className="column-validation">
                 <summary>Validation (optional)</summary>
@@ -621,7 +692,7 @@ export default function MappingRows({
                   />
                   Required value
                 </label>
-                <label>
+                {field.type === "text" && <label>
                   Maximum characters
                   <input
                     type="number"
@@ -637,7 +708,7 @@ export default function MappingRows({
                       })
                     }
                   />
-                </label>
+                </label>}
               </details>
               <div className="dialog-actions">
                 <button

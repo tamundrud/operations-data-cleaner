@@ -1,0 +1,4109 @@
+diff --git a/.github/workflows/u2.yml b/.github/workflows/u2.yml
+index b28af2c..60e24b8 100644
+--- a/.github/workflows/u2.yml
++++ b/.github/workflows/u2.yml
+@@ -1,11 +1,11 @@
+-name: U2 CSV verification
++name: CSV conversion verification
+ on:
+   pull_request:
+   push:
+     branches: [main]
+ permissions:
+   contents: read
+ jobs:
+   verify:
+     runs-on: ubuntu-latest
+     timeout-minutes: 20
+@@ -18,15 +18,15 @@ jobs:
+       - run: npm ci
+       - run: npm run typecheck
+       - run: npm run lint
+       - run: npm run test:unit
+       - run: npm run build
+       - run: npx playwright install --with-deps chromium firefox webkit
+       - run: npm run test:e2e
+       - uses: actions/upload-artifact@v4
+         if: always()
+         with:
+-          name: u2-browser-evidence
++          name: csv-browser-evidence
+           path: |
+             playwright-report/
+             test-results/
+           retention-days: 14
+diff --git a/README.md b/README.md
+index 906929a..01dc6e6 100644
+--- a/README.md
++++ b/README.md
+@@ -1,40 +1,44 @@
+ # Operations Data Cleaner
+ 
+-U2 internal preview: a browser application that converts a CSV into an explicitly mapped, reordered CSV. Upload your source, enter destination columns or upload a CSV header template, choose each copy mapping, preview all rows, then download. Identifiers and whitespace remain text. Nothing needs an account or a saved workflow.
++U3 internal preview: convert a CSV into explicitly matched, reordered output columns, including fixed text, exact decimal numbers and intentional blanks. Trim text only when you choose to. Select CSV delimiter, BOM and header settings, inspect the automatically refreshed preview, then download. Nothing needs an account or a saved workflow.
+ 
+ ## Run locally
+ 
+ Use Node 24 LTS (implementation environment: Node 24.19.0, npm 11.9.0).
+ 
+ ```sh
+ npm ci
+ npm run build
+ npm run preview
+ ```
+ 
+ Open **http://127.0.0.1:4173**. This serves the production application and privacy policy. `npm run dev` starts Vite for development; its HMR traffic and styles conflict with the restrictive production CSP, so use build/preview for product verification. No deployment or server-side file processing is involved.
+ 
+ ## Working synthetic example
+ 
+ Select **Try sample data** to run the bundled, fictional order conversion. Download should match [expected.csv](examples/u2/expected.csv), including `001234`, quoted commas, an embedded newline, and preserved spaces.
+ 
+-For a personal usability check, start a fresh session and use [source.csv](examples/u2/source.csv) and [template.csv](examples/u2/template.csv). Try mapping, renaming/reordering, inspecting the result and downloading using only the interface. The ready-made [workflow.json](examples/u2/workflow.json) is the bundled configuration, not an import/persistence feature in this build. Please report where the next action, source/output distinction, errors, export settings or keyboard controls were unclear. **User UX approval is pending**; automated tests cannot close it.
++Select **Try fixed fields example** for [the U3 source](examples/u3-source.csv) and [configuration](examples/u3-workflow.json). It adds text `0012`, number `12.50`, an optional blank and explicit Consignee trimming. Download matches [the U3 golden file](examples/u3-expected.csv): semicolon, UTF-8 BOM, no header, CRLF. Internal spaces stay unchanged. Both examples are fictional.
++
++Open an output card’s **⋯** settings to choose **Copy a source column** or **Use a fixed value**. Fixed fields join completed rows with a “No source needed” summary and can be reordered with matched pairs. Text identifiers preserve leading zeros and whitespace. **Remove leading and trailing whitespace** is off by default and operates before required/maximum-length checks; originals remain available under **Inspect original source table**. CSV settings sit beside preview/download; changing any configuration blocks old downloads and clears formula handling until the current result is checked.
++
++The existing [U2 source](examples/u2/source.csv), [template](examples/u2/template.csv) and [configuration](examples/u2/workflow.json) remain available. Bundled configurations demonstrate the version 1 model; this build has no workflow import or storage UI. U2 has been user approved; **U3 UX approval remains pending hands-on testing**.
+ 
+ ## Delivered limits and privacy
+ 
+ - UTF-8 CSV with optional input BOM; comma, semicolon or tab input. First nonblank record is the header; normalized empty/duplicate headers and malformed quotes/extra cells fail explicitly.
+-- Copy mapping only; all output fields must be mapped. Text type, optional required/max-length validation, no automatic trimming or numeric conversion. Invalid rows block the whole download; fix/reupload or change your rules.
+-- Default output: UTF-8, no BOM, comma, headers, standard quoting, CRLF. Formula-like text/headers require an explicit escaped/raw choice; preview shows the selected representation. Escaping changes text and cannot promise protection in every spreadsheet/importer. Raw text may be unsafe to open in spreadsheets.
++- Every output must have a source copy or fixed text/number/blank recipe. Text supports optional required/max-length validation and explicit boundary trim. Numeric constants use a strict decimal string grammar: optional sign, digits and decimal point; no currency, thousands separators or exponents. `12.50`, `+0012.500` and long decimals retain their exact representation without floating-point conversion or rounding. Numeric source conversion, scale and rounding rules remain deferred. Optional blanks succeed; required blank/whitespace-only values block the whole download.
++- Default output: UTF-8, no BOM, comma, headers, standard quoting, CRLF. Choose comma, semicolon or tab, BOM on/off and header on/off. Preview retains column labels for identification even when the exported header is omitted. Formula-like text (including constants) and included headers require an explicit escaped/raw choice; preview shows the selected representation. Typed numeric constants are not formula text. Escaping changes text and cannot promise protection in every spreadsheet/importer. Raw text may be unsafe to open in spreadsheets.
+ - Full dataset counts with paginated output and exception rows (50 per page). Nonblank totals are ordinary candidates. No silent record truncation. Limits: 25 MiB source, 200 columns, 2 million inspected cells, 30-second cancellable worker watchdog.
+ - Files and parsed data stay in browser memory and are cleared by reload or End session. No localStorage, IndexedDB, service worker, analytics, remote fonts, or upload endpoint. Static application code/assets still use ordinary host requests and metadata. Processing runs in a local Web Worker.
+-- Excel, constants, advanced recipes, export options, saved workflows, suggestions, source correction and partial export belong to later units. This is not the full MVP or certified TMS interoperability.
++- Excel, split/combine/arithmetic/date operations, saved workflows, suggestions, source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
+ 
+ ## Verify
+ 
+ ```sh
+ npm run typecheck
+ npm run lint
+ npm run test:unit
+ npm run build
+ npx playwright install --with-deps chromium firefox webkit
+ npm run test:e2e
+diff --git a/docs/plans/2026-10-15-0233-feat-u3-fixed-trim-csv-plan.md b/docs/plans/2026-10-15-0233-feat-u3-fixed-trim-csv-plan.md
+new file mode 100644
+index 0000000..32bc1bb
+--- /dev/null
++++ b/docs/plans/2026-10-15-0233-feat-u3-fixed-trim-csv-plan.md
+@@ -0,0 +1,208 @@
++---
++title: U3 Fixed Fields, Explicit Trim and CSV Settings - Plan
++type: feat
++date: 2026-10-15
++artifact_contract: ce-unified-plan/v1
++product_contract_source: approved-u3-scope
++origin: docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md
++execution: code
++---
++
++# U3 Fixed Fields, Explicit Trim and CSV Settings - Plan
++
++## Goal Capsule
++
++- Objective: Operators can prepare import CSVs with fixed output values, deliberate whitespace trimming and the required CSV layout, then inspect and download the current result.
++- Means: Extend the existing version 1 recipe engine and paired-card workspace (KTD1–KTD4).
++- Authority: The user authorizes U3 planning, implementation, testing and a draft PR against main; the PRD and approved master plan govern semantics.
++- Stop conditions: No merge, deployment, U4 persistence or substantial redesign of the approved U2 interface. The user personally tests and approves UX before the PR leaves draft.
++- Execution: The implementation agent finishes production changes, verification, CE simplification/review, finding validation, evidence and draft PR updates.
++
++---
++
++## Product Contract
++
++### Summary
++
++Deliver master-plan U3 only: fixed text, number and intentional-blank fields; explicit text trimming; and CSV delimiter, BOM and header controls.
++Use existing contextual field settings and place CSV controls beside preview/download.
++
++### Problem Frame
++
++A source export often lacks required customer codes or service values, includes meaningful boundary spaces, or needs a different CSV layout for an import.
++U2 currently supports copying text with only default CSV settings.
++
++### Requirements
++
++**Values and validation**
++
++- R1. Fixed values generate every candidate source row without a source association, preserving text literally and numbers as exact decimal strings; optional blanks succeed and required blanks fail (FR-40, AC-07).
++- R2. Text trimming is off by default and removes only explicitly selected boundary whitespace before required and maximum-length validation, without changing source values (FR-12, KTD-04).
++- R3. Copies and constants retain typed results, row provenance, complete counts, validation and formula-safety checks, including formula-like constant text (KTD-03/04/06).
++
++**CSV and current results**
++
++- R4. Configure comma, semicolon or tab delimiter, UTF-8 BOM on/off and header on/off in the existing workflow; preserve comma/no BOM/header/CRLF defaults (FR-45, AC-16).
++- R5. All configuration changes automatically schedule the current preview and invalidate prior export eligibility and formula handling choices; no obsolete worker result may become downloadable.
++- R6. CSV bytes preserve output order, UTF-8, quotes, embedded delimiters/newlines and CRLF across all twelve delimiter/BOM/header combinations.
++
++**Experience and verification**
++
++- R7. Preserve U2 bidirectional matching, reusable sources, matched-slot reorder, unmatched grouping and keyboard alternatives while completed constants appear configured without a fake source connection.
++- R8. Prove U3 using unit and production-build browser tests, synthetic examples, desktop/laptop screenshots, privacy sentinels and the existing full-dataset/performance checks; record cross-browser limits honestly.
++
++### Scope Boundaries
++
++U3 does not introduce dependencies, alternate transformation models, automatic cleanup, output-field dependencies, configurable encodings, extra export formats or partial exports.
++No source corrections, split/combine/arithmetic/date operations, Excel integration, suggestions or saved-workflow storage are delivered here.
++Existing source template handling and U1/U2 acceptance remain in place.
++
++### Sources
++
++- `docs/PRD.md`: FR-12, FR-38, FR-40, FR-45, AC-07/16/17/20/21.
++- `docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md`: U3 and KTD-03/04/06; other units remain deferred.
++- `docs/design/u2/paired-cards/SPECIFICATION.md`: approved interaction and completed-slot reorder rules.
++- `docs/reviews/u2-paired-cards/review-followup.md`: active selection, announcements, downward reorder and private output-header regression coverage.
++
++---
++
++## Planning Contract
++
++### Key Technical Decisions
++
++- KTD1. Use existing strict version 1 variants in `src/engine/workflow.ts`, not a second model. The schema already declares constants, trim and CSV settings, while runtime validation deliberately blocks them; expand only U3 support and keep unsupported variants failing clearly (R1–R4).
++- KTD2. Keep numeric constants as validated lexical decimal strings, including `12.50`, leading zeroes and explicit plus signs; use no JavaScript number conversion or arithmetic dependency. Constant type and field type must agree, trim/max-length remain text-only, and malformed/incompatible settings block exports. Optional intentional blanks may use delivered text or number types. Preserve current required semantics: whitespace-only text is blank whether trim is enabled or not (R1–R3).
++- KTD3. Model completed outputs as copy mappings or valid constant recipes. Retain existing pair rows for copies; show fixed output rows in the same completed group with a noninteractive source-side “Fixed value · no source needed” summary and no connection arrow. Include these rows in completed-slot drag/keyboard reorder without moving unmatched slots. Keep fixed type/value/intentional blank and trim inside the contextual dialog (R7).
++- KTD4. Route fields and output settings through one workflow mutation path in `src/ui/Workspace.tsx`. Preserve generation tracking, debounce, dirty export lock, controller revision checks and cancellation. Clear formula choice on every relevant edit and keep settings editable through the existing pending-run scheduling behavior (R5).
++- KTD5. Extend result provenance to identify constant origin and applied trim without inventing a source column. Preserve actual source row identity for every output and the existing copy provenance information (R3).
++
++### High-Level Technical Design
++
++Data flows through the existing modules; only supported recipe execution, modifiers and CSV settings widen.
++Header-off downloads omit header formula risk because labels are not emitted; the UI explains that column labels remain visible only for preview.
++
++```mermaid
++flowchart TB
++  UI[Contextual field and CSV settings] --> Draft[Version 1 workflow draft]
++  Draft --> Scheduler[Generation and revision protected scheduler]
++  Scheduler --> Engine[Primary copy or constant recipe]
++  Engine --> Trim[Explicit text trim]
++  Trim --> Validation[Required and maximum length validation]
++  Validation --> Run[Typed results with provenance and counts]
++  Run --> Preview[Current preview and safety choice]
++  Preview --> CSV[Configured CSV serialization]
++```
++
++The export eligibility states retain the existing transitions.
++
++```mermaid
++stateDiagram-v2
++  Current --> Dirty: configuration edit clears choice
++  Dirty --> Processing: debounce and worker available
++  Processing --> Dirty: newer configuration edit
++  Processing --> Current: current successful reply
++  Processing --> Blocked: error or cancellation
++  Current --> AwaitingChoice: formula-like text
++  AwaitingChoice --> Exportable: explicit safe or raw choice
++  Current --> Exportable: no errors or formula risk
++  Exportable --> Dirty: any configuration edit
++```
++
++CSV format combinations are the cartesian product below, with independent exact-byte expectations.
++
++| Delimiter | BOM off/header on | BOM on/header on | BOM off/header off | BOM on/header off |
++| --- | --- | --- | --- | --- |
++| Comma | Default | BOM prefix | Data only | BOM plus data |
++| Semicolon | Header and data | BOM prefix | Data only | BOM plus data |
++| Tab | Header and data | BOM prefix | Data only | BOM plus data |
++
++### Sequencing and Risks
++
++Implement U1, then U2, then U3 below; these IDs are local work packets inside master-plan U3.
++Keep the current U2 sample action stable and add a separately named synthetic U3 example.
++Do not expand numeric support to copied numeric conversion, scale or rounding rules from future U7.
++
++The U2 evidence records browser installation and performance-budget limitations; implementation must rerun the required checks and separate fidelity success from timing failures.
++Neither missing browser executables nor CI pending status proves cross-browser behavior.
++
++---
++
++## Implementation Units
++
++### U1. Typed constants, explicit trim and configured CSV bytes
++
++**Goal:** Deliver deterministic U3 data semantics in the existing engine and adapter.
++**Requirements:** R1–R6; KTD1, KTD2, KTD5.
++**Dependencies:** Merged U2 on latest main.
++**Files:** `src/engine/workflow.ts`, `src/engine/recipes.ts`, `src/engine/validation.ts`, `src/engine/values.ts`, `src/formats/csv.ts`, `tests/unit/constants.test.ts`, `tests/unit/trim.test.ts`, `tests/unit/csv-options.test.ts`, `tests/unit/workflow.test.ts`, `tests/unit/safety.test.ts`.
++**Approach:** Expand semantic validation and evaluate typed constants in the existing field loop, apply explicit trim, then existing row rules and text-only formula detection. Serialize configured header/delimiter/BOM with the current CSV quoting implementation. Preserve unsupported-format/recipe failures for future units.
++**Patterns to follow:** `referencedHeaders` already omits constants; `displayValue` already emits numeric decimal strings; `serializeCsv` already enforces row and formula safety.
++**Test scenarios:**
++1. `0012` and boundary spaces remain text; `12.50`, a large decimal and a negative decimal retain exact number representations without formula warnings.
++2. A constant-only workflow has no source-column references and emits one result per nonblank source row, including optional blank and required-blank failure.
++3. Provenance distinguishes constants from copies, preserves source record/line identity, and records explicit trim without mutating source cells.
++4. Explicit trim removes boundary spaces and preserves internal spaces; default keeps all spaces; required and max-length validation inspect the resulting text.
++5. Formula-like constants require safe/raw selection and produce the expected raw/escaped bytes; malformed literals and type/modifier conflicts fail workflow validation.
++6. All twelve CSV combinations match independent byte goldens containing commas, semicolons, tabs, quotes, LF/CRLF within fields and UTF-8 text, including reordered output fields.
++**Verification:** Unit tests establish values, strict configuration failures, provenance, validation and exact bytes with U2 regressions passing.
++
++### U2. Contextual fixed values and CSV controls
++
++**Goal:** Make U3 configurable while retaining the approved matching interface.
++**Requirements:** R5, R7; KTD3, KTD4.
++**Dependencies:** U1.
++**Files:** `src/ui/MappingRows.tsx`, `src/ui/Workspace.tsx`, `src/ui/styles.css`, `tests/e2e/constants.spec.ts`, `tests/e2e/row-mapping.spec.ts`, `tests/e2e/review-regressions.spec.ts`, `tests/unit/session.test.ts`.
++**Approach:** Add copy/fixed choice and typed fixed value/intentional blank controls to the existing output settings dialog. Add an explicitly labelled trim option for text. Generalize configured-row grouping/reorder just enough for KTD3. Place CSV controls with preview/download and use KTD4 for all changes.
++**Patterns to follow:** Preserve existing card events, focus restoration, announcements, settings dialog and generation-protected scheduling.
++**Test scenarios:**
++1. Configure fixed text/number/blank fields with no mapping; completed cards show their values/states and cease appearing unmatched.
++2. Drag and keyboard reorder constants among copied fields with an unmatched slot retained; preview and downloaded data keep value/type/order.
++3. Switch fixed to copy and copy to fixed, replace a fixed output by explicit source matching, reuse sources, unlink, and preserve bidirectional/keyboard U2 interactions.
++4. Enable trim contextually and verify preview, validation, download and read-only original-source display agree.
++5. Edit constants, trim and each CSV setting during debounce and pending processing; stale results stay blocked and prior formula acknowledgement is cleared.
++6. Keyboard focus, selected state and live announcements remain usable; fixed summaries are not presented as source cards or connections.
++**Verification:** Production-build browser tests prove settings, matching, ordering, safety decisions and stale-download behavior using actual downloaded bytes.
++
++### U3. Synthetic demonstration, full verification and review evidence
++
++**Goal:** Prepare a reviewable U3 delivery with reproducible evidence and accurate capability claims.
++**Requirements:** R8 and all regression constraints.
++**Dependencies:** U1, U2.
++**Files:** `examples/u3-source.csv`, `examples/u3-workflow.json`, `src/ui/Workspace.tsx`, `tests/unit/sample.test.ts`, `tests/e2e/constants.spec.ts`, `tests/e2e/privacy.spec.ts`, `tests/e2e/performance.spec.ts`, `tests/README.md`, `README.md`, `.github/workflows/u2.yml`, `docs/reviews/u3/`.
++**Approach:** Add a distinct U3 example, document released controls/exclusions, extend privacy interception with constant sentinels and keep baseline fidelity/performance coverage. Archive screenshots and actual command/browser results. Update CI labeling if useful without changing the production-build browser matrix.
++**Test scenarios:**
++1. The U3 example demonstrates leading-zero fixed text, exact number, optional blank, trim and nondefault CSV settings; existing U2 sample behavior remains unchanged.
++2. Context-wide interception observes no source or configuration content transmissions, including a distinctive constant sentinel, output-header sentinel and diagnostics.
++3. Existing 10,000-row and under-500-row performance/fidelity checks retain full row counts, ordering and provenance; timing limits are reported separately if unmet.
++4. Desktop 1440px and laptop 1024px screenshots show copied and fixed completed outputs, contextual controls and CSV settings; existing 25-source/30-output scalability checks remain applicable.
++5. Chromium, Firefox and WebKit production tests run when installed; attempts and available GitHub CI results distinguish failures, blocked environments and passes.
++**Verification:** Required checks, prescribed CE simplification/code review, independently validated fixes and affected reruns are archived and reflected in the draft PR.
++
++---
++
++## Verification Contract
++
++| Check | Command | Evidence |
++| --- | --- | --- |
++| Types | `npm run typecheck` | Pass |
++| Static quality | `npm run lint` | Pass |
++| Domain/bytes | `npm run test:unit` | Existing and U3 cases pass |
++| Production output | `npm run build` | Build succeeds |
++| Browser behavior | `npm run test:e2e` | Production server, all configured projects attempted |
++| Privacy | `npm run test:privacy` | No data/configuration egress |
++| Performance/fidelity | `npm run test:performance` | Full dataset correctness and measured budgets |
++
++Inspect actual downloads rather than relying on snapshots or CSV reader/writer round trips alone.
++Use GitHub CI for additional browser evidence where the local runtime cannot install browsers; retain pending or failed results honestly.
++No release validation script exists in this repository and deployment is not authorized.
++
++---
++
++## Definition of Done
++
++- U1/U2/U3 local work packets deliver R1–R8 with no reopened U1/U2 product milestones or future-unit behavior.
++- Tests, examples, docs, desktop/laptop screenshots and reproducible browser/privacy/fidelity results are available under `docs/reviews/u3/`.
++- Mandatory CE simplification and code review complete, findings are independently validated, confirmed issues fixed and affected tests rerun, with unavailable cross-model capability clearly identified.
++- Abandoned experiments and dead code are removed; no dependency or source/configuration transmission is added.
++- A draft U3 PR targets main and describes delivered scope, design choices, exact commands/results, browser limits, CE evidence and remaining risks.
++- No merge or deployment occurs; hands-on UX approval remains with the user.
+diff --git a/docs/reviews/u3/accessibility.json b/docs/reviews/u3/accessibility.json
+new file mode 100644
+index 0000000..8283dfa
+--- /dev/null
++++ b/docs/reviews/u3/accessibility.json
+@@ -0,0 +1,195 @@
++{
++  "config": {
++    "argv": [
++      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
++      "/workspace/operations-data-cleaner/node_modules/.bin/playwright",
++      "test",
++      "tests/e2e/accessibility.spec.ts",
++      "--project=chromium",
++      "--grep",
++      "U3 fixed",
++      "--reporter=json"
++    ],
++    "configFile": "/workspace/operations-data-cleaner/playwright.config.ts",
++    "rootDir": "/workspace/operations-data-cleaner/tests/e2e",
++    "failOnFlakyTests": false,
++    "forbidOnly": false,
++    "fullyParallel": false,
++    "globalSetup": null,
++    "globalTeardown": null,
++    "globalTimeout": 0,
++    "grep": {},
++    "grepInvert": null,
++    "maxFailures": 0,
++    "metadata": {
++      "actualWorkers": 1
++    },
++    "preserveOutput": "always",
++    "projects": [
++      {
++        "outputDir": "/workspace/operations-data-cleaner/test-results",
++        "repeatEach": 1,
++        "retries": 0,
++        "metadata": {
++          "actualWorkers": 1
++        },
++        "id": "chromium",
++        "name": "chromium",
++        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "testIgnore": [],
++        "testMatch": [
++          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
++        ],
++        "timeout": 30000
++      },
++      {
++        "outputDir": "/workspace/operations-data-cleaner/test-results",
++        "repeatEach": 1,
++        "retries": 0,
++        "metadata": {
++          "actualWorkers": 1
++        },
++        "id": "firefox",
++        "name": "firefox",
++        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "testIgnore": [],
++        "testMatch": [
++          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
++        ],
++        "timeout": 30000
++      },
++      {
++        "outputDir": "/workspace/operations-data-cleaner/test-results",
++        "repeatEach": 1,
++        "retries": 0,
++        "metadata": {
++          "actualWorkers": 1
++        },
++        "id": "webkit",
++        "name": "webkit",
++        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "testIgnore": [],
++        "testMatch": [
++          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
++        ],
++        "timeout": 30000
++      }
++    ],
++    "filteredProjects": [
++      {
++        "grep": {},
++        "grepInvert": null,
++        "outputDir": "/workspace/operations-data-cleaner/test-results",
++        "repeatEach": 1,
++        "retries": 0,
++        "metadata": {
++          "actualWorkers": 1
++        },
++        "name": "chromium",
++        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "snapshotDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "testIgnore": [],
++        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
++        "timeout": 30000,
++        "use": {
++          "baseURL": "http://127.0.0.1:4173",
++          "serviceWorkers": "block",
++          "trace": "retain-on-failure",
++          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
++          "viewport": {
++            "width": 1280,
++            "height": 720
++          },
++          "screen": {
++            "width": 1920,
++            "height": 1080
++          },
++          "deviceScaleFactor": 1,
++          "isMobile": false,
++          "hasTouch": false,
++          "defaultBrowserType": "chromium",
++          "launchOptions": {
++            "executablePath": "/usr/bin/chromium"
++          }
++        },
++        "dependencies": [],
++        "ignoreSnapshots": false,
++        "__projectId": "chromium"
++      }
++    ],
++    "quiet": false,
++    "reporter": [
++      [
++        "json"
++      ]
++    ],
++    "reportSlowTests": {
++      "max": 5,
++      "threshold": 300000
++    },
++    "shard": null,
++    "tags": [],
++    "updateSnapshots": "default",
++    "updateSourceMethod": "patch",
++    "version": "1.64.0",
++    "workers": 1,
++    "webServer": {
++      "command": "npm run preview",
++      "url": "http://127.0.0.1:4173",
++      "reuseExistingServer": false
++    }
++  },
++  "suites": [
++    {
++      "title": "accessibility.spec.ts",
++      "file": "accessibility.spec.ts",
++      "column": 0,
++      "line": 0,
++      "specs": [
++        {
++          "title": "U3 fixed fields, CSV options and contextual trim controls remain accessible",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 2798,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:51:36.111Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "ddd864604af8a6a0198f-95b29f5c54c1e70a6d51",
++          "file": "accessibility.spec.ts",
++          "line": 35,
++          "column": 1
++        }
++      ]
++    }
++  ],
++  "errors": [],
++  "stats": {
++    "startTime": "2026-10-15T02:51:35.200Z",
++    "duration": 4033.274,
++    "expected": 1,
++    "skipped": 0,
++    "unexpected": 0,
++    "flaky": 0
++  }
++}
+diff --git a/docs/reviews/u3/capture.json b/docs/reviews/u3/capture.json
+new file mode 100644
+index 0000000..3470ae2
+--- /dev/null
++++ b/docs/reviews/u3/capture.json
+@@ -0,0 +1,19 @@
++{
++  "browser": "154.0.8037.57",
++  "results": [
++    {
++      "width": 1440,
++      "height": 900,
++      "overflow": false,
++      "pageErrors": [],
++      "exactSampleBytes": true
++    },
++    {
++      "width": 1024,
++      "height": 900,
++      "overflow": false,
++      "pageErrors": [],
++      "exactSampleBytes": true
++    }
++  ]
++}
+diff --git a/docs/reviews/u3/capture.mjs b/docs/reviews/u3/capture.mjs
+new file mode 100644
+index 0000000..e160ab1
+--- /dev/null
++++ b/docs/reviews/u3/capture.mjs
+@@ -0,0 +1,43 @@
++import { chromium } from '@playwright/test';
++import { readFile, writeFile } from 'node:fs/promises';
++import { fileURLToPath } from 'node:url';
++
++// Run against npm run preview after npm run build, from the repository root.
++const browser = await chromium.launch({
++  ...(process.env.U2_CHROMIUM_PATH ? { executablePath: process.env.U2_CHROMIUM_PATH } : {}),
++});
++const output = new URL('./', import.meta.url);
++const results = [];
++try {
++  for (const width of [1440, 1024]) {
++    const page = await browser.newPage({ viewport: { width, height: 900 } });
++    const errors = [];
++    page.on('pageerror', e => errors.push(e.message));
++    await page.goto('http://127.0.0.1:4173');
++    await page.getByRole('button', { name: 'Try fixed fields example', exact: true }).click();
++    await page.getByRole('button', { name: 'Download converted CSV', exact: true }).waitFor({ state: 'visible' });
++    const pending = page.waitForEvent('download');
++    await page.getByRole('button', { name: 'Download converted CSV', exact: true }).click();
++    const downloaded = await pending;
++    const bytes = await readFile(await downloaded.path());
++    const expected = await readFile('examples/u3-expected.csv');
++    if (!bytes.equals(expected)) throw new Error('U3 sample download differs from golden bytes');
++    if (await page.locator('html').evaluate(node => node.scrollWidth > node.clientWidth))
++      throw new Error(`Page overflow at ${width}px`);
++    await page.screenshot({ path: fileURLToPath(new URL(`workspace-${width}.png`, output)), fullPage: true });
++    await page.locator('.matched-scroll').evaluate(node => { node.scrollTop = node.scrollHeight; });
++    await page.locator('.matching').screenshot({ path: fileURLToPath(new URL(`completed-values-${width}.png`, output)) });
++    await page.locator('.matched-scroll').evaluate(node => { node.scrollTop = 0; });
++    await page.getByRole('button', { name: 'Edit Weight', exact: true }).click();
++    await page.screenshot({ path: fileURLToPath(new URL(`fixed-settings-${width}.png`, output)) });
++    await page.getByRole('dialog').getByRole('button', { name: 'Done', exact: true }).click();
++    await page.getByRole('button', { name: 'Edit Consignee', exact: true }).click();
++    await page.screenshot({ path: fileURLToPath(new URL(`trim-settings-${width}.png`, output)) });
++    if (errors.length) throw new Error(errors.join('\n'));
++    results.push({ width, height: 900, overflow: false, pageErrors: errors, exactSampleBytes: true });
++    await page.close();
++  }
++  await writeFile(new URL('capture.json', output), JSON.stringify({ browser: browser.version(), results }, null, 2) + '\n');
++} finally {
++  await browser.close();
++}
+diff --git a/docs/reviews/u3/chromium-initial.json b/docs/reviews/u3/chromium-initial.json
+new file mode 100644
+index 0000000..1dd4075
+--- /dev/null
++++ b/docs/reviews/u3/chromium-initial.json
+@@ -0,0 +1,1374 @@
++{
++  "config": {
++    "argv": [
++      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
++      "/workspace/operations-data-cleaner/node_modules/.bin/playwright",
++      "test",
++      "--project=chromium",
++      "--reporter=json"
++    ],
++    "configFile": "/workspace/operations-data-cleaner/playwright.config.ts",
++    "rootDir": "/workspace/operations-data-cleaner/tests/e2e",
++    "failOnFlakyTests": false,
++    "forbidOnly": false,
++    "fullyParallel": false,
++    "globalSetup": null,
++    "globalTeardown": null,
++    "globalTimeout": 0,
++    "grep": {},
++    "grepInvert": null,
++    "maxFailures": 0,
++    "metadata": {
++      "actualWorkers": 1
++    },
++    "preserveOutput": "always",
++    "projects": [
++      {
++        "outputDir": "/workspace/operations-data-cleaner/test-results",
++        "repeatEach": 1,
++        "retries": 0,
++        "metadata": {
++          "actualWorkers": 1
++        },
++        "id": "chromium",
++        "name": "chromium",
++        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "testIgnore": [],
++        "testMatch": [
++          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
++        ],
++        "timeout": 30000
++      },
++      {
++        "outputDir": "/workspace/operations-data-cleaner/test-results",
++        "repeatEach": 1,
++        "retries": 0,
++        "metadata": {
++          "actualWorkers": 1
++        },
++        "id": "firefox",
++        "name": "firefox",
++        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "testIgnore": [],
++        "testMatch": [
++          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
++        ],
++        "timeout": 30000
++      },
++      {
++        "outputDir": "/workspace/operations-data-cleaner/test-results",
++        "repeatEach": 1,
++        "retries": 0,
++        "metadata": {
++          "actualWorkers": 1
++        },
++        "id": "webkit",
++        "name": "webkit",
++        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "testIgnore": [],
++        "testMatch": [
++          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
++        ],
++        "timeout": 30000
++      }
++    ],
++    "filteredProjects": [
++      {
++        "grep": {},
++        "grepInvert": null,
++        "outputDir": "/workspace/operations-data-cleaner/test-results",
++        "repeatEach": 1,
++        "retries": 0,
++        "metadata": {
++          "actualWorkers": 1
++        },
++        "name": "chromium",
++        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "snapshotDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "testIgnore": [],
++        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
++        "timeout": 30000,
++        "use": {
++          "baseURL": "http://127.0.0.1:4173",
++          "serviceWorkers": "block",
++          "trace": "retain-on-failure",
++          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
++          "viewport": {
++            "width": 1280,
++            "height": 720
++          },
++          "screen": {
++            "width": 1920,
++            "height": 1080
++          },
++          "deviceScaleFactor": 1,
++          "isMobile": false,
++          "hasTouch": false,
++          "defaultBrowserType": "chromium",
++          "launchOptions": {
++            "executablePath": "/usr/bin/chromium"
++          }
++        },
++        "dependencies": [],
++        "ignoreSnapshots": false,
++        "__projectId": "chromium"
++      }
++    ],
++    "quiet": false,
++    "reporter": [
++      [
++        "json"
++      ]
++    ],
++    "reportSlowTests": {
++      "max": 5,
++      "threshold": 300000
++    },
++    "shard": null,
++    "tags": [],
++    "updateSnapshots": "default",
++    "updateSourceMethod": "patch",
++    "version": "1.64.0",
++    "workers": 1,
++    "webServer": {
++      "command": "npm run preview",
++      "url": "http://127.0.0.1:4173",
++      "reuseExistingServer": false
++    }
++  },
++  "suites": [
++    {
++      "title": "accessibility.spec.ts",
++      "file": "accessibility.spec.ts",
++      "column": 0,
++      "line": 0,
++      "specs": [
++        {
++          "title": "labelled keyboard controls, laptop/mobile layouts and automated accessibility",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 3554,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:49:23.144Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "ddd864604af8a6a0198f-8541934cb8b2e41a384c",
++          "file": "accessibility.spec.ts",
++          "line": 4,
++          "column": 1
++        }
++      ]
++    },
++    {
++      "title": "constants.spec.ts",
++      "file": "constants.spec.ts",
++      "column": 0,
++      "line": 0,
++      "specs": [
++        {
++          "title": "U3 sample demonstrates constants, trim and nondefault CSV settings",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 803,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:49:26.949Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "61f6207473dd4c57f49d-bfb99f7b2939e10ce710",
++          "file": "constants.spec.ts",
++          "line": 5,
++          "column": 1
++        },
++        {
++          "title": "fixed fields complete without sources, trim validates resulting text and reorder preserves values",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 4576,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:49:27.764Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "61f6207473dd4c57f49d-5795f256d7c22c0928c6",
++          "file": "constants.spec.ts",
++          "line": 16,
++          "column": 1
++        },
++        {
++          "title": "constant reorder permutes configured slots while unmatched outputs stay fixed",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1742,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:49:32.360Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "61f6207473dd4c57f49d-859fa92011726a186900",
++          "file": "constants.spec.ts",
++          "line": 59,
++          "column": 1
++        },
++        {
++          "title": "intentional required blanks and invalid numeric literals block export with actionable errors",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 2551,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:49:34.109Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "61f6207473dd4c57f49d-9f48afc2e4f4ff2b9a52",
++          "file": "constants.spec.ts",
++          "line": 77,
++          "column": 1
++        },
++        {
++          "title": "all twelve CSV setting combinations download independent exact UTF-8 byte goldens",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 6779,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:49:36.678Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "61f6207473dd4c57f49d-1f967f7227db079fc58d",
++          "file": "constants.spec.ts",
++          "line": 99,
++          "column": 1
++        },
++        {
++          "title": "formula constants require renewed choice after constant, trim and every export setting edit",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 2181,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:49:43.469Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "61f6207473dd4c57f49d-d421684b6791f2382cfc",
++          "file": "constants.spec.ts",
++          "line": 120,
++          "column": 1
++        },
++        {
++          "title": "constant and CSV edits during an older evaluation cannot export stale settings",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1435,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:49:45.660Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "61f6207473dd4c57f49d-125db96be900ec949ee4",
++          "file": "constants.spec.ts",
++          "line": 153,
++          "column": 1
++        }
++      ]
++    },
++    {
++      "title": "conversion.spec.ts",
++      "file": "conversion.spec.ts",
++      "column": 0,
++      "line": 0,
++      "specs": [
++        {
++          "title": "upload template, keyboard map, rename, reorder, preview and verify actual bytes",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1944,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:49:47.111Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "222f7e5d85987e089f07-fd5e474624aef79fd7fb",
++          "file": "conversion.spec.ts",
++          "line": 15,
++          "column": 1
++        },
++        {
++          "title": "sample produces golden bytes without any customer file",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 677,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:49:49.068Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "222f7e5d85987e089f07-009b8d530204a891843a",
++          "file": "conversion.spec.ts",
++          "line": 57,
++          "column": 1
++        },
++        {
++          "title": "unmapped and invalid rows block download, all exceptions are reachable",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1927,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:49:49.753Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "222f7e5d85987e089f07-153fae414d5f156b521f",
++          "file": "conversion.spec.ts",
++          "line": 69,
++          "column": 1
++        },
++        {
++          "title": "formula headers and text block export until explicit choice, representation matches bytes",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1813,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:49:51.692Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "222f7e5d85987e089f07-970c06600e7a0be98727",
++          "file": "conversion.spec.ts",
++          "line": 114,
++          "column": 1
++        },
++        {
++          "title": "failed replacement retains active file and valid mapping; ending session clears it",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1293,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:49:53.516Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "222f7e5d85987e089f07-146b69ff2a6400a0b0d9",
++          "file": "conversion.spec.ts",
++          "line": 140,
++          "column": 1
++        }
++      ]
++    },
++    {
++      "title": "performance.spec.ts",
++      "file": "performance.spec.ts",
++      "column": 0,
++      "line": 0,
++      "specs": [
++        {
++          "title": "10000 U3 rows preserve every fixed value, exact decimal, trim result and original reference",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 120000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 5425,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:49:54.835Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "b15d6361b2fc38288977-08220513c0e9082444a4",
++          "file": "performance.spec.ts",
++          "line": 14,
++          "column": 1
++        },
++        {
++          "title": "10000 x 20 rows remain intact; record cold and five warm full-pipeline runs",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 120000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 6773,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:00.269Z",
++                  "annotations": [],
++                  "attachments": [
++                    {
++                      "name": "timings.json",
++                      "contentType": "application/json",
++                      "body": "ewogICJicm93c2VyTmFtZSI6ICJjaHJvbWl1bSIsCiAgInZlcnNpb24iOiAiMTU0LjAuODAzNy41NyIsCiAgInJvd3MiOiAxMDAwMCwKICAiY29sdW1ucyI6IDIwLAogICJjb2xkSW5jbHVkaW5nTWFudWFsU2V0dXBNcyI6IDI2MTIuODA5MDMyOTk5OTk3NywKICAid2FybU1zIjogWwogICAgNjkxLjIzNjEwODk5OTk5NzcsCiAgICA2NDYuNTc3NTg4MDAwMDAwMSwKICAgIDY0OS44NzM0NTkwMDAwMDIyLAogICAgNzMyLjM2MzY2NTk5OTk5NzUsCiAgICA2MTQuMzA5OTc1OTk5OTk2OAogIF0sCiAgIm1lZGlhbk1zIjogNjQ5Ljg3MzQ1OTAwMDAwMjIsCiAgIndvcnN0TXMiOiA3MzIuMzYzNjY1OTk5OTk3NSwKICAiZW52aXJvbm1lbnQiOiAiQ29kZXggY2xvdWQgcnVubmVyOyBub3QgcmVmZXJlbmNlIGxhcHRvcCBxdWFsaWZpY2F0aW9uIgp9"
++                    }
++                  ]
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "b15d6361b2fc38288977-08791083335f335ae6dc",
++          "file": "performance.spec.ts",
++          "line": 41,
++          "column": 1
++        },
++        {
++          "title": "busy cancel and retry preserve the active mapping and full downloaded data",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1424,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:07.060Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "b15d6361b2fc38288977-170bb9e044ace2075d68",
++          "file": "performance.spec.ts",
++          "line": 108,
++          "column": 1
++        },
++        {
++          "title": "cancellation terminates an active parsing worker and retries the original file",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 3404,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:08.503Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "b15d6361b2fc38288977-965c5bc89e6d3b6b487f",
++          "file": "performance.spec.ts",
++          "line": 146,
++          "column": 1
++        },
++        {
++          "title": "499 x 20 import to preview stays under the one-second smoke budget",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 4032,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:11.915Z",
++                  "annotations": [],
++                  "attachments": [
++                    {
++                      "name": "small-timings.json",
++                      "contentType": "application/json",
++                      "body": "ewogICJicm93c2VyTmFtZSI6ICJjaHJvbWl1bSIsCiAgInZlcnNpb24iOiAiMTU0LjAuODAzNy41NyIsCiAgInJvd3MiOiA0OTksCiAgImNvbHVtbnMiOiAyMCwKICAiY29sZEltcG9ydFBsdXNFdmFsdWF0aW9uRXhjbHVkaW5nTWFudWFsTWFwcGluZ01zIjogNDY1LjEwODYwMzAwMDAwNzg2LAogICJ3YXJtSW1wb3J0VGhyb3VnaFByZXZpZXdNcyI6IFsKICAgIDE2Ni4yNzk5NTgwMDAwMDY0NSwKICAgIDE4NC40MTMwNzM5OTk5OTY0LAogICAgMTk2Ljg5OTI3NDAwMDAwMzA2LAogICAgMTc5Ljk5Nzc2NDk5OTk5MjgsCiAgICAxODAuNjY1NTUyMDAwMDA1ODUKICBdLAogICJtZWRpYW5NcyI6IDE4MC42NjU1NTIwMDAwMDU4NSwKICAid29yc3RNcyI6IDE5Ni44OTkyNzQwMDAwMDMwNiwKICAiZW52aXJvbm1lbnQiOiAiY2xvdWQgcnVubmVyOyBVSSBhdXRvbWF0aW9uIG92ZXJoZWFkIGluY2x1ZGVkOyByZWZlcmVuY2UgbGFwdG9wIHBlbmRpbmciCn0="
++                    }
++                  ]
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "b15d6361b2fc38288977-cde643714459b7613694",
++          "file": "performance.spec.ts",
++          "line": 179,
++          "column": 1
++        }
++      ]
++    },
++    {
++      "title": "privacy.spec.ts",
++      "file": "privacy.spec.ts",
++      "column": 0,
++      "line": 0,
++      "specs": [
++        {
++          "title": "production journey sends no customer values, file names or IDs and stores no source data",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 3338,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:15.959Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "62491902cb946290adea-d66ddcfc559e9d6031a6",
++          "file": "privacy.spec.ts",
++          "line": 4,
++          "column": 1
++        }
++      ]
++    },
++    {
++      "title": "review-regressions.spec.ts",
++      "file": "review-regressions.spec.ts",
++      "column": 0,
++      "line": 0,
++      "specs": [
++        {
++          "title": "CE #1: removing a previewed field and repreviewing cannot render stale values",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1753,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:19.320Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "70295784855ab916a09e-ac536822fa52132d7250",
++          "file": "review-regressions.spec.ts",
++          "line": 4,
++          "column": 1
++        },
++        {
++          "title": "CE #1: sample transaction replaces a wider completed preview",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1656,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:21.082Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "70295784855ab916a09e-43a06715e335ffa79fc2",
++          "file": "review-regressions.spec.ts",
++          "line": 20,
++          "column": 1
++        },
++        {
++          "title": "CE #4: failed sample read retains the prior active mapping and visible failure",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1289,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:22.744Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "70295784855ab916a09e-2d72f0dd403d67943e14",
++          "file": "review-regressions.spec.ts",
++          "line": 39,
++          "column": 1
++        },
++        {
++          "title": "CE #5: cancelled sample and active-file retry keep matching preview and output",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1479,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:24.041Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "70295784855ab916a09e-3730bf42a85b6b12705e",
++          "file": "review-regressions.spec.ts",
++          "line": 65,
++          "column": 1
++        },
++        {
++          "title": "new source upload requires a fresh CSV safety choice",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1504,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:25.531Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "70295784855ab916a09e-db36a1f0acf1468e4d94",
++          "file": "review-regressions.spec.ts",
++          "line": 96,
++          "column": 1
++        }
++      ]
++    },
++    {
++      "title": "row-mapping.spec.ts",
++      "file": "row-mapping.spec.ts",
++      "column": 0,
++      "line": 0,
++      "specs": [
++        {
++          "title": "both drag directions, grouping, source reuse, replacement and unlink preserve export order",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 2285,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:27.053Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "dde240f1d9c05c1c130e-dd36becc2ab7ec5fd27a",
++          "file": "row-mapping.spec.ts",
++          "line": 19,
++          "column": 1
++        },
++        {
++          "title": "keyboard counterpart selection in both directions, Escape and pair reordering retain focus",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 2474,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:29.346Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "dde240f1d9c05c1c130e-b104e1e0d51c6b82580e",
++          "file": "row-mapping.spec.ts",
++          "line": 63,
++          "column": 1
++        },
++        {
++          "title": "25 sources and 30 outputs stay searchable and aligned at desktop and laptop widths",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 7191,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:31.837Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "dde240f1d9c05c1c130e-dc723e52e0d12533a088",
++          "file": "row-mapping.spec.ts",
++          "line": 162,
++          "column": 1
++        },
++        {
++          "title": "rapid edits debounce and never enable an old export",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1768,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:39.038Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "dde240f1d9c05c1c130e-d06fd5fb7dd4fa05dc71",
++          "file": "row-mapping.spec.ts",
++          "line": 216,
++          "column": 1
++        },
++        {
++          "title": "edits during an older worker evaluation queue the latest draft",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1936,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:40.814Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "dde240f1d9c05c1c130e-6ea9b03fc66bd5eafd0a",
++          "file": "row-mapping.spec.ts",
++          "line": 237,
++          "column": 1
++        },
++        {
++          "title": "template replacement is deliberate and failed parsing preserves mapped columns",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 2237,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:42.757Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "dde240f1d9c05c1c130e-24ac17760be3977c2bf9",
++          "file": "row-mapping.spec.ts",
++          "line": 306,
++          "column": 1
++        },
++        {
++          "title": "automatic evaluation waits for a fresh 250 ms quiet period",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1240,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:45.007Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "dde240f1d9c05c1c130e-f1fd180620a19b47d56e",
++          "file": "row-mapping.spec.ts",
++          "line": 364,
++          "column": 1
++        },
++        {
++          "title": "a failed automatic evaluation stops until explicit recovery",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1090,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:46.259Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "dde240f1d9c05c1c130e-5a3edffbc3f5eead8956",
++          "file": "row-mapping.spec.ts",
++          "line": 405,
++          "column": 1
++        },
++        {
++          "title": "zero output columns give an actionable empty state rather than a pending preview",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1277,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:47.362Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "dde240f1d9c05c1c130e-51f1da4369f0d00b4f22",
++          "file": "row-mapping.spec.ts",
++          "line": 457,
++          "column": 1
++        },
++        {
++          "title": "external drops cannot create mappings; contextual settings and deletion restore focus",
++          "ok": true,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "chromium",
++              "projectName": "chromium",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "passed",
++                  "duration": 1000,
++                  "errors": [],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:50:48.646Z",
++                  "annotations": [],
++                  "attachments": []
++                }
++              ],
++              "status": "expected"
++            }
++          ],
++          "id": "dde240f1d9c05c1c130e-a8877fa942621ec8b816",
++          "file": "row-mapping.spec.ts",
++          "line": 477,
++          "column": 1
++        }
++      ]
++    }
++  ],
++  "errors": [],
++  "stats": {
++    "startTime": "2026-10-15T02:49:22.058Z",
++    "duration": 87735.304,
++    "expected": 34,
++    "skipped": 0,
++    "unexpected": 0,
++    "flaky": 0
++  }
++}
+diff --git a/docs/reviews/u3/completed-values-1024.png b/docs/reviews/u3/completed-values-1024.png
+new file mode 100644
+index 0000000..1fad3b1
+Binary files /dev/null and b/docs/reviews/u3/completed-values-1024.png differ
+diff --git a/docs/reviews/u3/completed-values-1440.png b/docs/reviews/u3/completed-values-1440.png
+new file mode 100644
+index 0000000..bb0ad29
+Binary files /dev/null and b/docs/reviews/u3/completed-values-1440.png differ
+diff --git a/docs/reviews/u3/fixed-settings-1024.png b/docs/reviews/u3/fixed-settings-1024.png
+new file mode 100644
+index 0000000..20d5ed4
+Binary files /dev/null and b/docs/reviews/u3/fixed-settings-1024.png differ
+diff --git a/docs/reviews/u3/fixed-settings-1440.png b/docs/reviews/u3/fixed-settings-1440.png
+new file mode 100644
+index 0000000..787685b
+Binary files /dev/null and b/docs/reviews/u3/fixed-settings-1440.png differ
+diff --git a/docs/reviews/u3/other-browsers.json b/docs/reviews/u3/other-browsers.json
+new file mode 100644
+index 0000000..19e96ad
+--- /dev/null
++++ b/docs/reviews/u3/other-browsers.json
+@@ -0,0 +1,301 @@
++{
++  "config": {
++    "argv": [
++      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
++      "/workspace/operations-data-cleaner/node_modules/.bin/playwright",
++      "test",
++      "--project=firefox",
++      "--project=webkit",
++      "--grep",
++      "U3 sample",
++      "--reporter=json"
++    ],
++    "configFile": "/workspace/operations-data-cleaner/playwright.config.ts",
++    "rootDir": "/workspace/operations-data-cleaner/tests/e2e",
++    "failOnFlakyTests": false,
++    "forbidOnly": false,
++    "fullyParallel": false,
++    "globalSetup": null,
++    "globalTeardown": null,
++    "globalTimeout": 0,
++    "grep": {},
++    "grepInvert": null,
++    "maxFailures": 0,
++    "metadata": {
++      "actualWorkers": 1
++    },
++    "preserveOutput": "always",
++    "projects": [
++      {
++        "outputDir": "/workspace/operations-data-cleaner/test-results",
++        "repeatEach": 1,
++        "retries": 0,
++        "metadata": {
++          "actualWorkers": 1
++        },
++        "id": "chromium",
++        "name": "chromium",
++        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "testIgnore": [],
++        "testMatch": [
++          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
++        ],
++        "timeout": 30000
++      },
++      {
++        "outputDir": "/workspace/operations-data-cleaner/test-results",
++        "repeatEach": 1,
++        "retries": 0,
++        "metadata": {
++          "actualWorkers": 1
++        },
++        "id": "firefox",
++        "name": "firefox",
++        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "testIgnore": [],
++        "testMatch": [
++          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
++        ],
++        "timeout": 30000
++      },
++      {
++        "outputDir": "/workspace/operations-data-cleaner/test-results",
++        "repeatEach": 1,
++        "retries": 0,
++        "metadata": {
++          "actualWorkers": 1
++        },
++        "id": "webkit",
++        "name": "webkit",
++        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "testIgnore": [],
++        "testMatch": [
++          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
++        ],
++        "timeout": 30000
++      }
++    ],
++    "filteredProjects": [
++      {
++        "grep": {},
++        "grepInvert": null,
++        "outputDir": "/workspace/operations-data-cleaner/test-results",
++        "repeatEach": 1,
++        "retries": 0,
++        "metadata": {
++          "actualWorkers": 1
++        },
++        "name": "firefox",
++        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "snapshotDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "testIgnore": [],
++        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
++        "timeout": 30000,
++        "use": {
++          "baseURL": "http://127.0.0.1:4173",
++          "serviceWorkers": "block",
++          "trace": "retain-on-failure",
++          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:157.0) Gecko/20100101 Firefox/157.0",
++          "viewport": {
++            "width": 1280,
++            "height": 720
++          },
++          "screen": {
++            "width": 1920,
++            "height": 1080
++          },
++          "deviceScaleFactor": 1,
++          "isMobile": false,
++          "hasTouch": false,
++          "defaultBrowserType": "firefox"
++        },
++        "dependencies": [],
++        "ignoreSnapshots": false,
++        "__projectId": "firefox"
++      },
++      {
++        "grep": {},
++        "grepInvert": null,
++        "outputDir": "/workspace/operations-data-cleaner/test-results",
++        "repeatEach": 1,
++        "retries": 0,
++        "metadata": {
++          "actualWorkers": 1
++        },
++        "name": "webkit",
++        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "snapshotDir": "/workspace/operations-data-cleaner/tests/e2e",
++        "testIgnore": [],
++        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
++        "timeout": 30000,
++        "use": {
++          "baseURL": "http://127.0.0.1:4173",
++          "serviceWorkers": "block",
++          "trace": "retain-on-failure",
++          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
++          "viewport": {
++            "width": 1280,
++            "height": 720
++          },
++          "screen": {
++            "width": 1792,
++            "height": 1120
++          },
++          "deviceScaleFactor": 2,
++          "isMobile": false,
++          "hasTouch": false,
++          "defaultBrowserType": "webkit"
++        },
++        "dependencies": [],
++        "ignoreSnapshots": false,
++        "__projectId": "webkit"
++      }
++    ],
++    "quiet": false,
++    "reporter": [
++      [
++        "json"
++      ]
++    ],
++    "reportSlowTests": {
++      "max": 5,
++      "threshold": 300000
++    },
++    "shard": null,
++    "tags": [],
++    "updateSnapshots": "default",
++    "updateSourceMethod": "patch",
++    "version": "1.64.0",
++    "workers": 1,
++    "webServer": {
++      "command": "npm run preview",
++      "url": "http://127.0.0.1:4173",
++      "reuseExistingServer": false
++    }
++  },
++  "suites": [
++    {
++      "title": "constants.spec.ts",
++      "file": "constants.spec.ts",
++      "column": 0,
++      "line": 0,
++      "specs": [
++        {
++          "title": "U3 sample demonstrates constants, trim and nondefault CSV settings",
++          "ok": false,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "firefox",
++              "projectName": "firefox",
++              "results": [
++                {
++                  "workerIndex": 0,
++                  "parallelIndex": 0,
++                  "status": "failed",
++                  "duration": 2,
++                  "error": {
++                    "message": "Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/firefox-1555/firefox/firefox\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝",
++                    "stack": "Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/firefox-1555/firefox/firefox\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
++                  },
++                  "errors": [
++                    {
++                      "message": "Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/firefox-1555/firefox/firefox\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
++                    }
++                  ],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:51:15.317Z",
++                  "annotations": [],
++                  "attachments": [
++                    {
++                      "name": "error-context",
++                      "contentType": "text/markdown",
++                      "path": "/workspace/operations-data-cleaner/test-results/constants-U3-sample-demons-d6ab4-and-nondefault-CSV-settings-firefox/error-context.md"
++                    },
++                    {
++                      "name": "trace",
++                      "contentType": "application/zip",
++                      "path": "/workspace/operations-data-cleaner/test-results/constants-U3-sample-demons-d6ab4-and-nondefault-CSV-settings-firefox/trace.zip"
++                    }
++                  ]
++                }
++              ],
++              "status": "unexpected"
++            }
++          ],
++          "id": "61f6207473dd4c57f49d-2d371f35b207d8e3562b",
++          "file": "constants.spec.ts",
++          "line": 5,
++          "column": 1
++        },
++        {
++          "title": "U3 sample demonstrates constants, trim and nondefault CSV settings",
++          "ok": false,
++          "tags": [],
++          "tests": [
++            {
++              "timeout": 30000,
++              "annotations": [],
++              "expectedStatus": "passed",
++              "projectId": "webkit",
++              "projectName": "webkit",
++              "results": [
++                {
++                  "workerIndex": 1,
++                  "parallelIndex": 0,
++                  "status": "failed",
++                  "duration": 2,
++                  "error": {
++                    "message": "Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/webkit-2370/pw_run.sh\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝",
++                    "stack": "Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/webkit-2370/pw_run.sh\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
++                  },
++                  "errors": [
++                    {
++                      "message": "Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/webkit-2370/pw_run.sh\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
++                    }
++                  ],
++                  "stdout": [],
++                  "stderr": [],
++                  "retry": 0,
++                  "startTime": "2026-10-15T02:51:15.706Z",
++                  "annotations": [],
++                  "attachments": [
++                    {
++                      "name": "error-context",
++                      "contentType": "text/markdown",
++                      "path": "/workspace/operations-data-cleaner/test-results/constants-U3-sample-demons-d6ab4-and-nondefault-CSV-settings-webkit/error-context.md"
++                    },
++                    {
++                      "name": "trace",
++                      "contentType": "application/zip",
++                      "path": "/workspace/operations-data-cleaner/test-results/constants-U3-sample-demons-d6ab4-and-nondefault-CSV-settings-webkit/trace.zip"
++                    }
++                  ]
++                }
++              ],
++              "status": "unexpected"
++            }
++          ],
++          "id": "61f6207473dd4c57f49d-115454b8653ca2d9354e",
++          "file": "constants.spec.ts",
++          "line": 5,
++          "column": 1
++        }
++      ]
++    }
++  ],
++  "errors": [],
++  "stats": {
++    "startTime": "2026-10-15T02:51:14.485Z",
++    "duration": 1277.4969999999998,
++    "expected": 0,
++    "skipped": 0,
++    "unexpected": 2,
++    "flaky": 0
++  }
++}
+diff --git a/docs/reviews/u3/plan-review/README.md b/docs/reviews/u3/plan-review/README.md
+new file mode 100644
+index 0000000..0469769
+--- /dev/null
++++ b/docs/reviews/u3/plan-review/README.md
+@@ -0,0 +1,11 @@
++# U3 planning review evidence
++
++The installed `ce-plan` and `ce-doc-review` workflows ran using skill-local persona prompts, the documented generic-subagent template and findings schema. Two research delegates investigated current repository patterns and the declared solutions corpus. Packs resolved empty. No directly relevant institutional learning or external research dependency was found.
++
++Requirements were reviewed against the scoped user request, PRD and approved master plan before the canonical repository plan was authored. An initial unreviewed draft was moved to scratch before this checkpoint; no production work occurred. Six separate read-only contexts reviewed requirements; six new contexts reviewed the resulting plan. Each wave selected coherence, feasibility, design, security, scope and adversarial lenses. Product lens was not selected because this bounded U3 scope is already established by the user and approved upstream plan. All raw returns were valid and clean. The lead checked source references, scope, exact-decimal and validation semantics, execution ordering and test coverage. No corrections or user decisions remained.
++
++Confidence check passed without deepening. The plan includes typed constant/type constraints, honest constant provenance, minimal completed-card treatment, existing revision-safe scheduling and independent byte goldens. No code changes, dependency installation or tests were run by the planning agent.
++
++Cross-model discovery found only `/opt/codex/bin/codex`; no Claude, Grok, Cursor or OpenCode route was installed. The external pass did not run, no job started and no document content left the machine. The independently dispatched local adversarial lens completed in both waves; it is not a different-provider review.
++
++The raw and resolved JSON files retain exact reviewer responses and disposition. Temporary prompt/research files remain at `/tmp/ce-u3-plan-research` for the current session; they are not product artifacts.
+diff --git a/docs/reviews/u3/plan-review/plan-raw.json b/docs/reviews/u3/plan-review/plan-raw.json
+new file mode 100644
+index 0000000..a801425
+--- /dev/null
++++ b/docs/reviews/u3/plan-review/plan-raw.json
+@@ -0,0 +1,38 @@
++[
++  {
++    "reviewer": "coherence",
++    "findings": [],
++    "residual_risks": [],
++    "deferred_questions": []
++  },
++  {
++    "reviewer": "feasibility",
++    "findings": [],
++    "residual_risks": [],
++    "deferred_questions": []
++  },
++  {
++    "reviewer": "design-lens",
++    "findings": [],
++    "residual_risks": [],
++    "deferred_questions": []
++  },
++  {
++    "reviewer": "security-lens",
++    "findings": [],
++    "residual_risks": [],
++    "deferred_questions": []
++  },
++  {
++    "reviewer": "scope-guardian",
++    "findings": [],
++    "residual_risks": [],
++    "deferred_questions": []
++  },
++  {
++    "reviewer": "adversarial",
++    "findings": [],
++    "residual_risks": [],
++    "deferred_questions": []
++  }
++]
+diff --git a/docs/reviews/u3/plan-review/plan-resolved.json b/docs/reviews/u3/plan-review/plan-resolved.json
+new file mode 100644
+index 0000000..749443e
+--- /dev/null
++++ b/docs/reviews/u3/plan-review/plan-resolved.json
+@@ -0,0 +1,32 @@
++{
++  "status": "complete",
++  "mode": "non-interactive",
++  "document": "docs/plans/2026-10-15-0233-feat-u3-fixed-trim-csv-plan.md",
++  "document_sha256": "85f0920c2b2ea7322e2762fe45fba025e2c1484033957d2896286c4127240b29",
++  "classification": "unified-plan",
++  "fixes_applied": 0,
++  "proposed_fixes_count": 0,
++  "decisions_count": 0,
++  "fyi_count": 0,
++  "findings": [],
++  "coverage": [
++    "coherence",
++    "feasibility",
++    "design-lens",
++    "security-lens",
++    "scope-guardian",
++    "adversarial"
++  ],
++  "failed_reviewers": [],
++  "cross_model": {
++    "outcome": "not run",
++    "host": "codex",
++    "installed_routes": [
++      "codex"
++    ],
++    "reason": "No installed attested-different provider route; no job started or content sent. Local adversarial reviewer completed; this is not actual cross-model evidence."
++  },
++  "confidence": "Passed: verified existing schema/values/validation/engine/CSV/controller/UI and U2 tests/review findings; three scoped implementation units and acceptance-specific verification; no section needs targeted deepening.",
++  "prerequisites": "No blocking requirements or implementation decisions remain.",
++  "hand_off": "User already authorizes ce-work; return to calling ce-work agent for implementation."
++}
+diff --git a/docs/reviews/u3/plan-review/pre-review-plan.sha256 b/docs/reviews/u3/plan-review/pre-review-plan.sha256
+new file mode 100644
+index 0000000..dfd1fa7
+--- /dev/null
++++ b/docs/reviews/u3/plan-review/pre-review-plan.sha256
+@@ -0,0 +1 @@
++85f0920c2b2ea7322e2762fe45fba025e2c1484033957d2896286c4127240b29
+diff --git a/docs/reviews/u3/plan-review/requirements-raw.json b/docs/reviews/u3/plan-review/requirements-raw.json
+new file mode 100644
+index 0000000..a801425
+--- /dev/null
++++ b/docs/reviews/u3/plan-review/requirements-raw.json
+@@ -0,0 +1,38 @@
++[
++  {
++    "reviewer": "coherence",
++    "findings": [],
++    "residual_risks": [],
++    "deferred_questions": []
++  },
++  {
++    "reviewer": "feasibility",
++    "findings": [],
++    "residual_risks": [],
++    "deferred_questions": []
++  },
++  {
++    "reviewer": "design-lens",
++    "findings": [],
++    "residual_risks": [],
++    "deferred_questions": []
++  },
++  {
++    "reviewer": "security-lens",
++    "findings": [],
++    "residual_risks": [],
++    "deferred_questions": []
++  },
++  {
++    "reviewer": "scope-guardian",
++    "findings": [],
++    "residual_risks": [],
++    "deferred_questions": []
++  },
++  {
++    "reviewer": "adversarial",
++    "findings": [],
++    "residual_risks": [],
++    "deferred_questions": []
++  }
++]
+diff --git a/docs/reviews/u3/plan-review/requirements-resolved.json b/docs/reviews/u3/plan-review/requirements-resolved.json
+new file mode 100644
+index 0000000..8dc9814
+--- /dev/null
++++ b/docs/reviews/u3/plan-review/requirements-resolved.json
+@@ -0,0 +1,21 @@
++{
++  "status": "complete",
++  "document": "scoped U3 requirements from PRD/master plan and user request",
++  "findings": [],
++  "applied": [],
++  "proposed_fixes": [],
++  "decisions": [],
++  "coverage": [
++    "coherence",
++    "feasibility",
++    "design-lens",
++    "security-lens",
++    "scope-guardian",
++    "adversarial"
++  ],
++  "cross_model": {
++    "outcome": "not run",
++    "reason": "Codex host; only codex CLI installed; no different-provider route. Local adversarial reviewer completed. No external egress."
++  },
++  "ordering_note": "An unreviewed initial plan draft was moved to scratch before requirements review. The repository plan was authored only after all six requirement reviewers returned."
++}
+diff --git a/docs/reviews/u3/small-timings.json b/docs/reviews/u3/small-timings.json
+new file mode 100644
+index 0000000..3884e2a
+--- /dev/null
++++ b/docs/reviews/u3/small-timings.json
+@@ -0,0 +1,17 @@
++{
++  "browserName": "chromium",
++  "version": "154.0.8037.57",
++  "rows": 499,
++  "columns": 20,
++  "coldImportPlusEvaluationExcludingManualMappingMs": 465.10860300000786,
++  "warmImportThroughPreviewMs": [
++    166.27995800000645,
++    184.4130739999964,
++    196.89927400000306,
++    179.9977649999928,
++    180.66555200000585
++  ],
++  "medianMs": 180.66555200000585,
++  "worstMs": 196.89927400000306,
++  "environment": "cloud runner; UI automation overhead included; reference laptop pending"
++}
+\ No newline at end of file
+diff --git a/docs/reviews/u3/timings.json b/docs/reviews/u3/timings.json
+new file mode 100644
+index 0000000..6e6375b
+--- /dev/null
++++ b/docs/reviews/u3/timings.json
+@@ -0,0 +1,17 @@
++{
++  "browserName": "chromium",
++  "version": "154.0.8037.57",
++  "rows": 10000,
++  "columns": 20,
++  "coldIncludingManualSetupMs": 2612.8090329999977,
++  "warmMs": [
++    691.2361089999977,
++    646.5775880000001,
++    649.8734590000022,
++    732.3636659999975,
++    614.3099759999968
++  ],
++  "medianMs": 649.8734590000022,
++  "worstMs": 732.3636659999975,
++  "environment": "Codex cloud runner; not reference laptop qualification"
++}
+\ No newline at end of file
+diff --git a/docs/reviews/u3/trim-settings-1024.png b/docs/reviews/u3/trim-settings-1024.png
+new file mode 100644
+index 0000000..0ebf631
+Binary files /dev/null and b/docs/reviews/u3/trim-settings-1024.png differ
+diff --git a/docs/reviews/u3/trim-settings-1440.png b/docs/reviews/u3/trim-settings-1440.png
+new file mode 100644
+index 0000000..56d26c7
+Binary files /dev/null and b/docs/reviews/u3/trim-settings-1440.png differ
+diff --git a/docs/reviews/u3/verification.md b/docs/reviews/u3/verification.md
+new file mode 100644
+index 0000000..5786a2e
+--- /dev/null
++++ b/docs/reviews/u3/verification.md
+@@ -0,0 +1,35 @@
++# U3 verification before CE quality review
++
++Synthetic fixtures only. Base: `origin/main` at `7192c36`; new feature branch `feat/u3-fixed-trim-csv`. Initial checkout was clean and carried no commits beyond main. Native CE execution was selected: no external implementation binding or CE engine configuration exists. Local work packets form a dependency chain (engine/CSV, contextual UI, integrated proof), so implementation ran inline. No dependencies added.
++
++## Evidence strategy
++
++- Baseline: typecheck, lint, build, 41 unit tests and 24 production Chromium functional tests passed.
++- Engine proof first: new constants/trim/CSV-options tests ran before production edits: 26 failed, one incompatible-configuration test passed. Failures were the expected U2 unsupported recipe/settings/output guards. After implementation, all 68 units passed.
++- UI proof first: `U2_CHROMIUM_PATH=/usr/bin/chromium npm run test:e2e -- --project=chromium tests/e2e/constants.spec.ts --grep "intentional required" --reporter=line` failed waiting for the absent fixed-value control before UI implementation.
++- Initial UI runs exposed labels that included select options or textarea contents. Reproduction confirmed exact labels were ambiguous; explicit accessible names fixed them. The six U3 browser tests then passed (20.6s), and the combined 30 functional tests passed (1.1 minutes).
++- Synthetic sample proof first: the new sample unit failed with missing `examples/u3-workflow.json` before the fixture was created. All 69 units then passed.
++
++## Current results
++
++`npm run test:unit`: 69 tests / 10 files passed. `npm run typecheck`, `npm run lint`, `npm run build`: passed. A capture-script lint failure for browser globals was corrected by evaluating the HTML element directly; lint passed afterward.
++
++`U2_CHROMIUM_PATH=/usr/bin/chromium npm run test:e2e -- --project=chromium --reporter=json > docs/reviews/u3/chromium-initial.json`: 34 passed, 0 failed/skipped/flaky, 87.7s. The npm preamble was removed from the JSON artifact; no test payload was changed. This includes new U3 sample, twelve browser byte combinations, constants/type/reorder/trim/validation, formula-choice renewal, pending-run edits, constant-sentinel privacy, existing U2 regressions and full dataset performance/fidelity.
++
++`U2_CHROMIUM_PATH=/usr/bin/chromium npx playwright test tests/e2e/accessibility.spec.ts --project=chromium --grep "U3 fixed" --reporter=json > docs/reviews/u3/accessibility.json`: 1 additional accessibility test passed (4.0s), covering the configured workspace and fixed/trim dialogs at 1024px. No production changes occurred between these runs. Both axe and existing 1440/1024/390 layout checks passed.
++
++System Chromium 154.0.8037.57; Node 24.19.0/npm 11.9.0; managed Linux cloud runner, not reference-laptop qualification. Existing 10,000 × 20 cold trial 2613ms; five warm full import-through-download runs median 650ms, worst 732ms (<5000ms). Existing 499 × 20 import-through-preview median 181ms, worst 197ms (<1000ms). Full measurements are retained in `timings.json` and `small-timings.json`. The U3 10,000-row test checks every downloaded fixed/trimmed value and original reference, counts and paginated provenance.
++
++## Browser limits
++
++`npx playwright install chromium firefox webkit`, `npx playwright install firefox webkit` and `npx playwright install webkit` were attempted separately. Downloads from `cdn.playwright.dev` and Firefox/WebKit fallback `playwright.download.prss.microsoft.com` returned HTTP 403 / Domain forbidden. No network-policy workaround was attempted.
++
++`npx playwright test --project=firefox --project=webkit --grep "U3 sample" --reporter=json > docs/reviews/u3/other-browsers.json`: 2 launch failures, absent `firefox-1555/firefox/firefox` and `webkit-2370/pw_run.sh`. No application assertions ran. GitHub CI retains all three browser projects; its result must be recorded separately for the PR head.
++
++## Screenshots
++
++`npm run preview`, then `U2_CHROMIUM_PATH=/usr/bin/chromium node docs/reviews/u3/capture.mjs`. Captures at 1440×900 and 1024×900 include the workspace, completed constants/intentional blank, fixed-number dialog and trim dialog. The script verifies exact U3 sample download bytes, no page-width overflow and no page errors. `capture.json` records observations. Screenshots are engineering evidence, not user UX approval.
++
++## Remaining gates at this checkpoint
++
++CE simplification, code review, finding validation and final PR delivery follow this checkpoint. No merge, deployment or U4 work is authorized. The U3 UX remains pending personal user testing.
+diff --git a/docs/reviews/u3/workspace-1024.png b/docs/reviews/u3/workspace-1024.png
+new file mode 100644
+index 0000000..a5a8736
+Binary files /dev/null and b/docs/reviews/u3/workspace-1024.png differ
+diff --git a/docs/reviews/u3/workspace-1440.png b/docs/reviews/u3/workspace-1440.png
+new file mode 100644
+index 0000000..8b07554
+Binary files /dev/null and b/docs/reviews/u3/workspace-1440.png differ
+diff --git a/examples/README.md b/examples/README.md
+index 0f67897..314cc74 100644
+--- a/examples/README.md
++++ b/examples/README.md
+@@ -1,3 +1,8 @@
+ # Examples
+ 
+-Only fictional, synthetic datasets belong here. The eventual public demonstration should include a fictional customer order export, a destination TMS-style template, and a matching working workflow, after the relevant formats have been implemented and tested.
++Only fictional, synthetic datasets belong here.
++
++- `u2/` contains the original copy-mapping source, header template, version 1 configuration and exact golden export. **Try sample data** loads it.
++- `u3-source.csv`, `u3-workflow.json` and `u3-expected.csv` demonstrate a fixed text code `0012`, exact number `12.50`, intentional optional blank and explicit boundary trim with internal spacing preserved. **Try fixed fields example** loads it. Expected output is UTF-8 with BOM, semicolon delimiter, no header and CRLF line endings.
++
++These configuration files are examples for the existing strict workflow codec. U3 does not add workflow import, save or persistence controls. No vendor-certified import compatibility is claimed.
+diff --git a/examples/u3-expected.csv b/examples/u3-expected.csv
+new file mode 100644
+index 0000000..7523365
+--- /dev/null
++++ b/examples/u3-expected.csv
+@@ -0,0 +1,2 @@
++﻿001234;0012;North  Depot;12.50;
++000007;0012;Café Distribution;12.50;
+diff --git a/examples/u3-source.csv b/examples/u3-source.csv
+new file mode 100644
+index 0000000..6cb92dd
+--- /dev/null
++++ b/examples/u3-source.csv
+@@ -0,0 +1,3 @@
++Order,Consignee
++001234,"  North  Depot  "
++000007,"  Café Distribution  "
+diff --git a/examples/u3-workflow.json b/examples/u3-workflow.json
+new file mode 100644
+index 0000000..2a3aa88
+--- /dev/null
++++ b/examples/u3-workflow.json
+@@ -0,0 +1,83 @@
++{
++  "version": 1,
++  "id": "u3-synthetic",
++  "name": "Synthetic fixed fields and trim",
++  "source": {
++    "format": "csv",
++    "delimiter": ",",
++    "referencedHeaders": [
++      "order",
++      "consignee"
++    ]
++  },
++  "fields": [
++    {
++      "id": "reference",
++      "header": "Reference",
++      "type": "text",
++      "required": true,
++      "recipe": {
++        "kind": "copy",
++        "source": "order"
++      }
++    },
++    {
++      "id": "customer",
++      "header": "CustomerCode",
++      "type": "text",
++      "required": true,
++      "recipe": {
++        "kind": "constant",
++        "value": {
++          "kind": "text",
++          "text": "0012"
++        }
++      }
++    },
++    {
++      "id": "consignee",
++      "header": "Consignee",
++      "type": "text",
++      "required": true,
++      "maxLength": 80,
++      "trim": true,
++      "recipe": {
++        "kind": "copy",
++        "source": "consignee"
++      }
++    },
++    {
++      "id": "weight",
++      "header": "Weight",
++      "type": "number",
++      "required": true,
++      "recipe": {
++        "kind": "constant",
++        "value": {
++          "kind": "number",
++          "decimal": "12.50"
++        }
++      }
++    },
++    {
++      "id": "note",
++      "header": "OptionalNote",
++      "type": "text",
++      "required": false,
++      "recipe": {
++        "kind": "constant",
++        "value": {
++          "kind": "blank"
++        }
++      }
++    }
++  ],
++  "output": {
++    "format": "csv",
++    "delimiter": ";",
++    "bom": true,
++    "header": false,
++    "lineEnding": "CRLF",
++    "dateSystem": "1900"
++  }
++}
+diff --git a/src/engine/recipes.ts b/src/engine/recipes.ts
+index 9d478d9..d44aebf 100644
+--- a/src/engine/recipes.ts
++++ b/src/engine/recipes.ts
+@@ -1,21 +1,22 @@
+ import type { Workflow } from "./workflow";
+-import type { SourceTable, Value } from "./values";
++import { displayValue, type SourceTable, type Value } from "./values";
+ import type { Issue } from "./issues";
+ import { validateWorkflow } from "./validation";
+ import { riskyText } from "../formats/spreadsheet-safety";
+ export type ResultRow = {
+   id: string;
+   record: number;
+   line: number;
+   values: Value[];
+-  provenance: { field: string; source: string; row: string }[];
++  provenance: ({ field: string; row: string; trim?: true } &
++    ({ source: string } | { constant: Value }))[];
+   issues: Issue[];
+   status: "valid" | "warning" | "invalid";
+ };
+ export type Run = {
+   workflowIssues: Issue[];
+   rows: ResultRow[];
+   summary: {
+     inputRows: number;
+     skippedBlanks: number;
+     candidates: number;
+@@ -40,33 +41,44 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+       candidates: source.rows.length,
+       valid: 0,
+       warningOnly: 0,
+       invalid: 0,
+       warningIssues: 0,
+       errorIssues: 0,
+       corrected: 0,
+       excluded: 0,
+     },
+     riskyHeaders: workflow.fields
+-      .filter((f) => riskyText(f.header))
++      .filter((f) => workflow.output.header && riskyText(f.header))
+       .map((f) => f.header),
+   };
+   if (workflowIssues.length) return run;
+   const positions = new Map(source.columns.map((c) => [c.key, c.position]));
+   for (const row of source.rows) {
+     const issues: Issue[] = [],
+       provenance: ResultRow["provenance"] = [];
+     const values: Value[] = workflow.fields.map((f) => {
+-      if (f.recipe?.kind !== "copy") throw new Error("Unvalidated recipe");
+-      const sourceKey = f.recipe.source;
+-      const text = row.cells[positions.get(sourceKey)!]?.raw ?? "";
+-      provenance.push({ field: f.id, source: sourceKey, row: row.id });
++      const recipe = f.recipe;
++      if (!recipe || (recipe.kind !== "copy" && recipe.kind !== "constant"))
++        throw new Error("Unvalidated recipe");
++      const sourceKey = recipe.kind === "copy" ? recipe.source : undefined;
++      let value: Value = recipe.kind === "constant"
++        ? { ...recipe.value }
++        : { kind: "text", text: row.cells[positions.get(recipe.source)!]?.raw ?? "" };
++      provenance.push({
++        field: f.id,
++        row: row.id,
++        ...(recipe.kind === "copy" ? { source: recipe.source } : { constant: { ...recipe.value } }),
++        ...(f.trim ? { trim: true as const } : {}),
++      });
++      if (f.trim && value.kind === "text") value = { kind: "text", text: value.text.trim() };
++      const text = displayValue(value);
+       const add = (
+         code: string,
+         severity: "error" | "warning",
+         reason: string,
+         action: string,
+       ) =>
+         issues.push({
+           code,
+           scope: "row",
+           severity,
+@@ -85,28 +97,28 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+           `${f.header} is required but blank.`,
+           "Correct the source file and reupload, or change the field rule.",
+         );
+       if (f.maxLength && [...text].length > f.maxLength)
+         add(
+           "max-length",
+           "error",
+           `${f.header} exceeds ${f.maxLength} characters.`,
+           "Correct the source file or increase the maximum length.",
+         );
+-      if (riskyText(text))
++      if (value.kind === "text" && riskyText(text))
+         add(
+           "csv-risk",
+           "warning",
+           `${f.header} may be interpreted as a spreadsheet formula.`,
+           "Choose escaped output or raw TMS text before download.",
+         );
+-      return text === "" ? { kind: "blank" } : { kind: "text", text };
++      return value.kind === "text" && text === "" ? { kind: "blank" } : value;
+     });
+     const status = issues.some((i) => i.severity === "error")
+       ? "invalid"
+       : issues.length
+         ? "warning"
+         : "valid";
+     run.summary[status === "warning" ? "warningOnly" : status]++;
+     run.summary.warningIssues += issues.filter(
+       (i) => i.severity === "warning",
+     ).length;
+diff --git a/src/engine/validation.ts b/src/engine/validation.ts
+index b76ae18..c9c3996 100644
+--- a/src/engine/validation.ts
++++ b/src/engine/validation.ts
+@@ -23,29 +23,26 @@ export function validateWorkflow(
+   if (!workflowSchema.safeParse(workflow).success) {
+     add(
+       "schema",
+       "Workflow structure is invalid.",
+       "Use version 1 with valid field settings.",
+     );
+     return errors;
+   }
+   if (
+     workflow.source.format !== "csv" ||
+-    workflow.output.format !== "csv" ||
+-    workflow.output.delimiter !== "," ||
+-    workflow.output.bom ||
+-    !workflow.output.header
++    workflow.output.format !== "csv"
+   )
+     add(
+       "unsupported-format",
+-      "This U2 build supports CSV with default export settings only.",
+-      "Use UTF-8, comma, headers, no BOM and CRLF.",
++      "This build supports CSV input and output only.",
++      "Use UTF-8 CSV with comma, semicolon or tab and CRLF output.",
+     );
+   const keys = new Set(source.columns.map((c) => c.key));
+   const ids = new Set<string>(),
+     headers = new Set<string>();
+   for (const f of workflow.fields) {
+     const header = normalizeHeader(f.header);
+     if (!header || headers.has(header) || ids.has(f.id))
+       add(
+         "destination-header",
+         "Output names and field IDs must be unique and nonblank.",
+@@ -54,42 +51,45 @@ export function validateWorkflow(
+       );
+     ids.add(f.id);
+     headers.add(header);
+     if (!f.recipe)
+       add(
+         "unmapped",
+         `${f.header || "Output column"} is unmapped.`,
+         "Choose a source column or remove this output column.",
+         f.id,
+       );
+-    if (f.recipe && f.recipe.kind !== "copy")
++    if (f.recipe && f.recipe.kind !== "copy" && f.recipe.kind !== "constant")
+       add(
+         "unsupported-recipe",
+-        `${f.recipe.kind} is not supported in this U2 build.`,
+-        "Use a copy mapping.",
++        `${f.recipe.kind} is not supported in this build.`,
++        "Use a source copy or a fixed value.",
+         f.id,
+       );
+     if (
+-      f.type !== "text" ||
+-      f.trim ||
++      (f.type !== "text" && !(f.type === "number" && f.recipe?.kind === "constant")) ||
+       f.date ||
+       f.rounding ||
+       f.scale !== undefined ||
+       f.wholeNumber !== undefined
+     )
+       add(
+         "unsupported-settings",
+-        "This U2 build copies text without conversion or trimming.",
+-        "Use text with optional required/max-length validation.",
++        "This build supports text copies and typed fixed values without conversion, dates or rounding.",
++        "Use text or a fixed number, with supported validation settings.",
+         f.id,
+       );
+     const r = f.recipe;
++    if (r?.kind === "constant" && r.value.kind !== "blank" && r.value.kind !== f.type)
++      add("constant-type", "The fixed value type must match the output type.", "Choose text for a text literal or number for a decimal literal.", f.id);
++    if (f.trim && f.type !== "text")
++      add("trim-type", "Trimming requires a text output.", "Use text or turn off whitespace trimming.", f.id);
+     if (
+       r?.kind === "split" &&
+       (r.index >= r.segments || r.optionalEmpty.some((i) => i >= r.segments))
+     )
+       add(
+         "split-index",
+         "Split positions exceed the expected segment count.",
+         "Correct the segment positions.",
+         f.id,
+       );
+diff --git a/src/formats/csv.ts b/src/formats/csv.ts
+index 31c22e1..e8ecbf5 100644
+--- a/src/formats/csv.ts
++++ b/src/formats/csv.ts
+@@ -169,22 +169,25 @@ export function serializeCsv(
+ ): Uint8Array {
+   if (run.workflowIssues.length || run.summary.invalid || !run.rows.length)
+     throw new Error(
+       "Export blocked. Map every field, resolve invalid rows and include at least one data row.",
+     );
+   if ((run.summary.warningIssues || run.riskyHeaders.length) && !choice)
+     throw new Error(
+       "Choose escaped output or raw TMS text before downloading formula-like content.",
+     );
+   const records = [
+-    workflow.fields.map((f) => exportText(f.header, choice)),
++    ...(workflow.output.header
++      ? [workflow.fields.map((f) => exportText(f.header, choice))]
++      : []),
+     ...run.rows.map((r) =>
+       r.values.map((v) =>
+         v.kind === "text" ? exportText(v.text, choice) : displayValue(v),
+       ),
+     ),
+   ];
+   return new TextEncoder().encode(
+-    Papa.unparse(records, { delimiter: ",", newline: "\r\n", quotes: false }) +
++    (workflow.output.bom ? "\ufeff" : "") +
++    Papa.unparse(records, { delimiter: workflow.output.delimiter, newline: "\r\n", quotes: false }) +
+       "\r\n",
+   );
+ }
+diff --git a/src/ui/MappingRows.tsx b/src/ui/MappingRows.tsx
+index eba227b..adeacd8 100644
+--- a/src/ui/MappingRows.tsx
++++ b/src/ui/MappingRows.tsx
+@@ -1,26 +1,34 @@
+ import { useEffect, useRef, useState, type DragEvent } from "react";
+ import type { Field } from "../engine/workflow";
++import { displayValue } from "../engine/values";
+ import type { View } from "../session/worker-protocol";
+ 
+ type Props = {
+   view: View;
+   fields: Field[];
+   disabled: boolean;
+   importing: boolean;
+   change: (fields: Field[]) => void;
+   makeFields: (headers: string[]) => Field[];
+   importTemplate: (file: File) => void;
+ };
+ type Card = { kind: "source" | "output" | "pair"; id: string };
+ const sourceKey = (f: Field) =>
+   f.recipe?.kind === "copy" ? f.recipe.source : "";
++const configured = (f: Field) => Boolean(sourceKey(f) || f.recipe?.kind === "constant");
++const fixedSummary = (f: Field) => {
++  if (f.recipe?.kind !== "constant") return "";
++  const value = f.recipe.value;
++  if (value.kind === "blank") return "Intentional blank";
++  return `Fixed ${value.kind} · ${value.kind === "text" ? JSON.stringify(value.text) : value.decimal}`;
++};
+ 
+ export default function MappingRows({
+   view,
+   fields,
+   disabled,
+   importing,
+   change,
+   makeFields,
+   importTemplate,
+ }: Props) {
+@@ -33,27 +41,27 @@ export default function MappingRows({
+   const [announcement, setAnnouncement] = useState("");
+   const [template, setTemplate] = useState<File>();
+   const [editing, setEditing] = useState<string>();
+   const [orderOpen, setOrderOpen] = useState(false);
+   const settings = useRef<HTMLDialogElement>(null);
+   const order = useRef<HTMLDialogElement>(null);
+   const addButton = useRef<HTMLButtonElement>(null);
+   const cards = useRef(new Map<string, HTMLButtonElement>());
+   const focus = (id: string) =>
+     requestAnimationFrame(() => cards.current.get(id)?.focus());
+-  const matched = fields.filter((f) => sourceKey(f));
+-  const unmatched = fields.filter((f) => !sourceKey(f));
++  const matched = fields.filter(configured);
++  const unmatched = fields.filter((f) => !configured(f));
+   const positions = new Map(fields.map((f, i) => [f, i + 1]));
+   const usesBySource = new Map<string, number>();
+   for (const f of matched) {
+     const key = sourceKey(f);
+-    usesBySource.set(key, (usesBySource.get(key) ?? 0) + 1);
++    if (key) usesBySource.set(key, (usesBySource.get(key) ?? 0) + 1);
+   }
+   const field = fields.find((f) => f.id === editing);
+   const manualHeaders = manual.split("\n").filter((h) => h.trim());
+   const columns = view.columns.filter((c) =>
+     c.header.toLowerCase().includes(search.toLowerCase()),
+   );
+   const columnByKey = new Map(view.columns.map((c) => [c.key, c]));
+   const sample = (key: string) => {
+     const c = columnByKey.get(key);
+     return c
+@@ -76,21 +84,21 @@ export default function MappingRows({
+     change(fields.map((f) => (f.id === id ? { ...f, ...patch } : f)));
+   const clearDrag = () => {
+     drag.current = undefined;
+     setDragging(undefined);
+     setTarget(undefined);
+   };
+   const match = (id: string, key: string) => {
+     const f = fields.find((f) => f.id === id),
+       c = columnByKey.get(key);
+     if (disabled || !f || !c) return;
+-    update(id, { recipe: { kind: "copy", source: key } });
++    update(id, { type: "text", recipe: { kind: "copy", source: key } });
+     setAnnouncement(
+       `${f.header || "Output column"} now copies ${c.header}. Export order unchanged.`,
+     );
+     setSelected(undefined);
+     clearDrag();
+     focus(`output-${id}`);
+   };
+   const select = (card: Card) => {
+     if (disabled) return;
+     if (selected && selected.kind !== card.kind) {
+@@ -119,21 +127,21 @@ export default function MappingRows({
+     e.dataTransfer.setData("text/plain", card.id);
+   };
+   const reorderPair = (id: string, destination: string) => {
+     if (disabled) return;
+     const reordered = [...matched];
+     const from = reordered.findIndex((f) => f.id === id),
+       to = reordered.findIndex((f) => f.id === destination);
+     if (from < 0 || to < 0 || from === to) return;
+     reordered.splice(to, 0, reordered.splice(from, 1)[0]);
+     let i = 0;
+-    change(fields.map((f) => (sourceKey(f) ? reordered[i++] : f)));
++    change(fields.map((f) => (configured(f) ? reordered[i++] : f)));
+     setAnnouncement(
+       "Pair reordered. Export order updated; unmatched output positions stayed fixed.",
+     );
+     clearDrag();
+     focus(`grip-${id}`);
+   };
+   const move = (id: string, direction: number) => {
+     if (disabled) return;
+     const i = fields.findIndex((f) => f.id === id),
+       j = i + direction;
+@@ -237,23 +245,24 @@ export default function MappingRows({
+       disabled={disabled}
+       aria-label={`Select output ${f.header || "unnamed column"}`}
+       aria-pressed={selected?.kind === "output" && selected.id === f.id}
+       {...cardEvents({ kind: "output", id: f.id })}
+     >
+       <strong>
+         <span className="position">{positions.get(f)}</span>
+         {f.header || "Name this output column"}
+       </strong>
+       <span className={paired ? "confirmed" : "waiting"}>
+-        {paired
++        {f.recipe?.kind === "constant" ? fixedSummary(f) : paired
+           ? `Confirmed · copies ${columnByKey.get(sourceKey(f))?.header ?? sourceKey(f)}`
+           : "Unmatched · drop a source here"}
++        {f.trim && " · trims boundary whitespace"}
+       </span>
+     </button>
+   );
+   const editButton = (f: Field) => (
+     <button
+       className="edit"
+       disabled={disabled}
+       aria-label={`Edit ${f.header || "output column"}`}
+       ref={(node) => {
+         if (node) cards.current.set(`edit-${f.id}`, node);
+@@ -349,20 +358,23 @@ export default function MappingRows({
+       )}
+       <div className="group matched-group">
+         <div className="section-title">
+           <h3>
+             Matched columns <span className="count">{matched.length}</span>
+           </h3>
+           <span className="section-note">
+             Drag the grip to reorder a pair · Alt+↑ / Alt+↓
+           </span>
+         </div>
++        {matched.some((f) => f.recipe?.kind === "constant") && (
++          <p className="helper">Completed outputs include fixed values. Fixed values need no source match and can be reordered with the pairs.</p>
++        )}
+         <div className="matched-headings" aria-hidden="true">
+           <span>Source column</span>
+           <span>Output column · export position</span>
+         </div>
+         <div
+           className="matched-scroll"
+           role="region"
+           aria-label="Matched columns"
+           tabIndex={0}
+         >
+@@ -409,31 +421,36 @@ export default function MappingRows({
+                     (e.key === "ArrowUp" || e.key === "ArrowDown")
+                   ) {
+                     e.preventDefault();
+                     const next = matched[i + (e.key === "ArrowUp" ? -1 : 1)];
+                     if (next) reorderPair(f.id, next.id);
+                   }
+                 }}
+               >
+                 ⠿
+               </button>
+-              {sourceCard(sourceKey(f), f)}
++              {f.recipe?.kind === "constant" ? (
++                <div className="fixed-summary">
++                  <strong>Fixed value</strong>
++                  <span>No source needed</span>
++                </div>
++              ) : sourceCard(sourceKey(f), f)}
+               <span className="pair-mark" aria-hidden="true">
+-                ↔
++                {f.recipe?.kind === "constant" ? "" : "↔"}
+               </span>
+               {outputCard(f, true)}
+               <div className="pair-actions">
+                 <button
+                   className="unlink"
+                   disabled={disabled}
+-                  aria-label={`Unlink ${f.header}`}
+-                  title="Unlink match"
++                  aria-label={f.recipe?.kind === "constant" ? `Clear fixed value for ${f.header}` : `Unlink ${f.header}`}
++                  title={f.recipe?.kind === "constant" ? "Clear fixed value" : "Unlink match"}
+                   onClick={() => {
+                     update(f.id, { recipe: undefined });
+                     setSelected(undefined);
+                     setAnnouncement(
+                       `${f.header} is unmatched. Export order unchanged.`,
+                     );
+                     focus(`output-${f.id}`);
+                   }}
+                 >
+                   ×
+@@ -550,21 +567,21 @@ export default function MappingRows({
+       <p className="mapping-status" role="status" aria-live="polite">
+         {announcement ||
+           `${matched.length} of ${fields.length} outputs matched. No matches are guessed.`}
+       </p>
+       <div className="order-bar">
+         <strong>Export order</strong>
+         <div className="order-overflow">
+           {fields.map((f, i) => (
+             <span
+               key={f.id}
+-              className={`order-chip ${sourceKey(f) ? "" : "missing"}`}
++              className={`order-chip ${configured(f) ? "" : "missing"}`}
+             >
+               {i + 1} · {f.header || "Unnamed"}
+             </span>
+           ))}
+         </div>
+       </div>
+       <dialog
+         ref={settings}
+         className="column-dialog"
+         aria-labelledby="column-title"
+@@ -577,74 +594,128 @@ export default function MappingRows({
+           <>
+             <fieldset disabled={disabled}>
+               <label>
+                 Output column name
+                 <input
+                   autoFocus
+                   value={field.header}
+                   onChange={(e) => update(field.id, { header: e.target.value })}
+                 />
+               </label>
+-              <label>
++              <fieldset className="value-mode">
++                <legend>Output value</legend>
++                <label className="check">
++                  <input type="radio" name="value-mode" checked={field.recipe?.kind !== "constant"}
++                    onChange={() => update(field.id, { type: "text", recipe: undefined })} />
++                  Copy a source column
++                </label>
++                <label className="check">
++                  <input type="radio" name="value-mode" checked={field.recipe?.kind === "constant"}
++                    onChange={() => {
++                      update(field.id, { type: "text", recipe: { kind: "constant", value: { kind: "text", text: "" } } });
++                      setSelected(undefined);
++                      setAnnouncement(`${field.header} uses a fixed value. No source match needed.`);
++                    }} />
++                  Use a fixed value
++                </label>
++              </fieldset>
++              {field.recipe?.kind === "constant" ? (
++                <>
++                  <label>
++                    Fixed value type
++                    <select aria-label="Fixed value type" value={field.recipe.value.kind} onChange={(e) => {
++                      const kind = e.target.value as "text" | "number" | "blank";
++                      const text = field.recipe?.kind === "constant" ? displayValue(field.recipe.value) : "";
++                      update(field.id, {
++                        type: kind === "number" ? "number" : "text",
++                        trim: kind === "number" ? undefined : field.trim,
++                        maxLength: kind === "number" ? undefined : field.maxLength,
++                        recipe: { kind: "constant", value: kind === "blank" ? { kind } : kind === "number" ? { kind, decimal: text } : { kind, text } },
++                      });
++                    }}>
++                      <option value="text">Text — preserve exactly</option>
++                      <option value="number">Number — exact decimal</option>
++                      <option value="blank">Intentional blank</option>
++                    </select>
++                  </label>
++                  {field.recipe.value.kind === "text" && (
++                    <label>Fixed text
++                      <textarea aria-label="Fixed text" rows={2} maxLength={4096} value={field.recipe.value.text}
++                        onChange={(e) => update(field.id, { recipe: { kind: "constant", value: { kind: "text", text: e.target.value } } })} />
++                    </label>
++                  )}
++                  {field.recipe.value.kind === "number" && (
++                    <label>Fixed number
++                      <input type="text" inputMode="decimal" maxLength={1000} value={field.recipe.value.decimal}
++                        onChange={(e) => update(field.id, { recipe: { kind: "constant", value: { kind: "number", decimal: e.target.value } } })} />
++                    </label>
++                  )}
++                  <p className="helper">{field.recipe.value.kind === "blank" ? "An empty value in every row. Required outputs cannot be blank." : field.recipe.value.kind === "number" ? "Use a decimal such as 12.50. No commas, currency symbols or exponents; digits and decimal places are preserved exactly." : "The same text in every row. Leading zeros and whitespace are preserved unless you enable trimming."}</p>
++                </>
++              ) : <label>
+                 Copy source for {field.header || "unnamed column"}
+                 <select
+                   aria-label={`Copy source for ${field.header || "unnamed column"}`}
+                   value={sourceKey(field)}
+                   onChange={(e) => {
+                     if (e.target.value) match(field.id, e.target.value);
+                     else {
+                       update(field.id, { recipe: undefined });
+                       setAnnouncement(`${field.header} is unmatched.`);
+                     }
+                   }}
+                 >
+                   <option value="">Unmatched — choose a source</option>
+                   {view.columns.map((c) => (
+                     <option key={c.key} value={c.key}>
+                       {c.header}
+                     </option>
+                   ))}
+                 </select>
+-              </label>
++              </label>}
++              {field.type === "text" && <label className="check">
++                <input type="checkbox" checked={field.trim ?? false}
++                  onChange={(e) => update(field.id, { trim: e.target.checked })} />
++                Remove leading and trailing whitespace
++              </label>}
+               <p className="helper">
+-                Changes update preview automatically. Text copied exactly · no
+-                trimming or conversion.
++                Changes update preview automatically. {field.trim ? "Only boundary whitespace is removed; internal spacing and original source values stay unchanged." : "Trimming is off. Text keeps its original whitespace."}
+               </p>
+               <details className="column-validation">
+                 <summary>Validation (optional)</summary>
+                 <label className="check">
+                   <input
+                     type="checkbox"
+                     checked={field.required}
+                     onChange={(e) =>
+                       update(field.id, { required: e.target.checked })
+                     }
+                   />
+                   Required value
+                 </label>
+-                <label>
++                {field.type === "text" && <label>
+                   Maximum characters
+                   <input
+                     type="number"
+                     min="1"
+                     max="1000000"
+                     value={field.maxLength ?? ""}
+                     onChange={(e) =>
+                       update(field.id, {
+                         maxLength:
+                           e.target.value === ""
+                             ? undefined
+                             : Number(e.target.value),
+                       })
+                     }
+                   />
+-                </label>
++                </label>}
+               </details>
+               <div className="dialog-actions">
+                 <button
+                   disabled={disabled || fields[0]?.id === field.id}
+                   aria-label={`Move ${field.header} up`}
+                   onClick={() => move(field.id, -1)}
+                 >
+                   Move output up
+                 </button>
+                 <button
+diff --git a/src/ui/Workspace.tsx b/src/ui/Workspace.tsx
+index af74aff..d12b138 100644
+--- a/src/ui/Workspace.tsx
++++ b/src/ui/Workspace.tsx
+@@ -5,20 +5,22 @@ import {
+   decodeWorkflow,
+   referencedHeaders,
+   type Workflow,
+   type Field,
+ } from "../engine/workflow";
+ import { displayValue } from "../engine/values";
+ import { exportText, type SafetyChoice } from "../formats/spreadsheet-safety";
+ import MappingRows from "./MappingRows";
+ import sampleSource from "../../examples/u2/source.csv?raw";
+ import sampleConfig from "../../examples/u2/workflow.json?raw";
++import fixedSource from "../../examples/u3-source.csv?raw";
++import fixedConfig from "../../examples/u3-workflow.json?raw";
+ function saveDownload(bytes: Uint8Array) {
+   const url = URL.createObjectURL(
+     new Blob([new Uint8Array(bytes)], { type: "text/csv;charset=utf-8" }),
+   );
+   const link = document.createElement("a");
+   link.href = url;
+   link.download = "converted.csv";
+   link.click();
+   setTimeout(() => URL.revokeObjectURL(url), 1000);
+ }
+@@ -59,27 +61,28 @@ export default function Workspace() {
+       setDirty(false);
+       setChoice(undefined);
+     };
+     return () => {
+       session.onState = () => {};
+       session.end();
+     };
+   }, [session]);
+   const view = state.view;
+   const busy = Boolean(state.busy);
+-  const change = (fields: Field[]) => {
++  const changeWorkflow = (patch: Partial<Workflow>) => {
+     draftGeneration.current++;
+     failedGeneration.current = undefined;
+-    setWorkflow((w) => ({ ...w, fields }));
++    setWorkflow((w) => ({ ...w, ...patch }));
+     setDirty(true);
+     setChoice(undefined);
+   };
++  const change = (fields: Field[]) => changeWorkflow({ fields });
+   const makeFields = (headers: string[]): Field[] =>
+     headers.map((header) => ({
+       id: `manual-${nextID.current++}`,
+       header,
+       type: "text",
+       required: false,
+     }));
+   session.onTemplate = (headers) => change(makeFields(headers));
+   useEffect(() => {
+     if (
+@@ -104,26 +107,26 @@ export default function Workspace() {
+         source: {
+           ...workflow.source,
+           referencedHeaders: referencedHeaders(workflow.fields),
+         },
+       };
+       pendingGeneration.current = generation;
+       session.configure(current);
+     }, 250);
+     return () => clearTimeout(timer);
+   }, [dirty, busy, view, state.recoverable, workflow, session]);
+-  const sample = async () => {
++  const sample = async (fixed = false) => {
+     setChoice(undefined);
+     await session.upload(
+-      new File([sampleSource], "synthetic-orders.csv", { type: "text/csv" }),
++      new File([fixed ? fixedSource : sampleSource], fixed ? "synthetic-fixed-fields.csv" : "synthetic-orders.csv", { type: "text/csv" }),
+       ",",
+-      { workflow: decodeWorkflow(sampleConfig) },
++      { workflow: decodeWorkflow(fixed ? fixedConfig : sampleConfig) },
+     );
+   };
+   const validPreview =
+     view &&
+     !dirty &&
+     !busy &&
+     !state.recoverable &&
+     view.workflowIssues.length === 0;
+   const risk = Boolean(
+     validPreview && (view.summary.warningIssues || view.riskyHeaders.length),
+@@ -190,20 +193,23 @@ export default function Workspace() {
+             />
+           </label>
+           <button
+             disabled={busy}
+             onClick={() => {
+               void sample();
+             }}
+           >
+             Try sample data
+           </button>
++          <button disabled={busy} onClick={() => { void sample(true); }}>
++            Try fixed fields example
++          </button>
+           {(view || state.recoverable) && (
+             <button
+               disabled={busy}
+               onClick={() => {
+                 draftGeneration.current++;
+                 pendingGeneration.current = undefined;
+                 failedGeneration.current = undefined;
+                 session.end();
+                 setWorkflow(makeWorkflow([]));
+                 setDirty(true);
+@@ -302,24 +308,42 @@ export default function Workspace() {
+             importing={busy}
+             change={change}
+             makeFields={makeFields}
+             importTemplate={(file) => {
+               setChoice(undefined);
+               void session.upload(file, delimiter, { template: true });
+             }}
+           />
+           <section className="panel review" aria-labelledby="preview-title">
+             <h2 id="preview-title">3. Preview & download</h2>
+-            <p className="export-settings">
+-              <strong>CSV export:</strong> UTF-8 · no BOM · comma · header row ·
+-              CRLF
+-            </p>
++            <fieldset className="csv-options" disabled={busy && state.busy !== "Checking all rows…"}>
++              <legend>CSV export settings</legend>
++              <div className="csv-controls">
++                <label>CSV delimiter
++                  <select aria-label="CSV delimiter" value={workflow.output.delimiter} onChange={(e) => changeWorkflow({ output: { ...workflow.output, delimiter: e.target.value as Workflow["output"]["delimiter"] } })}>
++                    <option value=",">Comma</option>
++                    <option value=";">Semicolon</option>
++                    <option value={"\t"}>Tab</option>
++                  </select>
++                </label>
++                <label className="check">
++                  <input type="checkbox" checked={workflow.output.bom} onChange={(e) => changeWorkflow({ output: { ...workflow.output, bom: e.target.checked } })} />
++                  Include UTF-8 BOM
++                </label>
++                <label className="check">
++                  <input type="checkbox" checked={workflow.output.header} onChange={(e) => changeWorkflow({ output: { ...workflow.output, header: e.target.checked } })} />
++                  Include header row
++                </label>
++              </div>
++              <p className="helper">UTF-8 encoding · CRLF line endings. Settings update preview automatically.</p>
++              {!workflow.output.header && <p className="helper">Column labels identify fields in preview only. The downloaded file has no header row.</p>}
++            </fieldset>
+             {!workflow.fields.length ? (
+               <p className="notice">
+                 Add an output column or import a template to start matching.
+               </p>
+             ) : dirty || busy ? (
+               <p className="notice">
+                 {busy
+                   ? "Preparing the current preview… Download is blocked until processing finishes."
+                   : "Updating preview automatically… Download stays blocked until the current mappings are checked."}
+               </p>
+@@ -524,18 +548,18 @@ export default function Workspace() {
+               Download converted CSV
+             </button>
+             <p className="small">
+               Validation checks your chosen rules. Acceptance by your
+               destination system depends on its import requirements.
+             </p>
+           </section>
+         </div>
+       )}
+       <footer>
+-        U2 internal preview · CSV copy mapping only. Data is cleared on reload
++        U3 internal preview · CSV copies, fixed values and explicit trim. Data is cleared on reload
+         or End session. Source data and file names are never saved. Static
+         application assets are requested from the host; customer file processing
+         stays local.
+       </footer>
+     </main>
+   );
+ }
+diff --git a/src/ui/styles.css b/src/ui/styles.css
+index 3214f1b..6b2d2a4 100644
+--- a/src/ui/styles.css
++++ b/src/ui/styles.css
+@@ -540,20 +540,49 @@ h3 {
+   font-size: 10px;
+   color: #526849;
+   margin-top: 5px;
+ }
+ .card.destination {
+   border-color: #b6cbaa;
+ }
+ .pair .card {
+   background: #fbfdf9;
+ }
++.fixed-summary {
++  min-width: 0;
++  padding: 10px 14px;
++  color: #45683c;
++  display: grid;
++  font-size: 12px;
++  overflow-wrap: anywhere;
++}
++.fixed-summary span {
++  font-size: 11px;
++}
++.confirmed {
++  overflow-wrap: anywhere;
++  max-height: 48px;
++  overflow: auto;
++}
++.value-mode {
++  margin-block: 14px;
++}
++.csv-options {
++  border-block: 1px solid #dce4d5;
++  padding-block: 12px;
++}
++.csv-controls {
++  display: flex;
++  align-items: center;
++  flex-wrap: wrap;
++  gap: 12px 24px;
++}
+ .pair-mark {
+   color: #467444;
+   text-align: center;
+   font-size: 17px;
+ }
+ .pair-actions {
+   display: flex;
+   align-items: center;
+   justify-content: end;
+   gap: 2px;
+diff --git a/tests/README.md b/tests/README.md
+index ca6bf4d..95d3aaf 100644
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -1,3 +1,18 @@
+ # Tests
+ 
+-No test runner has been chosen. Engineering planning must establish automated checks for file parsing, exports and golden-file round trips, identifier/date/decimal fidelity, formula safety, workflow versions and schema compatibility, browser-network privacy, and 10,000-row behavior. Use synthetic data exclusively.
++Use Node 24 and `npm ci`, then run:
++
++```sh
++npm run typecheck
++npm run lint
++npm run test:unit
++npm run build
++npx playwright install --with-deps chromium firefox webkit
++npm run test:e2e
++```
++
++Playwright starts the production server automatically. `U2_CHROMIUM_PATH=/usr/bin/chromium npm run test:e2e -- --project=chromium` selects an installed system Chromium. Keep Firefox and WebKit enabled in CI; a missing local executable is not a browser pass.
++
++Unit tests cover strict workflows, faithful copies, typed constants, explicit trim, validation, provenance, counts, safety and independent byte goldens for all twelve delimiter × BOM × header combinations. Browser tests inspect actual downloads, bidirectional paired-card mapping and reorder, fixed-value configuration, preview generations, formula acknowledgement renewal, cancellation/recovery, accessibility and full-data fidelity. Privacy interception includes unique file, output-header and constant-value sentinels, all network origins and diagnostics, plus empty browser storage. Performance checks retain the original budgets and inspect 10,000-row output; a separate U3 check verifies every fixed/trimmed cell in all 10,000 rows.
++
++Use synthetic fixtures only. See `docs/reviews/u3/` for actual command results, browser limitations, screenshots and CE review evidence. The XLSX qualification harness is separate from the delivered CSV application.
+diff --git a/tests/e2e/accessibility.spec.ts b/tests/e2e/accessibility.spec.ts
+index 01744bc..e0f03d2 100644
+--- a/tests/e2e/accessibility.spec.ts
++++ b/tests/e2e/accessibility.spec.ts
+@@ -24,10 +24,23 @@ test("labelled keyboard controls, laptop/mobile layouts and automated accessibil
+       await page.evaluate(
+         () => document.documentElement.scrollWidth <= window.innerWidth,
+       ),
+     ).toBe(true);
+     const results = await new AxeBuilder({ page })
+       .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+       .analyze();
+     expect(results.violations).toEqual([]);
+   }
+ });
++
++test("U3 fixed fields, CSV options and contextual trim controls remain accessible", async ({ page }) => {
++  await page.setViewportSize({ width: 1024, height: 900 });
++  await page.goto("/");
++  await page.getByRole("button", { name: "Try fixed fields example", exact: true }).click();
++  await preview(page);
++  for (const header of [undefined, "CustomerCode", "Consignee"]) {
++    if (header) await edit(page, header);
++    const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
++    expect(results.violations).toEqual([]);
++    if (header) await closeSettings(page);
++  }
++});
+diff --git a/tests/e2e/constants.spec.ts b/tests/e2e/constants.spec.ts
+new file mode 100644
+index 0000000..cfe25a1
+--- /dev/null
++++ b/tests/e2e/constants.spec.ts
+@@ -0,0 +1,186 @@
++import { test, expect } from "@playwright/test";
++import { readFile } from "node:fs/promises";
++import { add, closeSettings, download, edit, fixed, map, preview, upload } from "./helpers";
++
++test("U3 sample demonstrates constants, trim and nondefault CSV settings", async ({ page }) => {
++  await page.goto("/");
++  await page.getByRole("button", { name: "Try fixed fields example", exact: true }).click();
++  await preview(page);
++  expect(await download(page)).toEqual(await readFile("examples/u3-expected.csv"));
++  await expect(page.getByLabel("CSV delimiter", { exact: true })).toHaveValue(";");
++  await expect(page.getByLabel("Include UTF-8 BOM")).toBeChecked();
++  await expect(page.getByLabel("Include header row")).not.toBeChecked();
++  await expect(page.locator(".matched-scroll")).toContainText("No source needed");
++});
++
++test("fixed fields complete without sources, trim validates resulting text and reorder preserves values", async ({ page }) => {
++  await page.setViewportSize({ width: 1440, height: 1200 });
++  await page.goto("/");
++  await upload(page, 'ID,Name\r\n001,"  A  B  "\r\n002,"  C  D  "\r\n');
++  await add(page, ["CustomerCode", "Weight", "Blank", "Name"]);
++  await fixed(page, "CustomerCode", "text", "0012");
++  await fixed(page, "Weight", "number", "12.50");
++  await fixed(page, "Blank", "blank");
++  await map(page, "Name", "name");
++  await expect(page.locator(".matched-scroll .pair")).toHaveCount(4);
++  await expect(page.getByRole("button", { name: "Select output Weight", exact: true })).toContainText("12.50");
++  await expect(page.locator(".source-grid")).not.toContainText("Used in 2");
++  await preview(page);
++  expect((await download(page)).toString()).toBe('CustomerCode,Weight,Blank,Name\r\n0012,12.50,,"  A  B  "\r\n0012,12.50,,"  C  D  "\r\n');
++  await edit(page, "Name");
++  await page.locator(".column-validation summary").click();
++  await page.getByLabel("Required value", { exact: true }).check();
++  await page.getByLabel("Maximum characters", { exact: true }).fill("4");
++  await closeSettings(page);
++  await preview(page);
++  await expect(page.getByRole("button", { name: "Download converted CSV" })).toBeDisabled();
++  await edit(page, "Name");
++  await page.getByLabel("Remove leading and trailing whitespace", { exact: true }).check();
++  await closeSettings(page);
++  await preview(page);
++  await expect(page.getByRole("cell", { name: "A B", exact: true })).toHaveText("A  B");
++  await page.locator(".source-inspection summary").click();
++  expect(await page.getByRole("region", { name: "Source table, scroll horizontally" }).getByRole("cell").nth(1).textContent()).toBe("  A  B  ");
++  await page.getByRole("button", { name: "Reorder pair Weight", exact: true }).press("Alt+ArrowUp");
++  await preview(page);
++  expect((await download(page)).toString()).toBe("Weight,CustomerCode,Blank,Name\r\n12.50,0012,,A  B\r\n12.50,0012,,C  D\r\n");
++  await page.getByRole("button", { name: "Reorder pair Weight", exact: true }).dragTo(page.locator(".pair").last());
++  await preview(page);
++  expect((await download(page)).toString()).toBe("CustomerCode,Blank,Name,Weight\r\n0012,,A  B,12.50\r\n0012,,C  D,12.50\r\n");
++  // An explicit source match replaces a numeric constant and returns to text copy semantics.
++  await map(page, "Weight", "id");
++  await preview(page);
++  expect((await download(page)).toString()).toContain("0012,,A  B,001\r\n");
++  await fixed(page, "Weight", "number", "-12.50");
++  await preview(page);
++  expect((await download(page)).toString()).toContain("0012,,A  B,-12.50\r\n");
++});
++
++test("constant reorder permutes configured slots while unmatched outputs stay fixed", async ({ page }) => {
++  await page.goto("/");
++  await upload(page, "ID\n001234");
++  await add(page, ["Fixed", "Gap", "Copy"]);
++  await fixed(page, "Fixed", "text", "0012");
++  await map(page, "Copy", "id");
++  const constant = page.locator(".pair").filter({ has: page.getByRole("button", { name: "Select output Fixed", exact: true }) });
++  await expect(constant.locator("[data-source-key]")).toHaveCount(0);
++  await expect(constant.locator(".pair-mark")).toHaveText("");
++  await page.getByRole("button", { name: "Reorder pair Copy", exact: true }).press("Alt+ArrowUp");
++  expect(await page.locator(".order-chip").allTextContents()).toEqual(["1 · Copy", "2 · Gap", "3 · Fixed"]);
++  await page.getByRole("button", { name: "Reorder pair Fixed", exact: true }).dragTo(page.locator(".pair").first());
++  expect(await page.locator(".order-chip").allTextContents()).toEqual(["1 · Fixed", "2 · Gap", "3 · Copy"]);
++  await map(page, "Gap", "id");
++  await preview(page);
++  expect((await download(page)).toString()).toBe("Fixed,Gap,Copy\r\n0012,001234,001234\r\n");
++});
++
++test("intentional required blanks and invalid numeric literals block export with actionable errors", async ({ page }) => {
++  await page.goto("/");
++  await upload(page, "ID\na\nb");
++  await add(page, ["Blank"]);
++  await fixed(page, "Blank", "blank");
++  await preview(page);
++  expect((await download(page)).toString()).toBe("Blank\r\n\r\n\r\n");
++  await edit(page, "Blank");
++  await page.locator(".column-validation summary").click();
++  await page.getByLabel("Required value", { exact: true }).check();
++  await closeSettings(page);
++  await preview(page);
++  await expect(page.locator(".counts")).toContainText("Invalid 2");
++  await expect(page.getByRole("button", { name: "Download converted CSV" })).toBeDisabled();
++  await fixed(page, "Blank", "number", "1e3");
++  await preview(page);
++  await expect(page.locator(".review [role=alert]")).toContainText("Workflow structure is invalid");
++  await fixed(page, "Blank", "number", "12.50");
++  await preview(page);
++  expect((await download(page)).toString()).toBe("Blank\r\n12.50\r\n12.50\r\n");
++});
++
++test("all twelve CSV setting combinations download independent exact UTF-8 byte goldens", async ({ page }) => {
++  await page.goto("/");
++  await upload(page, 'ID,Note\r\n0012,"café,;\t""Dock""\nNorth\r\nSouth"\r\n');
++  await add(page, ["Note", "Reference"]);
++  await map(page, "Note", "note");
++  await map(page, "Reference", "id");
++  await preview(page);
++  for (const delimiter of [",", ";", "\t"]) {
++    for (const bom of [false, true]) {
++      for (const header of [false, true]) {
++        await page.getByLabel("CSV delimiter", { exact: true }).selectOption(delimiter);
++        await page.getByLabel("Include UTF-8 BOM", { exact: true }).setChecked(bom);
++        await page.getByLabel("Include header row", { exact: true }).setChecked(header);
++        await preview(page);
++        const expected = (bom ? "\ufeff" : "") + (header ? `Note${delimiter}Reference\r\n` : "") + `"café,;\t""Dock""\nNorth\r\nSouth"${delimiter}0012\r\n`;
++        expect(await download(page)).toEqual(Buffer.from(expected));
++      }
++    }
++  }
++});
++
++test("formula constants require renewed choice after constant, trim and every export setting edit", async ({ page }) => {
++  await page.goto("/");
++  await upload(page, "ID\na");
++  await add(page, ["Code"]);
++  await fixed(page, "Code", "text", " =1+1 ");
++  await preview(page);
++  const button = page.getByRole("button", { name: "Download converted CSV" });
++  const safe = page.getByLabel("Escape risky text with an apostrophe");
++  await expect(button).toBeDisabled();
++  await safe.check();
++  expect((await download(page)).toString()).toBe('Code\r\n"\' =1+1 "\r\n');
++  await page.getByLabel("Preserve raw text for TMS import", { exact: false }).check();
++  expect((await download(page)).toString()).toBe('Code\r\n" =1+1 "\r\n');
++  await page.clock.install();
++  await page.clock.pauseAt(new Date(Date.now() + 1000));
++  for (const action of [
++    async () => { await fixed(page, "Code", "text", " =2+2 "); },
++    async () => { await edit(page, "Code"); await page.getByLabel("Remove leading and trailing whitespace").check(); await closeSettings(page); },
++    async () => { await page.getByLabel("CSV delimiter", { exact: true }).selectOption(";"); },
++    async () => { await page.getByLabel("Include UTF-8 BOM").check(); },
++    async () => { await page.getByLabel("Include header row").uncheck(); },
++  ]) {
++    await action();
++    await expect(button).toBeDisabled();
++    await page.clock.runFor(250);
++    await preview(page);
++    await expect(button).toBeDisabled();
++    await expect(safe).not.toBeChecked();
++    await safe.check();
++  }
++  expect(await download(page)).toEqual(Buffer.from("\ufeff'=2+2\r\n"));
++});
++
++test("constant and CSV edits during an older evaluation cannot export stale settings", async ({ page }) => {
++  await page.clock.install({ time: new Date("2026-10-15T00:00:00Z") });
++  await page.addInitScript(() => {
++    const runtime = Object.assign(window, { holdRuns: false, pendingRuns: [] as (() => void)[] });
++    const OriginalWorker = window.Worker;
++    window.Worker = class extends OriginalWorker {
++      postMessage(message: unknown, options: Transferable[] | StructuredSerializeOptions = []) {
++        const send = () => { if (Array.isArray(options)) super.postMessage(message, options); else super.postMessage(message, options); };
++        if ((message as { kind?: string }).kind === "run" && runtime.holdRuns) runtime.pendingRuns.push(send);
++        else send();
++      }
++    };
++  });
++  await page.goto("/");
++  await page.clock.pauseAt(new Date("2026-10-15T00:10:00Z"));
++  await upload(page, "ID\na");
++  await add(page, ["Code"]);
++  await fixed(page, "Code", "text", "0012");
++  await page.clock.runFor(250);
++  await preview(page);
++  await page.evaluate(() => Reflect.set(window, "holdRuns", true));
++  await page.getByLabel("Include UTF-8 BOM").check();
++  await page.clock.runFor(250);
++  await expect(page.locator(".status-bar [role=status]")).toContainText("Checking all rows");
++  await fixed(page, "Code", "text", "0099");
++  await page.getByLabel("Include header row").uncheck();
++  await page.evaluate(() => Reflect.get(window, "pendingRuns").shift()?.());
++  await expect(page.getByLabel("Upload source CSV")).toBeEnabled();
++  await expect(page.getByRole("button", { name: "Download converted CSV" })).toBeDisabled();
++  await page.clock.runFor(250);
++  await page.evaluate(() => Reflect.get(window, "pendingRuns").shift()?.());
++  await preview(page);
++  expect(await download(page)).toEqual(Buffer.from("\ufeff0099\r\n"));
++});
+diff --git a/tests/e2e/helpers.ts b/tests/e2e/helpers.ts
+index c944acb..06a7d84 100644
+--- a/tests/e2e/helpers.ts
++++ b/tests/e2e/helpers.ts
+@@ -23,20 +23,33 @@ export async function edit(page: Page, header: string) {
+   await expect(
+     page.getByRole("dialog", { name: /column settings/ }),
+   ).toBeVisible();
+ }
+ export async function closeSettings(page: Page) {
+   await page
+     .getByRole("dialog")
+     .getByRole("button", { name: "Done", exact: true })
+     .click();
+ }
++export async function fixed(
++  page: Page,
++  header: string,
++  type: "text" | "number" | "blank",
++  value = "",
++) {
++  await edit(page, header);
++  await page.getByLabel("Use a fixed value", { exact: true }).check();
++  await page.getByLabel("Fixed value type", { exact: true }).selectOption(type);
++  if (type !== "blank")
++    await page.getByLabel(type === "number" ? "Fixed number" : "Fixed text", { exact: true }).fill(value);
++  await closeSettings(page);
++}
+ export async function rename(page: Page, header: string, name: string) {
+   await edit(page, header);
+   await page.getByLabel("Output column name", { exact: true }).fill(name);
+   await closeSettings(page);
+ }
+ export async function remove(page: Page, header: string) {
+   await edit(page, header);
+   await page
+     .getByRole("button", { name: `Remove ${header}`, exact: true })
+     .click();
+diff --git a/tests/e2e/performance.spec.ts b/tests/e2e/performance.spec.ts
+index 44b7fa9..a56dd56 100644
+--- a/tests/e2e/performance.spec.ts
++++ b/tests/e2e/performance.spec.ts
+@@ -1,20 +1,50 @@
+ import { test, expect } from "@playwright/test";
+ import {
+   upload,
+   add,
+   map,
+   preview,
+   download,
+   mapForPerformance,
++  fixed,
++  edit,
++  closeSettings,
+ } from "./helpers";
+ import Papa from "papaparse";
++test("10000 U3 rows preserve every fixed value, exact decimal, trim result and original reference", async ({ page }) => {
++  test.setTimeout(120000);
++  await page.goto("/");
++  await upload(page, "ID,Name\r\n" + Array.from({ length: 10000 }, (_, i) => `${String(i).padStart(6, "0")},  Dock  ${i}  `).join("\r\n"));
++  await add(page, ["Reference", "CustomerCode", "Weight", "Blank", "Name"]);
++  await map(page, "Reference", "id");
++  await fixed(page, "CustomerCode", "text", "0012");
++  await fixed(page, "Weight", "number", "12.50");
++  await fixed(page, "Blank", "blank");
++  await map(page, "Name", "name");
++  await edit(page, "Name");
++  await page.getByLabel("Remove leading and trailing whitespace").check();
++  await closeSettings(page);
++  await page.getByLabel("CSV delimiter", { exact: true }).selectOption("\t");
++  await page.getByLabel("Include UTF-8 BOM").check();
++  await preview(page);
++  const bytes = await download(page);
++  expect(bytes.subarray(0, 3)).toEqual(Buffer.from([239, 187, 191]));
++  const rows = Papa.parse<string[]>(bytes.toString(), { delimiter: "\t", skipEmptyLines: true }).data;
++  expect(rows[0]).toEqual(["Reference", "CustomerCode", "Weight", "Blank", "Name"]);
++  expect(rows).toHaveLength(10001);
++  for (let i = 0; i < 10000; i++)
++    expect(rows[i + 1]).toEqual([String(i).padStart(6, "0"), "0012", "12.50", "", `Dock  ${i}`]);
++  await expect(page.getByLabel("Full dataset counts")).toContainText("10000");
++  await page.getByRole("button", { name: "Next page", exact: true }).click();
++  await expect(page.getByRole("region", { name: "Output preview, scroll horizontally" }).getByRole("rowheader").first()).toHaveText("52 / 52");
++});
+ test("10000 x 20 rows remain intact; record cold and five warm full-pipeline runs", async ({
+   page,
+   browserName,
+   browser,
+ }, testInfo) => {
+   test.setTimeout(120000);
+   const headers = Array.from({ length: 20 }, (_, i) => `Col${i}`);
+   const csv =
+     headers.join(",") +
+     "\r\n" +
+diff --git a/tests/e2e/privacy.spec.ts b/tests/e2e/privacy.spec.ts
+index b8b3dae..2c8d981 100644
+--- a/tests/e2e/privacy.spec.ts
++++ b/tests/e2e/privacy.spec.ts
+@@ -1,20 +1,21 @@
+ import { test, expect } from "@playwright/test";
+ import { readdir } from "node:fs/promises";
+-import { upload, add, map, preview, download, rename, move } from "./helpers";
++import { upload, add, map, preview, download, rename, move, fixed, edit, closeSettings } from "./helpers";
+ test("production journey sends no customer values, file names or IDs and stores no source data", async ({
+   context,
+   page,
+ }) => {
+   const sentinel = "PRIVATE_U2_SENTINEL_9X";
+   const headerSentinel = "PRIVATE_U2_HEADER_SENTINEL_Z7";
+-  const privateValues = [sentinel, headerSentinel];
++  const constantSentinel = "PRIVATE_U3_FIXED_SENTINEL_Q82";
++  const privateValues = [sentinel, headerSentinel, constantSentinel];
+   const unexpected: string[] = [];
+   const seen: string[] = [];
+   const diagnostics: string[] = [];
+   const assets = new Set(
+     (await readdir("dist/assets")).map((f) => "/assets/" + f),
+   );
+   assets.add("/");
+   assets.add("/index.html");
+   await context.route("**/*", async (route) => {
+     const r = route.request(),
+@@ -61,20 +62,32 @@ test("production journey sends no customer values, file names or IDs and stores
+   await page.getByLabel("Search source columns").fill("");
+   await page.getByRole("button", { name: "Unlink Note", exact: true }).click();
+   await map(page, "Note", "note");
+   await move(page, "Note", "up");
+   await move(page, "Note", "down");
+   await preview(page);
+   expect((await download(page)).toString()).toContain(sentinel);
+   await rename(page, "Note", headerSentinel);
+   await preview(page);
+   expect((await download(page)).toString()).toContain(headerSentinel);
++  await add(page, ["CustomerCode"]);
++  await fixed(page, "CustomerCode", "text", `  ${constantSentinel}  `);
++  await edit(page, "CustomerCode");
++  await page.getByLabel("Remove leading and trailing whitespace").check();
++  await closeSettings(page);
++  await page.getByLabel("CSV delimiter", { exact: true }).selectOption(";");
++  await page.getByLabel("Include UTF-8 BOM").check();
++  await page.getByLabel("Include header row").uncheck();
++  await preview(page);
++  const configuredBytes = await download(page);
++  expect(configuredBytes.subarray(0, 3)).toEqual(Buffer.from([239, 187, 191]));
++  expect(configuredBytes.toString()).toContain(`;${constantSentinel}\r\n`);
+   await page.getByLabel("Show only rows with exceptions").check();
+   await expect(page.getByLabel("Full dataset counts")).toBeVisible();
+   const storage = await page.evaluate(async () => ({
+     local: Object.keys(localStorage),
+     session: Object.keys(sessionStorage),
+     dbs: await indexedDB.databases(),
+     caches: await caches.keys(),
+   }));
+   expect(storage).toEqual({ local: [], session: [], dbs: [], caches: [] });
+   expect(await page.locator("img").count()).toBe(0);
+diff --git a/tests/unit/constants.test.ts b/tests/unit/constants.test.ts
+new file mode 100644
+index 0000000..aa46d8a
+--- /dev/null
++++ b/tests/unit/constants.test.ts
+@@ -0,0 +1,72 @@
++import { expect, test } from "vitest";
++import { makeWorkflow, referencedHeaders } from "../../src/engine/workflow";
++import { evaluate } from "../../src/engine/recipes";
++import { parseCsv, serializeCsv } from "../../src/formats/csv";
++
++const source = parseCsv(new TextEncoder().encode("ID,Note\n001, x \n,\n002,y"), ",", "fixed");
++test("typed constants need no source and preserve exact literals, rows and provenance", () => {
++  const w = makeWorkflow(["CustomerCode", "Weight", "Empty"]);
++  w.fields[0].recipe = { kind: "constant", value: { kind: "text", text: " 0012 " } };
++  w.fields[1] = { ...w.fields[1], type: "number", recipe: { kind: "constant", value: { kind: "number", decimal: "12.50" } } };
++  w.fields[2].recipe = { kind: "constant", value: { kind: "blank" } };
++  const original = structuredClone(source);
++  const run = evaluate(w, source);
++  expect(run.workflowIssues).toEqual([]);
++  expect(referencedHeaders(w.fields)).toEqual([]);
++  expect(run.summary).toMatchObject({ inputRows: 3, skippedBlanks: 1, candidates: 2, valid: 2 });
++  for (const row of run.rows) {
++    expect(row.values).toEqual([{ kind: "text", text: " 0012 " }, { kind: "number", decimal: "12.50" }, { kind: "blank" }]);
++    expect(row.provenance[0]).toMatchObject({ field: "field-0", row: row.id, constant: { kind: "text", text: " 0012 " } });
++    expect(row.provenance[0]).not.toHaveProperty("source");
++  }
++  expect(run.rows.map(r => [r.record, r.line])).toEqual([[2, 2], [4, 4]]);
++  expect(source).toEqual(original);
++  expect(new TextDecoder().decode(serializeCsv(w, run, undefined))).toBe('CustomerCode,Weight,Empty\r\n" 0012 ",12.50,\r\n" 0012 ",12.50,\r\n');
++});
++test.each(["12.50", "-12.50", "+0012.500", "90071992547409931234567890.123456789", ".50", "12."])("number %s remains a decimal string and is not formula text", decimal => {
++  const w = makeWorkflow(["Weight"]);
++  w.fields[0] = { ...w.fields[0], type: "number", recipe: { kind: "constant", value: { kind: "number", decimal } } };
++  const run = evaluate(w, source);
++  expect(run.workflowIssues).toEqual([]);
++  expect(run.summary.warningIssues).toBe(0);
++  expect(run.rows[0].values).toEqual([{ kind: "number", decimal }]);
++  expect(new TextDecoder().decode(serializeCsv(w, run, undefined))).toBe(`Weight\r\n${decimal}\r\n${decimal}\r\n`);
++});
++test.each(["text", "number"] as const)("intentional blank %s is optional, required blank is invalid", type => {
++  const w = makeWorkflow(["Blank"]);
++  w.fields[0] = { ...w.fields[0], type, recipe: { kind: "constant", value: { kind: "blank" } } };
++  expect(evaluate(w, source).summary.valid).toBe(2);
++  w.fields[0].required = true;
++  const run = evaluate(w, source);
++  expect(run.summary.invalid).toBe(2);
++  expect(run.rows[0].issues[0]).toMatchObject({ code: "required", field: "field-0", row: "fixed:2" });
++  expect(() => serializeCsv(w, run, undefined)).toThrow(/Export blocked/);
++});
++test("formula-like constants require safe/raw choice; reordering retains value and type", () => {
++  const w = makeWorkflow(["Code", "Formula"]);
++  w.fields[0].recipe = { kind: "constant", value: { kind: "text", text: "0012" } };
++  w.fields[1].recipe = { kind: "constant", value: { kind: "text", text: "=1+1" } };
++  w.fields.reverse();
++  const run = evaluate(w, source);
++  expect(run.summary.warningOnly).toBe(2);
++  expect(() => serializeCsv(w, run, undefined)).toThrow(/Choose/);
++  expect(new TextDecoder().decode(serializeCsv(w, run, "raw"))).toBe("Formula,Code\r\n=1+1,0012\r\n=1+1,0012\r\n");
++  expect(new TextDecoder().decode(serializeCsv(w, run, "escape"))).toBe("Formula,Code\r\n'=1+1,0012\r\n'=1+1,0012\r\n");
++});
++test("malformed or incompatible constants and future modifiers fail closed", () => {
++  for (const patch of [
++    { type: "number", recipe: { kind: "constant", value: { kind: "text", text: "12.50" } } },
++    { type: "text", recipe: { kind: "constant", value: { kind: "number", decimal: "12.50" } } },
++    { type: "number", recipe: { kind: "constant", value: { kind: "number", decimal: "1e3" } } },
++    { type: "number", trim: true, recipe: { kind: "constant", value: { kind: "number", decimal: "1" } } },
++    { type: "number", recipe: { kind: "copy", source: "id" } },
++    { type: "number", scale: 2, recipe: { kind: "constant", value: { kind: "number", decimal: "1.00" } } },
++  ]) {
++    const w = makeWorkflow(["Invalid"]);
++    Object.assign(w.fields[0], patch);
++    const run = evaluate(w, source);
++    expect(run.workflowIssues.length).toBeGreaterThan(0);
++    expect(run.rows).toEqual([]);
++    expect(() => serializeCsv(w, run, undefined)).toThrow(/Export blocked/);
++  }
++});
+diff --git a/tests/unit/csv-options.test.ts b/tests/unit/csv-options.test.ts
+new file mode 100644
+index 0000000..f83b299
+--- /dev/null
++++ b/tests/unit/csv-options.test.ts
+@@ -0,0 +1,26 @@
++import { expect, test } from "vitest";
++import { makeWorkflow } from "../../src/engine/workflow";
++import { evaluate } from "../../src/engine/recipes";
++import { parseCsv, serializeCsv } from "../../src/formats/csv";
++for (const delimiter of [",", ";", "\t"] as const)
++  for (const bom of [false, true])
++    for (const header of [false, true])
++      test(`exact CSV bytes delimiter=${JSON.stringify(delimiter)} BOM=${bom} header=${header}`, () => {
++        const w = makeWorkflow(['All,";\t', "Code", "Empty"]);
++        w.output = { ...w.output, delimiter, bom, header };
++        w.fields[0].recipe = { kind: "constant", value: { kind: "text", text: 'café,;\t"Dock"\nNorth\r\nSouth' } };
++        w.fields[1].recipe = { kind: "constant", value: { kind: "text", text: "0012" } };
++        w.fields[2].recipe = { kind: "constant", value: { kind: "blank" } };
++        const source = parseCsv(new TextEncoder().encode("ID\na\nb"), ",", "csv");
++        const row = `"café,;\t""Dock""\nNorth\r\nSouth"${delimiter}0012${delimiter}\r\n`;
++        const expected = (bom ? "\ufeff" : "") + (header ? `"All,"";\t"${delimiter}Code${delimiter}Empty\r\n` : "") + row + row;
++        expect(serializeCsv(w, evaluate(w, source), undefined)).toEqual(new TextEncoder().encode(expected));
++      });
++test("omitted headers do not contribute formula risk", () => {
++  const w = makeWorkflow(["=Not exported"]);
++  w.fields[0].recipe = { kind: "constant", value: { kind: "text", text: "0012" } };
++  w.output.header = false;
++  const run = evaluate(w, parseCsv(new TextEncoder().encode("ID\na"), ",", "d"));
++  expect(run.riskyHeaders).toEqual([]);
++  expect(serializeCsv(w, run, undefined)).toEqual(new TextEncoder().encode("0012\r\n"));
++});
+diff --git a/tests/unit/sample.test.ts b/tests/unit/sample.test.ts
+index cb26d0d..4bbbdd2 100644
+--- a/tests/unit/sample.test.ts
++++ b/tests/unit/sample.test.ts
+@@ -6,10 +6,17 @@ import { evaluate } from "../../src/engine/recipes";
+ test("bundled synthetic configuration produces committed golden bytes", () => {
+   const w = decodeWorkflow(readFileSync("examples/u2/workflow.json", "utf8"));
+   const r = evaluate(
+     w,
+     parseCsv(readFileSync("examples/u2/source.csv"), ",", "sample"),
+   );
+   expect(Buffer.from(serializeCsv(w, r, undefined))).toEqual(
+     readFileSync("examples/u2/expected.csv"),
+   );
+ });
++test("U3 synthetic fixed/trimmed semicolon BOM data-only example produces golden bytes", () => {
++  const w = decodeWorkflow(readFileSync("examples/u3-workflow.json", "utf8"));
++  const r = evaluate(w, parseCsv(readFileSync("examples/u3-source.csv"), ",", "u3-sample"));
++  expect(r.workflowIssues).toEqual([]);
++  expect(r.summary).toMatchObject({ candidates: 2, valid: 2, invalid: 0 });
++  expect(Buffer.from(serializeCsv(w, r, undefined))).toEqual(readFileSync("examples/u3-expected.csv"));
++});
+diff --git a/tests/unit/trim.test.ts b/tests/unit/trim.test.ts
+new file mode 100644
+index 0000000..81cb1d8
+--- /dev/null
++++ b/tests/unit/trim.test.ts
+@@ -0,0 +1,31 @@
++import { expect, test } from "vitest";
++import { makeWorkflow } from "../../src/engine/workflow";
++import { evaluate } from "../../src/engine/recipes";
++import { parseCsv, serializeCsv } from "../../src/formats/csv";
++test.each(["copy", "constant"] as const)("%s trims only explicitly, before validation, preserving originals", kind => {
++  const source = parseCsv(new TextEncoder().encode('ID\n"  A  B  "'), ",", "trim");
++  const w = makeWorkflow(["Name"]);
++  w.fields[0].recipe = kind === "copy" ? { kind, source: "id" } : { kind, value: { kind: "text", text: "  A  B  " } };
++  w.fields[0].required = true;
++  w.fields[0].maxLength = 4;
++  const before = structuredClone(source);
++  expect(evaluate(w, source).summary.invalid).toBe(1);
++  expect(evaluate(w, source).rows[0].values[0]).toEqual({ kind: "text", text: "  A  B  " });
++  w.fields[0].trim = true;
++  const run = evaluate(w, source);
++  expect(run.summary.valid).toBe(1);
++  expect(run.rows[0].values[0]).toEqual({ kind: "text", text: "A  B" });
++  expect(run.rows[0].provenance[0]).toMatchObject({ trim: true });
++  expect(new TextDecoder().decode(serializeCsv(w, run, undefined))).toBe("Name\r\nA  B\r\n");
++  expect(source).toEqual(before);
++});
++test("required whitespace stays invalid before and after explicit trim", () => {
++  const source = parseCsv(new TextEncoder().encode('ID\n"  "'), ",", "trim");
++  const w = makeWorkflow(["Name"]);
++  w.fields[0] = { ...w.fields[0], required: true, recipe: { kind: "copy", source: "id" } };
++  expect(evaluate(w, source).rows[0].values[0]).toEqual({ kind: "text", text: "  " });
++  w.fields[0].trim = true;
++  const run = evaluate(w, source);
++  expect(run.rows[0].values[0]).toEqual({ kind: "blank" });
++  expect(run.rows[0].issues[0].code).toBe("required");
++});
+diff --git a/tests/unit/workflow.test.ts b/tests/unit/workflow.test.ts
+index 64ffa97..09d82c2 100644
+--- a/tests/unit/workflow.test.ts
++++ b/tests/unit/workflow.test.ts
+@@ -23,24 +23,22 @@ test("strict versioned schema rejects extra executable properties and unknown ve
+     decodeWorkflow(JSON.stringify({ ...copy(), version: 2 })),
+   ).toThrow(/version/);
+   expect(() =>
+     decodeWorkflow(JSON.stringify({ ...copy(), script: "alert(1)" })),
+   ).toThrow(/structure/);
+   expect(() => decodeWorkflow("[".repeat(21) + "0" + "]".repeat(21))).toThrow(
+     /nesting/,
+   );
+   expect(() => decodeWorkflow(" ".repeat(1024 * 1024 + 1))).toThrow(/1 MiB/);
+ });
+-test("complete finite grammar accepts valid later variants but never executes them in U2", () => {
++test("finite grammar accepts future variants but never executes unsupported recipes", () => {
+   const variants = [
+-    { kind: "constant", value: { kind: "number", decimal: "0.10" } },
+-    { kind: "constant", value: { kind: "blank" } },
+     {
+       kind: "split",
+       source: "id",
+       delimiter: ",",
+       segments: 2,
+       index: 0,
+       trim: false,
+       optionalEmpty: [],
+     },
+     {

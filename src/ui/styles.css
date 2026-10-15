@@ -547,6 +547,35 @@ h3 {
 .pair .card {
   background: #fbfdf9;
 }
+.fixed-summary {
+  min-width: 0;
+  padding: 10px 14px;
+  color: #45683c;
+  display: grid;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.fixed-summary span {
+  font-size: 11px;
+}
+.confirmed {
+  overflow-wrap: anywhere;
+  max-height: 48px;
+  overflow: auto;
+}
+.value-mode {
+  margin-block: 14px;
+}
+.csv-options {
+  border-block: 1px solid #dce4d5;
+  padding-block: 12px;
+}
+.csv-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
 .pair-mark {
   color: #467444;
   text-align: center;

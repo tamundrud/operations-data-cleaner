@@ -31,3 +31,16 @@ test("labelled keyboard controls, laptop/mobile layouts and automated accessibil
     expect(results.violations).toEqual([]);
   }
 });
+
+test("U3 fixed fields, CSV options and contextual trim controls remain accessible", async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Try fixed fields example", exact: true }).click();
+  await preview(page);
+  for (const header of [undefined, "CustomerCode", "Consignee"]) {
+    if (header) await edit(page, header);
+    const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
+    expect(results.violations).toEqual([]);
+    if (header) await closeSettings(page);
+  }
+});

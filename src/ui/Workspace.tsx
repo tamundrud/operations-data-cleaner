@@ -12,6 +12,8 @@ import { exportText, type SafetyChoice } from "../formats/spreadsheet-safety";
 import MappingRows from "./MappingRows";
 import sampleSource from "../../examples/u2/source.csv?raw";
 import sampleConfig from "../../examples/u2/workflow.json?raw";
+import fixedSource from "../../examples/u3-source.csv?raw";
+import fixedConfig from "../../examples/u3-workflow.json?raw";
 function saveDownload(bytes: Uint8Array) {
   const url = URL.createObjectURL(
     new Blob([new Uint8Array(bytes)], { type: "text/csv;charset=utf-8" }),
@@ -66,13 +68,14 @@ export default function Workspace() {
   }, [session]);
   const view = state.view;
   const busy = Boolean(state.busy);
-  const change = (fields: Field[]) => {
+  const changeWorkflow = (patch: Partial<Workflow>) => {
     draftGeneration.current++;
     failedGeneration.current = undefined;
-    setWorkflow((w) => ({ ...w, fields }));
+    setWorkflow((w) => ({ ...w, ...patch }));
     setDirty(true);
     setChoice(undefined);
   };
+  const change = (fields: Field[]) => changeWorkflow({ fields });
   const makeFields = (headers: string[]): Field[] =>
     headers.map((header) => ({
       id: `manual-${nextID.current++}`,
@@ -111,12 +114,12 @@ export default function Workspace() {
     }, 250);
     return () => clearTimeout(timer);
   }, [dirty, busy, view, state.recoverable, workflow, session]);
-  const sample = async () => {
+  const sample = async (fixed = false) => {
     setChoice(undefined);
     await session.upload(
-      new File([sampleSource], "synthetic-orders.csv", { type: "text/csv" }),
+      new File([fixed ? fixedSource : sampleSource], fixed ? "synthetic-fixed-fields.csv" : "synthetic-orders.csv", { type: "text/csv" }),
       ",",
-      { workflow: decodeWorkflow(sampleConfig) },
+      { workflow: decodeWorkflow(fixed ? fixedConfig : sampleConfig) },
     );
   };
   const validPreview =
@@ -196,6 +199,9 @@ export default function Workspace() {
             }}
           >
             Try sample data
+          </button>
+          <button disabled={busy} onClick={() => { void sample(true); }}>
+            Try fixed fields example
           </button>
           {(view || state.recoverable) && (
             <button
@@ -309,10 +315,28 @@ export default function Workspace() {
           />
           <section className="panel review" aria-labelledby="preview-title">
             <h2 id="preview-title">3. Preview & download</h2>
-            <p className="export-settings">
-              <strong>CSV export:</strong> UTF-8 · no BOM · comma · header row ·
-              CRLF
-            </p>
+            <fieldset className="csv-options" disabled={busy && state.busy !== "Checking all rows…"}>
+              <legend>CSV export settings</legend>
+              <div className="csv-controls">
+                <label>CSV delimiter
+                  <select aria-label="CSV delimiter" value={workflow.output.delimiter} onChange={(e) => changeWorkflow({ output: { ...workflow.output, delimiter: e.target.value as Workflow["output"]["delimiter"] } })}>
+                    <option value=",">Comma</option>
+                    <option value=";">Semicolon</option>
+                    <option value={"\t"}>Tab</option>
+                  </select>
+                </label>
+                <label className="check">
+                  <input type="checkbox" checked={workflow.output.bom} onChange={(e) => changeWorkflow({ output: { ...workflow.output, bom: e.target.checked } })} />
+                  Include UTF-8 BOM
+                </label>
+                <label className="check">
+                  <input type="checkbox" checked={workflow.output.header} onChange={(e) => changeWorkflow({ output: { ...workflow.output, header: e.target.checked } })} />
+                  Include header row
+                </label>
+              </div>
+              <p className="helper">UTF-8 encoding · CRLF line endings. Settings update preview automatically.</p>
+              {!workflow.output.header && <p className="helper">Column labels identify fields in preview only. The downloaded file has no header row.</p>}
+            </fieldset>
             {!workflow.fields.length ? (
               <p className="notice">
                 Add an output column or import a template to start matching.
@@ -531,7 +555,7 @@ export default function Workspace() {
         </div>
       )}
       <footer>
-        U2 internal preview · CSV copy mapping only. Data is cleared on reload
+        U3 internal preview · CSV copies, fixed values and explicit trim. Data is cleared on reload
         or End session. Source data and file names are never saved. Static
         application assets are requested from the host; customer file processing
         stays local.

@@ -6,8 +6,38 @@ import {
   preview,
   download,
   mapForPerformance,
+  fixed,
+  edit,
+  closeSettings,
 } from "./helpers";
 import Papa from "papaparse";
+test("10000 U3 rows preserve every fixed value, exact decimal, trim result and original reference", async ({ page }) => {
+  test.setTimeout(120000);
+  await page.goto("/");
+  await upload(page, "ID,Name\r\n" + Array.from({ length: 10000 }, (_, i) => `${String(i).padStart(6, "0")},  Dock  ${i}  `).join("\r\n"));
+  await add(page, ["Reference", "CustomerCode", "Weight", "Blank", "Name"]);
+  await map(page, "Reference", "id");
+  await fixed(page, "CustomerCode", "text", "0012");
+  await fixed(page, "Weight", "number", "12.50");
+  await fixed(page, "Blank", "blank");
+  await map(page, "Name", "name");
+  await edit(page, "Name");
+  await page.getByLabel("Remove leading and trailing whitespace").check();
+  await closeSettings(page);
+  await page.getByLabel("CSV delimiter", { exact: true }).selectOption("\t");
+  await page.getByLabel("Include UTF-8 BOM").check();
+  await preview(page);
+  const bytes = await download(page);
+  expect(bytes.subarray(0, 3)).toEqual(Buffer.from([239, 187, 191]));
+  const rows = Papa.parse<string[]>(bytes.toString(), { delimiter: "\t", skipEmptyLines: true }).data;
+  expect(rows[0]).toEqual(["Reference", "CustomerCode", "Weight", "Blank", "Name"]);
+  expect(rows).toHaveLength(10001);
+  for (let i = 0; i < 10000; i++)
+    expect(rows[i + 1]).toEqual([String(i).padStart(6, "0"), "0012", "12.50", "", `Dock  ${i}`]);
+  await expect(page.getByLabel("Full dataset counts")).toContainText("10000");
+  await page.getByRole("button", { name: "Next page", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Output preview, scroll horizontally" }).getByRole("rowheader").first()).toHaveText("52 / 52");
+});
 test("10000 x 20 rows remain intact; record cold and five warm full-pipeline runs", async ({
   page,
   browserName,
