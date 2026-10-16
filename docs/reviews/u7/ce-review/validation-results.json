@@ -1,0 +1,41 @@
+{
+  "batch_outcome": "verdicts",
+  "selected": 2,
+  "confirmed": 1,
+  "rejected": 1,
+  "unresolved": 0,
+  "malformed": 0,
+  "failed": 0,
+  "shortcut_skipped": 0,
+  "shortcut_evidence_basis": "No independently verified different-provider corroboration.",
+  "reason": "Fresh replacement validator completed after usage-limit interruption ended the original launch without output.",
+  "verdicts": [
+    {
+      "#": 1,
+      "status": "rejected",
+      "protected_subject": null,
+      "reason": "The cited 835-to-1121-line growth is substantially formatting in full.diff, the embedded column-settings responsibility already exists in HEAD, and inspected code and AGENTS.md establish neither a 1000-line limit nor a concrete defect requiring this extraction."
+    },
+    {
+      "#": 2,
+      "status": "confirmed",
+      "protected_subject": null,
+      "reason": "When a user selects Number and numeric policies through the newly added controls before selecting or replacing a copy source, MappingRows.tsx:962 calls match at line 150, which sets type=text and newly clears policies at lines 126-130; Workspace.tsx:95-102 retains that patch and recipes.ts:190-215 skips numeric checks, so fractional or nonnumeric replacement values can become valid, with UI reachability established by these handlers but incidence not measured."
+    }
+  ],
+  "protected_subject_classification": [
+    {
+      "#": 1,
+      "protected_subject": null,
+      "reason": "Component size/extraction preference; no protected failure alleged."
+    },
+    {
+      "#": 2,
+      "protected_subject": null,
+      "reason": "Internal editor numeric-policy reset; no destructive source write, irreversible migration or externally consumed API compatibility failure alleged."
+    }
+  ],
+  "protected_subject_reclassifications": [],
+  "degraded_blockers": [],
+  "collection": "Replacement validator verdicts landed; original usage-limit interruption did not leave any finding unvalidated."
+}

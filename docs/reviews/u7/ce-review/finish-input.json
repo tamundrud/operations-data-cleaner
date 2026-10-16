@@ -1,0 +1,201 @@
+{
+  "run_id": "20261016-142646-122044e8",
+  "run_dir": "/tmp/compound-engineering-1000/ce-code-review/20261016-142646-122044e8",
+  "skill_dir": "/home/agent/.agents/skills/ce-code-review",
+  "docs_root": "docs",
+  "mode": {
+    "agent": true,
+    "apply_local": false,
+    "grouping": "auto",
+    "depth": "auto"
+  },
+  "invocation": {
+    "arguments": "ce-code-review mode:agent base:origin/main plan:docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "constraints": [
+      "Do not implement or commit anything; artifacts only.",
+      "Scope ONLY U7 exact calculations/numeric validation, KTD-04, AC05/06/10; preserve existing U2\u2013U6 privacy/fidelity/saved-workflow/revision-safety.",
+      "No date/Excel/U8, no merge or deployment.",
+      "Do not run browser tests/server or mutate shared build.",
+      "Review itself must not create PR."
+    ]
+  },
+  "scope": {
+    "mode": "standalone",
+    "base": "8f0432d4e19b9f5e50f3c7446bcb426b2918ca55",
+    "diff_a": "8f0432d4e19b9f5e50f3c7446bcb426b2918ca55",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u7-exact-calculations",
+    "head_sha": "8f0432d4e19b9f5e50f3c7446bcb426b2918ca55",
+    "files": "/tmp/compound-engineering-1000/ce-code-review/20261016-142646-122044e8/files.txt",
+    "diff": "/tmp/compound-engineering-1000/ce-code-review/20261016-142646-122044e8/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": []
+  },
+  "intent": {
+    "summary": "Implement U7 only: exact decimal add/subtract/multiply/divide using big.js, strict numeric interpretation, opt-in rounding and precision, whole-number validation before rounding, contextual paired-card numeric controls, and version-1 portable/local compatibility. Preserve U2\u2013U6 local privacy, fidelity, saved workflows and revision safety; date/Excel/U8 changes are out of scope.",
+    "confidence": "explicit"
+  },
+  "plan": {
+    "path": "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "source": "explicit",
+    "requirements": [
+      {
+        "id": "R3",
+        "text": "For U7: FR-15\u201316,43 exact arithmetic and precision; AC-05\u201306."
+      },
+      {
+        "id": "R4",
+        "text": "For U7: FR-19\u201320 numeric validation; AC-10."
+      }
+    ],
+    "implementation_units": [
+      {
+        "id": "U7",
+        "title": "Exact calculations and numeric validation",
+        "requirements": "R3/R4; FR-15\u201316,19\u201320,43; AC-05\u201306,10",
+        "acceptance": "24/4=6;15*12=180;0.1+0.2=0.3; subtract and typed negatives; invalid/missing operands and zero divisors; zero operands; 1/3 invalid absent explicit rounding; all modes with ties/negative; wholeNumber checks exact before rounding; large identifiers remain text; visible precision overflow; exact strings/CSV bytes; browser settings; 10k arithmetic/privacy."
+      }
+    ],
+    "settled_decisions": []
+  },
+  "roster": {
+    "selected": [
+      {
+        "reviewer": "correctness",
+        "tier": "session",
+        "reason": "always-on"
+      },
+      {
+        "reviewer": "project-standards",
+        "tier": "mid-tier",
+        "reason": "AGENTS.md explicit invariants"
+      },
+      {
+        "reviewer": "testing",
+        "tier": "mid-tier",
+        "reason": "new/changed unit/e2e tests and helpers"
+      },
+      {
+        "reviewer": "maintainability",
+        "tier": "mid-tier",
+        "reason": "1199 executable non-test changed lines and UI structure"
+      },
+      {
+        "reviewer": "security",
+        "tier": "session",
+        "reason": "untrusted decimal/workflow input/resource bounds"
+      },
+      {
+        "reviewer": "performance",
+        "tier": "mid-tier",
+        "reason": "10k-row exact arithmetic transforms"
+      },
+      {
+        "reviewer": "api-contract",
+        "tier": "mid-tier",
+        "reason": "version1 portable/stored workflow schema and codec"
+      },
+      {
+        "reviewer": "adversarial",
+        "tier": "session",
+        "reason": "cross-boundary arithmetic/validation/editor workflows; no cross-model CLI"
+      }
+    ],
+    "standards": {
+      "criteria": [
+        {
+          "path": "AGENTS.md",
+          "files": [
+            "README.md",
+            "THIRD_PARTY_NOTICES.md",
+            "docs/decisions/exact-decimals.md",
+            "docs/reviews/u7/calculation-settings-1440.png",
+            "docs/reviews/u7/calculation-settings-390.png",
+            "docs/reviews/u7/capture.json",
+            "docs/reviews/u7/capture.mjs",
+            "docs/reviews/u7/plan-review/README.md",
+            "docs/reviews/u7/plan-review/adversarial.json",
+            "docs/reviews/u7/plan-review/coherence.json",
+            "docs/reviews/u7/plan-review/design-lens.json",
+            "docs/reviews/u7/plan-review/feasibility.json",
+            "docs/reviews/u7/plan-review/scope-guardian.json",
+            "docs/reviews/u7/plan-review/security-lens.json",
+            "docs/reviews/u7/plan-review/source-hashes.json",
+            "docs/reviews/u7/rounding-settings-1440.png",
+            "docs/reviews/u7/rounding-settings-390.png",
+            "docs/reviews/u7/simplification/verification.md",
+            "docs/reviews/u7/workspace-1024.png",
+            "docs/reviews/u7/workspace-1440.png",
+            "docs/reviews/u7/workspace-390.png",
+            "package-lock.json",
+            "package.json",
+            "src/engine/decimal.ts",
+            "src/engine/recipes.ts",
+            "src/engine/validation.ts",
+            "src/engine/workflow.ts",
+            "src/ui/CalculationSettings.tsx",
+            "src/ui/MappingRows.tsx",
+            "src/ui/Workspace.tsx",
+            "src/workflows/codec.ts",
+            "tests/e2e/calculations.spec.ts",
+            "tests/e2e/helpers.ts",
+            "tests/e2e/performance.spec.ts",
+            "tests/e2e/privacy.spec.ts",
+            "tests/unit/constants.test.ts",
+            "tests/unit/decimal.test.ts",
+            "tests/unit/numeric-validation.test.ts",
+            "tests/unit/workflow-roundtrip.test.ts",
+            "tests/unit/workflow.test.ts",
+            "third-party-licenses/big.js-LICENCE.md"
+          ]
+        }
+      ],
+      "fallback_named": true,
+      "not_run_reason": null
+    },
+    "packs": {
+      "roots": [],
+      "errors": [],
+      "warnings": []
+    }
+  },
+  "collection": {
+    "returns": "/tmp/compound-engineering-1000/ce-code-review/20261016-142646-122044e8/raw-returns.json",
+    "unstructured_returns": [],
+    "failed_reviewers": [],
+    "bound_exceeded": [],
+    "fast_pass": {
+      "emitted_preliminary": false,
+      "candidates": []
+    }
+  },
+  "peer": {
+    "selected": true,
+    "target": null,
+    "route": null,
+    "preference_source": "default",
+    "outcome": "in-process-fallback",
+    "artifact": null,
+    "coverage": "cross-model pass: not run (host attested codex; no different-provider CLI installed: claude, grok, cursor-agent and opencode absent); in-process adversarial reviewed the same scope."
+  },
+  "coverage_notes": [
+    "Full depth required by scope helper: 1199 executable non-test changed lines, size large, seven binary files uncounted.",
+    "AGENTS.md is the applicable instruction-file fallback for every changed path; successful search found no CODING_STANDARDS.md or CLAUDE.md.",
+    "Scope includes staged implementation against origin/main; full.diff/files.txt are the authoritative snapshot. Parent added verification/log/screenshot artifacts afterward, no code changes.",
+    "All eight reviewers returned valid terminal JSON and artifacts; no cleanup/release API exists.",
+    "Parent reported final verification: typecheck/lint/build,156 units pass; production Chromium calculations/privacy/performance 12/12 in52.2s; earlier full regression68/68 plus new fourth calculation browser test pass. Reviewers did not run browser/server/build.",
+    "Excluded planned later work U8 onward: no completeness obligation for dates or Excel.",
+    "Skipped conditional reviewers: agent-native: no agent-facing surface; learnings: corpus concerns XLSX qualification, no plausible U7 match; no declared packs; reliability: no changed async or recovery mechanism; frontend-races: synchronous editor callbacks; no meaningful new asynchronous lifecycle; data-migration: no schema/migration; previous-comments: no PR metadata; swift-ios: no Swift"
+  ]
+}

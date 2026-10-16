@@ -1,0 +1,16 @@
+{
+  "verdicts": [
+    {
+      "#": 1,
+      "status": "rejected",
+      "protected_subject": null,
+      "reason": "The cited 835-to-1121-line growth is substantially formatting in full.diff, the embedded column-settings responsibility already exists in HEAD, and inspected code and AGENTS.md establish neither a 1000-line limit nor a concrete defect requiring this extraction."
+    },
+    {
+      "#": 2,
+      "status": "confirmed",
+      "protected_subject": null,
+      "reason": "When a user selects Number and numeric policies through the newly added controls before selecting or replacing a copy source, MappingRows.tsx:962 calls match at line 150, which sets type=text and newly clears policies at lines 126-130; Workspace.tsx:95-102 retains that patch and recipes.ts:190-215 skips numeric checks, so fractional or nonnumeric replacement values can become valid, with UI reachability established by these handlers but incidence not measured."
+    }
+  ]
+}

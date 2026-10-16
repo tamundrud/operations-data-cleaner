@@ -1,0 +1,74 @@
+[
+  {
+    "reviewer": "correctness",
+    "findings": [
+      {
+        "autofix_class": "manual",
+        "confidence": 75,
+        "evidence": [
+          "src/ui/MappingRows.tsx:962:                       if (e.target.value) match(field.id, e.target.value);",
+          "src/ui/MappingRows.tsx:150:     update(id, { type: \"text\", recipe: { kind: \"copy\", source: key } });",
+          "src/ui/MappingRows.tsx:126-130: patch.type === \"text\" clears rounding, scale and wholeNumber in update().",
+          "src/ui/MappingRows.tsx:978-987: Copy outputs now expose an independent Output type selector, including Number.",
+          "src/engine/recipes.ts:196-199: Numeric validation is conditional on f.type === \"number\".",
+          "src/ui/MappingRows.tsx:128: rounding: undefined,; src/ui/MappingRows.tsx:129: scale: undefined,; src/ui/MappingRows.tsx:130: wholeNumber: undefined,; src/ui/MappingRows.tsx:150: update(id, { type: \"text\", recipe: { kind: \"copy\", source: key } });",
+          "Configure a copy from source A as number with wholeNumber=true, then choose source B through the Copy source selector. Its onChange invokes match(field.id, e.target.value), which supplies type=text; the new update branch deletes all numeric policies.",
+          "If B contains 1.5 or 'four', recipes.ts skips numeric validation because f.type is now text, leaving an optional destination valid and exportable. This crosses the source-selection/editor boundary into numeric validation and can silently change a saved workflow's business rule."
+        ],
+        "file": "src/ui/MappingRows.tsx",
+        "first_evidence": "src/ui/MappingRows.tsx:962:                       if (e.target.value) match(field.id, e.target.value);",
+        "independent_reviewers": [
+          "adversarial",
+          "correctness"
+        ],
+        "line": 962,
+        "owner": "downstream-resolver",
+        "pre_existing": false,
+        "requires_verification": true,
+        "reviewers": [
+          "adversarial",
+          "correctness"
+        ],
+        "severity": "P2",
+        "suggested_fix": "Preserve an existing copy field's output type, wholeNumber, scale and rounding when selecting or replacing its source; reserve incompatible-policy clearing for an explicit output-type or recipe-mode transition. Add a regression scenario that configures a numeric copy before and after source selection, remaps it to fractional and nonnumeric data, and verifies the rules and invalid-row/export behavior remain intact.",
+        "title": "Preserve numeric settings when changing a copy source"
+      }
+    ],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "maintainability",
+    "findings": [
+      {
+        "autofix_class": "gated_auto",
+        "confidence": 100,
+        "evidence": [
+          "src/ui/MappingRows.tsx:854:               {field.recipe?.kind === \"calculate\" ? (",
+          "git show HEAD:src/ui/MappingRows.tsx | wc -l reports 835; wc -l src/ui/MappingRows.tsx reports 1121.",
+          "src/ui/MappingRows.tsx:734 begins the column settings dialog; its recipe/type/validation UI continues through line 1085, inside the same MappingRows function that owns matching, suggestions and ordering."
+        ],
+        "file": "src/ui/MappingRows.tsx",
+        "first_evidence": "src/ui/MappingRows.tsx:854:               {field.recipe?.kind === \"calculate\" ? (",
+        "independent_reviewers": [
+          "maintainability"
+        ],
+        "line": 854,
+        "owner": "downstream-resolver",
+        "pre_existing": false,
+        "requires_verification": true,
+        "reviewers": [
+          "maintainability"
+        ],
+        "severity": "P1",
+        "suggested_fix": "Extract the column-settings dialog body, including recipe mode initialization, fixed-value editing, output type and validation controls, into a ColumnSettings component receiving the selected field, source columns and field update/match callbacks. Keep dialog focus/lifecycle and matching workspace state in MappingRows; retain CalculationSettings and NumericSettings as its existing child controls. This moves a coherent editing responsibility out of the oversized workspace without adding a generic registry or duplicating recipe logic.",
+        "title": "Extract column settings before MappingRows crosses 1,000 lines"
+      }
+    ],
+    "residual_risks": [],
+    "testing_gaps": [
+      "tests/unit/decimal.test.ts exercises terminating denominators and recurring denominators, but never a quotient that terminates only after cancelling a non-2/5 factor (for example 3 / 6 = 0.5). Add that case, preferably with a negative divisor too, to protect the new gcd/reduction path in src/engine/decimal.ts.",
+      "The new resource tests cover the 1000-character input guard and the division-scale guard, but do not exercise finish/checkSize's 2000-digit result guard. Add accepted-boundary and rejected-overflow cases using legal operands, including a large multiplication with explicit rounding places, and assert the numeric-limit error code. This protects the separate result-expansion bound rather than only input and division bounds."
+    ]
+  }
+]

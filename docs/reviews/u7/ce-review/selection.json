@@ -1,0 +1,40 @@
+{
+  "reviewers": [
+    "correctness",
+    "project-standards",
+    "testing",
+    "maintainability",
+    "security",
+    "performance",
+    "api-contract",
+    "adversarial"
+  ],
+  "tiers": {
+    "correctness": "session",
+    "project-standards": "mid-tier",
+    "testing": "mid-tier",
+    "maintainability": "mid-tier",
+    "security": "session",
+    "performance": "mid-tier",
+    "api-contract": "mid-tier",
+    "adversarial": "session"
+  },
+  "standards_mapping": {
+    "AGENTS.md": "all changed paths"
+  },
+  "cross_model": {
+    "status": "not_run",
+    "reason": "No attested-different installed CLI: claude/grok/cursor-agent/opencode absent",
+    "host_harness": "codex",
+    "host_family": "codex"
+  },
+  "skipped": [
+    "agent-native: no agent-facing surface",
+    "learnings: corpus concerns XLSX qualification, no plausible U7 match; no declared packs",
+    "reliability: no changed async or recovery mechanism",
+    "frontend-races: synchronous editor callbacks; no meaningful new asynchronous lifecycle",
+    "data-migration: no schema/migration",
+    "previous-comments: no PR metadata",
+    "swift-ios: no Swift"
+  ]
+}

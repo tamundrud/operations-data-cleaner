@@ -1,0 +1,10 @@
+{
+  "residual_risks": [],
+  "testing_gaps": [
+    "tests/unit/decimal.test.ts exercises terminating denominators and recurring denominators, but never a quotient that terminates only after cancelling a non-2/5 factor (for example 3 / 6 = 0.5). Add that case, preferably with a negative divisor too, to protect the new gcd/reduction path in src/engine/decimal.ts.",
+    "The new resource tests cover the 1000-character input guard and the division-scale guard, but do not exercise finish/checkSize's 2000-digit result guard. Add accepted-boundary and rejected-overflow cases using legal operands, including a large multiplication with explicit rounding places, and assert the numeric-limit error code. This protects the separate result-expansion bound rather than only input and division bounds."
+  ],
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": []
+}

@@ -1,3 +1,4 @@
+import type { Field } from "../../src/engine/workflow";
 import { expect, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 export async function upload(page: Page, text: string, name = "synthetic.csv") {
@@ -108,5 +109,17 @@ export async function splitField(page: Page, header: string, source: string, pos
   await page.getByLabel("Split source", { exact: true }).selectOption(source);
   await page.getByLabel("Use segment number", { exact: true }).fill(String(position));
   if (trim) await page.getByLabel("Trim whitespace around each segment", { exact: true }).check();
+  await closeSettings(page);
+}
+
+export async function calculation(page: Page, header: string, left: string, right: string, operation: Extract<NonNullable<Field["recipe"]>, {kind:"calculate"}>["operation"], constant = false) {
+  await edit(page, header);
+  await page.getByLabel('Calculate with numbers', { exact:true }).check();
+  await page.getByLabel('First source', { exact:true }).selectOption(left);
+  await page.getByLabel('Operation', { exact:true }).selectOption(operation);
+  if (constant) {
+    await page.getByLabel('Second operand type', { exact:true }).selectOption('number');
+    await page.getByLabel('Second fixed number', { exact:true }).fill(right);
+  } else await page.getByLabel('Second source', { exact:true }).selectOption(right);
   await closeSettings(page);
 }

@@ -1,0 +1,25 @@
+{
+  "reviewer": "adversarial",
+  "findings": [
+    {
+      "title": "Changing numeric source silently removes validation",
+      "severity": "P2",
+      "file": "src/ui/MappingRows.tsx",
+      "line": 128,
+      "why_it_matters": "A user who changes the source of an existing numeric copy unexpectedly converts the destination to text and loses its whole-number, scale and rounding rules. Fractional or malformed quantities then become valid exportable text. The same problem occurs when selecting number output and its rules before choosing the first source.",
+      "autofix_class": "manual",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 75,
+      "evidence": [
+        "src/ui/MappingRows.tsx:128: rounding: undefined,; src/ui/MappingRows.tsx:129: scale: undefined,; src/ui/MappingRows.tsx:130: wholeNumber: undefined,; src/ui/MappingRows.tsx:150: update(id, { type: \"text\", recipe: { kind: \"copy\", source: key } });",
+        "Configure a copy from source A as number with wholeNumber=true, then choose source B through the Copy source selector. Its onChange invokes match(field.id, e.target.value), which supplies type=text; the new update branch deletes all numeric policies.",
+        "If B contains 1.5 or 'four', recipes.ts skips numeric validation because f.type is now text, leaving an optional destination valid and exportable. This crosses the source-selection/editor boundary into numeric validation and can silently change a saved workflow's business rule."
+      ],
+      "pre_existing": false,
+      "suggested_fix": "Have match preserve the destination's existing output type and compatible field policies when replacing a source reference, instead of always passing type=text. Explicit Output type changes should remain responsible for clearing incompatible settings. Verify remapping a whole-number numeric copy to fractional and nonnumeric sources retains its validation errors."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

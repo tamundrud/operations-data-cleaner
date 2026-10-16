@@ -1,14 +1,12 @@
 import { z } from "zod";
+import { DECIMAL_GRAMMAR, DECIMAL_INPUT_LIMIT } from "./decimal";
 export const normalizeHeader = (name: string) =>
   name.trim().replace(/\s+/gu, " ").toLowerCase();
 const bounded = z.string().max(4096);
 const key = bounded
   .min(1)
   .refine((v) => normalizeHeader(v) === v, "Use a normalized source header");
-const decimal = z
-  .string()
-  .max(1000)
-  .regex(/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/u);
+const decimal = z.string().max(DECIMAL_INPUT_LIMIT).regex(DECIMAL_GRAMMAR);
 const literal = z.discriminatedUnion("kind", [
   z.strictObject({ kind: z.literal("text"), text: bounded }),
   z.strictObject({ kind: z.literal("number"), decimal }),

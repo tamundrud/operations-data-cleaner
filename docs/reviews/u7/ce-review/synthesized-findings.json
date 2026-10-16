@@ -1,0 +1,205 @@
+{
+  "run_id": "20261016-142646-122044e8",
+  "status": "complete",
+  "findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 100,
+      "evidence": [
+        "src/ui/MappingRows.tsx:854:               {field.recipe?.kind === \"calculate\" ? (",
+        "git show HEAD:src/ui/MappingRows.tsx | wc -l reports 835; wc -l src/ui/MappingRows.tsx reports 1121.",
+        "src/ui/MappingRows.tsx:734 begins the column settings dialog; its recipe/type/validation UI continues through line 1085, inside the same MappingRows function that owns matching, suggestions and ordering."
+      ],
+      "file": "src/ui/MappingRows.tsx",
+      "first_evidence": "src/ui/MappingRows.tsx:854:               {field.recipe?.kind === \"calculate\" ? (",
+      "independent_reviewers": [
+        "maintainability"
+      ],
+      "line": 854,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "maintainability"
+      ],
+      "severity": "P1",
+      "suggested_fix": "Extract the column-settings dialog body, including recipe mode initialization, fixed-value editing, output type and validation controls, into a ColumnSettings component receiving the selected field, source columns and field update/match callbacks. Keep dialog focus/lifecycle and matching workspace state in MappingRows; retain CalculationSettings and NumericSettings as its existing child controls. This moves a coherent editing responsibility out of the oversized workspace without adding a generic registry or duplicating recipe logic.",
+      "title": "Extract column settings before MappingRows crosses 1,000 lines",
+      "why_it_matters": "This diff grows MappingRows from 835 to 1,121 lines. The component now combines drag/drop matching, suggestions, ordering, modal lifecycle, recipe creation, fixed-value editing and numeric policy transitions in one function. Adding calculation support expands the embedded settings branch even after extracting CalculationSettings, so changes to any recipe still require navigating the entire matching workspace and its captured state."
+    },
+    {
+      "#": 2,
+      "autofix_class": "manual",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/MappingRows.tsx:962:                       if (e.target.value) match(field.id, e.target.value);",
+        "src/ui/MappingRows.tsx:150:     update(id, { type: \"text\", recipe: { kind: \"copy\", source: key } });",
+        "src/ui/MappingRows.tsx:126-130: patch.type === \"text\" clears rounding, scale and wholeNumber in update().",
+        "src/ui/MappingRows.tsx:978-987: Copy outputs now expose an independent Output type selector, including Number.",
+        "src/engine/recipes.ts:196-199: Numeric validation is conditional on f.type === \"number\".",
+        "src/ui/MappingRows.tsx:128: rounding: undefined,; src/ui/MappingRows.tsx:129: scale: undefined,; src/ui/MappingRows.tsx:130: wholeNumber: undefined,; src/ui/MappingRows.tsx:150: update(id, { type: \"text\", recipe: { kind: \"copy\", source: key } });",
+        "Configure a copy from source A as number with wholeNumber=true, then choose source B through the Copy source selector. Its onChange invokes match(field.id, e.target.value), which supplies type=text; the new update branch deletes all numeric policies.",
+        "If B contains 1.5 or 'four', recipes.ts skips numeric validation because f.type is now text, leaving an optional destination valid and exportable. This crosses the source-selection/editor boundary into numeric validation and can silently change a saved workflow's business rule."
+      ],
+      "file": "src/ui/MappingRows.tsx",
+      "first_evidence": "src/ui/MappingRows.tsx:962:                       if (e.target.value) match(field.id, e.target.value);",
+      "independent_reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "line": 962,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Preserve an existing copy field's output type, wholeNumber, scale and rounding when selecting or replacing its source; reserve incompatible-policy clearing for an explicit output-type or recipe-mode transition. Add a regression scenario that configures a numeric copy before and after source selection, remaps it to fractional and nonnumeric data, and verifies the rules and invalid-row/export behavior remain intact.",
+      "title": "Preserve numeric settings when changing a copy source",
+      "why_it_matters": "A user can configure a copied output as Number with whole-number, scale and rounding rules, then change its Copy source dropdown. The dropdown calls match(), which always sets type to text; the new update logic also removes all numeric settings. The replacement source now bypasses numeric validation and exports as text, so a fractional or malformed value that should be invalid can become eligible without an explicit change to the output type or validation controls. The same reset is reachable when configuring Number before choosing the first copy source."
+    }
+  ],
+  "pre_existing_findings": [],
+  "residual_risks": [],
+  "testing_gaps": [
+    "tests/unit/decimal.test.ts exercises terminating denominators and recurring denominators, but never a quotient that terminates only after cancelling a non-2/5 factor (for example 3 / 6 = 0.5). Add that case, preferably with a negative divisor too, to protect the new gcd/reduction path in src/engine/decimal.ts.",
+    "The new resource tests cover the 1000-character input guard and the division-scale guard, but do not exercise finish/checkSize's 2000-digit result guard. Add accepted-boundary and rejected-overflow cases using legal operands, including a large multiplication with explicit rounding places, and assert the numeric-limit error code. This protects the separate result-expansion bound rather than only input and division bounds."
+  ],
+  "triage_groups": [],
+  "actionable_findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 100,
+      "evidence": [
+        "src/ui/MappingRows.tsx:854:               {field.recipe?.kind === \"calculate\" ? (",
+        "git show HEAD:src/ui/MappingRows.tsx | wc -l reports 835; wc -l src/ui/MappingRows.tsx reports 1121.",
+        "src/ui/MappingRows.tsx:734 begins the column settings dialog; its recipe/type/validation UI continues through line 1085, inside the same MappingRows function that owns matching, suggestions and ordering."
+      ],
+      "file": "src/ui/MappingRows.tsx",
+      "first_evidence": "src/ui/MappingRows.tsx:854:               {field.recipe?.kind === \"calculate\" ? (",
+      "independent_reviewers": [
+        "maintainability"
+      ],
+      "line": 854,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "maintainability"
+      ],
+      "severity": "P1",
+      "suggested_fix": "Extract the column-settings dialog body, including recipe mode initialization, fixed-value editing, output type and validation controls, into a ColumnSettings component receiving the selected field, source columns and field update/match callbacks. Keep dialog focus/lifecycle and matching workspace state in MappingRows; retain CalculationSettings and NumericSettings as its existing child controls. This moves a coherent editing responsibility out of the oversized workspace without adding a generic registry or duplicating recipe logic.",
+      "title": "Extract column settings before MappingRows crosses 1,000 lines",
+      "why_it_matters": "This diff grows MappingRows from 835 to 1,121 lines. The component now combines drag/drop matching, suggestions, ordering, modal lifecycle, recipe creation, fixed-value editing and numeric policy transitions in one function. Adding calculation support expands the embedded settings branch even after extracting CalculationSettings, so changes to any recipe still require navigating the entire matching workspace and its captured state."
+    },
+    {
+      "#": 2,
+      "autofix_class": "manual",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/MappingRows.tsx:962:                       if (e.target.value) match(field.id, e.target.value);",
+        "src/ui/MappingRows.tsx:150:     update(id, { type: \"text\", recipe: { kind: \"copy\", source: key } });",
+        "src/ui/MappingRows.tsx:126-130: patch.type === \"text\" clears rounding, scale and wholeNumber in update().",
+        "src/ui/MappingRows.tsx:978-987: Copy outputs now expose an independent Output type selector, including Number.",
+        "src/engine/recipes.ts:196-199: Numeric validation is conditional on f.type === \"number\".",
+        "src/ui/MappingRows.tsx:128: rounding: undefined,; src/ui/MappingRows.tsx:129: scale: undefined,; src/ui/MappingRows.tsx:130: wholeNumber: undefined,; src/ui/MappingRows.tsx:150: update(id, { type: \"text\", recipe: { kind: \"copy\", source: key } });",
+        "Configure a copy from source A as number with wholeNumber=true, then choose source B through the Copy source selector. Its onChange invokes match(field.id, e.target.value), which supplies type=text; the new update branch deletes all numeric policies.",
+        "If B contains 1.5 or 'four', recipes.ts skips numeric validation because f.type is now text, leaving an optional destination valid and exportable. This crosses the source-selection/editor boundary into numeric validation and can silently change a saved workflow's business rule."
+      ],
+      "file": "src/ui/MappingRows.tsx",
+      "first_evidence": "src/ui/MappingRows.tsx:962:                       if (e.target.value) match(field.id, e.target.value);",
+      "independent_reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "line": 962,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Preserve an existing copy field's output type, wholeNumber, scale and rounding when selecting or replacing its source; reserve incompatible-policy clearing for an explicit output-type or recipe-mode transition. Add a regression scenario that configures a numeric copy before and after source selection, remaps it to fractional and nonnumeric data, and verifies the rules and invalid-row/export behavior remain intact.",
+      "title": "Preserve numeric settings when changing a copy source",
+      "why_it_matters": "A user can configure a copied output as Number with whole-number, scale and rounding rules, then change its Copy source dropdown. The dropdown calls match(), which always sets type to text; the new update logic also removes all numeric settings. The replacement source now bypasses numeric validation and exports as text, so a fractional or malformed value that should be invalid can become eligible without an explicit change to the output type or validation controls. The same reset is reachable when configuring Number before choosing the first copy source."
+    }
+  ],
+  "suppressed_by_confidence": {},
+  "suppressed_findings": [],
+  "malformed_findings": 0,
+  "malformed_returns": 0,
+  "first_evidence_backfilled": 0,
+  "missing_first_evidence_demotions": 0,
+  "mode_aware_demotions": 0,
+  "semantic_merges": [
+    {
+      "finding": 2,
+      "source_reviewers": [
+        "correctness",
+        "adversarial"
+      ],
+      "reason": "Same match()->update(type=text) failure and same source-only update fix path."
+    }
+  ],
+  "settlement_suppressed": 0,
+  "rejected_claims": [],
+  "source_detail_map": "/tmp/compound-engineering-1000/ce-code-review/20261016-142646-122044e8/source-detail-map.json",
+  "peer": {
+    "selected": true,
+    "target": null,
+    "route": null,
+    "preference_source": "default",
+    "outcome": "in-process-fallback",
+    "artifact": null,
+    "coverage": "cross-model pass: not run (host attested codex; no different-provider CLI installed: claude, grok, cursor-agent and opencode absent); in-process adversarial reviewed the same scope."
+  },
+  "fold_in_outcome": "in-process-fallback",
+  "coverage": [
+    "Full depth required by scope helper: 1199 executable non-test changed lines, size large, seven binary files uncounted.",
+    "AGENTS.md is the applicable instruction-file fallback for every changed path; successful search found no CODING_STANDARDS.md or CLAUDE.md.",
+    "Scope includes staged implementation against origin/main; full.diff/files.txt are the authoritative snapshot. Parent added verification/log/screenshot artifacts afterward, no code changes.",
+    "All eight reviewers returned valid terminal JSON and artifacts; no cleanup/release API exists.",
+    "Parent reported final verification: typecheck/lint/build,156 units pass; production Chromium calculations/privacy/performance 12/12 in52.2s; earlier full regression68/68 plus new fourth calculation browser test pass. Reviewers did not run browser/server/build.",
+    "Excluded planned later work U8 onward: no completeness obligation for dates or Excel.",
+    "Skipped conditional reviewers: agent-native: no agent-facing surface; learnings: corpus concerns XLSX qualification, no plausible U7 match; no declared packs; reliability: no changed async or recovery mechanism; frontend-races: synchronous editor callbacks; no meaningful new asynchronous lifecycle; data-migration: no schema/migration; previous-comments: no PR metadata; swift-ios: no Swift",
+    "cross-model pass: not run (host attested codex; no different-provider CLI installed: claude, grok, cursor-agent and opencode absent); in-process adversarial reviewed the same scope.",
+    "Semantic reconciliation merged correctness and in-process adversarial source-remapping reports into finding #2; same-model agreement does not raise confidence or permit the validator shortcut.",
+    "No settlement conflicts: the supplied plan has no session-settled decisions. No pre-existing or confidence-suppressed findings; first_evidence_backfilled=0; missing-first-evidence demotions=0; mode-aware demotions=0.",
+    "Validator selection: 2 findings in one deterministic batch; 0 shortcut-skipped. Neither has independently verified different-provider corroboration.",
+    "Retained two consequential decimal testing gaps: ratio cancellation before factor analysis and the separate 2000-digit result-expansion boundary. No absence-of-coverage primary finding was added."
+  ],
+  "coverage_notes": [
+    "Full depth required by scope helper: 1199 executable non-test changed lines, size large, seven binary files uncounted.",
+    "AGENTS.md is the applicable instruction-file fallback for every changed path; successful search found no CODING_STANDARDS.md or CLAUDE.md.",
+    "Scope includes staged implementation against origin/main; full.diff/files.txt are the authoritative snapshot. Parent added verification/log/screenshot artifacts afterward, no code changes.",
+    "All eight reviewers returned valid terminal JSON and artifacts; no cleanup/release API exists.",
+    "Parent reported final verification: typecheck/lint/build,156 units pass; production Chromium calculations/privacy/performance 12/12 in52.2s; earlier full regression68/68 plus new fourth calculation browser test pass. Reviewers did not run browser/server/build.",
+    "Excluded planned later work U8 onward: no completeness obligation for dates or Excel.",
+    "Skipped conditional reviewers: agent-native: no agent-facing surface; learnings: corpus concerns XLSX qualification, no plausible U7 match; no declared packs; reliability: no changed async or recovery mechanism; frontend-races: synchronous editor callbacks; no meaningful new asynchronous lifecycle; data-migration: no schema/migration; previous-comments: no PR metadata; swift-ios: no Swift",
+    "cross-model pass: not run (host attested codex; no different-provider CLI installed: claude, grok, cursor-agent and opencode absent); in-process adversarial reviewed the same scope.",
+    "Semantic reconciliation merged correctness and in-process adversarial source-remapping reports into finding #2; same-model agreement does not raise confidence or permit the validator shortcut.",
+    "No settlement conflicts: the supplied plan has no session-settled decisions. No pre-existing or confidence-suppressed findings; first_evidence_backfilled=0; missing-first-evidence demotions=0; mode-aware demotions=0.",
+    "Validator selection: 2 findings in one deterministic batch; 0 shortcut-skipped. Neither has independently verified different-provider corroboration.",
+    "Retained two consequential decimal testing gaps: ratio cancellation before factor analysis and the separate 2000-digit result-expansion boundary. No absence-of-coverage primary finding was added."
+  ],
+  "validation_selection": {
+    "selected_numbers": [
+      1,
+      2
+    ],
+    "shortcut_skipped": 0,
+    "skip_evidence_basis": "No adversarial-<provider> with independence_verified=true."
+  },
+  "synthesis_notes": [
+    "Finding #1 is retained for the required validation gate under the Stage 5 current-P1 retention rule. Its evidence proves component size and responsibility growth, but AGENTS.md establishes no 1000-line limit; validator must determine whether the proposed extraction establishes a significant present defect/maintenance benefit rather than an arbitrary threshold or preference. Do not infer a runtime defect from component length.",
+    "Finding #2 is new in interaction with numeric-copy controls and explicit numeric-policy clearing; match() itself previously set type=text, but U7 adds selectable numeric copies and rules whose remapping now bypasses validation.",
+    "Independent-reviewer identities union the original mechanics sets; all are same serving family, so this is reviewer corroboration only.",
+    "No triage groups: each concern would yield a decorative single-item group under grouping:auto."
+  ]
+}

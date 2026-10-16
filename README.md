@@ -1,6 +1,6 @@
 # Operations Data Cleaner
 
-U6 internal preview: convert a CSV into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits and ordered combinations. Trim text only when you choose to. Select CSV delimiter, BOM and header settings, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
+U7 internal preview: convert a CSV into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations and exact decimal calculations. Trim text only when you choose to. Select CSV delimiter, BOM and header settings, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
 
 ## Run locally
 
@@ -36,7 +36,17 @@ Open an output column's settings and choose **Split a source column**. Choose it
 
 Choose **Combine sources and text** to arrange two or more source columns and literal components. Use the labeled Up/Down controls, add/remove components, and choose an exact separator (including an empty separator). Empty sources and empty literals retain their position and separator. Combination cards show the configured order; all sources remain reusable. Optional output trim affects only the combined value's boundaries.
 
-Both recipes save and transfer in workflow version 1, including trimming, optional positions, ordered components and separators. Renamed or missing source headers still block runs. Split/combination output uses the same required/maximum-length validation, formula safety and revision checks as existing recipes. General parsing, automatic address interpretation, arithmetic and date conversion remain unavailable.
+Both recipes save and transfer in workflow version 1, including trimming, optional positions, ordered components and separators. Renamed or missing source headers still block runs. Split/combination output uses the same required/maximum-length validation, formula safety and revision checks as existing recipes. General parsing, automatic address interpretation and date conversion remain unavailable.
+
+## Exact calculations and numeric validation (U7)
+
+Choose **Calculate with numbers** in an output column's settings. Choose two operands (each a source column or fixed decimal) and Add, Subtract, Multiply or Divide. For example, 24 units divided by a source factor of 4 yields 6 cases; 15 cases multiplied by the fixed number `12` yields 180. Field names may describe units; operands must be plain numbers (`12`, not `12 kg/case`). No factor or unit is inferred.
+
+Calculations keep exact decimal strings (`0.1 + 0.2 = 0.3`). **No rounding — require exact result** is the default. Missing operands, non-numbers, zero divisors and nonterminating division are row errors even for optional outputs. **Maximum decimal places** limits precision without rounding or padding; excess precision is an error unless you explicitly select rounding. **Require whole numbers before rounding** rejects fractional results even if rounding would hide them. Choose **Round half up**, **Round half to even** or **Truncate toward zero** with 0–100 decimal places; rounding outputs exactly that many places, including trailing zeros. Rounding places cannot exceed the configured maximum. Optional blank copies/constants remain permitted.
+
+For source copies, splits or combinations, choose **Output type → Number** to validate the resulting string as a strict decimal. Text remains the default to preserve identifiers. Numeric parsing accepts an optional sign, digits and a decimal point (`12.50`, `+.5`, `-2.`); whitespace, currency, separators, units and exponents fail. Number fields do not trim input; correct source whitespace explicitly. Fixed numeric literals without rounding retain the approved original representation.
+
+Inputs are limited to 1000 characters each before numeric parsing; results are limited to 2000 digits, counting integer and fractional padding. Excess expansion is an explicit precision-limit error, never a truncated result. Exact division beyond this budget can use explicitly chosen rounding. All settings remain compatible with workflow version 1, local saves and portable JSON. Missing source headers still block runs; changing numeric settings invalidates old export decisions.
 
 ## Save, repeat and recover
 
@@ -51,11 +61,11 @@ Browser storage belongs to this browser and site origin, can be cleared, and is 
 ## Delivered limits and privacy
 
 - UTF-8 CSV with optional input BOM; comma, semicolon or tab input. First nonblank record is the header; normalized empty/duplicate headers and malformed quotes/extra cells fail explicitly.
-- Every output must have a source copy, fixed text/number/blank, split or combination recipe. Text supports optional required/max-length validation and explicit boundary trim. Numeric constants use a strict decimal string grammar: optional sign, digits and decimal point; no currency, thousands separators or exponents. `12.50`, `+0012.500` and long decimals retain their exact representation without floating-point conversion or rounding. Fixed text is limited to 4096 characters and decimal literals to 1000 characters. Numeric source conversion, scale and rounding rules remain deferred. Optional blanks succeed; required blank/whitespace-only values block the whole download.
+- Every output must have a source copy, fixed text/number/blank, split, combination or calculation recipe. Text supports optional required/max-length validation and explicit boundary trim. Numeric constants use a strict decimal string grammar: optional sign, digits and decimal point; no currency, thousands separators or exponents. `12.50`, `+0012.500` and long decimals retain their exact representation without floating-point conversion or rounding. Fixed text is limited to 4096 characters and decimal literals to 1000 characters. Number outputs support strict source conversion, whole-number checks, maximum decimal places and explicit rounding. Optional blanks succeed; required blank/whitespace-only values block the whole download.
 - Default output: UTF-8, no BOM, comma, headers, standard quoting, CRLF. Choose comma, semicolon or tab, BOM on/off and header on/off. Preview retains column labels for identification even when the exported header is omitted. Formula-like text (including constants) and included headers require an explicit escaped/raw choice; preview shows the selected representation. Typed numeric constants are not formula text. Escaping changes text and cannot promise protection in every spreadsheet/importer. Raw text may be unsafe to open in spreadsheets.
 - Full dataset counts with paginated output and exception rows (50 per page). Nonblank totals are ordinary candidates. No silent record truncation. Limits: 25 MiB source, 200 columns, 2 million inspected cells, 30-second cancellable worker watchdog.
 - Files and parsed data stay in browser memory and are cleared by reload or End session. Only explicitly saved workflow configurations use IndexedDB; no source data or filename is persisted. No localStorage, service worker, analytics, remote fonts, or upload endpoint. Static application code/assets still use ordinary host requests and metadata. Processing runs in a local Web Worker.
-- Excel, arithmetic/date operations, source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
+- Excel, date operations, source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
 
 ## Verify
 

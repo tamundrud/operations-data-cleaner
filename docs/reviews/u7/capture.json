@@ -1,0 +1,48 @@
+{
+  "browser": "154.0.8037.57",
+  "errors": [],
+  "observations": [
+    {
+      "state": "workspace",
+      "width": 1440,
+      "noPageOverflow": true,
+      "noDialogOverflow": true
+    },
+    {
+      "state": "workspace",
+      "width": 1024,
+      "noPageOverflow": true,
+      "noDialogOverflow": true
+    },
+    {
+      "state": "workspace",
+      "width": 390,
+      "noPageOverflow": true,
+      "noDialogOverflow": true
+    },
+    {
+      "state": "calculation-settings",
+      "width": 1440,
+      "noPageOverflow": true,
+      "noDialogOverflow": true
+    },
+    {
+      "state": "calculation-settings",
+      "width": 390,
+      "noPageOverflow": true,
+      "noDialogOverflow": true
+    },
+    {
+      "state": "rounding-settings",
+      "width": 1440,
+      "noPageOverflow": true,
+      "noDialogOverflow": true
+    },
+    {
+      "state": "rounding-settings",
+      "width": 390,
+      "noPageOverflow": true,
+      "noDialogOverflow": true
+    }
+  ]
+}

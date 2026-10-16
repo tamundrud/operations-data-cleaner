@@ -1,0 +1,27 @@
+{
+  "reviewer": "correctness",
+  "findings": [
+    {
+      "title": "Preserve numeric settings when changing a copy source",
+      "severity": "P2",
+      "file": "src/ui/MappingRows.tsx",
+      "line": 962,
+      "why_it_matters": "A user can configure a copied output as Number with whole-number, scale and rounding rules, then change its Copy source dropdown. The dropdown calls match(), which always sets type to text; the new update logic also removes all numeric settings. The replacement source now bypasses numeric validation and exports as text, so a fractional or malformed value that should be invalid can become eligible without an explicit change to the output type or validation controls.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 75,
+      "evidence": [
+        "src/ui/MappingRows.tsx:962:                       if (e.target.value) match(field.id, e.target.value);",
+        "src/ui/MappingRows.tsx:150:     update(id, { type: \"text\", recipe: { kind: \"copy\", source: key } });",
+        "src/ui/MappingRows.tsx:126-130: patch.type === \"text\" clears rounding, scale and wholeNumber in update().",
+        "src/ui/MappingRows.tsx:978-987: Copy outputs now expose an independent Output type selector, including Number.",
+        "src/engine/recipes.ts:196-199: Numeric validation is conditional on f.type === \"number\"."
+      ],
+      "pre_existing": false,
+      "suggested_fix": "For an existing copy recipe, change only the recipe source and preserve the field's output type and numeric settings. Reserve the explicit text reset for transitions from another recipe mode when required. Add a regression scenario that configures a numeric copy with wholeNumber/scale/rounding, changes its source, and verifies those settings and invalid-row behavior remain intact."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

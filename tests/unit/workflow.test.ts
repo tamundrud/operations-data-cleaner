@@ -31,7 +31,7 @@ test("strict versioned schema rejects extra executable properties and unknown ve
   );
   expect(() => decodeWorkflow(" ".repeat(1024 * 1024 + 1))).toThrow(/1 MiB/);
 });
-test("finite grammar accepts future variants but never executes unsupported recipes", () => {
+test("finite grammar accepts calculations only with explicit numeric output", () => {
   const variants = [
     {
       kind: "calculate",
@@ -46,7 +46,7 @@ test("finite grammar accepts future variants but never executes unsupported reci
     const decoded = decodeWorkflow(JSON.stringify(w));
     expect(
       evaluate(decoded, source).workflowIssues.some(
-        (i) => i.code === "unsupported-recipe",
+        (i) => i.code === "calculation-type",
       ),
     ).toBe(true);
     expect(referencedHeaders(decoded.fields)).toEqual(
