@@ -1,0 +1,103 @@
+{
+  "status": "complete",
+  "verdict": "Ready to merge",
+  "scope": {
+    "base": "00a0bee9be174f244a8441205bac839282eff3e8",
+    "mode": "standalone base-scoped fix only",
+    "branch": "feat/u4-save-repeat-backup",
+    "head_sha": "00a0bee9be174f244a8441205bac839282eff3e8",
+    "files_changed": 6,
+    "untracked_excluded": [
+      "docs/reviews/u4/ci-open-race/"
+    ]
+  },
+  "intent": "Prevent source upload or conflicting workflow selection from defeating asynchronous saved-workflow activation; preserve U2/U3 and all U4 semantics.",
+  "intent_confidence": "explicit",
+  "mode": "agent report-only",
+  "reviewers": [
+    "correctness",
+    "adversarial"
+  ],
+  "findings": [],
+  "actionable_findings": [],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [],
+  "testing_gaps": [],
+  "requirements_completeness": {
+    "plan": "docs/plans/2026-10-15-0924-feat-u4-save-repeat-backup-plan.md",
+    "source": "explicit PR body",
+    "scope": "Focused correction only, not a re-review of already delivered units. User explicitly excludes replanning/U5.",
+    "requirements": [
+      {
+        "id": "R3",
+        "status": "met",
+        "evidence": "Selected saved workflow activates before source upload; native chooser regression verifies exact new-source bytes."
+      },
+      {
+        "id": "R10",
+        "status": "met",
+        "evidence": "Abort/generation cleanup and cancel/missing-record regressions preserve prior conversion or deliberate reset; controls release."
+      },
+      {
+        "id": "R11",
+        "status": "met",
+        "evidence": "Opening pauses queued preview and session-mutating controls; U2/U3 matching component and engine unchanged; existing safety and current-state confirmation retained."
+      }
+    ],
+    "unaddressed_requirements": [],
+    "unrequested_behavior_rules": []
+  },
+  "coverage": {
+    "depth": "focused",
+    "project_standards": {
+      "criteria": [
+        {
+          "path": "AGENTS.md",
+          "files": [
+            "src/ui/SavedWorkflows.tsx",
+            "src/ui/Workspace.tsx",
+            "tests/e2e/performance.spec.ts",
+            "tests/e2e/persistence.spec.ts",
+            "tests/e2e/privacy.spec.ts",
+            "tests/e2e/workflow-portability.spec.ts"
+          ]
+        }
+      ],
+      "fallback_named": true
+    },
+    "compound_packs": {
+      "roots": [],
+      "warnings": [],
+      "errors": []
+    },
+    "cross_model": {
+      "selected": true,
+      "target": "claude",
+      "route": "claude",
+      "model_requested": "claude-opus-5-5",
+      "effort_requested": "high",
+      "outcome": "in-process-fallback",
+      "reason": "shared acpx@0.19.5 npm ETARGET before egress; no code sent",
+      "independence_verified": false
+    },
+    "independent_read": "separate local adversarial context; same serving family, no cross-model promotion",
+    "validator": "not run on focused path",
+    "not_assessed": [
+      "learnings",
+      "agent-native gaps",
+      "deployment notes"
+    ],
+    "notes": [
+      "Initial delegated whole-skill orchestration failed at model usage limit before review; root completed focused path with successful separately collected adversarial leaf.",
+      "No full-roster or mutation review; root correctness inspected all changed lines, session boundaries, queued preview, failure/cancel/success release and test fidelity.",
+      "Affected browser suites passed 54/54; parent still owns full-suite completion and remote Actions verification."
+    ]
+  },
+  "artifact_path": "/tmp/odc-ci-open-review",
+  "run_id": "odc-ci-open-review",
+  "verdict_reason": "No confirmed defect or omitted focused requirement; full production and remote CI qualification remain caller gates. Ready-to-merge is the skill verdict, not authorization to merge or change draft status."
+}

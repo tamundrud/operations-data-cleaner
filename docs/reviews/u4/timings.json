@@ -1,0 +1,104 @@
+[
+  {
+    "browserName": "chromium",
+    "version": "156.0.8078.4",
+    "rows": 10000,
+    "columns": 20,
+    "coldIncludingManualSetupMs": 3109.4110059999985,
+    "warmMs": [
+      1095.7694559999982,
+      1055.096921999997,
+      986.3031850000007,
+      965.6482999999935,
+      978.6527729999943
+    ],
+    "medianMs": 986.3031850000007,
+    "worstMs": 1095.7694559999982,
+    "environment": "Codex cloud runner; not reference laptop qualification"
+  },
+  {
+    "browserName": "chromium",
+    "version": "156.0.8078.4",
+    "rows": 499,
+    "columns": 20,
+    "coldImportPlusEvaluationExcludingManualMappingMs": 437.2997380000015,
+    "warmImportThroughPreviewMs": [
+      240.1651090000014,
+      239.71979699999793,
+      227.0006910000011,
+      225.95872699999745,
+      241.49695000000065
+    ],
+    "medianMs": 239.71979699999793,
+    "worstMs": 241.49695000000065,
+    "environment": "cloud runner; UI automation overhead included; reference laptop pending"
+  },
+  {
+    "browserName": "firefox",
+    "version": "157.0",
+    "rows": 10000,
+    "columns": 20,
+    "coldIncludingManualSetupMs": 3806.0398480000003,
+    "warmMs": [
+      976.8532559999985,
+      880.1257539999933,
+      868.4252409999972,
+      942.0252830000027,
+      858.3886730000013
+    ],
+    "medianMs": 880.1257539999933,
+    "worstMs": 976.8532559999985,
+    "environment": "Codex cloud runner; not reference laptop qualification"
+  },
+  {
+    "browserName": "firefox",
+    "version": "157.0",
+    "rows": 499,
+    "columns": 20,
+    "coldImportPlusEvaluationExcludingManualMappingMs": 623.914663999989,
+    "warmImportThroughPreviewMs": [
+      258.8537030000007,
+      242.24211600000126,
+      272.1613870000001,
+      253.2548039999965,
+      252.37767899999744
+    ],
+    "medianMs": 253.2548039999965,
+    "worstMs": 272.1613870000001,
+    "environment": "cloud runner; UI automation overhead included; reference laptop pending"
+  },
+  {
+    "browserName": "webkit",
+    "version": "27.2",
+    "rows": 10000,
+    "columns": 20,
+    "coldIncludingManualSetupMs": 9380.047043000002,
+    "warmMs": [
+      1245.5367810000025,
+      1302.0676870000025,
+      1235.2368090000018,
+      1304.1693159999995,
+      1249.8418999999994
+    ],
+    "medianMs": 1249.8418999999994,
+    "worstMs": 1304.1693159999995,
+    "environment": "Codex cloud runner; not reference laptop qualification"
+  },
+  {
+    "browserName": "webkit",
+    "version": "27.2",
+    "rows": 499,
+    "columns": 20,
+    "coldImportPlusEvaluationExcludingManualMappingMs": 1087.4801809999917,
+    "warmImportThroughPreviewMs": [
+      741.7811470000015,
+      635.0542920000007,
+      731.0032309999951,
+      877.2805479999952,
+      634.6801510000078
+    ],
+    "medianMs": 731.0032309999951,
+    "worstMs": 877.2805479999952,
+    "environment": "cloud runner; UI automation overhead included; reference laptop pending"
+  }
+]

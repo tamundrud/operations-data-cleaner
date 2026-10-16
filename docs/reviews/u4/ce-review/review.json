@@ -1,0 +1,346 @@
+{
+  "status": "complete",
+  "verdict": "Ready with fixes",
+  "scope": {
+    "base": "origin/main",
+    "mode": "standalone",
+    "branch": "feat/u4-save-repeat-backup",
+    "head_sha": "93ed147eca2f963b3b84dd8e57a51bc51c8b19bb",
+    "pr_url": null,
+    "files_changed": 23,
+    "untracked_excluded": [
+      "docs/reviews/u4/",
+      "docs/decisions/workflow-persistence.md"
+    ]
+  },
+  "intent": "Deliver approved U4 explicit named local workflow saves, fresh-source repeat runs and portable JSON backup/import, preserving U2/U3 paired cards and source privacy/current-revision export.",
+  "intent_confidence": "explicit",
+  "mode": "agent report-only",
+  "reviewers": [
+    "correctness",
+    "security",
+    "adversarial",
+    "project-standards",
+    "testing",
+    "maintainability",
+    "reliability",
+    "julik-frontend-races",
+    "api-contract"
+  ],
+  "findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/SavedWorkflows.tsx:109-111 -- const workflow = decodeUsableWorkflow(await file.text()); / if (revision !== generation.current || token !== selection.current || currentProps.current.disabled) return; / if (props.activate(workflow)) { setStatus(\"Workflow imported as an unsaved draft. Upload a new source CSV.\"); setBackup(false); }",
+        "src/ui/SavedWorkflows.tsx:96-100 -- const next = await store.list(); / if (revision !== generation.current || token !== selection.current || currentProps.current.disabled) return; / const record = next.records.find((r) => r.id === selected); / if (!record) throw new Error(\"Saved workflow unavailable. Retry to refresh the list.\"); / if (props.activate(record.workflow, record)) { setStatus(\"Workflow opened. Upload a new source CSV.\"); setBackup(false); }",
+        "src/ui/SavedWorkflows.tsx:33-34 -- const currentProps = useRef(props); / currentProps.current = props;",
+        "docs/plans/2026-10-15-0924-feat-u4-save-repeat-backup-plan.md KTD4 requires confirmation before discarding an unsaved configuration or replacing an active run.",
+        "src/ui/Workspace.tsx:145 -- const confirmReplacement = () => !(unsaved || view || state.recoverable) || window.confirm(\"Replace the current conversion? Unsaved configuration and source data in this session will be discarded.\");",
+        "Verified source: src/ui/Workspace.tsx:145 captures render-local unsaved/view/recoverable state; lines159-163 call that confirmation then end the session and activate another workflow. src/ui/SavedWorkflows.tsx:117 permits name editing during a pending read.",
+        "Runtime evidence inspected: docs/reviews/u4/activation-race-red.json, Playwright1.64.0 / Node24.21.0 / Chromium156.0.8078.4, synthetic deferred JSON import followed by completed source upload; tests/e2e/workflow-portability.spec.ts:183 expected one replacement confirmation but observed zero after5000ms. Test result failed before production fix; no production edits performed by synthesis."
+      ],
+      "file": "src/ui/SavedWorkflows.tsx",
+      "first_evidence": "src/ui/SavedWorkflows.tsx:109-111 -- const workflow = decodeUsableWorkflow(await file.text()); / if (revision !== generation.current || token !== selection.current || currentProps.current.disabled) return; / if (props.activate(workflow)) { setStatus(\"Workflow imported as an unsaved draft. Upload a new source CSV.\"); setBackup(false); }",
+      "independent_reviewers": [
+        "julik-frontend-races",
+        "reliability"
+      ],
+      "line": 111,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "julik-frontend-races",
+        "reliability"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Call currentProps.current.activate(...) in both async Open and Import handlers after their generation/selection/disabled checks. Make the existing deferred-import regression pass, and cover a delayed saved-workflow read after a name edit or completed source upload; dismiss replacement and assert that the newer draft, source and downloadable CSV remain intact.",
+      "title": "Use current activation callback after asynchronous workflow reads",
+      "why_it_matters": "New edits or a newly uploaded source can be discarded without confirmation when a workflow import or saved-workflow read finishes late. Start from a clean saved workflow awaiting a source, begin a delayed JSON import, then change the workflow name or finish uploading a source before the JSON read resolves: the captured activate callback still sees the original unsaved=false and absent view, so it skips the replacement confirmation and clears the newer session. The generation and disabled checks do not catch edits or a source upload that has already finished; invoking the current callback makes the confirmation inspect current state.",
+      "validation_status": "confirmed",
+      "validation_reason": "The origin/main diff introduces captured props.activate calls at src/ui/SavedWorkflows.tsx:100/111; when an async Open/Import begins from a clean saved workflow and a name edit or source upload completes before its read resolves, unchanged activation/selection tokens and the now-false disabled guard allow the old Workspace.tsx:145/158\u2013163 closure to bypass confirmation and clear the newer draft/source through Session.end(), and reachability is demonstrated on the reviewed 93ed147 plus staged tree by docs/reviews/u4/activation-race-red.json using Playwright 1.64.0, Node 24.21.0, Chromium 156.0.8078.4, local preview with service workers blocked, and a synthetic deferred File.text import released after source upload/preview/export, where workflow-portability.spec.ts:183 expected one confirmation and observed zero after 5000 ms (subsequent preservation assertions were not reached).",
+      "protected_subject": "concurrency"
+    }
+  ],
+  "requirements_completeness": {
+    "plan": "docs/plans/2026-10-15-0924-feat-u4-save-repeat-backup-plan.md",
+    "source": "explicit",
+    "requirements": [
+      {
+        "id": "R1",
+        "status": "met",
+        "evidence": "Explicit named Save is separate from ad hoc processing; no account or automatic draft persistence."
+      },
+      {
+        "id": "R2",
+        "status": "met",
+        "evidence": "Shared codec projects ordered recipes, stable IDs, validation/modifiers and source/output policies; independent byte goldens added."
+      },
+      {
+        "id": "R3",
+        "status": "met",
+        "evidence": "Controller activation and repeat view support new-source conversion without remapping; baseline snapshots separate unsaved edits."
+      },
+      {
+        "id": "R4",
+        "status": "met",
+        "evidence": "Existing exact normalized-header compatibility composes with source-independent validation; no automatic substitution added."
+      },
+      {
+        "id": "R5",
+        "status": "met",
+        "evidence": "Versioned JSON download/import and fresh-context/separate-origin portability tests are present."
+      },
+      {
+        "id": "R6",
+        "status": "met",
+        "evidence": "Usable codec validates structural, capability, reference-set and budget constraints before activation/storage."
+      },
+      {
+        "id": "R7",
+        "status": "met",
+        "evidence": "Explicit collision replace/copy/cancel controls, committed-save acknowledgement, backup reminder and independent download are present."
+      },
+      {
+        "id": "R8",
+        "status": "met",
+        "evidence": "Browser/origin clearability and configuration-sensitivity notices appear in controls and operator documentation."
+      },
+      {
+        "id": "R9",
+        "status": "met",
+        "evidence": "Configuration-only projection/envelope and extended network/storage privacy assertions are present."
+      },
+      {
+        "id": "R10",
+        "status": "partially addressed",
+        "evidence": "Storage recovery and cancellation paths are implemented, but #1 bypasses current-state replacement confirmation after a delayed read; Chromium regression is red."
+      },
+      {
+        "id": "R11",
+        "status": "met",
+        "evidence": "Approved matching controls retained; current-revision guards, full-dataset repeat checks and accessibility coverage are present. Complete browser qualification was not independently rerun by this review."
+      }
+    ],
+    "implementation_units": [
+      {
+        "id": "U1",
+        "status": "met",
+        "evidence": "src/workflows/codec.ts; src/engine/validation.ts; workflow round-trip/byte fixtures and unit tests."
+      },
+      {
+        "id": "U2",
+        "status": "met",
+        "evidence": "src/workflows/indexeddb-store.ts; transactional collision, abort, corruption and recovery tests."
+      },
+      {
+        "id": "U3",
+        "status": "partially addressed",
+        "evidence": "SavedWorkflows/Workspace/controller integration and portable repeat journeys are present; #1 remains open."
+      },
+      {
+        "id": "U4",
+        "status": "met",
+        "evidence": "Privacy/performance suites and README updates are in reviewed scope; untracked evidence/decision documentation was excluded from code review. Qualification passes are not independently asserted here."
+      }
+    ],
+    "unaddressed_requirements": [],
+    "unrequested_behavior_rules": [],
+    "reverse_check": "Compared the reviewed changes with the full plan, including KTD1-KTD6 and scope boundaries. No additional unrequested behavior rule identified. R10/U3 are partial because of the confirmed implementation defect #1, not an omitted work packet. Completeness describes corresponding implementation and test presence, not independently reproduced qualification."
+  },
+  "actionable_findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/SavedWorkflows.tsx:109-111 -- const workflow = decodeUsableWorkflow(await file.text()); / if (revision !== generation.current || token !== selection.current || currentProps.current.disabled) return; / if (props.activate(workflow)) { setStatus(\"Workflow imported as an unsaved draft. Upload a new source CSV.\"); setBackup(false); }",
+        "src/ui/SavedWorkflows.tsx:96-100 -- const next = await store.list(); / if (revision !== generation.current || token !== selection.current || currentProps.current.disabled) return; / const record = next.records.find((r) => r.id === selected); / if (!record) throw new Error(\"Saved workflow unavailable. Retry to refresh the list.\"); / if (props.activate(record.workflow, record)) { setStatus(\"Workflow opened. Upload a new source CSV.\"); setBackup(false); }",
+        "src/ui/SavedWorkflows.tsx:33-34 -- const currentProps = useRef(props); / currentProps.current = props;",
+        "docs/plans/2026-10-15-0924-feat-u4-save-repeat-backup-plan.md KTD4 requires confirmation before discarding an unsaved configuration or replacing an active run.",
+        "src/ui/Workspace.tsx:145 -- const confirmReplacement = () => !(unsaved || view || state.recoverable) || window.confirm(\"Replace the current conversion? Unsaved configuration and source data in this session will be discarded.\");",
+        "Verified source: src/ui/Workspace.tsx:145 captures render-local unsaved/view/recoverable state; lines159-163 call that confirmation then end the session and activate another workflow. src/ui/SavedWorkflows.tsx:117 permits name editing during a pending read.",
+        "Runtime evidence inspected: docs/reviews/u4/activation-race-red.json, Playwright1.64.0 / Node24.21.0 / Chromium156.0.8078.4, synthetic deferred JSON import followed by completed source upload; tests/e2e/workflow-portability.spec.ts:183 expected one replacement confirmation but observed zero after5000ms. Test result failed before production fix; no production edits performed by synthesis."
+      ],
+      "file": "src/ui/SavedWorkflows.tsx",
+      "first_evidence": "src/ui/SavedWorkflows.tsx:109-111 -- const workflow = decodeUsableWorkflow(await file.text()); / if (revision !== generation.current || token !== selection.current || currentProps.current.disabled) return; / if (props.activate(workflow)) { setStatus(\"Workflow imported as an unsaved draft. Upload a new source CSV.\"); setBackup(false); }",
+      "independent_reviewers": [
+        "julik-frontend-races",
+        "reliability"
+      ],
+      "line": 111,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "julik-frontend-races",
+        "reliability"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Call currentProps.current.activate(...) in both async Open and Import handlers after their generation/selection/disabled checks. Make the existing deferred-import regression pass, and cover a delayed saved-workflow read after a name edit or completed source upload; dismiss replacement and assert that the newer draft, source and downloadable CSV remain intact.",
+      "title": "Use current activation callback after asynchronous workflow reads",
+      "why_it_matters": "New edits or a newly uploaded source can be discarded without confirmation when a workflow import or saved-workflow read finishes late. Start from a clean saved workflow awaiting a source, begin a delayed JSON import, then change the workflow name or finish uploading a source before the JSON read resolves: the captured activate callback still sees the original unsaved=false and absent view, so it skips the replacement confirmation and clears the newer session. The generation and disabled checks do not catch edits or a source upload that has already finished; invoking the current callback makes the confirmation inspect current state.",
+      "validation_status": "confirmed",
+      "validation_reason": "The origin/main diff introduces captured props.activate calls at src/ui/SavedWorkflows.tsx:100/111; when an async Open/Import begins from a clean saved workflow and a name edit or source upload completes before its read resolves, unchanged activation/selection tokens and the now-false disabled guard allow the old Workspace.tsx:145/158\u2013163 closure to bypass confirmation and clear the newer draft/source through Session.end(), and reachability is demonstrated on the reviewed 93ed147 plus staged tree by docs/reviews/u4/activation-race-red.json using Playwright 1.64.0, Node 24.21.0, Chromium 156.0.8078.4, local preview with service workers blocked, and a synthetic deferred File.text import released after source upload/preview/export, where workflow-portability.spec.ts:183 expected one confirmation and observed zero after 5000 ms (subsequent preservation assertions were not reached).",
+      "protected_subject": "concurrency"
+    }
+  ],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [],
+  "testing_gaps": [
+    "Native held-connection/version-change integration remains covered by the controlled unit harness rather than a real-browser upgrade scenario. Initial v1 has no application upgrade path; this is a bounded integration test limitation, not a demonstrated current defect or blocker."
+  ],
+  "coverage": {
+    "depth": "full",
+    "reviewers_completed": 9,
+    "failed_reviewers": [],
+    "timed_out_reviewers": [],
+    "reviewer_selection": [
+      {
+        "reviewer": "correctness",
+        "tier": "session",
+        "reason": "Core logic"
+      },
+      {
+        "reviewer": "security",
+        "tier": "session",
+        "reason": "Relevant U4 persistence, privacy, format, async UI or test surface"
+      },
+      {
+        "reviewer": "adversarial",
+        "tier": "session",
+        "reason": "Relevant U4 persistence, privacy, format, async UI or test surface"
+      },
+      {
+        "reviewer": "project-standards",
+        "tier": "mid",
+        "reason": "Relevant U4 persistence, privacy, format, async UI or test surface"
+      },
+      {
+        "reviewer": "testing",
+        "tier": "mid",
+        "reason": "Relevant U4 persistence, privacy, format, async UI or test surface"
+      },
+      {
+        "reviewer": "maintainability",
+        "tier": "mid",
+        "reason": "Relevant U4 persistence, privacy, format, async UI or test surface"
+      },
+      {
+        "reviewer": "reliability",
+        "tier": "mid",
+        "reason": "Relevant U4 persistence, privacy, format, async UI or test surface"
+      },
+      {
+        "reviewer": "julik-frontend-races",
+        "tier": "mid",
+        "reason": "Relevant U4 persistence, privacy, format, async UI or test surface"
+      },
+      {
+        "reviewer": "api-contract",
+        "tier": "mid",
+        "reason": "Relevant U4 persistence, privacy, format, async UI or test surface"
+      }
+    ],
+    "project_standards": {
+      "criteria": [
+        {
+          "path": "AGENTS.md",
+          "files": [
+            "README.md",
+            "docs/plans/2026-10-15-0924-feat-u4-save-repeat-backup-plan.md",
+            "scripts/serve.mjs",
+            "src/engine/validation.ts",
+            "src/session/controller.ts",
+            "src/ui/SavedWorkflows.tsx",
+            "src/ui/Workspace.tsx",
+            "src/ui/styles.css",
+            "src/workflows/codec.ts",
+            "src/workflows/indexeddb-store.ts",
+            "tests/README.md",
+            "tests/e2e/helpers.ts",
+            "tests/e2e/performance.spec.ts",
+            "tests/e2e/persistence.spec.ts",
+            "tests/e2e/privacy.spec.ts",
+            "tests/e2e/workflow-portability.spec.ts",
+            "tests/fixtures/workflows/u4-expected.csv",
+            "tests/fixtures/workflows/u4-supported.json",
+            "tests/unit/sample.test.ts",
+            "tests/unit/session.test.ts",
+            "tests/unit/workflow-roundtrip.test.ts",
+            "tests/unit/workflow-store.test.ts",
+            "tests/unit/workflow.test.ts"
+          ]
+        }
+      ],
+      "fallback_named": true,
+      "not_run_reason": null
+    },
+    "compound_packs": {
+      "roots": [],
+      "warnings": [],
+      "errors": []
+    },
+    "cross_model": {
+      "selected": true,
+      "target": "claude",
+      "route": "claude",
+      "preference_source": "default",
+      "outcome": "in-process-fallback",
+      "artifact": null,
+      "coverage": "Cross-model review not run: shared pinned acpx@0.19.5 transport failed npm ETARGET before egress earlier in this session; no alternate route or repeat attempted. Local adversarial fallback completed."
+    },
+    "validator": {
+      "outcome": "verdicts",
+      "batches": 1,
+      "selected": [
+        1
+      ],
+      "confirmed": 1,
+      "rejected": 0,
+      "unresolved": 0,
+      "malformed": 0,
+      "failed": 0,
+      "shortcut_skipped": 0,
+      "skip_evidence_basis": "No finding has verified different-serving-family corroboration; both contributing reviewers are local Codex contexts.",
+      "protected_subjects": {
+        "1": "concurrency"
+      },
+      "protected_subject_reclassifications": 0,
+      "degraded_blockers": [],
+      "bound_exceeded": false,
+      "reason": "One independent validator confirmed #1 using source inspection and the recorded Chromium failing regression; no cross-model shortcut or confidence promotion."
+    },
+    "first_evidence_backfilled": 2,
+    "quote_gate_demotions": 0,
+    "suppressed_by_confidence": {},
+    "mode_aware_demotion_count": 0,
+    "semantic_duplicates_merged": 1,
+    "settlement_suppressed_count": 0,
+    "malformed_findings": 0,
+    "malformed_returns": 0,
+    "notes": [
+      "Project standards use root AGENTS.md fallback; no CODING_STANDARDS.md exists.",
+      "Scope standalone current staged/unstaged tree. Untracked U4 review evidence/decision documentation excluded from code review; all runtime files staged or tracked.",
+      "No different-model independence promotion: all local contexts use Codex family.",
+      "Cross-model review not run: shared pinned acpx@0.19.5 transport failed npm ETARGET before egress earlier in this session; no alternate route or repeat attempted. Local adversarial fallback completed.",
+      "Two same-defect findings from reliability and julik-frontend-races were semantically merged into #1; both identify captured activation callbacks after async reads. Confidence remains75: same-model corroboration grants no promotion or validation shortcut.",
+      "first_evidence_backfilled:2 on initial mechanics pass, preserved across reconciliation; quote-gate demotions:0; confidence suppressions:0; malformed reviewer inputs:0; mode-aware demotions:0; settlement-preference suppressions:0.",
+      "Source-detail hydration verified for every retained finding. No pre-existing findings or triage groups; one primary concern under grouping:auto.",
+      "Late-import/source and cancelled-replacement coverage claims became stale during synthesis: a new regression in workflow-portability.spec.ts now exercises both and reproduced the missing confirmation in Chromium. Its first run failed as recorded in docs/reviews/u4/activation-race-red.json.",
+      "Hostile workflow metadata and keyboard conflict cancellation coverage was added to accessibility.spec.ts during synthesis; test presence was inspected, execution was not independently reproduced here. The earlier missing-test claims are omitted rather than preserved as residual defects.",
+      "Reviewers did not independently rerun the complete browser matrix; synthesis performed read-only source/artifact inspection and did not run tests or modify production code.",
+      "Validator shortcut-skipped:0; selected1 actionable P2 finding for one deterministic batch. No cross-model independence basis exists."
+    ],
+    "local_apply": "Skipped: mode:agent is report-only and apply_local is false. No production edits, commits or tests executed by this report leaf."
+  },
+  "artifact_path": "/tmp/odc-u4-code-review",
+  "run_id": "odc-u4-code-review",
+  "verdict_reason": "Fix #1 at src/ui/SavedWorkflows.tsx:100/111 before merging: delayed reads can bypass replacement confirmation and discard newer draft/source state. Both local reviewers and the independent validator agree; the recorded Chromium regression is red. No omitted requirement or new product decision was found. Verify the fix with the deferred import and saved-read preservation scenarios; complete qualification remains the caller's responsibility."
+}

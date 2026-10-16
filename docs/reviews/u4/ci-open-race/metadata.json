@@ -1,0 +1,60 @@
+{
+  "branch": "feat/u4-save-repeat-backup",
+  "completed_at": "2026-10-15T23:32:49.047680+00:00",
+  "cost": {
+    "host": "codex",
+    "scope": {
+      "changed_lines": 161,
+      "depth": "focused",
+      "exec_nontest_lines": 57,
+      "size_band": "small",
+      "unclassified_lines": 0
+    },
+    "stages": [
+      {
+        "elapsed_seconds": 0.051,
+        "ended_at": "2026-10-15T23:30:19.491487+00:00",
+        "facts": {
+          "changed_lines": 161,
+          "depth": "focused",
+          "exec_nontest_lines": 57,
+          "size_band": "small",
+          "unclassified_lines": 0
+        },
+        "stage": "scope",
+        "started_at": "2026-10-15T23:30:19.440337+00:00"
+      },
+      {
+        "candidates": 0,
+        "elapsed_seconds": 149.601,
+        "ended_at": "2026-10-15T23:32:49.092613+00:00",
+        "stage": "review",
+        "started_at": "2026-10-15T23:30:19.491487+00:00"
+      },
+      {
+        "candidates": 0,
+        "elapsed_seconds": 58.271,
+        "ended_at": "2026-10-15T23:31:28.582077+00:00",
+        "stage": "peer",
+        "started_at": "2026-10-15T23:30:30.311043+00:00"
+      },
+      {
+        "elapsed_seconds": 0.046,
+        "ended_at": "2026-10-15T23:32:49.138183+00:00",
+        "stage": "receipt",
+        "started_at": "2026-10-15T23:32:49.092613+00:00"
+      }
+    ],
+    "status": "complete",
+    "totals": {
+      "artifact_bytes": 42103,
+      "candidates": 0,
+      "elapsed_seconds": 207.969,
+      "reviewers": 0
+    },
+    "truncated_events": 0
+  },
+  "head_sha": "00a0bee9be174f244a8441205bac839282eff3e8",
+  "run_id": "odc-ci-open-review",
+  "verdict": "Ready to merge"
+}

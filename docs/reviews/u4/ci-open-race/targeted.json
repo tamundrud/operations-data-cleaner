@@ -1,0 +1,1993 @@
+{
+  "config": {
+    "argv": [
+      "/home/trevor/.nvm/versions/node/v24.21.0/bin/node",
+      "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/node_modules/.bin/playwright",
+      "test",
+      "tests/e2e/persistence.spec.ts",
+      "tests/e2e/privacy.spec.ts",
+      "tests/e2e/workflow-portability.spec.ts",
+      "--reporter=line,json"
+    ],
+    "configFile": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/playwright.config.ts",
+    "rootDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+        "snapshotDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 30000,
+        "use": {
+          "baseURL": "http://127.0.0.1:4173",
+          "serviceWorkers": "block",
+          "trace": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium",
+          "launchOptions": {}
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "firefox",
+        "testDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+        "snapshotDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 30000,
+        "use": {
+          "baseURL": "http://127.0.0.1:4173",
+          "serviceWorkers": "block",
+          "trace": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:157.0) Gecko/20100101 Firefox/157.0",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "firefox"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "firefox"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "webkit",
+        "testDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+        "snapshotDir": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 30000,
+        "use": {
+          "baseURL": "http://127.0.0.1:4173",
+          "serviceWorkers": "block",
+          "trace": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1792,
+            "height": 1120
+          },
+          "deviceScaleFactor": 2,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "webkit"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "webkit"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "line"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run preview",
+      "url": "http://127.0.0.1:4173",
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "persistence.spec.ts",
+      "file": "persistence.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "ad hoc edits persist nothing; explicit save commits configuration that survives reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1346,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:11.947Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-d60144fb82ddd73a31db",
+          "file": "persistence.spec.ts",
+          "line": 31,
+          "column": 1
+        },
+        {
+          "title": "two tabs cannot silently replace a workflow changed since opening",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1069,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:13.392Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-a57c9211eac970ab4840",
+          "file": "persistence.spec.ts",
+          "line": 50,
+          "column": 1
+        },
+        {
+          "title": "write abort after request success preserves the draft and independent portable download",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 500,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:14.479Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-627fa2d6729d6e0ec9ba",
+          "file": "persistence.spec.ts",
+          "line": 67,
+          "column": 1
+        },
+        {
+          "title": "corrupt records stay untouched while intact saved definitions remain available",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 737,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:15.000Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-2de053648c17cdeb3f19",
+          "file": "persistence.spec.ts",
+          "line": 89,
+          "column": 1
+        },
+        {
+          "title": "save acknowledges its submitted snapshot while newer name edits remain unsaved",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 572,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:15.758Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-f9fd7a349a350793f69c",
+          "file": "persistence.spec.ts",
+          "line": 111,
+          "column": 1
+        },
+        {
+          "title": "storage denial keeps portable workflow download and ad hoc processing available",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 644,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:16.347Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-09f35a24833dea257b8f",
+          "file": "persistence.spec.ts",
+          "line": 136,
+          "column": 1
+        },
+        {
+          "title": "a delayed saved-workflow read uses current confirmation after a draft edit",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 899,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:17.007Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-5580b1016a34024b1169",
+          "file": "persistence.spec.ts",
+          "line": 149,
+          "column": 1
+        },
+        {
+          "title": "immediate source upload waits for the selected saved workflow to activate",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1027,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:17.922Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-f90ead73870172019013",
+          "file": "persistence.spec.ts",
+          "line": 179,
+          "column": 1
+        },
+        {
+          "title": "ad hoc edits persist nothing; explicit save commits configuration that survives reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3365,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:38.839Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-6e99df28e01d9f12217f",
+          "file": "persistence.spec.ts",
+          "line": 31,
+          "column": 1
+        },
+        {
+          "title": "two tabs cannot silently replace a workflow changed since opening",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2129,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:43.144Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-5314579bc1006551f3ba",
+          "file": "persistence.spec.ts",
+          "line": 50,
+          "column": 1
+        },
+        {
+          "title": "write abort after request success preserves the draft and independent portable download",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1026,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:45.291Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-4770eeed2ebb9f720bb9",
+          "file": "persistence.spec.ts",
+          "line": 67,
+          "column": 1
+        },
+        {
+          "title": "corrupt records stay untouched while intact saved definitions remain available",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1393,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:46.332Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-519853e96e769b97616b",
+          "file": "persistence.spec.ts",
+          "line": 89,
+          "column": 1
+        },
+        {
+          "title": "save acknowledges its submitted snapshot while newer name edits remain unsaved",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1108,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:47.750Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-f10bdd122ae09f1d072b",
+          "file": "persistence.spec.ts",
+          "line": 111,
+          "column": 1
+        },
+        {
+          "title": "storage denial keeps portable workflow download and ad hoc processing available",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1133,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:48.882Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-2284b0cdc5d6ac12e3ad",
+          "file": "persistence.spec.ts",
+          "line": 136,
+          "column": 1
+        },
+        {
+          "title": "a delayed saved-workflow read uses current confirmation after a draft edit",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2306,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:50.035Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-dcc55e044e63844f3b99",
+          "file": "persistence.spec.ts",
+          "line": 149,
+          "column": 1
+        },
+        {
+          "title": "immediate source upload waits for the selected saved workflow to activate",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2144,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:52.360Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-abb7845600268c31b376",
+          "file": "persistence.spec.ts",
+          "line": 179,
+          "column": 1
+        },
+        {
+          "title": "ad hoc edits persist nothing; explicit save commits configuration that survives reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3033,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:21.592Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-203c4e1f85145ed5f207",
+          "file": "persistence.spec.ts",
+          "line": 31,
+          "column": 1
+        },
+        {
+          "title": "two tabs cannot silently replace a workflow changed since opening",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2423,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:25.016Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-b0fe1bdb19937e1038c0",
+          "file": "persistence.spec.ts",
+          "line": 50,
+          "column": 1
+        },
+        {
+          "title": "write abort after request success preserves the draft and independent portable download",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1087,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:27.461Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-190dc0878ddfaaf6622a",
+          "file": "persistence.spec.ts",
+          "line": 67,
+          "column": 1
+        },
+        {
+          "title": "corrupt records stay untouched while intact saved definitions remain available",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1537,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:28.565Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-c9b7cd3cd5770abfc281",
+          "file": "persistence.spec.ts",
+          "line": 89,
+          "column": 1
+        },
+        {
+          "title": "save acknowledges its submitted snapshot while newer name edits remain unsaved",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1132,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:30.119Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-d1a278bdc8c51c59b606",
+          "file": "persistence.spec.ts",
+          "line": 111,
+          "column": 1
+        },
+        {
+          "title": "storage denial keeps portable workflow download and ad hoc processing available",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1401,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:31.271Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-7e36e96fb8b2048a863a",
+          "file": "persistence.spec.ts",
+          "line": 136,
+          "column": 1
+        },
+        {
+          "title": "a delayed saved-workflow read uses current confirmation after a draft edit",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1807,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:32.692Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-5c2489ac97e0103b2201",
+          "file": "persistence.spec.ts",
+          "line": 149,
+          "column": 1
+        },
+        {
+          "title": "immediate source upload waits for the selected saved workflow to activate",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2233,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:34.515Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-7469a3c733fee67d19fa",
+          "file": "persistence.spec.ts",
+          "line": 179,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "privacy.spec.ts",
+      "file": "privacy.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "production journey sends no customer values, file names or IDs and stores no source data",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 10035,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Workflow opened. Upload a new source CSV.', { exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('Workflow opened. Upload a new source CSV.', { exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Workflow opened. Upload a new source CSV.', { exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Workflow opened. Upload a new source CSV.', { exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('Workflow opened. Upload a new source CSV.', { exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Workflow opened. Upload a new source CSV.', { exact: true })\u001b[22m\n\n    at /home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/privacy.spec.ts:122:94",
+                    "location": {
+                      "file": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/privacy.spec.ts",
+                      "column": 94,
+                      "line": 122
+                    },
+                    "snippet": "  120 |   await page.getByLabel(\"Saved workflows\", { exact: true }).selectOption(saved[0].id);\n  121 |   await page.getByRole(\"button\", { name: \"Open workflow\", exact: true }).click();\n> 122 |   await expect(page.getByText(\"Workflow opened. Upload a new source CSV.\", { exact: true })).toBeVisible();\n      |                                                                                              ^\n  123 |   await page.getByLabel(\"Upload source CSV\").setInputFiles({ name: `${sentinel}-repeat.csv`, mimeType: \"text/csv\", buffer: Buffer.from(`ID,Note\\n${sentinel},repeat-note`) });\n  124 |   await preview(page);\n  125 |   expect((await download(page)).toString()).toContain(sentinel);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/privacy.spec.ts",
+                        "column": 94,
+                        "line": 122
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Workflow opened. Upload a new source CSV.', { exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('Workflow opened. Upload a new source CSV.', { exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Workflow opened. Upload a new source CSV.', { exact: true })\u001b[22m\n\n\n  120 |   await page.getByLabel(\"Saved workflows\", { exact: true }).selectOption(saved[0].id);\n  121 |   await page.getByRole(\"button\", { name: \"Open workflow\", exact: true }).click();\n> 122 |   await expect(page.getByText(\"Workflow opened. Upload a new source CSV.\", { exact: true })).toBeVisible();\n      |                                                                                              ^\n  123 |   await page.getByLabel(\"Upload source CSV\").setInputFiles({ name: `${sentinel}-repeat.csv`, mimeType: \"text/csv\", buffer: Buffer.from(`ID,Note\\n${sentinel},repeat-note`) });\n  124 |   await preview(page);\n  125 |   expect((await download(page)).toString()).toContain(sentinel);\n    at /home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/privacy.spec.ts:122:94"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:18.975Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results/privacy-production-journey-180ce-s-and-stores-no-source-data-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results/privacy-production-journey-180ce-s-and-stores-no-source-data-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/privacy.spec.ts",
+                    "column": 94,
+                    "line": 122
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "62491902cb946290adea-d66ddcfc559e9d6031a6",
+          "file": "privacy.spec.ts",
+          "line": 4,
+          "column": 1
+        },
+        {
+          "title": "production journey sends no customer values, file names or IDs and stores no source data",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7109,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:54.538Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "62491902cb946290adea-706a498ba72c81bf7bec",
+          "file": "privacy.spec.ts",
+          "line": 4,
+          "column": 1
+        },
+        {
+          "title": "production journey sends no customer values, file names or IDs and stores no source data",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 13594,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Workflow opened. Upload a new source CSV.', { exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('Workflow opened. Upload a new source CSV.', { exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Workflow opened. Upload a new source CSV.', { exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Workflow opened. Upload a new source CSV.', { exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('Workflow opened. Upload a new source CSV.', { exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Workflow opened. Upload a new source CSV.', { exact: true })\u001b[22m\n\n    at /home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/privacy.spec.ts:122:94",
+                    "location": {
+                      "file": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/privacy.spec.ts",
+                      "column": 94,
+                      "line": 122
+                    },
+                    "snippet": "  120 |   await page.getByLabel(\"Saved workflows\", { exact: true }).selectOption(saved[0].id);\n  121 |   await page.getByRole(\"button\", { name: \"Open workflow\", exact: true }).click();\n> 122 |   await expect(page.getByText(\"Workflow opened. Upload a new source CSV.\", { exact: true })).toBeVisible();\n      |                                                                                              ^\n  123 |   await page.getByLabel(\"Upload source CSV\").setInputFiles({ name: `${sentinel}-repeat.csv`, mimeType: \"text/csv\", buffer: Buffer.from(`ID,Note\\n${sentinel},repeat-note`) });\n  124 |   await preview(page);\n  125 |   expect((await download(page)).toString()).toContain(sentinel);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/privacy.spec.ts",
+                        "column": 94,
+                        "line": 122
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Workflow opened. Upload a new source CSV.', { exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('Workflow opened. Upload a new source CSV.', { exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Workflow opened. Upload a new source CSV.', { exact: true })\u001b[22m\n\n\n  120 |   await page.getByLabel(\"Saved workflows\", { exact: true }).selectOption(saved[0].id);\n  121 |   await page.getByRole(\"button\", { name: \"Open workflow\", exact: true }).click();\n> 122 |   await expect(page.getByText(\"Workflow opened. Upload a new source CSV.\", { exact: true })).toBeVisible();\n      |                                                                                              ^\n  123 |   await page.getByLabel(\"Upload source CSV\").setInputFiles({ name: `${sentinel}-repeat.csv`, mimeType: \"text/csv\", buffer: Buffer.from(`ID,Note\\n${sentinel},repeat-note`) });\n  124 |   await preview(page);\n  125 |   expect((await download(page)).toString()).toContain(sentinel);\n    at /home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/privacy.spec.ts:122:94"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:36.775Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results/privacy-production-journey-180ce-s-and-stores-no-source-data-webkit/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results/privacy-production-journey-180ce-s-and-stores-no-source-data-webkit/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/privacy.spec.ts",
+                    "column": 94,
+                    "line": 122
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "62491902cb946290adea-e14193d129e319bd2440",
+          "file": "privacy.spec.ts",
+          "line": 4,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "workflow-portability.spec.ts",
+      "file": "workflow-portability.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "portable backup runs in a fresh browser and separate local origin without remapping",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1573,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:30.298Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-597ef6eed70340ddf23f",
+          "file": "workflow-portability.spec.ts",
+          "line": 32,
+          "column": 1
+        },
+        {
+          "title": "invalid workflow imports preserve the prior run and compatible headers never guess",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1180,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:32.202Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-0161769a381d6a5637c8",
+          "file": "workflow-portability.spec.ts",
+          "line": 63,
+          "column": 1
+        },
+        {
+          "title": "identity and name collisions require an explicit target or distinct copy",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 850,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:33.401Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-15335022c2803f6d1e1f",
+          "file": "workflow-portability.spec.ts",
+          "line": 81,
+          "column": 1
+        },
+        {
+          "title": "saved source delimiter policy is committed independently of the next upload picker",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 644,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:34.272Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-49999cd1e6a3fa7daf26",
+          "file": "workflow-portability.spec.ts",
+          "line": 102,
+          "column": 1
+        },
+        {
+          "title": "a late workflow read cannot resurrect a conversion after New conversion",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 521,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:34.934Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-81eba4671cf793dab213",
+          "file": "workflow-portability.spec.ts",
+          "line": 120,
+          "column": 1
+        },
+        {
+          "title": "opening a workflow resets formula permission and added output IDs remain unique",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1633,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:35.468Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-583c414900849387e4f2",
+          "file": "workflow-portability.spec.ts",
+          "line": 138,
+          "column": 1
+        },
+        {
+          "title": "a delayed workflow read confirms against the current newly uploaded source",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1083,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:45:37.113Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-67362837f59db920cf3e",
+          "file": "workflow-portability.spec.ts",
+          "line": 162,
+          "column": 1
+        },
+        {
+          "title": "portable backup runs in a fresh browser and separate local origin without remapping",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2737,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:01.677Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-868eac49e675a7056936",
+          "file": "workflow-portability.spec.ts",
+          "line": 32,
+          "column": 1
+        },
+        {
+          "title": "invalid workflow imports preserve the prior run and compatible headers never guess",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1812,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:04.599Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-9e33cbd5414548551b49",
+          "file": "workflow-portability.spec.ts",
+          "line": 63,
+          "column": 1
+        },
+        {
+          "title": "identity and name collisions require an explicit target or distinct copy",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1623,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:06.423Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-91eb1b1eb913f5f9482b",
+          "file": "workflow-portability.spec.ts",
+          "line": 81,
+          "column": 1
+        },
+        {
+          "title": "saved source delimiter policy is committed independently of the next upload picker",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1519,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:08.063Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-b210d61c0fa0d8f711dc",
+          "file": "workflow-portability.spec.ts",
+          "line": 102,
+          "column": 1
+        },
+        {
+          "title": "a late workflow read cannot resurrect a conversion after New conversion",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 859,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:09.597Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-51171bdd39d02102c6df",
+          "file": "workflow-portability.spec.ts",
+          "line": 120,
+          "column": 1
+        },
+        {
+          "title": "opening a workflow resets formula permission and added output IDs remain unique",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2949,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:10.475Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-89dc9190245274a7a64f",
+          "file": "workflow-portability.spec.ts",
+          "line": 138,
+          "column": 1
+        },
+        {
+          "title": "a delayed workflow read confirms against the current newly uploaded source",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 6689,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Workflow opened. Upload a new source CSV.', { exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('Workflow opened. Upload a new source CSV.', { exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Workflow opened. Upload a new source CSV.', { exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Workflow opened. Upload a new source CSV.', { exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('Workflow opened. Upload a new source CSV.', { exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Workflow opened. Upload a new source CSV.', { exact: true })\u001b[22m\n\n    at /home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/workflow-portability.spec.ts:169:94",
+                    "location": {
+                      "file": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/workflow-portability.spec.ts",
+                      "column": 94,
+                      "line": 169
+                    },
+                    "snippet": "  167 |   await page.reload(); await page.getByLabel(\"Saved workflows\", { exact: true }).selectOption(id);\n  168 |   await page.getByRole(\"button\", { name: \"Open workflow\", exact: true }).click();\n> 169 |   await expect(page.getByText(\"Workflow opened. Upload a new source CSV.\", { exact: true })).toBeVisible();\n      |                                                                                              ^\n  170 |   await page.evaluate(() => {\n  171 |     const text = File.prototype.text;\n  172 |     File.prototype.text = async function () {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/workflow-portability.spec.ts",
+                        "column": 94,
+                        "line": 169
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Workflow opened. Upload a new source CSV.', { exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('Workflow opened. Upload a new source CSV.', { exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Workflow opened. Upload a new source CSV.', { exact: true })\u001b[22m\n\n\n  167 |   await page.reload(); await page.getByLabel(\"Saved workflows\", { exact: true }).selectOption(id);\n  168 |   await page.getByRole(\"button\", { name: \"Open workflow\", exact: true }).click();\n> 169 |   await expect(page.getByText(\"Workflow opened. Upload a new source CSV.\", { exact: true })).toBeVisible();\n      |                                                                                              ^\n  170 |   await page.evaluate(() => {\n  171 |     const text = File.prototype.text;\n  172 |     File.prototype.text = async function () {\n    at /home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/workflow-portability.spec.ts:169:94"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:13.445Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results/workflow-portability-a-del-22c97-rrent-newly-uploaded-source-firefox/error-context.md"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results/workflow-portability-a-del-22c97-rrent-newly-uploaded-source-firefox/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/test-results/workflow-portability-a-del-22c97-rrent-newly-uploaded-source-firefox/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/trevor/Documents/Repos/operations-data-cleaner/operations-data-cleaner/tests/e2e/workflow-portability.spec.ts",
+                    "column": 94,
+                    "line": 169
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-b53cc572b422056ecbab",
+          "file": "workflow-portability.spec.ts",
+          "line": 162,
+          "column": 1
+        },
+        {
+          "title": "portable backup runs in a fresh browser and separate local origin without remapping",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3257,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:51.896Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-f8f26e82cfbd3dd50019",
+          "file": "workflow-portability.spec.ts",
+          "line": 32,
+          "column": 1
+        },
+        {
+          "title": "invalid workflow imports preserve the prior run and compatible headers never guess",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2338,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:55.529Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-cf1e9ee2f0cd6dea3cfb",
+          "file": "workflow-portability.spec.ts",
+          "line": 63,
+          "column": 1
+        },
+        {
+          "title": "identity and name collisions require an explicit target or distinct copy",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1875,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:57.892Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-010d07855ad9d05945d6",
+          "file": "workflow-portability.spec.ts",
+          "line": 81,
+          "column": 1
+        },
+        {
+          "title": "saved source delimiter policy is committed independently of the next upload picker",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1791,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:46:59.787Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-06775566d2fa358d9db7",
+          "file": "workflow-portability.spec.ts",
+          "line": 102,
+          "column": 1
+        },
+        {
+          "title": "a late workflow read cannot resurrect a conversion after New conversion",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 946,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:47:01.595Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-a922534f0e9298b3e99f",
+          "file": "workflow-portability.spec.ts",
+          "line": 120,
+          "column": 1
+        },
+        {
+          "title": "opening a workflow resets formula permission and added output IDs remain unique",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3570,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:47:02.557Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-8cc22bfc0c75ad96e0a6",
+          "file": "workflow-portability.spec.ts",
+          "line": 138,
+          "column": 1
+        },
+        {
+          "title": "a delayed workflow read confirms against the current newly uploaded source",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2011,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T19:47:06.141Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-f19db5a8eebd538a20a7",
+          "file": "workflow-portability.spec.ts",
+          "line": 162,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-15T19:45:10.752Z",
+    "duration": 117569.977,
+    "expected": 45,
+    "skipped": 0,
+    "unexpected": 3,
+    "flaky": 0
+  }
+}

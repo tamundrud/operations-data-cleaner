@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "id": "u4-synthetic",
+  "name": "Synthetic reusable configuration",
+  "source": {
+    "format": "csv",
+    "delimiter": "auto",
+    "referencedHeaders": [
+      "order",
+      "consignee"
+    ]
+  },
+  "fields": [
+    {
+      "id": "reference",
+      "header": "Reference",
+      "type": "text",
+      "required": true,
+      "recipe": {
+        "kind": "copy",
+        "source": "order"
+      }
+    },
+    {
+      "id": "customer",
+      "header": "CustomerCode",
+      "type": "text",
+      "required": true,
+      "recipe": {
+        "kind": "constant",
+        "value": {
+          "kind": "text",
+          "text": "0012"
+        }
+      }
+    },
+    {
+      "id": "consignee",
+      "header": "Consignee",
+      "type": "text",
+      "required": true,
+      "maxLength": 80,
+      "trim": true,
+      "recipe": {
+        "kind": "copy",
+        "source": "consignee"
+      }
+    },
+    {
+      "id": "weight",
+      "header": "Weight",
+      "type": "number",
+      "required": true,
+      "recipe": {
+        "kind": "constant",
+        "value": {
+          "kind": "number",
+          "decimal": "12.50"
+        }
+      }
+    },
+    {
+      "id": "note",
+      "header": "OptionalNote",
+      "type": "text",
+      "required": false,
+      "recipe": {
+        "kind": "constant",
+        "value": {
+          "kind": "blank"
+        }
+      }
+    },
+    {
+      "id": "reused",
+      "header": "Again",
+      "type": "text",
+      "required": true,
+      "recipe": {
+        "kind": "copy",
+        "source": "order"
+      }
+    },
+    {
+      "id": "literal",
+      "header": "Literal",
+      "type": "text",
+      "required": false,
+      "recipe": {
+        "kind": "constant",
+        "value": {
+          "kind": "text",
+          "text": " café,\"quoted\"\nnext\tend "
+        }
+      }
+    },
+    {
+      "id": "signed",
+      "header": "Signed",
+      "type": "number",
+      "required": false,
+      "recipe": {
+        "kind": "constant",
+        "value": {
+          "kind": "number",
+          "decimal": "-999999999999999999999.0001"
+        }
+      }
+    }
+  ],
+  "output": {
+    "format": "csv",
+    "delimiter": ",",
+    "bom": false,
+    "header": true,
+    "lineEnding": "CRLF",
+    "dateSystem": "1900"
+  }
+}
