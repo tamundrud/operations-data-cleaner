@@ -1,0 +1,194 @@
+{
+  "stats": {
+    "startTime": "2026-10-16T02:30:46.289Z",
+    "duration": 63506.761,
+    "expected": 14,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "title": "ad hoc edits persist nothing; explicit save commits configuration that survives reload",
+      "file": "persistence.spec.ts",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 4278,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "title": "two tabs cannot silently replace a workflow changed since opening",
+      "file": "persistence.spec.ts",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3127,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "title": "write abort after request success preserves the draft and independent portable download",
+      "file": "persistence.spec.ts",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 1854,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "title": "corrupt records stay untouched while intact saved definitions remain available",
+      "file": "persistence.spec.ts",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 2596,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "title": "save acknowledges its submitted snapshot while newer name edits remain unsaved",
+      "file": "persistence.spec.ts",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 2199,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "title": "storage denial keeps portable workflow download and ad hoc processing available",
+      "file": "persistence.spec.ts",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 2131,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "title": "a delayed saved-workflow read uses current confirmation after a draft edit",
+      "file": "persistence.spec.ts",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 2646,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "title": "native chooser waits for the selected saved workflow to activate",
+      "file": "persistence.spec.ts",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 2743,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "title": "upload helper waits for the selected saved workflow to activate",
+      "file": "persistence.spec.ts",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 15143,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "title": "pending Open releases controls after cancel without activating a late workflow",
+      "file": "persistence.spec.ts",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 2609,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "title": "pending Open releases controls after missing without activating a late workflow",
+      "file": "persistence.spec.ts",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 2269,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "title": "keyboard accept/reject leaves candidates unconfirmed and existing recipes authoritative",
+      "file": "suggestions.spec.ts",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 6344,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "title": "ambiguous exact/dictionary candidates remain alternatives until an explicit choice",
+      "file": "suggestions.spec.ts",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 2384,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "title": "only accepted mappings save, back up and rerun; renamed headers still block",
+      "file": "suggestions.spec.ts",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 7750,
+          "errors": []
+        }
+      ]
+    }
+  ]
+}

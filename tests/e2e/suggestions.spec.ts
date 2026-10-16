@@ -90,6 +90,7 @@ test("only accepted mappings save, back up and rerun; renamed headers still bloc
   await page.reload();
   await page.getByLabel("Saved workflows", { exact: true }).selectOption({ label: "Synthetic U5" });
   await page.getByRole("button", { name: "Open workflow", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Repeat workflow", exact: true })).toContainText("Synthetic U5");
   await upload(page, "Extra,Ship To\nunused,U5_PRIVATE_REUSED_DEPOT");
   expect((await download(page)).toString()).toBe("Consignee\r\nU5_PRIVATE_REUSED_DEPOT\r\n");
   const fresh = await browser.newContext({ baseURL: "http://127.0.0.1:4173", serviceWorkers: "block" });
