@@ -32,7 +32,7 @@
     "src/workflows/indexeddb-store.ts": "7678489fa52f2f9754885e2dcaee7bf5e847e5465f900063c0d1bfb71c22a34e",
     "tests/e2e/accessibility.spec.ts": "341176a4c1d761ec0b99e348bd23641dc228f57764c56137d28828e1616b3fd5",
     "tests/e2e/address-recipes.spec.ts": "82e3adae3e776bf25be56c994a0f88492cc26b298c80119ff87a763523d6f076",
-    "tests/e2e/calculations.spec.ts": "7d89a1dc2dd45519aef14260a773efb8d71c6027407e8c3c9e2ca3ce3218441e",
+    "tests/e2e/calculations.spec.ts": "4a3ede4427a767a5894180906a4bd9ff0617951dc80a8d28e5e482dc38abf943",
     "tests/e2e/constants.spec.ts": "4eaf2799de801fc310cb00cb13994a2561e4435555c1eaf51f8a1428e0e56ba4",
     "tests/e2e/conversion.spec.ts": "44cf479c510f906c3e5baa45703de2b2f08c4a34cdfada5868c4657c042d48a1",
     "tests/e2e/helpers.ts": "eec689560ab8d3eb7be3e9a39479a7a0c8f782e24dcd191e158bad083e37422d",
@@ -61,5 +61,6 @@
     "tests/unit/workflow.test.ts": "112b3a43f112ee20d02d5fed8580f426afa1ce67e3af1bcd799619b27d2695ec",
     "tsconfig.json": "22a68a5bc8062a4d8cb7809b0dc5b23de04de8b9205138d5344f2fc78774c717",
     "vite.config.ts": "4d29c2de82017116599dc244cd45722dedfb550b59ecd9d55acd4c0f6b351df2"
-  }
+  },
+  "notes": "Core implementation commit unchanged; source hashes include the CI test-readiness correction documented in ci-save-entry/README.md."
 }

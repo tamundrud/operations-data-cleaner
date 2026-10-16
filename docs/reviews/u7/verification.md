@@ -31,3 +31,7 @@ Existing workflow, constants, split/combine, persistence, worker/session, export
 Reference environment: Node 24.19.0, npm 11.9.0, Linux x86_64, system Chromium 154.0.8037.57. Playwright browser download returned network-policy `403 Domain forbidden`; local Firefox/WebKit runtimes are unavailable. Existing three-browser GitHub CI remains configured; its result is checked on the draft PR when available. Cloud timings are completeness/responsiveness smoke evidence, not reference-laptop or full-MVP qualification.
 
 The PR remains draft for hands-on UX acceptance. No merge, deployment or U8 is authorized.
+
+## GitHub CI follow-up
+
+The first three-browser run on 930b0fe passed 212/213 cases, with one WebKit name-entry setup failure in the new save/reopen test. `ci-save-entry/README.md` records the observed empty-name state, trace artifact, test-only readiness correction, and 6/6 focused Chromium validation. Production behavior is unchanged; the following CI run verifies the corrected test on all browsers.

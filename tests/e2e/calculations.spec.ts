@@ -29,7 +29,13 @@ test("AC-05/06/10 contextual calculations export exact bytes, save/reopen and po
   await page.getByLabel("Require whole numbers before rounding").check();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await closeSettings(page);
-  await page.getByLabel("Workflow name", { exact: true }).fill("Synthetic U7");
+  await expect(
+    page.getByRole("button", { name: "Edit Cases out", exact: true }),
+  ).toBeFocused();
+  const workflowName = page.getByLabel("Workflow name", { exact: true });
+  await workflowName.scrollIntoViewIfNeeded();
+  await workflowName.fill("Synthetic U7");
+  await expect(workflowName).toHaveValue("Synthetic U7");
   await page
     .getByRole("button", { name: "Save workflow", exact: true })
     .click();

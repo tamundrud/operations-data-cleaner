@@ -1,0 +1,13 @@
+{
+  "run_id": 38947965907,
+  "job_id": 117131800224,
+  "head_sha": "930b0fe214438da833efe7fe8acf0754aa5f95bd",
+  "artifact_id": 12065969927,
+  "sha256": "2722113ed137753dd95dda19156fdfbcedb4aa4b6fc7c0e06e23d585e33f9b6f",
+  "url": "https://github.com/tamundrud/operations-data-cleaner/actions/runs/38947965907/artifacts/12065969927",
+  "result": {
+    "passed": 212,
+    "failed": 1,
+    "failure": "WebKit calculation save/reopen test: workflow name remained blank after fill"
+  }
+}
