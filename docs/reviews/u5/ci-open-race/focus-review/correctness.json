@@ -1,0 +1,13 @@
+{
+  "reviewer": "correctness",
+  "findings": [],
+  "residual_risks": [],
+  "testing_gaps": [],
+  "review_notes": [
+    "Reject focuses output via requestAnimationFrame; candidate removal can precede that callback. The added auto-retrying focus assertion waits for the actual output focus before accept.focus and global Enter.",
+    "Explicit reject.focus moves focus away from the target before Enter, so the added assertion cannot succeed on stale focus.",
+    "The acceptance Unlink and Consignee focus assertions remain intact; no assertion removed, mock added, timeout increased, or production behavior altered.",
+    "AGENTS.md governs through instruction-file fallback; change retains synthetic data and focused scope.",
+    "No tests, server, or build launched by reviewer; caller owns running verification."
+  ]
+}

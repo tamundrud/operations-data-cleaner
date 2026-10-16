@@ -13,6 +13,7 @@ test("keyboard accept/reject leaves candidates unconfirmed and existing recipes 
   const reject = page.getByRole("button", { name: "Reject PO # for Purchase Order Reference", exact: true });
   await reject.focus(); await page.keyboard.press("Enter");
   await expect(page.getByRole("button", { name: "Accept PO # for Purchase Order Reference", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Select output Purchase Order Reference", exact: true })).toBeFocused();
   const accept = page.getByRole("button", { name: "Accept Ship To for Consignee", exact: true });
   await accept.focus(); await page.keyboard.press("Enter");
   await expect(page.getByRole("button", { name: "Unlink Consignee", exact: true })).toBeVisible();

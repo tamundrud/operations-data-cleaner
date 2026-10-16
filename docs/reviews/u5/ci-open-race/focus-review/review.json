@@ -1,0 +1,53 @@
+{
+  "status": "complete",
+  "verdict": "Ready to merge",
+  "scope": {
+    "base": "ec11fd4200ff46db68d393b4142019289d4856f7",
+    "branch": "feat/u5-confirmable-logistics-suggestions",
+    "head_sha": "ec11fd4200ff46db68d393b4142019289d4856f7",
+    "pr_url": null,
+    "files_changed": 1
+  },
+  "intent": "Wait for keyboard Reject to restore Purchase Order Reference output focus before focusing Consignee Accept and pressing Enter. Preserve real keyboard activation and existing acceptance assertions.",
+  "intent_confidence": "explicit",
+  "reviewers": [
+    "correctness",
+    "adversarial"
+  ],
+  "findings": [],
+  "actionable_findings": [],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "requirements_completeness": null,
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [],
+  "testing_gaps": [],
+  "coverage": {
+    "depth": "focused",
+    "scope_mode": "local-aligned",
+    "changed_lines": 1,
+    "criteria_checked": [
+      "AGENTS.md"
+    ],
+    "criteria_source": "instruction-file fallback; no governing CODING_STANDARDS.md",
+    "plan": "No explicit plan or PR-body plan; no unambiguous branch-keyword filename match. Requirements completeness not assessed.",
+    "cross_model": {
+      "status": "not run",
+      "reason": "Only same-family Codex CLI installed; no attested different-family route available."
+    },
+    "adversarial_lens": "One separately dispatched local adversarial reviewer completed; same serving family, no cross-model corroboration.",
+    "other_reviewer_agents": "None dispatched. No validator ran.",
+    "compound_packs": "Not applied; none declared.",
+    "not_assessed": [
+      "learnings",
+      "agent-native gaps",
+      "deployment notes"
+    ],
+    "validation": "Source inspection only; no tests, builds, or server launched. Caller owns executing typecheck, lint, and repeated browser tests.",
+    "excluded_untracked": []
+  },
+  "artifact_path": "/tmp/compound-engineering-1000/ce-code-review/20261016-043508-02365234",
+  "run_id": "20261016-043508-02365234"
+}
