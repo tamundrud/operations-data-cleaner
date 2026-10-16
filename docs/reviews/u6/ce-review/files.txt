@@ -1,0 +1,16 @@
+README.md
+src/engine/recipes.ts
+src/engine/validation.ts
+src/ui/MappingRows.tsx
+src/ui/Workspace.tsx
+src/ui/styles.css
+src/workflows/codec.ts
+tests/e2e/helpers.ts
+tests/e2e/performance.spec.ts
+tests/e2e/privacy.spec.ts
+tests/unit/workflow-roundtrip.test.ts
+tests/unit/workflow.test.ts
+src/ui/TextRecipeSettings.tsx
+tests/e2e/address-recipes.spec.ts
+tests/unit/split-combine.test.ts
+tests/fixtures/addresses/source.csv

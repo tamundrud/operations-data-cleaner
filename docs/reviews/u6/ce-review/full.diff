@@ -1,0 +1,1073 @@
+diff --git a/README.md b/README.md
+index 1d26af8..e04346f 100644
+--- a/README.md
++++ b/README.md
+@@ -1,17 +1,17 @@
+ # Operations Data Cleaner
+ 
+-U5 internal preview: convert a CSV into explicitly matched, reordered output columns, including fixed text, exact decimal numbers and intentional blanks. Trim text only when you choose to. Select CSV delimiter, BOM and header settings, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
++U6 internal preview: convert a CSV into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits and ordered combinations. Trim text only when you choose to. Select CSV delimiter, BOM and header settings, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
+ 
+ ## Run locally
+ 
+-Use Node 24 LTS (U5 cloud verification: Node 24.19.0).
++Use Node 24 LTS (U6 cloud verification: Node 24.19.0).
+ 
+ ```sh
+ npm ci
+ npm run build
+ npm run preview
+ ```
+ 
+ Open **http://127.0.0.1:4173**. This serves the production application and privacy policy. `npm run dev` starts Vite for development; its HMR traffic and styles conflict with the restrictive production CSP, so use build/preview for product verification. No deployment or server-side file processing is involved.
+ 
+ ## Working synthetic example
+@@ -23,38 +23,46 @@ Select **Try fixed fields example** for [the U3 source](examples/u3-source.csv)
+ Open an output card’s **⋯** settings to choose **Copy a source column** or **Use a fixed value**. Fixed fields join completed rows with a “No source needed” summary and can be reordered with matched pairs. Text identifiers preserve leading zeros and whitespace. **Remove leading and trailing whitespace** is off by default and operates before required/maximum-length checks; originals remain available under **Inspect original source table**. CSV settings sit beside preview/download; changing any configuration blocks old downloads and clears formula handling until the current result is checked.
+ 
+ The existing [U2 source](examples/u2/source.csv), [template](examples/u2/template.csv) and [configuration](examples/u2/workflow.json) remain available. Bundled configurations use the same version 1 model as saved and portable workflows. The approved U2/U3 paired-card interface and contextual settings are retained.
+ 
+ ## Review suggested matches
+ 
+ Unmatched outputs show **Suggested** candidates for exact normalized header names and the curated pairs **Ship To ↔ Consignee** and **PO # ↔ Purchase Order Reference**. Choose **Accept** for a candidate, **Reject** to dismiss it in this editor session, or match another source using the existing cards/settings. Multiple candidates remain alternatives; none is selected automatically. Existing confirmed mappings and fixed values take precedence.
+ 
+ Suggestions use headers only, stay local, and never inspect row values. Billing parties, sales orders, stop/shipment IDs and quantities with different units are not treated as equivalents. Only explicitly configured recipes can be saved or downloaded; unresolved outputs still need a mapping or removal. Saved mappings rerun directly, and renamed or missing source headers still block processing.
+ 
++## Split and combine text (U6)
++
++Open an output column's settings and choose **Split a source column**. Choose its source, literal delimiter, expected count and segment number (starting at 1). Trimming is off until explicitly enabled. Configure each destination independently from the same original source. The count must match exactly: missing or extra segments invalidate the row. Mark optional empty positions explicitly and keep their delimiters (`a,,c,d`); positions are never guessed. Every other segment must contain text, even when selecting a different segment.
++
++Choose **Combine sources and text** to arrange two or more source columns and literal components. Use the labeled Up/Down controls, add/remove components, and choose an exact separator (including an empty separator). Empty sources and empty literals retain their position and separator. Combination cards show the configured order; all sources remain reusable. Optional output trim affects only the combined value's boundaries.
++
++Both recipes save and transfer in workflow version 1, including trimming, optional positions, ordered components and separators. Renamed or missing source headers still block runs. Split/combination output uses the same required/maximum-length validation, formula safety and revision checks as existing recipes. General parsing, automatic address interpretation, arithmetic and date conversion remain unavailable.
++
+ ## Save, repeat and recover
+ 
+ Name the current configuration and choose **Save workflow**. Save is explicit: changing rules, uploading a source, or importing a workflow does not automatically update saved definitions. **Save changes** updates the opened saved definition; **Save a copy** needs a distinct name. Identity/name conflicts require an explicit replacement or copy. Changes from another tab are detected before replacement.
+ 
+ Choose a definition under **Saved workflows**, then **Open workflow**, upload a compatible new CSV, review and download. Source columns may be reordered or have extra unused columns; missing/duplicate/changed required headers block the run without guessing. **Edit workflow** reveals the existing matching board. Opening another definition clears the old source only after validation and any replacement confirmation.
+ 
+ **Download workflow** produces `workflow.json` without needing a source or working browser storage. Use **Import workflow** in another browser or local instance, then upload its compatible source. Import validates supported configuration before replacing anything and opens a draft; Save separately if you want it in that browser. Future versions and currently undelivered recipes/settings are rejected clearly.
+ 
+ Browser storage belongs to this browser and site origin, can be cleared, and is not shared automatically. Keep the prompted portable backup and store it somewhere durable. Workflow files contain field names and configured constants that may reveal business information; review them before sharing. Source records and filenames are excluded. Reload and **End session** clear source data; saved definitions remain available. **New conversion** starts an ad hoc draft after confirming replacement when needed. If storage fails, continue ad hoc or download a backup; **Retry workflow storage** retries the local library without discarding your conversion.
+ 
+ ## Delivered limits and privacy
+ 
+ - UTF-8 CSV with optional input BOM; comma, semicolon or tab input. First nonblank record is the header; normalized empty/duplicate headers and malformed quotes/extra cells fail explicitly.
+-- Every output must have a source copy or fixed text/number/blank recipe. Text supports optional required/max-length validation and explicit boundary trim. Numeric constants use a strict decimal string grammar: optional sign, digits and decimal point; no currency, thousands separators or exponents. `12.50`, `+0012.500` and long decimals retain their exact representation without floating-point conversion or rounding. Fixed text is limited to 4096 characters and decimal literals to 1000 characters. Numeric source conversion, scale and rounding rules remain deferred. Optional blanks succeed; required blank/whitespace-only values block the whole download.
++- Every output must have a source copy, fixed text/number/blank, split or combination recipe. Text supports optional required/max-length validation and explicit boundary trim. Numeric constants use a strict decimal string grammar: optional sign, digits and decimal point; no currency, thousands separators or exponents. `12.50`, `+0012.500` and long decimals retain their exact representation without floating-point conversion or rounding. Fixed text is limited to 4096 characters and decimal literals to 1000 characters. Numeric source conversion, scale and rounding rules remain deferred. Optional blanks succeed; required blank/whitespace-only values block the whole download.
+ - Default output: UTF-8, no BOM, comma, headers, standard quoting, CRLF. Choose comma, semicolon or tab, BOM on/off and header on/off. Preview retains column labels for identification even when the exported header is omitted. Formula-like text (including constants) and included headers require an explicit escaped/raw choice; preview shows the selected representation. Typed numeric constants are not formula text. Escaping changes text and cannot promise protection in every spreadsheet/importer. Raw text may be unsafe to open in spreadsheets.
+ - Full dataset counts with paginated output and exception rows (50 per page). Nonblank totals are ordinary candidates. No silent record truncation. Limits: 25 MiB source, 200 columns, 2 million inspected cells, 30-second cancellable worker watchdog.
+ - Files and parsed data stay in browser memory and are cleared by reload or End session. Only explicitly saved workflow configurations use IndexedDB; no source data or filename is persisted. No localStorage, service worker, analytics, remote fonts, or upload endpoint. Static application code/assets still use ordinary host requests and metadata. Processing runs in a local Web Worker.
+-- Excel, split/combine/arithmetic/date operations, source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
++- Excel, arithmetic/date operations, source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
+ 
+ ## Verify
+ 
+ ```sh
+ npm run typecheck
+ npm run lint
+ npm run test:unit
+ npm run build
+ npx playwright install --with-deps chromium firefox webkit
+ npm run test:e2e
+diff --git a/src/engine/recipes.ts b/src/engine/recipes.ts
+index d44aebf..90ef492 100644
+--- a/src/engine/recipes.ts
++++ b/src/engine/recipes.ts
+@@ -1,21 +1,21 @@
+ import type { Workflow } from "./workflow";
+ import { displayValue, type SourceTable, type Value } from "./values";
+ import type { Issue } from "./issues";
+ import { validateWorkflow } from "./validation";
+ import { riskyText } from "../formats/spreadsheet-safety";
+ export type ResultRow = {
+   id: string;
+   record: number;
+   line: number;
+   values: Value[];
+-  provenance: ({ field: string; row: string; trim?: true } &
++  provenance: ({ field: string; row: string; trim?: true; segment?: number; segmentTrim?: boolean } &
+     ({ source: string } | { constant: Value }))[];
+   issues: Issue[];
+   status: "valid" | "warning" | "invalid";
+ };
+ export type Run = {
+   workflowIssues: Issue[];
+   rows: ResultRow[];
+   summary: {
+     inputRows: number;
+     skippedBlanks: number;
+@@ -51,52 +51,78 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+       .filter((f) => workflow.output.header && riskyText(f.header))
+       .map((f) => f.header),
+   };
+   if (workflowIssues.length) return run;
+   const positions = new Map(source.columns.map((c) => [c.key, c.position]));
+   for (const row of source.rows) {
+     const issues: Issue[] = [],
+       provenance: ResultRow["provenance"] = [];
+     const values: Value[] = workflow.fields.map((f) => {
+       const recipe = f.recipe;
+-      if (!recipe || (recipe.kind !== "copy" && recipe.kind !== "constant"))
++      if (!recipe || recipe.kind === "calculate")
+         throw new Error("Unvalidated recipe");
+-      const sourceKey = recipe.kind === "copy" ? recipe.source : undefined;
+-      let value: Value = recipe.kind === "constant"
+-        ? { ...recipe.value }
+-        : { kind: "text", text: row.cells[positions.get(recipe.source)!]?.raw ?? "" };
+-      provenance.push({
+-        field: f.id,
+-        row: row.id,
+-        ...(recipe.kind === "copy" ? { source: recipe.source } : { constant: { ...recipe.value } }),
+-        ...(f.trim ? { trim: true as const } : {}),
+-      });
+-      if (f.trim && value.kind === "text") value = { kind: "text", text: value.text.trim() };
+-      const text = displayValue(value);
++      const sourceKey = recipe.kind === "copy" || recipe.kind === "split" ? recipe.source : undefined;
+       const add = (
+         code: string,
+         severity: "error" | "warning",
+         reason: string,
+         action: string,
+       ) =>
+         issues.push({
+-          code,
+-          scope: "row",
+-          severity,
+-          row: row.id,
+-          record: row.record,
+-          line: row.line,
+-          field: f.id,
+-          source: sourceKey,
+-          reason,
+-          action,
++          code, scope: "row", severity,
++          row: row.id, record: row.record, line: row.line,
++          field: f.id, source: sourceKey, reason, action,
++        });
++      const readSource = (source: string) => {
++        provenance.push({
++          field: f.id, row: row.id, source,
++          ...(f.trim ? { trim: true as const } : {}),
++          ...(recipe.kind === "split" ? { segment: recipe.index, segmentTrim: recipe.trim } : {}),
+         });
++        return row.cells[positions.get(source)!]?.raw ?? "";
++      };
++      const readConstant = (constant: Value) => {
++        provenance.push({ field: f.id, row: row.id, constant: { ...constant }, ...(f.trim ? { trim: true as const } : {}) });
++        return { ...constant };
++      };
++      let value: Value;
++      switch (recipe.kind) {
++        case "copy":
++          value = { kind: "text", text: readSource(recipe.source) };
++          break;
++        case "constant":
++          value = readConstant(recipe.value);
++          break;
++        case "combine":
++          value = { kind: "text", text: recipe.components.map((c) => c.kind === "source"
++            ? readSource(c.source)
++            : displayValue(readConstant({ kind: "text", text: c.text }))).join(recipe.separator) };
++          break;
++        case "split": {
++          const parts = readSource(recipe.source).split(recipe.delimiter);
++          value = { kind: "blank" };
++          if (parts.length !== recipe.segments) {
++            add("split-count", "error", `${f.header}: expected ${recipe.segments} segments but found ${parts.length}.`, "Correct the source delimiter positions or change the expected segment count.");
++            break;
++          }
++          const segments = recipe.trim ? parts.map((part) => part.trim()) : parts;
++          const empty = segments.flatMap((part, index) => part === "" && !recipe.optionalEmpty.includes(index) ? [index + 1] : []);
++          if (empty.length) {
++            add("split-empty", "error", `${f.header}: required segment ${empty.join(", ")} is empty.`, "Correct the source or explicitly mark that empty position optional; retain its delimiters.");
++            break;
++          }
++          value = { kind: "text", text: segments[recipe.index] };
++          break;
++        }
++      }
++      if (f.trim && value.kind === "text") value = { kind: "text", text: value.text.trim() };
++      const text = displayValue(value);
+       if (f.required && text.trim() === "")
+         add(
+           "required",
+           "error",
+           `${f.header} is required but blank.`,
+           "Correct the source file and reupload, or change the field rule.",
+         );
+       if (f.maxLength && [...text].length > f.maxLength)
+         add(
+           "max-length",
+diff --git a/src/engine/validation.ts b/src/engine/validation.ts
+index cd16cfb..89e9688 100644
+--- a/src/engine/validation.ts
++++ b/src/engine/validation.ts
+@@ -47,25 +47,25 @@ export function validateWorkflowConfiguration(workflow: Workflow): Issue[] {
+       );
+     ids.add(f.id);
+     headers.add(header);
+     if (!f.recipe)
+       add(
+         "unmapped",
+         `${f.header || "Output column"} is unmapped.`,
+         "Choose a source column or remove this output column.",
+         f.id,
+       );
+-    if (f.recipe && f.recipe.kind !== "copy" && f.recipe.kind !== "constant")
++    if (f.recipe?.kind === "calculate")
+       add(
+         "unsupported-recipe",
+         `${f.recipe.kind} is not supported in this build.`,
+-        "Use a source copy or a fixed value.",
++        "Use a source copy, fixed value, split or combination.",
+         f.id,
+       );
+     if (
+       (f.type !== "text" && !(f.type === "number" && f.recipe?.kind === "constant")) ||
+       f.date ||
+       f.rounding ||
+       f.scale !== undefined ||
+       f.wholeNumber !== undefined
+     )
+       add(
+@@ -74,25 +74,26 @@ export function validateWorkflowConfiguration(workflow: Workflow): Issue[] {
+         "Use text or a fixed number, with supported validation settings.",
+         f.id,
+       );
+     const r = f.recipe;
+     if (r?.kind === "constant" && r.value.kind !== "blank" && r.value.kind !== f.type)
+       add("constant-type", "The fixed value type must match the output type.", "Choose text for a text literal or number for a decimal literal.", f.id);
+     if (f.trim && f.type !== "text")
+       add("trim-type", "Trimming requires a text output.", "Use text or turn off whitespace trimming.", f.id);
+     if (
+       r?.kind === "split" &&
+-      (r.index >= r.segments || r.optionalEmpty.some((i) => i >= r.segments))
++      (r.index >= r.segments || r.optionalEmpty.some((i) => i >= r.segments) ||
++        new Set(r.optionalEmpty).size !== r.optionalEmpty.length)
+     )
+       add(
+         "split-index",
+-        "Split positions exceed the expected segment count.",
++        "Split positions must be unique and within the expected segment count.",
+         "Correct the segment positions.",
+         f.id,
+       );
+     if (f.maxLength !== undefined && f.type !== "text")
+       add(
+         "validation-type",
+         "Maximum length requires a text field.",
+         "Use text or remove maximum length.",
+         f.id,
+       );
+diff --git a/src/ui/MappingRows.tsx b/src/ui/MappingRows.tsx
+index aff5fed..7859e3f 100644
+--- a/src/ui/MappingRows.tsx
++++ b/src/ui/MappingRows.tsx
+@@ -1,29 +1,30 @@
+ import { useEffect, useRef, useState, type DragEvent } from "react";
++import TextRecipeSettings from "./TextRecipeSettings";
+ import { suggestMatches } from "../suggestions/matches";
+-import { normalizeHeader, type Field } from "../engine/workflow";
++import { normalizeHeader, referencedHeaders, type Field } from "../engine/workflow";
+ import { displayValue } from "../engine/values";
+ import type { View } from "../session/worker-protocol";
+ 
+ type Props = {
+   view: View;
+   fields: Field[];
+   disabled: boolean;
+   importing: boolean;
+   change: (fields: Field[]) => void;
+   makeFields: (headers: string[]) => Field[];
+   importTemplate: (file: File) => void;
+ };
+ type Card = { kind: "source" | "output" | "pair"; id: string };
+ const sourceKey = (f: Field) =>
+-  f.recipe?.kind === "copy" ? f.recipe.source : "";
+-const configured = (f: Field) => Boolean(sourceKey(f) || f.recipe?.kind === "constant");
++  f.recipe?.kind === "copy" || f.recipe?.kind === "split" ? f.recipe.source : "";
++const configured = (f: Field) => Boolean(sourceKey(f) || f.recipe?.kind === "constant" || (f.recipe?.kind === "combine" && f.recipe.components.every((c) => c.kind === "literal" || c.source)));
+ const fixedSummary = (f: Field) => {
+   if (f.recipe?.kind !== "constant") return "";
+   const value = f.recipe.value;
+   if (value.kind === "blank") return "Intentional blank";
+   return `Fixed ${value.kind} · ${value.kind === "text" ? JSON.stringify(value.text) : value.decimal}`;
+ };
+ 
+ export default function MappingRows({
+   view,
+   fields,
+@@ -49,30 +50,30 @@ export default function MappingRows({
+   const addButton = useRef<HTMLButtonElement>(null);
+   const cards = useRef(new Map<string, HTMLButtonElement>());
+   const focus = (id: string) =>
+     requestAnimationFrame(() => cards.current.get(id)?.focus());
+   const matched = fields.filter(configured);
+   const unmatched = fields.filter((f) => !configured(f));
+   const candidateKey = (f: Field, source: string) =>
+     JSON.stringify([f.id, normalizeHeader(f.header), source]);
+   const sourceHeaders = view.columns.map((c) => c.header);
+   const suggestions = new Map(unmatched.map((f) => {
+-    const headers = new Set(suggestMatches(sourceHeaders, f.header));
++    const headers = new Set(f.recipe ? [] : suggestMatches(sourceHeaders, f.header));
+     return [f.id, view.columns.filter((c) =>
+       headers.has(c.header) && !rejected.has(candidateKey(f, c.key)),
+     )];
+   }));
+   const positions = new Map(fields.map((f, i) => [f, i + 1]));
+   const usesBySource = new Map<string, number>();
+   for (const f of matched) {
+-    const key = sourceKey(f);
+-    if (key) usesBySource.set(key, (usesBySource.get(key) ?? 0) + 1);
++    for (const key of referencedHeaders([f]))
++      usesBySource.set(key, (usesBySource.get(key) ?? 0) + 1);
+   }
+   const field = fields.find((f) => f.id === editing);
+   const manualHeaders = manual.split("\n").filter((h) => h.trim());
+   const columns = view.columns.filter((c) =>
+     c.header.toLowerCase().includes(search.toLowerCase()),
+   );
+   const columnByKey = new Map(view.columns.map((c) => [c.key, c]));
+   const sample = (key: string) => {
+     const c = columnByKey.get(key);
+     return c
+@@ -241,20 +242,22 @@ export default function MappingRows({
+         {!c && (
+           <span className="error-text">
+             Source missing — choose another source
+           </span>
+         )}
+       </button>
+     );
+   };
+   const outputSummary = (f: Field, paired: boolean) => {
+     if (f.recipe?.kind === "constant") return fixedSummary(f);
++    if (f.recipe?.kind === "split") return `Split · segment ${f.recipe.index + 1} of ${f.recipe.segments} · delimiter ${JSON.stringify(f.recipe.delimiter)}${f.recipe.trim ? " · trims segments" : ""}`;
++    if (f.recipe?.kind === "combine") return `Combine · ${f.recipe.components.length} components · separator ${JSON.stringify(f.recipe.separator)} · keeps empty positions`;
+     if (paired) return `Confirmed · copies ${columnByKey.get(sourceKey(f))?.header ?? sourceKey(f)}`;
+     if (suggestions.get(f.id)?.length) return "Suggested · review below to confirm";
+     return "Unmatched · drop a source here";
+   };
+   const outputCard = (f: Field, paired: boolean) => (
+     <button
+       ref={(node) => {
+         if (node) cards.current.set(`output-${f.id}`, node);
+         else cards.current.delete(`output-${f.id}`);
+       }}
+@@ -441,20 +444,25 @@ export default function MappingRows({
+                   }
+                 }}
+               >
+                 ⠿
+               </button>
+               {f.recipe?.kind === "constant" ? (
+                 <div className="fixed-summary">
+                   <strong>Fixed value</strong>
+                   <span>No source needed</span>
+                 </div>
++              ) : f.recipe?.kind === "combine" ? (
++                <div className="fixed-summary combination-summary">
++                  <strong>Ordered combination</strong>
++                  <ol>{f.recipe.components.map((c, index) => <li key={index}>{c.kind === "source" ? columnByKey.get(c.source)?.header ?? `${c.source} (missing source)` : `Literal ${JSON.stringify(c.text)}`}</li>)}</ol>
++                </div>
+               ) : sourceCard(sourceKey(f), f)}
+               <span className="pair-mark" aria-hidden="true">
+                 {f.recipe?.kind === "constant" ? "" : "↔"}
+               </span>
+               {outputCard(f, true)}
+               <div className="pair-actions">
+                 <button
+                   className="unlink"
+                   disabled={disabled}
+                   aria-label={f.recipe?.kind === "constant" ? `Clear fixed value for ${f.header}` : `Unlink ${f.header}`}
+@@ -634,35 +642,47 @@ export default function MappingRows({
+                 Output column name
+                 <input
+                   autoFocus
+                   value={field.header}
+                   onChange={(e) => update(field.id, { header: e.target.value })}
+                 />
+               </label>
+               <fieldset className="value-mode">
+                 <legend>Output value</legend>
+                 <label className="check">
+-                  <input type="radio" name="value-mode" checked={field.recipe?.kind !== "constant"}
++                  <input type="radio" name="value-mode" checked={!field.recipe || field.recipe.kind === "copy"}
+                     onChange={() => update(field.id, { type: "text", recipe: undefined })} />
+                   Copy a source column
+                 </label>
+                 <label className="check">
+                   <input type="radio" name="value-mode" checked={field.recipe?.kind === "constant"}
+                     onChange={() => {
+                       update(field.id, { type: "text", recipe: { kind: "constant", value: { kind: "text", text: "" } } });
+                       setSelected(undefined);
+                       setAnnouncement(`${field.header} uses a fixed value. No source match needed.`);
+                     }} />
+                   Use a fixed value
+                 </label>
++                <label className="check">
++                  <input type="radio" name="value-mode" checked={field.recipe?.kind === "split"}
++                    onChange={() => { update(field.id, { type: "text", recipe: { kind: "split", source: sourceKey(field), delimiter: ",", segments: 4, index: 0, trim: false, optionalEmpty: [] } }); setSelected(undefined); }} />
++                  Split a source column
++                </label>
++                <label className="check">
++                  <input type="radio" name="value-mode" checked={field.recipe?.kind === "combine"}
++                    onChange={() => { update(field.id, { type: "text", recipe: { kind: "combine", components: [{ kind: "source", source: sourceKey(field) }, { kind: "literal", text: "" }], separator: " " } }); setSelected(undefined); }} />
++                  Combine sources and text
++                </label>
+               </fieldset>
+-              {field.recipe?.kind === "constant" ? (
++              {field.recipe?.kind === "split" || field.recipe?.kind === "combine" ? (
++                <TextRecipeSettings recipe={field.recipe} columns={view.columns} change={(recipe) => update(field.id, { recipe })} />
++              ) : field.recipe?.kind === "constant" ? (
+                 <>
+                   <label>
+                     Fixed value type
+                     <select aria-label="Fixed value type" value={field.recipe.value.kind} onChange={(e) => {
+                       const kind = e.target.value as "text" | "number" | "blank";
+                       const text = field.recipe?.kind === "constant" ? displayValue(field.recipe.value) : "";
+                       update(field.id, {
+                         type: kind === "number" ? "number" : "text",
+                         trim: kind === "number" ? undefined : field.trim,
+                         maxLength: kind === "number" ? undefined : field.maxLength,
+diff --git a/src/ui/Workspace.tsx b/src/ui/Workspace.tsx
+index 5e35436..f786526 100644
+--- a/src/ui/Workspace.tsx
++++ b/src/ui/Workspace.tsx
+@@ -636,18 +636,18 @@ export default function Workspace() {
+               Download converted CSV
+             </button>
+             <p className="small">
+               Validation checks your chosen rules. Acceptance by your
+               destination system depends on its import requirements.
+             </p>
+           </section>
+         </div>
+       )}
+       <footer>
+-        U5 internal preview · Confirmable header suggestions and reusable local workflows. Data is cleared on reload
++        U6 internal preview · Strict splits, ordered combinations and reusable local workflows. Data is cleared on reload
+         or End session. Source data and file names are never saved. Static
+         application assets are requested from the host; customer file processing
+         stays local.
+       </footer>
+     </main>
+   );
+ }
+diff --git a/src/ui/styles.css b/src/ui/styles.css
+index 2198a3b..7424775 100644
+--- a/src/ui/styles.css
++++ b/src/ui/styles.css
+@@ -921,10 +921,50 @@ h3 {
+   padding: 8px;
+   border-left: 3px solid #a47821;
+   background: #fff8e8;
+   font-size: 12px;
+ }
+ .suggestions p { margin: 0 0 6px; }
+ .suggestion { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+ .suggestion + .suggestion { margin-top: 6px; }
+ .suggestion span { flex: 1 1 100px; overflow-wrap: anywhere; }
+ .suggestion button { padding: 5px 8px; }
++
++.text-recipe {
++  margin: 14px 0;
++  min-width: 0;
++}
++.recipe-grid {
++  display: grid;
++  grid-template-columns: repeat(2, minmax(0, 1fr));
++  gap: 12px;
++}
++.optional-segments {
++  max-height: 180px;
++  overflow: auto;
++}
++.component-list {
++  padding-left: 22px;
++}
++.component-list li {
++  margin-bottom: 12px;
++}
++.component-list fieldset {
++  min-width: 0;
++}
++.component-actions {
++  display: flex;
++  flex-wrap: wrap;
++  gap: 6px;
++}
++.combination-summary ol {
++  margin: 4px 0;
++  padding-left: 20px;
++  overflow-wrap: anywhere;
++  max-height: 140px;
++  overflow: auto;
++}
++@media (max-width: 480px) {
++  .recipe-grid {
++    grid-template-columns: 1fr;
++  }
++}
+diff --git a/src/workflows/codec.ts b/src/workflows/codec.ts
+index fd37c7c..090c531 100644
+--- a/src/workflows/codec.ts
++++ b/src/workflows/codec.ts
+@@ -1,19 +1,19 @@
+ import { decodeWorkflow, referencedHeaders, type Field, type Workflow } from "../engine/workflow";
+ import { validateWorkflowConfiguration } from "../engine/validation";
+ 
+ function requireUsable(workflow: Workflow): Workflow {
+   const issues = validateWorkflowConfiguration(workflow);
+   if (issues.length) {
+     const unsupported = issues.some((issue) => issue.code.startsWith("unsupported-"));
+     throw new Error(unsupported
+-      ? "Unsupported workflow capability. Use CSV, text copies and typed fixed values with delivered settings."
++      ? "Unsupported workflow capability. Use CSV, copies, fixed values, splits and combinations with delivered settings."
+       : "Workflow configuration is invalid. Complete mappings and correct output names, identities and field settings.");
+   }
+   return workflow;
+ }
+ 
+ /** Strict boundary for untrusted portable and stored configuration. */
+ export function decodeUsableWorkflow(json: string): Workflow {
+   const workflow = requireUsable(decodeWorkflow(json));
+   const expected = new Set(referencedHeaders(workflow.fields));
+   const declared = workflow.source.referencedHeaders;
+@@ -23,20 +23,31 @@ export function decodeUsableWorkflow(json: string): Workflow {
+ }
+ 
+ function projectRecipe(recipe: Field["recipe"]): Field["recipe"] {
+   if (recipe?.kind === "copy") return { kind: "copy", source: recipe.source };
+   if (recipe?.kind === "constant") {
+     const value = recipe.value;
+     if (value.kind === "text") return { kind: "constant", value: { kind: "text", text: value.text } };
+     if (value.kind === "number") return { kind: "constant", value: { kind: "number", decimal: value.decimal } };
+     if (value.kind === "blank") return { kind: "constant", value: { kind: "blank" } };
+   }
++  if (recipe?.kind === "split") return {
++    kind: "split", source: recipe.source, delimiter: recipe.delimiter,
++    segments: recipe.segments, index: recipe.index, trim: recipe.trim,
++    optionalEmpty: [...recipe.optionalEmpty],
++  };
++  if (recipe?.kind === "combine") return {
++    kind: "combine", separator: recipe.separator,
++    components: recipe.components.map((c) => c.kind === "source"
++      ? { kind: "source", source: c.source }
++      : { kind: "literal", text: c.text }),
++  };
+   // Leave unsupported/malformed variants for the shared validators to reject.
+   return recipe;
+ }
+ 
+ /** An independent configuration-only editor snapshot; no source data is consulted. */
+ export function snapshotWorkflow(workflow: Workflow): Workflow {
+   const projection = {
+     version: workflow.version,
+     id: workflow.id,
+     ...(workflow.name !== undefined ? { name: workflow.name } : {}),
+diff --git a/tests/e2e/helpers.ts b/tests/e2e/helpers.ts
+index bd280f0..e6a84b2 100644
+--- a/tests/e2e/helpers.ts
++++ b/tests/e2e/helpers.ts
+@@ -94,10 +94,19 @@ export async function download(page: Page) {
+   const pending = page.waitForEvent("download");
+   await page
+     .getByRole("button", { name: "Download converted CSV", exact: true })
+     .click();
+   const result = await pending;
+   expect(result.suggestedFilename()).toBe("converted.csv");
+   const path = await result.path();
+   expect(path).not.toBeNull();
+   return readFile(path!);
+ }
++
++export async function splitField(page: Page, header: string, source: string, position: number, trim = true) {
++  await edit(page, header);
++  await page.getByLabel("Split a source column", { exact: true }).check();
++  await page.getByLabel("Split source", { exact: true }).selectOption(source);
++  await page.getByLabel("Use segment number", { exact: true }).fill(String(position));
++  if (trim) await page.getByLabel("Trim whitespace around each segment", { exact: true }).check();
++  await closeSettings(page);
++}
+diff --git a/tests/e2e/performance.spec.ts b/tests/e2e/performance.spec.ts
+index 80bd1b3..ae038a2 100644
+--- a/tests/e2e/performance.spec.ts
++++ b/tests/e2e/performance.spec.ts
+@@ -2,20 +2,21 @@ import { test, expect } from "@playwright/test";
+ import {
+   upload,
+   add,
+   map,
+   preview,
+   download,
+   mapForPerformance,
+   fixed,
+   edit,
+   closeSettings,
++  splitField,
+ } from "./helpers";
+ import Papa from "papaparse";
+ import { readFile } from "node:fs/promises";
+ test("10000 U3 rows preserve every fixed value, exact decimal, trim result and original reference", async ({ page }) => {
+   test.setTimeout(120000);
+   await page.goto("/");
+   await upload(page, "ID,Name\r\n" + Array.from({ length: 10000 }, (_, i) => `${String(i).padStart(6, "0")},  Dock  ${i}  `).join("\r\n"));
+   await add(page, ["Reference", "CustomerCode", "Weight", "Blank", "Name"]);
+   await map(page, "Reference", "id");
+   await fixed(page, "CustomerCode", "text", "0012");
+@@ -256,10 +257,33 @@ test("499 x 20 import to preview stays under the one-second smoke budget", async
+         environment:
+           "cloud runner; UI automation overhead included; reference laptop pending",
+       },
+       null,
+       2,
+     ),
+     contentType: "application/json",
+   });
+   expect(warm[4]).toBeLessThan(1000);
+ });
++
++
++test("10000 U6 rows preserve every split and combined empty component", async ({ page }, testInfo) => {
++  test.setTimeout(120000);
++  const lines = Array.from({ length: 10000 }, (_, i) => `${String(i).padStart(6, "0")},"${i} Main St, Vancouver, BC, V5K 0A1"`);
++  const csv = "ID,Address\r\n" + lines.join("\r\n") + "\r\n";
++  await page.goto("/"); await upload(page, csv);
++  await add(page, ["City", "Label"]);
++  await splitField(page, "City", "address", 2);
++  await edit(page, "Label");
++  await page.getByLabel("Combine sources and text", { exact: true }).check();
++  await page.getByLabel("Component 1 source", { exact: true }).selectOption("id");
++  await page.getByLabel("Combination separator", { exact: true }).fill("|");
++  await closeSettings(page);
++  const start = performance.now();
++  await upload(page, csv); await preview(page);
++  const bytes = await download(page), elapsed = performance.now() - start;
++  const expected = "City,Label\r\n" + Array.from({ length: 10000 }, (_, i) => `Vancouver,${String(i).padStart(6, "0")}|\r\n`).join("");
++  expect(bytes).toEqual(Buffer.from(expected));
++  await expect(page.getByLabel("Full dataset counts")).toContainText("10000");
++  await testInfo.attach("u6-timings.json", { body: JSON.stringify({ rows: 10000, repeatImportThroughDownloadMs: elapsed, environment: "Codex cloud runner; not reference-laptop qualification" }), contentType: "application/json" });
++  expect(elapsed).toBeLessThan(5000);
++});
+diff --git a/tests/e2e/privacy.spec.ts b/tests/e2e/privacy.spec.ts
+index fbda5b8..73a524a 100644
+--- a/tests/e2e/privacy.spec.ts
++++ b/tests/e2e/privacy.spec.ts
+@@ -1,13 +1,13 @@
+ import { test, expect } from "@playwright/test";
+ import { readdir } from "node:fs/promises";
+-import { upload, add, map, preview, download, rename, move, fixed, edit, closeSettings } from "./helpers";
++import { upload, add, map, preview, download, rename, move, fixed, edit, closeSettings, splitField } from "./helpers";
+ test("production journey sends no customer values, file names or IDs and stores no source data", async ({
+   context,
+   page,
+ }) => {
+   const sentinel = "PRIVATE_U2_SENTINEL_9X";
+   const headerSentinel = "PRIVATE_U2_HEADER_SENTINEL_Z7";
+   const constantSentinel = "PRIVATE_U3_FIXED_SENTINEL_Q82";
+   const privateValues = [sentinel, headerSentinel, constantSentinel];
+   const unexpected: string[] = [];
+   const seen: string[] = [];
+@@ -74,20 +74,32 @@ test("production journey sends no customer values, file names or IDs and stores
+   await edit(page, "CustomerCode");
+   await page.getByLabel("Remove leading and trailing whitespace").check();
+   await closeSettings(page);
+   await page.getByLabel("CSV delimiter", { exact: true }).selectOption(";");
+   await page.getByLabel("Include UTF-8 BOM").check();
+   await page.getByLabel("Include header row").uncheck();
+   await preview(page);
+   const configuredBytes = await download(page);
+   expect(configuredBytes.subarray(0, 3)).toEqual(Buffer.from([239, 187, 191]));
+   expect(configuredBytes.toString()).toContain(`;${constantSentinel}\r\n`);
++  await add(page, ["Split reference", "Combined reference"]);
++  await splitField(page, "Split reference", "id", 3);
++  await edit(page, "Split reference");
++  await page.getByLabel("Split delimiter", { exact: true }).fill("_");
++  await closeSettings(page);
++  await edit(page, "Combined reference");
++  await page.getByLabel("Combine sources and text", { exact: true }).check();
++  await page.getByLabel("Component 1 source", { exact: true }).selectOption("id");
++  await page.getByLabel("Component 2 text", { exact: true }).fill(constantSentinel);
++  await page.getByLabel("Combination separator", { exact: true }).fill("|");
++  await closeSettings(page);
++  expect((await download(page)).toString()).toContain(`${sentinel}|${constantSentinel}`);
+   await page.getByLabel("Show only rows with exceptions").check();
+   await expect(page.getByLabel("Full dataset counts")).toBeVisible();
+   const storage = await page.evaluate(async () => ({
+     local: Object.keys(localStorage),
+     session: Object.keys(sessionStorage),
+     dbs: await indexedDB.databases(),
+     caches: await caches.keys(),
+   }));
+   expect(storage.local).toEqual([]); expect(storage.session).toEqual([]); expect(storage.caches).toEqual([]);
+   expect(storage.dbs.map((db) => db.name)).toEqual(["operations-data-cleaner-workflows"]);
+diff --git a/tests/unit/workflow-roundtrip.test.ts b/tests/unit/workflow-roundtrip.test.ts
+index 5c5d456..8f8263c 100644
+--- a/tests/unit/workflow-roundtrip.test.ts
++++ b/tests/unit/workflow-roundtrip.test.ts
+@@ -51,22 +51,20 @@ test("untrusted JSON rejects versions, budgets, nested injection and malformed r
+     { ...golden(), output: { ...golden().output, safetyChoice: 'raw' } },
+     { ...golden(), fields: [{ ...golden().fields[0], sample: 'private' }] },
+     { ...golden(), fields: [{ ...golden().fields[0], recipe: { kind: 'script', code: '1' } }] },
+     { ...golden(), fields: [{ ...golden().fields[0], recipe: { kind: 'constant', value: { kind: 'number', decimal: 'NaN' } } }] },
+   ]) expect(() => decodeUsableWorkflow(JSON.stringify(injected))).toThrow(/structure/);
+ });
+ 
+ test("declared future capabilities decode structurally but fail the usable boundary", () => {
+   const variants: Workflow[] = [];
+   for (const recipe of [
+-    { kind: 'split', source: 'order', delimiter: '-', segments: 2, index: 0, trim: false, optionalEmpty: [] },
+-    { kind: 'combine', components: [{ kind: 'source', source: 'order' }, { kind: 'literal', text: 'x' }], separator: ' ' },
+     { kind: 'calculate', operation: 'add', left: { kind: 'source', source: 'order' }, right: { kind: 'number', decimal: '1' } },
+   ]) variants.push(decodeWorkflow(JSON.stringify({ ...golden(), fields: [{ ...golden().fields[0], recipe }], source: { ...golden().source, referencedHeaders: ['order'] } })));
+   for (const change of [{ type: 'date', date: { source: 'YYYY-MM-DD', target: 'MM/DD/YYYY' } }, { rounding: { mode: 'half-up', places: 2 } }, { scale: 2 }, { wholeNumber: false }])
+     variants.push(decodeWorkflow(JSON.stringify({ ...golden(), fields: [{ ...golden().fields[0], ...change }] })));
+   variants.push({ ...golden(), source: { ...golden().source, format: 'xlsx' } }, { ...golden(), output: { ...golden().output, format: 'xlsx' } });
+   for (const w of variants) expect(() => decodeUsableWorkflow(JSON.stringify(w))).toThrow(/unsupported/i);
+ });
+ 
+ test("usable configuration rejects unfinished, conflicting and inconsistent declarations", () => {
+   const bad: Workflow[] = [];
+diff --git a/tests/unit/workflow.test.ts b/tests/unit/workflow.test.ts
+index 8f534f6..cd08fe7 100644
+--- a/tests/unit/workflow.test.ts
++++ b/tests/unit/workflow.test.ts
+@@ -26,37 +26,20 @@ test("strict versioned schema rejects extra executable properties and unknown ve
+   expect(() =>
+     decodeWorkflow(JSON.stringify({ ...copy(), script: "alert(1)" })),
+   ).toThrow(/structure/);
+   expect(() => decodeWorkflow("[".repeat(21) + "0" + "]".repeat(21))).toThrow(
+     /nesting/,
+   );
+   expect(() => decodeWorkflow(" ".repeat(1024 * 1024 + 1))).toThrow(/1 MiB/);
+ });
+ test("finite grammar accepts future variants but never executes unsupported recipes", () => {
+   const variants = [
+-    {
+-      kind: "split",
+-      source: "id",
+-      delimiter: ",",
+-      segments: 2,
+-      index: 0,
+-      trim: false,
+-      optionalEmpty: [],
+-    },
+-    {
+-      kind: "combine",
+-      components: [
+-        { kind: "source", source: "id" },
+-        { kind: "literal", text: "x" },
+-      ],
+-      separator: " ",
+-    },
+     {
+       kind: "calculate",
+       operation: "divide",
+       left: { kind: "source", source: "id" },
+       right: { kind: "number", decimal: "4" },
+     },
+   ];
+   for (const recipe of variants) {
+     const w = { ...copy(), fields: [{ ...copy().fields[0], recipe }] };
+     expect(workflowSchema.safeParse(w).success).toBe(true);
+
+UNTRACKED NEW src/ui/TextRecipeSettings.tsx
+import type { Field } from "../engine/workflow";
+import type { SourceColumn } from "../engine/values";
+
+type Recipe = NonNullable<Field["recipe"]>;
+type Props = { recipe: Extract<Recipe, { kind: "split" | "combine" }>; columns: SourceColumn[]; change: (recipe: Recipe) => void };
+
+export default function TextRecipeSettings({ recipe, columns, change }: Props) {
+  const sources = columns.map((c) => <option key={c.key} value={c.key}>{c.header}</option>);
+  if (recipe.kind === "split") return (
+    <fieldset className="text-recipe">
+      <legend>Split a source into segments</legend>
+      <label>Split source
+        <select aria-label="Split source" value={recipe.source} onChange={(e) => change({ ...recipe, source: e.target.value })}>
+          <option value="">Choose a source</option>{sources}
+        </select>
+      </label>
+      <label>Split delimiter
+        <input maxLength={4096} value={recipe.delimiter} onChange={(e) => change({ ...recipe, delimiter: e.target.value })} />
+      </label>
+      <div className="recipe-grid">
+        <label>Expected segment count
+          <input type="number" min={1} max={100} value={recipe.segments} onChange={(e) => change({ ...recipe, segments: Number(e.target.value) })} />
+        </label>
+        <label>Use segment number
+          <input type="number" min={1} max={recipe.segments} value={recipe.index + 1} onChange={(e) => change({ ...recipe, index: Number(e.target.value) - 1 })} />
+        </label>
+      </div>
+      <label className="check"><input type="checkbox" checked={recipe.trim} onChange={(e) => change({ ...recipe, trim: e.target.checked })} />Trim whitespace around each segment</label>
+      <fieldset className="optional-segments">
+        <legend>Allow empty positions (optional)</legend>
+        {Array.from({ length: Math.min(100, Math.max(0, recipe.segments)) }, (_, index) => (
+          <label className="check" key={index}>
+            <input type="checkbox" checked={recipe.optionalEmpty.includes(index)} onChange={(e) => change({ ...recipe, optionalEmpty: e.target.checked ? [...recipe.optionalEmpty, index] : recipe.optionalEmpty.filter((i) => i !== index) })} />
+            Segment {index + 1} may be empty
+          </label>
+        ))}
+      </fieldset>
+      <p className="helper">The count must match exactly. Keep delimiters for empty positions, such as a,,c,d. All other positions must contain text. Each output reads the original source independently.</p>
+    </fieldset>
+  );
+  const update = (index: number, component: typeof recipe.components[number]) =>
+    change({ ...recipe, components: recipe.components.map((c, i) => i === index ? component : c) });
+  const move = (index: number, direction: number) => {
+    const components = [...recipe.components];
+    const next = index + direction;
+    [components[index], components[next]] = [components[next], components[index]];
+    change({ ...recipe, components });
+  };
+  return (
+    <fieldset className="text-recipe">
+      <legend>Combine in this order</legend>
+      <label>Combination separator
+        <input maxLength={4096} value={recipe.separator} onChange={(e) => change({ ...recipe, separator: e.target.value })} />
+      </label>
+      <ol className="component-list">
+        {recipe.components.map((component, index) => (
+          <li key={index}>
+            <fieldset>
+              <legend>Component {index + 1}</legend>
+              <label>Component {index + 1} type
+                <select aria-label={`Component ${index + 1} type`} value={component.kind} onChange={(e) => update(index, e.target.value === "source" ? { kind: "source", source: "" } : { kind: "literal", text: "" })}>
+                  <option value="source">Source column</option><option value="literal">Literal text</option>
+                </select>
+              </label>
+              {component.kind === "source" ? <label>Component {index + 1} source
+                <select aria-label={`Component ${index + 1} source`} value={component.source} onChange={(e) => update(index, { kind: "source", source: e.target.value })}>
+                  <option value="">Choose a source</option>{sources}
+                </select>
+              </label> : <label>Component {index + 1} text
+                <textarea aria-label={`Component ${index + 1} text`} rows={2} maxLength={4096} value={component.text} onChange={(e) => update(index, { kind: "literal", text: e.target.value })} />
+              </label>}
+              <div className="component-actions">
+                <button disabled={index === 0} aria-label={`Move component ${index + 1} up`} onClick={() => move(index, -1)}>↑ Up</button>
+                <button disabled={index === recipe.components.length - 1} aria-label={`Move component ${index + 1} down`} onClick={() => move(index, 1)}>↓ Down</button>
+                <button disabled={recipe.components.length <= 2} aria-label={`Remove component ${index + 1}`} onClick={() => change({ ...recipe, components: recipe.components.filter((_, i) => i !== index) })}>Remove</button>
+              </div>
+            </fieldset>
+          </li>
+        ))}
+      </ol>
+      <button disabled={recipe.components.length >= 100} onClick={() => change({ ...recipe, components: [...recipe.components, { kind: "source", source: "" }] })}>Add source component</button>{" "}
+      <button disabled={recipe.components.length >= 100} onClick={() => change({ ...recipe, components: [...recipe.components, { kind: "literal", text: "" }] })}>Add literal component</button>
+      <p className="helper">At least two components. Empty sources and empty literals keep their position and separator. Text and spacing stay exact unless output trimming is enabled.</p>
+    </fieldset>
+  );
+}
+
+UNTRACKED NEW tests/e2e/address-recipes.spec.ts
+import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+import { readFile } from "node:fs/promises";
+import { add, closeSettings, download, edit, preview, splitField, upload } from "./helpers";
+
+async function configure(page: Parameters<typeof add>[0]) {
+  await add(page, ["Street", "City", "Province", "Postal", "Label"]);
+  for (const [i, header] of ["Street", "City", "Province", "Postal"].entries()) await splitField(page, header, "address", i + 1);
+  await edit(page, "Label");
+  await page.getByLabel("Combine sources and text", { exact: true }).check();
+  await page.getByLabel("Component 1 source", { exact: true }).selectOption("id");
+  await page.getByLabel("Component 2 text", { exact: true }).fill("Dock");
+  await page.getByRole("button", { name: "Add source component", exact: true }).click();
+  await page.getByLabel("Component 3 source", { exact: true }).selectOption("empty");
+  await page.getByLabel("Combination separator", { exact: true }).fill(" | ");
+  await page.getByRole("button", { name: "Move component 2 up", exact: true }).click();
+  await expect(page.getByLabel("Component 1 text", { exact: true })).toHaveValue("Dock");
+  await page.getByRole("button", { name: "Move component 1 down", exact: true }).click();
+  await closeSettings(page);
+  await preview(page);
+}
+const expected = "Street,City,Province,Postal,Label\r\n123 Main St,Vancouver,BC,V5K 0A1,001234 | Dock | \r\n";
+
+test("AC-03/04 contextual split/combine, saved reuse and fresh-context JSON preserve exact output", async ({ page, browser }) => {
+  await page.goto("/");
+  await upload(page, await readFile("tests/fixtures/addresses/source.csv", "utf8"));
+  await configure(page);
+  expect((await download(page)).toString()).toBe(expected);
+  await expect(page.locator(".pair")).toHaveCount(5);
+  await expect(page.locator(".source-grid [data-source-key=address]")).toContainText("Used in 4 outputs");
+  await expect(page.locator(".source-grid [data-source-key=id]")).toContainText("Used in 1 output");
+  await page.getByLabel("Workflow name", { exact: true }).fill("Synthetic address workflow");
+  await page.getByRole("button", { name: "Save workflow", exact: true }).click();
+  await expect(page.getByText("Saved in this browser.", { exact: true })).toBeVisible();
+  const saved = await page.getByLabel("Saved workflows", { exact: true }).inputValue();
+  const event = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download workflow", exact: true }).click();
+  const file = await event, json = await readFile((await file.path())!, "utf8");
+  expect(json).not.toMatch(/123 Main St|001234|synthetic.csv/);
+  expect(JSON.parse(json).source.referencedHeaders).toEqual(["address", "id", "empty"]);
+  await page.reload();
+  await page.getByLabel("Saved workflows", { exact: true }).selectOption(saved);
+  await page.getByRole("button", { name: "Open workflow", exact: true }).click();
+  const reordered = 'Empty,Extra, ADDRESS , ID \n,unused,"123 Main St, Vancouver, BC, V5K 0A1",001234';
+  await upload(page, reordered);
+  expect((await download(page)).toString()).toBe(expected);
+  await expect(page.getByRole("heading", { name: "2. Match your columns", exact: true })).not.toBeVisible();
+  const fresh = await browser.newContext({ baseURL: "http://127.0.0.1:4173", serviceWorkers: "block" });
+  try {
+    const next = await fresh.newPage(); await next.goto("/");
+    await next.getByLabel("Import workflow", { exact: true }).setInputFiles({ name: "synthetic-u6.json", mimeType: "application/json", buffer: Buffer.from(json) });
+    await upload(next, reordered);
+    expect((await download(next)).toString()).toBe(expected);
+    await upload(next, 'ID,Empty,Address renamed\n001234,,"a,b,c,d"');
+    await expect(next.getByRole("alert")).toContainText("missing");
+    await expect(next.getByRole("button", { name: "Download converted CSV", exact: true })).toBeDisabled();
+  } finally { await fresh.close(); }
+});
+
+test("strict count and optional empty slots show row/field errors and block invalid download", async ({ page }) => {
+  await page.goto("/");
+  await upload(page, 'Address\n"123 Main St, Vancouver, BC, V5K 0A1, extra"\n"123 Main St, BC, V5K 0A1"\n"123 Main St,,BC,V5K 0A1"');
+  await add(page, ["Street"]);
+  await splitField(page, "Street", "address", 1);
+  await page.getByLabel("Show only rows with exceptions").check();
+  await expect(page.locator(".issues")).toContainText("Record 2, line 2: Street: expected 4 segments but found 5.");
+  await expect(page.locator(".issues")).toContainText("Record 3, line 3: Street: expected 4 segments but found 3.");
+  await expect(page.locator(".issues")).toContainText("Record 4, line 4: Street: required segment 2 is empty.");
+  await expect(page.getByRole("button", { name: "Download converted CSV", exact: true })).toBeDisabled();
+  await edit(page, "Street");
+  await page.getByLabel("Segment 2 may be empty", { exact: true }).check();
+  await closeSettings(page);
+  await expect(page.getByLabel("Full dataset counts")).toContainText("Invalid");
+  await upload(page, 'Address\n"123 Main St,,BC,V5K 0A1"');
+  expect((await download(page)).toString()).toBe("Street\r\n123 Main St\r\n");
+});
+
+test("keyboard recipe controls retain paired-card ordering, literal-only combinations and mobile accessibility", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/"); await upload(page, "ID\n001234"); await add(page, ["Label"]);
+  const editButton = page.getByRole("button", { name: "Edit Label", exact: true });
+  await editButton.focus(); await page.keyboard.press("Enter");
+  await page.getByLabel("Combine sources and text", { exact: true }).check();
+  await page.getByLabel("Component 1 type", { exact: true }).selectOption("literal");
+  await page.getByLabel("Component 1 text", { exact: true }).fill("0012");
+  await page.getByLabel("Combination separator", { exact: true }).fill(";");
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await closeSettings(page); await expect(editButton).toBeFocused();
+  expect((await download(page)).toString()).toBe("Label\r\n0012;\r\n");
+  expect(await page.locator("html").evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
+  await page.getByRole("button", { name: "Unlink Label", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Select output Label", exact: true })).toContainText("Unmatched");
+});
+
+UNTRACKED NEW tests/unit/split-combine.test.ts
+import { expect, test } from "vitest";
+import { makeWorkflow, type Workflow } from "../../src/engine/workflow";
+import { evaluate } from "../../src/engine/recipes";
+import { displayValue } from "../../src/engine/values";
+import { parseCsv, serializeCsv } from "../../src/formats/csv";
+import { decodeUsableWorkflow, encodeWorkflow } from "../../src/workflows/codec";
+const parse = (csv: string) => parseCsv(new TextEncoder().encode(csv), ",", "synthetic");
+const split = (): Workflow => {
+  const w = makeWorkflow(["Street", "City", "Province", "Postal"]);
+  w.fields.forEach((f, index) => { f.recipe = { kind: "split", source: "address", delimiter: ",", segments: 4, index, trim: true, optionalEmpty: [] }; });
+  return w;
+};
+
+test("AC-03 independent split destinations produce exact trimmed CSV and retain original provenance", () => {
+  const w = split();
+  const source = parse('Address\r\n"123 Main St, Vancouver, BC, V5K 0A1"\r\n');
+  const run = evaluate(w, source);
+  expect(run.workflowIssues).toEqual([]);
+  expect(run.rows[0].values.map(displayValue)).toEqual(["123 Main St", "Vancouver", "BC", "V5K 0A1"]);
+  expect(Buffer.from(serializeCsv(w, run, undefined)).toString()).toBe("Street,City,Province,Postal\r\n123 Main St,Vancouver,BC,V5K 0A1\r\n");
+  expect(run.rows[0].provenance).toEqual(w.fields.map((f, segment) => ({ field: f.id, row: "synthetic:2", source: "address", segment, segmentTrim: true })));
+  expect(source.rows[0].cells[0].raw).toBe("123 Main St, Vancouver, BC, V5K 0A1");
+});
+
+test("strict segment count rejects extra and missing segments with actionable row/field/source references", () => {
+  const run = evaluate(split(), parse('Address\n"a,b,c,d,e"\n"a,b,c"'));
+  expect(run.workflowIssues).toEqual([]);
+  expect(run.summary.invalid).toBe(2);
+  run.rows.forEach((row, i) => {
+    expect(row.values.map(displayValue)).toEqual(["", "", "", ""]);
+    expect(row.issues).toHaveLength(4);
+    expect(row.issues[0]).toMatchObject({ code: "split-count", scope: "row", severity: "error", row: row.id, record: i + 2, line: i + 2, field: "field-0", source: "address" });
+    expect(row.issues[0].reason).toMatch(/expected 4.*found [35]/i);
+    expect(row.issues[0].action).toMatch(/delimiter|segment/i);
+  });
+});
+
+test("only explicitly optional empty positions succeed, without shifting or guessing missing delimiters", () => {
+  const w = split();
+  w.fields.forEach((f) => { if (f.recipe?.kind === "split") f.recipe.optionalEmpty = [1]; });
+  const run = evaluate(w, parse('Address\n"a,,c,d"\n"a, ,c,d"\n"a,b,,d"\n"a,c,d"'));
+  expect(run.rows.map((r) => r.status)).toEqual(["valid", "valid", "invalid", "invalid"]);
+  expect(run.rows[0].values.map(displayValue)).toEqual(["a", "", "c", "d"]);
+  expect(run.rows[2].issues[0]).toMatchObject({ code: "split-empty" });
+  expect(run.rows[2].issues[0].reason).toMatch(/segment 3/i);
+  w.fields[1].required = true;
+  expect(evaluate(w, parse('Address\n"a,,c,d"')).rows[0].issues).toContainEqual(expect.objectContaining({ code: "required", field: "field-1" }));
+});
+
+test("literal multi-character delimiters and trimming are explicit, including unselected empty segments", () => {
+  const w = split(); w.fields = [w.fields[0]];
+  w.fields[0].recipe = { kind: "split", source: "address", delimiter: ".*", segments: 2, index: 1, trim: false, optionalEmpty: [] };
+  expect(evaluate(w, parse('Address\n left .* right ')).rows[0].values.map(displayValue)).toEqual([" right "]);
+  expect(evaluate(w, parse('Address\n.*right')).rows[0].status).toBe("invalid");
+  w.fields[0].trim = true;
+  expect(evaluate(w, parse('Address\n left .* right ')).rows[0].values.map(displayValue)).toEqual(["right"]);
+});
+
+const combine = () => {
+  const w = makeWorkflow(["Combined"]);
+  w.fields[0].recipe = { kind: "combine", components: [{ kind: "source", source: "id" }, { kind: "literal", text: "" }, { kind: "source", source: "empty" }, { kind: "literal", text: "Dock" }, { kind: "source", source: "id" }], separator: " | " };
+  return w;
+};
+test("AC-04 ordered source/literal combination preserves repeats, empty positions and exact whitespace", () => {
+  const w = combine(), run = evaluate(w, parse("ID,Empty\n0012,"));
+  expect(run.workflowIssues).toEqual([]);
+  expect(run.rows[0].values.map(displayValue)).toEqual(["0012 |  |  | Dock | 0012"]);
+  expect(Buffer.from(serializeCsv(w, run, undefined)).toString()).toBe("Combined\r\n0012 |  |  | Dock | 0012\r\n");
+  expect(run.rows[0].provenance).toHaveLength(5);
+  expect(run.rows[0].provenance.map((p) => 'source' in p ? p.source : displayValue(p.constant))).toEqual(["id", "", "empty", "Dock", "id"]);
+  if (w.fields[0].recipe?.kind === "combine") w.fields[0].recipe.separator = "";
+  expect(evaluate(w, parse("ID,Empty\n0012,")).rows[0].values.map(displayValue)).toEqual(["0012Dock0012"]);
+});
+
+test("new recipes use existing required/max-length/formula safety and missing-header rules", () => {
+  const w = combine();
+  w.fields[0].maxLength = 2;
+  expect(evaluate(w, parse("ID,Empty\n=1,")).rows[0].issues.map((i) => i.code)).toEqual(["max-length", "csv-risk"]);
+  expect(evaluate(w, parse("Renamed,Empty\n1,")).workflowIssues.map((i) => i.code)).toEqual(["missing-header"]);
+  w.fields[0].recipe = { kind: "combine", components: [{ kind: "literal", text: "" }, { kind: "literal", text: "" }], separator: "" };
+  w.fields[0].required = true;
+  expect(evaluate(w, parse("ID\nx")).rows[0].issues[0].code).toBe("required");
+});
+
+test("split and combine portable snapshots retain settings and detach configuration without source data", () => {
+  const w = split(); w.fields.push({ ...combine().fields[0], id: "combined" });
+  const encoded = encodeWorkflow(w), restored = decodeUsableWorkflow(encoded);
+  expect(restored.source.referencedHeaders).toEqual(["address", "id", "empty"]);
+  expect(restored.fields).toEqual(w.fields);
+  expect(encoded).not.toMatch(/synthetic:|123 Main|filename/);
+  const source = parse('ID,Empty,Address,Unused\n0012,,"123 Main St, Vancouver, BC, V5K 0A1",x');
+  expect(evaluate(restored, source).rows[0].values.map(displayValue)).toEqual(["123 Main St", "Vancouver", "BC", "V5K 0A1", "0012 |  |  | Dock | 0012"]);
+  if (w.fields[0].recipe?.kind === "split") w.fields[0].recipe.optionalEmpty.push(0);
+  expect(restored.fields[0].recipe).toMatchObject({ optionalEmpty: [] });
+});
+
+test("malformed split/combine and output dependencies fail before evaluation or storage", () => {
+  const w = split();
+  for (const patch of [{ index: 4 }, { optionalEmpty: [4] }, { optionalEmpty: [1,1] }, { delimiter: "" }]) {
+    const bad = structuredClone(w); Object.assign(bad.fields[0].recipe!, patch);
+    expect(evaluate(bad, parse("Address\nx")).workflowIssues.length).toBeGreaterThan(0);
+    expect(() => encodeWorkflow(bad)).toThrow();
+  }
+  for (const recipe of [
+    { kind: "split", source: "address", output: "field-0", delimiter: ",", segments: 4, index: 0, trim: false, optionalEmpty: [] },
+    { kind: "combine", components: [{ kind: "output", field: "field-0" }, { kind: "literal", text: "x" }], separator: " " },
+    { kind: "combine", components: [{ kind: "literal", text: "x" }], separator: " " },
+  ]) expect(() => decodeUsableWorkflow(JSON.stringify({ ...w, fields: [{ ...w.fields[0], recipe }] }))).toThrow();
+});
+
+UNTRACKED NEW tests/fixtures/addresses/source.csv
+ID,Address,Empty
+001234,"123 Main St, Vancouver, BC, V5K 0A1",

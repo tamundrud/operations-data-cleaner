@@ -34,23 +34,6 @@ test("strict versioned schema rejects extra executable properties and unknown ve
 test("finite grammar accepts future variants but never executes unsupported recipes", () => {
   const variants = [
     {
-      kind: "split",
-      source: "id",
-      delimiter: ",",
-      segments: 2,
-      index: 0,
-      trim: false,
-      optionalEmpty: [],
-    },
-    {
-      kind: "combine",
-      components: [
-        { kind: "source", source: "id" },
-        { kind: "literal", text: "x" },
-      ],
-      separator: " ",
-    },
-    {
       kind: "calculate",
       operation: "divide",
       left: { kind: "source", source: "id" },

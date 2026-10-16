@@ -58,8 +58,6 @@ test("untrusted JSON rejects versions, budgets, nested injection and malformed r
 test("declared future capabilities decode structurally but fail the usable boundary", () => {
   const variants: Workflow[] = [];
   for (const recipe of [
-    { kind: 'split', source: 'order', delimiter: '-', segments: 2, index: 0, trim: false, optionalEmpty: [] },
-    { kind: 'combine', components: [{ kind: 'source', source: 'order' }, { kind: 'literal', text: 'x' }], separator: ' ' },
     { kind: 'calculate', operation: 'add', left: { kind: 'source', source: 'order' }, right: { kind: 'number', decimal: '1' } },
   ]) variants.push(decodeWorkflow(JSON.stringify({ ...golden(), fields: [{ ...golden().fields[0], recipe }], source: { ...golden().source, referencedHeaders: ['order'] } })));
   for (const change of [{ type: 'date', date: { source: 'YYYY-MM-DD', target: 'MM/DD/YYYY' } }, { rounding: { mode: 'half-up', places: 2 } }, { scale: 2 }, { wholeNumber: false }])

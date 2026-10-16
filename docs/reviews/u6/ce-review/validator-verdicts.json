@@ -1,0 +1,10 @@
+{
+  "verdicts": [
+    {
+      "#": 1,
+      "status": "confirmed",
+      "protected_subject": null,
+      "reason": "The reachable UI sequence of enabling optional segment 4 and reducing the count from 4 to 3 preserves optionalEmpty:[3] in TextRecipeSettings.tsx:22 while line 31 hides its checkbox; MappingRows.tsx:95 and Workspace.tsx:98 pass that recipe through unchanged, so validation.ts:84 rejects the hidden position and recipes.ts:53 and workflows/codec.ts:5 block evaluation and saving; the new U6 editor introduces this path, confirmed by source inspection, with user incidence not measured."
+    }
+  ]
+}

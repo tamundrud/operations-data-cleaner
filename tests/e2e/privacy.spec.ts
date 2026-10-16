@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { readdir } from "node:fs/promises";
-import { upload, add, map, preview, download, rename, move, fixed, edit, closeSettings } from "./helpers";
+import { upload, add, map, preview, download, rename, move, fixed, edit, closeSettings, splitField } from "./helpers";
 test("production journey sends no customer values, file names or IDs and stores no source data", async ({
   context,
   page,
@@ -81,6 +81,18 @@ test("production journey sends no customer values, file names or IDs and stores 
   const configuredBytes = await download(page);
   expect(configuredBytes.subarray(0, 3)).toEqual(Buffer.from([239, 187, 191]));
   expect(configuredBytes.toString()).toContain(`;${constantSentinel}\r\n`);
+  await add(page, ["Split reference", "Combined reference"]);
+  await splitField(page, "Split reference", "id", 3);
+  await edit(page, "Split reference");
+  await page.getByLabel("Split delimiter", { exact: true }).fill("_");
+  await closeSettings(page);
+  await edit(page, "Combined reference");
+  await page.getByLabel("Combine sources and text", { exact: true }).check();
+  await page.getByLabel("Component 1 source", { exact: true }).selectOption("id");
+  await page.getByLabel("Component 2 text", { exact: true }).fill(constantSentinel);
+  await page.getByLabel("Combination separator", { exact: true }).fill("|");
+  await closeSettings(page);
+  expect((await download(page)).toString()).toContain(`${sentinel}|${constantSentinel}`);
   await page.getByLabel("Show only rows with exceptions").check();
   await expect(page.getByLabel("Full dataset counts")).toBeVisible();
   const storage = await page.evaluate(async () => ({
