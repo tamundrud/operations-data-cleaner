@@ -1,0 +1,5 @@
+{
+  "outcome": "verdicts",
+  "reason": "Fresh replacement validator completed after usage-limit interruption ended the original launch without output.",
+  "verdicts": "/tmp/compound-engineering-1000/ce-code-review/20261016-142646-122044e8/validator-verdicts.json"
+}

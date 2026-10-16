@@ -1,0 +1,86 @@
+[WebServer] (node:9545) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:9557) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/calculations.spec.ts:199:2 › numeric copy source retains rules when first choosing a source (6.2s)
+(node:9692) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [chromium] › tests/e2e/calculations.spec.ts:199:2 › numeric copy source retains rules when replacing a source (6.1s)
+
+
+  1) [chromium] › tests/e2e/calculations.spec.ts:199:2 › numeric copy source retains rules when first choosing a source
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator:  getByRole('combobox', { name: 'Output type', exact: true })
+    Expected: "number"
+    Received: "text"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveValue" getByRole('combobox', { name: 'Output type', exact: true }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Output type', exact: true })
+        14 × locator resolved to <select aria-label="Output type">…</select>
+           - unexpected value "text"
+
+
+      209 |   if (!initiallyMapped) {
+      210 |    await page.getByLabel('Copy source for Cases',{exact:true}).selectOption('original');
+    > 211 |    await expect(page.getByRole('combobox',{name:'Output type',exact:true})).toHaveValue('number');
+          |                                                                             ^
+      212 |   }
+      213 |   await page.getByLabel('Copy source for Cases',{exact:true}).selectOption('replacement');
+      214 |   await expect(page.getByRole('combobox',{name:'Output type',exact:true})).toHaveValue('number');
+        at /workspace/operations-data-cleaner/tests/e2e/calculations.spec.ts:211:77
+
+    Error Context: test-results/calculations-numeric-copy--88934-hen-first-choosing-a-source-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/calculations-numeric-copy--88934-hen-first-choosing-a-source-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/calculations-numeric-copy--88934-hen-first-choosing-a-source-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests/e2e/calculations.spec.ts:199:2 › numeric copy source retains rules when replacing a source
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator:  getByRole('combobox', { name: 'Output type', exact: true })
+    Expected: "number"
+    Received: "text"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveValue" getByRole('combobox', { name: 'Output type', exact: true }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Output type', exact: true })
+        14 × locator resolved to <select aria-label="Output type">…</select>
+           - unexpected value "text"
+
+
+      212 |   }
+      213 |   await page.getByLabel('Copy source for Cases',{exact:true}).selectOption('replacement');
+    > 214 |   await expect(page.getByRole('combobox',{name:'Output type',exact:true})).toHaveValue('number');
+          |                                                                            ^
+      215 |   await expect(page.getByLabel('Require whole numbers before rounding')).toBeChecked();
+      216 |   await expect(page.getByLabel('Maximum decimal places (optional)',{exact:true})).toHaveValue('0');
+      217 |   await expect(page.getByLabel('Rounding',{exact:true})).toHaveValue('half-up');
+        at /workspace/operations-data-cleaner/tests/e2e/calculations.spec.ts:214:76
+
+    Error Context: test-results/calculations-numeric-copy--c801d-les-when-replacing-a-source-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/calculations-numeric-copy--c801d-les-when-replacing-a-source-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/calculations-numeric-copy--c801d-les-when-replacing-a-source-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests/e2e/calculations.spec.ts:199:2 › numeric copy source retains rules when first choosing a source
+    [chromium] › tests/e2e/calculations.spec.ts:199:2 › numeric copy source retains rules when replacing a source

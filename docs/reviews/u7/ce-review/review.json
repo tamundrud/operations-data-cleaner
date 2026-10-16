@@ -1,0 +1,324 @@
+{
+  "status": "complete",
+  "verdict": "Ready with fixes",
+  "scope": {
+    "base": "8f0432d4e19b9f5e50f3c7446bcb426b2918ca55",
+    "branch": "feat/u7-exact-calculations",
+    "head_sha": "8f0432d4e19b9f5e50f3c7446bcb426b2918ca55",
+    "pr_url": null,
+    "files_changed": 41,
+    "mode": "standalone",
+    "snapshot": "Authoritative staged/working-tree snapshot in full.diff; head_sha identifies the dispatch base commit, not a committed U7 implementation."
+  },
+  "intent": "Implement U7 only: exact decimal add/subtract/multiply/divide using big.js, strict numeric interpretation, opt-in rounding and precision, whole-number validation before rounding, contextual paired-card numeric controls, and version-1 portable/local compatibility. Preserve U2-U6 local privacy, fidelity, saved workflows and revision safety; date/Excel/U8 changes are out of scope.",
+  "intent_confidence": "explicit",
+  "reviewers": [
+    "correctness",
+    "project-standards",
+    "testing",
+    "maintainability",
+    "security",
+    "performance",
+    "api-contract",
+    "adversarial"
+  ],
+  "findings": [
+    {
+      "#": 2,
+      "autofix_class": "manual",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/MappingRows.tsx:962:                       if (e.target.value) match(field.id, e.target.value);",
+        "src/ui/MappingRows.tsx:150:     update(id, { type: \"text\", recipe: { kind: \"copy\", source: key } });",
+        "src/ui/MappingRows.tsx:126-130: patch.type === \"text\" clears rounding, scale and wholeNumber in update().",
+        "src/ui/MappingRows.tsx:978-987: Copy outputs now expose an independent Output type selector, including Number.",
+        "src/engine/recipes.ts:196-199: Numeric validation is conditional on f.type === \"number\".",
+        "src/ui/MappingRows.tsx:128: rounding: undefined,; src/ui/MappingRows.tsx:129: scale: undefined,; src/ui/MappingRows.tsx:130: wholeNumber: undefined,; src/ui/MappingRows.tsx:150: update(id, { type: \"text\", recipe: { kind: \"copy\", source: key } });",
+        "Configure a copy from source A as number with wholeNumber=true, then choose source B through the Copy source selector. Its onChange invokes match(field.id, e.target.value), which supplies type=text; the new update branch deletes all numeric policies.",
+        "If B contains 1.5 or 'four', recipes.ts skips numeric validation because f.type is now text, leaving an optional destination valid and exportable. This crosses the source-selection/editor boundary into numeric validation and can silently change a saved workflow's business rule."
+      ],
+      "file": "src/ui/MappingRows.tsx",
+      "first_evidence": "src/ui/MappingRows.tsx:962:                       if (e.target.value) match(field.id, e.target.value);",
+      "independent_reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "line": 962,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Preserve an existing copy field's output type, wholeNumber, scale and rounding when selecting or replacing its source; reserve incompatible-policy clearing for an explicit output-type or recipe-mode transition. Add a regression scenario that configures a numeric copy before and after source selection, remaps it to fractional and nonnumeric data, and verifies the rules and invalid-row/export behavior remain intact.",
+      "title": "Preserve numeric settings when changing a copy source",
+      "why_it_matters": "A user can configure a copied output as Number with whole-number, scale and rounding rules, then change its Copy source dropdown. The dropdown calls match(), which always sets type to text; the new update logic also removes all numeric settings. The replacement source now bypasses numeric validation and exports as text, so a fractional or malformed value that should be invalid can become eligible without an explicit change to the output type or validation controls. The same reset is reachable when configuring Number before choosing the first copy source.",
+      "validation_status": "confirmed",
+      "validation_reason": "When a user selects Number and numeric policies through the newly added controls before selecting or replacing a copy source, MappingRows.tsx:962 calls match at line 150, which sets type=text and newly clears policies at lines 126-130; Workspace.tsx:95-102 retains that patch and recipes.ts:190-215 skips numeric checks, so fractional or nonnumeric replacement values can become valid, with UI reachability established by these handlers but incidence not measured."
+    }
+  ],
+  "actionable_findings": [
+    {
+      "#": 2,
+      "autofix_class": "manual",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/MappingRows.tsx:962:                       if (e.target.value) match(field.id, e.target.value);",
+        "src/ui/MappingRows.tsx:150:     update(id, { type: \"text\", recipe: { kind: \"copy\", source: key } });",
+        "src/ui/MappingRows.tsx:126-130: patch.type === \"text\" clears rounding, scale and wholeNumber in update().",
+        "src/ui/MappingRows.tsx:978-987: Copy outputs now expose an independent Output type selector, including Number.",
+        "src/engine/recipes.ts:196-199: Numeric validation is conditional on f.type === \"number\".",
+        "src/ui/MappingRows.tsx:128: rounding: undefined,; src/ui/MappingRows.tsx:129: scale: undefined,; src/ui/MappingRows.tsx:130: wholeNumber: undefined,; src/ui/MappingRows.tsx:150: update(id, { type: \"text\", recipe: { kind: \"copy\", source: key } });",
+        "Configure a copy from source A as number with wholeNumber=true, then choose source B through the Copy source selector. Its onChange invokes match(field.id, e.target.value), which supplies type=text; the new update branch deletes all numeric policies.",
+        "If B contains 1.5 or 'four', recipes.ts skips numeric validation because f.type is now text, leaving an optional destination valid and exportable. This crosses the source-selection/editor boundary into numeric validation and can silently change a saved workflow's business rule."
+      ],
+      "file": "src/ui/MappingRows.tsx",
+      "first_evidence": "src/ui/MappingRows.tsx:962:                       if (e.target.value) match(field.id, e.target.value);",
+      "independent_reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "line": 962,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Preserve an existing copy field's output type, wholeNumber, scale and rounding when selecting or replacing its source; reserve incompatible-policy clearing for an explicit output-type or recipe-mode transition. Add a regression scenario that configures a numeric copy before and after source selection, remaps it to fractional and nonnumeric data, and verifies the rules and invalid-row/export behavior remain intact.",
+      "title": "Preserve numeric settings when changing a copy source",
+      "why_it_matters": "A user can configure a copied output as Number with whole-number, scale and rounding rules, then change its Copy source dropdown. The dropdown calls match(), which always sets type to text; the new update logic also removes all numeric settings. The replacement source now bypasses numeric validation and exports as text, so a fractional or malformed value that should be invalid can become eligible without an explicit change to the output type or validation controls. The same reset is reachable when configuring Number before choosing the first copy source.",
+      "validation_status": "confirmed",
+      "validation_reason": "When a user selects Number and numeric policies through the newly added controls before selecting or replacing a copy source, MappingRows.tsx:962 calls match at line 150, which sets type=text and newly clears policies at lines 126-130; Workspace.tsx:95-102 retains that patch and recipes.ts:190-215 skips numeric checks, so fractional or nonnumeric replacement values can become valid, with UI reachability established by these handlers but incidence not measured."
+    }
+  ],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "requirements_completeness": {
+    "plan_path": "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "plan_source": "explicit",
+    "scope": "U7 only; later units and date/Excel work excluded.",
+    "requirements": [
+      {
+        "id": "R3",
+        "status": "met",
+        "detail": "U7 exact arithmetic and explicit precision/rounding are implemented in decimal.ts, recipes.ts and numeric controls, with exact-string/CSV and rounding tests."
+      },
+      {
+        "id": "R4",
+        "status": "partially addressed",
+        "detail": "Numeric parsing, whole-number-before-rounding and scale validation are implemented; confirmed #2 permits source selection to clear configured numeric rules."
+      }
+    ],
+    "implementation_units": [
+      {
+        "id": "U7",
+        "status": "partially addressed",
+        "detail": "Calculation engine, numeric editor, version-1 codec/storage projection and arithmetic/privacy/performance coverage are present. Preserve numeric-copy policies during source selection (#2) to complete the editor behavior."
+      }
+    ],
+    "unrequested_behavior_rules": [],
+    "reverse_check": "Compared the U7 diff and numeric policy changes with the full plan, including KTD-03/04. Explicit numeric interpretation, optional blank handling, opt-in rounding and bounded precision implement requested input policies; no additional unrequested behavior rule was retained. No U7 requirement or unit is wholly unaddressed."
+  },
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [],
+  "testing_gaps": [
+    "tests/unit/decimal.test.ts exercises terminating denominators and recurring denominators, but never a quotient that terminates only after cancelling a non-2/5 factor (for example 3 / 6 = 0.5). Add that case, preferably with a negative divisor too, to protect the new gcd/reduction path in src/engine/decimal.ts.",
+    "The new resource tests cover the 1000-character input guard and the division-scale guard, but do not exercise finish/checkSize's 2000-digit result guard. Add accepted-boundary and rejected-overflow cases using legal operands, including a large multiplication with explicit rounding places, and assert the numeric-limit error code. This protects the separate result-expansion bound rather than only input and division bounds."
+  ],
+  "coverage": {
+    "depth": "full",
+    "reviewer_selection": [
+      {
+        "reviewer": "correctness",
+        "tier": "session",
+        "reason": "always-on"
+      },
+      {
+        "reviewer": "project-standards",
+        "tier": "mid-tier",
+        "reason": "AGENTS.md explicit invariants"
+      },
+      {
+        "reviewer": "testing",
+        "tier": "mid-tier",
+        "reason": "new/changed unit/e2e tests and helpers"
+      },
+      {
+        "reviewer": "maintainability",
+        "tier": "mid-tier",
+        "reason": "1199 executable non-test changed lines and UI structure"
+      },
+      {
+        "reviewer": "security",
+        "tier": "session",
+        "reason": "untrusted decimal/workflow input/resource bounds"
+      },
+      {
+        "reviewer": "performance",
+        "tier": "mid-tier",
+        "reason": "10k-row exact arithmetic transforms"
+      },
+      {
+        "reviewer": "api-contract",
+        "tier": "mid-tier",
+        "reason": "version1 portable/stored workflow schema and codec"
+      },
+      {
+        "reviewer": "adversarial",
+        "tier": "session",
+        "reason": "cross-boundary arithmetic/validation/editor workflows; no cross-model CLI"
+      }
+    ],
+    "notes": [
+      "Full depth required by scope helper: 1199 executable non-test changed lines, size large, seven binary files uncounted.",
+      "AGENTS.md is the applicable instruction-file fallback for every changed path; successful search found no CODING_STANDARDS.md or CLAUDE.md.",
+      "Scope includes staged implementation against origin/main; full.diff/files.txt are the authoritative snapshot. Parent added verification/log/screenshot artifacts afterward, no code changes.",
+      "All eight reviewers returned valid terminal JSON and artifacts; no cleanup/release API exists.",
+      "Parent reported final verification: typecheck/lint/build,156 units pass; production Chromium calculations/privacy/performance 12/12 in52.2s; earlier full regression68/68 plus new fourth calculation browser test pass. Reviewers did not run browser/server/build.",
+      "Excluded planned later work U8 onward: no completeness obligation for dates or Excel.",
+      "Skipped conditional reviewers: agent-native: no agent-facing surface; learnings: corpus concerns XLSX qualification, no plausible U7 match; no declared packs; reliability: no changed async or recovery mechanism; frontend-races: synchronous editor callbacks; no meaningful new asynchronous lifecycle; data-migration: no schema/migration; previous-comments: no PR metadata; swift-ios: no Swift",
+      "cross-model pass: not run (host attested codex; no different-provider CLI installed: claude, grok, cursor-agent and opencode absent); in-process adversarial reviewed the same scope.",
+      "Semantic reconciliation merged correctness and in-process adversarial source-remapping reports into finding #2; same-model agreement does not raise confidence or permit the validator shortcut.",
+      "No settlement conflicts: the supplied plan has no session-settled decisions. No pre-existing or confidence-suppressed findings; first_evidence_backfilled=0; missing-first-evidence demotions=0; mode-aware demotions=0.",
+      "Validator selection: 2 findings in one deterministic batch; 0 shortcut-skipped. Neither has independently verified different-provider corroboration.",
+      "Retained two consequential decimal testing gaps: ratio cancellation before factor analysis and the separate 2000-digit result-expansion boundary. No absence-of-coverage primary finding was added."
+    ],
+    "standards": {
+      "criteria": [
+        {
+          "path": "AGENTS.md",
+          "files": [
+            "README.md",
+            "THIRD_PARTY_NOTICES.md",
+            "docs/decisions/exact-decimals.md",
+            "docs/reviews/u7/calculation-settings-1440.png",
+            "docs/reviews/u7/calculation-settings-390.png",
+            "docs/reviews/u7/capture.json",
+            "docs/reviews/u7/capture.mjs",
+            "docs/reviews/u7/plan-review/README.md",
+            "docs/reviews/u7/plan-review/adversarial.json",
+            "docs/reviews/u7/plan-review/coherence.json",
+            "docs/reviews/u7/plan-review/design-lens.json",
+            "docs/reviews/u7/plan-review/feasibility.json",
+            "docs/reviews/u7/plan-review/scope-guardian.json",
+            "docs/reviews/u7/plan-review/security-lens.json",
+            "docs/reviews/u7/plan-review/source-hashes.json",
+            "docs/reviews/u7/rounding-settings-1440.png",
+            "docs/reviews/u7/rounding-settings-390.png",
+            "docs/reviews/u7/simplification/verification.md",
+            "docs/reviews/u7/workspace-1024.png",
+            "docs/reviews/u7/workspace-1440.png",
+            "docs/reviews/u7/workspace-390.png",
+            "package-lock.json",
+            "package.json",
+            "src/engine/decimal.ts",
+            "src/engine/recipes.ts",
+            "src/engine/validation.ts",
+            "src/engine/workflow.ts",
+            "src/ui/CalculationSettings.tsx",
+            "src/ui/MappingRows.tsx",
+            "src/ui/Workspace.tsx",
+            "src/workflows/codec.ts",
+            "tests/e2e/calculations.spec.ts",
+            "tests/e2e/helpers.ts",
+            "tests/e2e/performance.spec.ts",
+            "tests/e2e/privacy.spec.ts",
+            "tests/unit/constants.test.ts",
+            "tests/unit/decimal.test.ts",
+            "tests/unit/numeric-validation.test.ts",
+            "tests/unit/workflow-roundtrip.test.ts",
+            "tests/unit/workflow.test.ts",
+            "third-party-licenses/big.js-LICENCE.md"
+          ]
+        }
+      ],
+      "fallback_named": true,
+      "not_run_reason": null
+    },
+    "compound_packs": {
+      "roots": [],
+      "errors": [],
+      "warnings": []
+    },
+    "cross_model": {
+      "selected": true,
+      "target": null,
+      "route": null,
+      "preference_source": "default",
+      "outcome": "in-process-fallback",
+      "artifact": null,
+      "coverage": "cross-model pass: not run (host attested codex; no different-provider CLI installed: claude, grok, cursor-agent and opencode absent); in-process adversarial reviewed the same scope."
+    },
+    "validation": {
+      "batch_outcome": "verdicts",
+      "selected": 2,
+      "confirmed": 1,
+      "rejected": 1,
+      "unresolved": 0,
+      "malformed": 0,
+      "failed": 0,
+      "shortcut_skipped": 0,
+      "shortcut_evidence_basis": "No independently verified different-provider corroboration.",
+      "reason": "Fresh replacement validator completed after usage-limit interruption ended the original launch without output.",
+      "verdicts": [
+        {
+          "#": 1,
+          "status": "rejected",
+          "protected_subject": null,
+          "reason": "The cited 835-to-1121-line growth is substantially formatting in full.diff, the embedded column-settings responsibility already exists in HEAD, and inspected code and AGENTS.md establish neither a 1000-line limit nor a concrete defect requiring this extraction."
+        },
+        {
+          "#": 2,
+          "status": "confirmed",
+          "protected_subject": null,
+          "reason": "When a user selects Number and numeric policies through the newly added controls before selecting or replacing a copy source, MappingRows.tsx:962 calls match at line 150, which sets type=text and newly clears policies at lines 126-130; Workspace.tsx:95-102 retains that patch and recipes.ts:190-215 skips numeric checks, so fractional or nonnumeric replacement values can become valid, with UI reachability established by these handlers but incidence not measured."
+        }
+      ],
+      "protected_subject_classification": [
+        {
+          "#": 1,
+          "protected_subject": null,
+          "reason": "Component size/extraction preference; no protected failure alleged."
+        },
+        {
+          "#": 2,
+          "protected_subject": null,
+          "reason": "Internal editor numeric-policy reset; no destructive source write, irreversible migration or externally consumed API compatibility failure alleged."
+        }
+      ],
+      "protected_subject_reclassifications": [],
+      "degraded_blockers": [],
+      "collection": "Replacement validator verdicts landed; original usage-limit interruption did not leave any finding unvalidated."
+    },
+    "suppressed_by_confidence": {},
+    "mode_aware_demotions": 0,
+    "first_evidence_backfilled": 0,
+    "missing_first_evidence_demotions": 0,
+    "malformed_findings": 0,
+    "malformed_returns": 0,
+    "settlement_suppressed": 0,
+    "failed_reviewers": [],
+    "timed_out_reviewers": [],
+    "local_apply": "Disabled: mode:agent and apply_local=false. No project changes, commits or PR created by this review.",
+    "finalization": "Rejected #1 was removed from primary and actionable findings without recycling it into residual risks or testing gaps. Stable #2 is preserved; no multi-finding triage groups remain."
+  },
+  "verdict_reason": "One confirmed P2 editor defect remains: changing or initially choosing a numeric copy source silently resets its output type and numeric policies. Preserve those settings and add a source-remapping regression test. Incidence was not measured; UI reachability is established by inspected handlers. The arbitrary component-length extraction claim (#1) was rejected. U7 work is present; the partial completeness labels reflect #2, not omitted planned units.",
+  "fix_order": [
+    {
+      "#": 2,
+      "severity": "P2",
+      "file": "src/ui/MappingRows.tsx",
+      "line": 962,
+      "action": "Preserve numeric-copy settings on source selection, then verify invalid fractional/nonnumeric rows and export eligibility."
+    }
+  ],
+  "artifact_path": "/tmp/compound-engineering-1000/ce-code-review/20261016-142646-122044e8",
+  "run_id": "20261016-142646-122044e8"
+}

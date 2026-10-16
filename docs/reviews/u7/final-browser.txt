@@ -1,0 +1,21 @@
+[WebServer] (node:7611) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 12 tests using 1 worker
+
+(node:7623) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › tests/e2e/calculations.spec.ts:14:1 › AC-05/06/10 contextual calculations export exact bytes, save/reopen and portable reuse (3.5s)
+  ✓   2 [chromium] › tests/e2e/calculations.spec.ts:77:1 › errors stay visible, rounding is explicit, and fractional cases fail before rounding (3.0s)
+  ✓   3 [chromium] › tests/e2e/calculations.spec.ts:113:1 › mobile calculation settings, output type switches and keyboard focus preserve paired cards (2.0s)
+  ✓   4 [chromium] › tests/e2e/calculations.spec.ts:147:1 › numeric copy validation and precision edits renew CSV safety decisions (3.2s)
+  ✓   5 [chromium] › tests/e2e/performance.spec.ts:17:1 › 10000 U3 rows preserve every fixed value, exact decimal, trim result and original reference (4.0s)
+  ✓   6 [chromium] › tests/e2e/performance.spec.ts:44:1 › 10000 x 20 rows remain intact; record cold and five warm full-pipeline runs (17.9s)
+  ✓   7 [chromium] › tests/e2e/performance.spec.ts:135:1 › busy cancel and retry preserve the active mapping and full downloaded data (1.3s)
+  ✓   8 [chromium] › tests/e2e/performance.spec.ts:173:1 › cancellation terminates an active parsing worker and retries the original file (2.8s)
+  ✓   9 [chromium] › tests/e2e/performance.spec.ts:206:1 › 499 x 20 import to preview stays under the one-second smoke budget (3.1s)
+  ✓  10 [chromium] › tests/e2e/performance.spec.ts:270:1 › 10000 U6 rows preserve every split and combined empty component (1.6s)
+  ✓  11 [chromium] › tests/e2e/performance.spec.ts:292:1 › 10000 U7 rows keep exact arithmetic, identifiers, counts and downloaded bytes (3.1s)
+  ✓  12 [chromium] › tests/e2e/privacy.spec.ts:4:1 › production journey sends no customer values, file names or IDs and stores no source data (5.4s)
+
+  12 passed (52.2s)

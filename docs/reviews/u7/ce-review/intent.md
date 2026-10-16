@@ -1,0 +1,1 @@
+Implement U7 only: exact decimal add/subtract/multiply/divide using big.js, strict numeric interpretation, opt-in rounding and precision, whole-number validation before rounding, contextual paired-card numeric controls, and version-1 portable/local compatibility. Preserve U2–U6 local privacy, fidelity, saved workflows and revision safety; date/Excel/U8 changes are out of scope.

@@ -1,0 +1,25 @@
+{
+  "reviewer": "maintainability",
+  "findings": [
+    {
+      "title": "Extract column settings before MappingRows crosses 1,000 lines",
+      "severity": "P1",
+      "file": "src/ui/MappingRows.tsx",
+      "line": 854,
+      "why_it_matters": "This diff grows MappingRows from 835 to 1,121 lines. The component now combines drag/drop matching, suggestions, ordering, modal lifecycle, recipe creation, fixed-value editing and numeric policy transitions in one function. Adding calculation support expands the embedded settings branch even after extracting CalculationSettings, so changes to any recipe still require navigating the entire matching workspace and its captured state.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 100,
+      "evidence": [
+        "src/ui/MappingRows.tsx:854:               {field.recipe?.kind === \"calculate\" ? (",
+        "git show HEAD:src/ui/MappingRows.tsx | wc -l reports 835; wc -l src/ui/MappingRows.tsx reports 1121.",
+        "src/ui/MappingRows.tsx:734 begins the column settings dialog; its recipe/type/validation UI continues through line 1085, inside the same MappingRows function that owns matching, suggestions and ordering."
+      ],
+      "pre_existing": false,
+      "suggested_fix": "Extract the column-settings dialog body, including recipe mode initialization, fixed-value editing, output type and validation controls, into a ColumnSettings component receiving the selected field, source columns and field update/match callbacks. Keep dialog focus/lifecycle and matching workspace state in MappingRows; retain CalculationSettings and NumericSettings as its existing child controls. This moves a coherent editing responsibility out of the oversized workspace without adding a generic registry or duplicating recipe logic."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}
