@@ -57,10 +57,7 @@ test("untrusted JSON rejects versions, budgets, nested injection and malformed r
 
 test("declared future capabilities decode structurally but fail the usable boundary", () => {
   const variants: Workflow[] = [];
-  for (const recipe of [
-    { kind: 'calculate', operation: 'add', left: { kind: 'source', source: 'order' }, right: { kind: 'number', decimal: '1' } },
-  ]) variants.push(decodeWorkflow(JSON.stringify({ ...golden(), fields: [{ ...golden().fields[0], recipe }], source: { ...golden().source, referencedHeaders: ['order'] } })));
-  for (const change of [{ type: 'date', date: { source: 'YYYY-MM-DD', target: 'MM/DD/YYYY' } }, { rounding: { mode: 'half-up', places: 2 } }, { scale: 2 }, { wholeNumber: false }])
+  for (const change of [{ type: 'date', date: { source: 'YYYY-MM-DD', target: 'MM/DD/YYYY' } }])
     variants.push(decodeWorkflow(JSON.stringify({ ...golden(), fields: [{ ...golden().fields[0], ...change }] })));
   variants.push({ ...golden(), source: { ...golden().source, format: 'xlsx' } }, { ...golden(), output: { ...golden().output, format: 'xlsx' } });
   for (const w of variants) expect(() => decodeUsableWorkflow(JSON.stringify(w))).toThrow(/unsupported/i);

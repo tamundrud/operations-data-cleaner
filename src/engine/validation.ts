@@ -25,10 +25,7 @@ export function validateWorkflowConfiguration(workflow: Workflow): Issue[] {
     );
     return errors;
   }
-  if (
-    workflow.source.format !== "csv" ||
-    workflow.output.format !== "csv"
-  )
+  if (workflow.source.format !== "csv" || workflow.output.format !== "csv")
     add(
       "unsupported-format",
       "This build supports CSV input and output only.",
@@ -54,34 +51,60 @@ export function validateWorkflowConfiguration(workflow: Workflow): Issue[] {
         "Choose a source column or remove this output column.",
         f.id,
       );
-    if (f.recipe?.kind === "calculate")
+    if (f.type === "date" || f.date)
       add(
-        "unsupported-recipe",
-        `${f.recipe.kind} is not supported in this build.`,
-        "Use a source copy, fixed value, split or combination.",
+        "unsupported-settings",
+        "Date conversion is not supported in this build.",
+        "Use text or number outputs.",
+        f.id,
+      );
+    if (f.recipe?.kind === "calculate" && f.type !== "number")
+      add(
+        "calculation-type",
+        "Calculations require a number output.",
+        "Choose number output.",
         f.id,
       );
     if (
-      (f.type !== "text" && !(f.type === "number" && f.recipe?.kind === "constant")) ||
-      f.date ||
-      f.rounding ||
-      f.scale !== undefined ||
-      f.wholeNumber !== undefined
+      (f.rounding || f.scale !== undefined || f.wholeNumber !== undefined) &&
+      f.type !== "number"
     )
       add(
-        "unsupported-settings",
-        "This build supports text copies and typed fixed values without conversion, dates or rounding.",
-        "Use text or a fixed number, with supported validation settings.",
+        "numeric-settings",
+        "Numeric validation and rounding require a number output.",
+        "Choose number output or remove numeric settings.",
+        f.id,
+      );
+    if (f.rounding && f.scale !== undefined && f.rounding.places > f.scale)
+      add(
+        "numeric-settings",
+        "Rounding decimal places exceed the maximum decimal places.",
+        "Reduce rounding places or increase the maximum.",
         f.id,
       );
     const r = f.recipe;
-    if (r?.kind === "constant" && r.value.kind !== "blank" && r.value.kind !== f.type)
-      add("constant-type", "The fixed value type must match the output type.", "Choose text for a text literal or number for a decimal literal.", f.id);
+    if (
+      r?.kind === "constant" &&
+      r.value.kind !== "blank" &&
+      r.value.kind !== f.type
+    )
+      add(
+        "constant-type",
+        "The fixed value type must match the output type.",
+        "Choose text for a text literal or number for a decimal literal.",
+        f.id,
+      );
     if (f.trim && f.type !== "text")
-      add("trim-type", "Trimming requires a text output.", "Use text or turn off whitespace trimming.", f.id);
+      add(
+        "trim-type",
+        "Trimming requires a text output.",
+        "Use text or turn off whitespace trimming.",
+        f.id,
+      );
     if (
       r?.kind === "split" &&
-      (r.index >= r.segments || r.optionalEmpty.some((i) => i >= r.segments) ||
+      (r.index >= r.segments ||
+        r.optionalEmpty.some((i) => i >= r.segments) ||
         new Set(r.optionalEmpty).size !== r.optionalEmpty.length)
     )
       add(
@@ -101,7 +124,10 @@ export function validateWorkflowConfiguration(workflow: Workflow): Issue[] {
   return errors;
 }
 
-export function validateWorkflow(workflow: Workflow, source: SourceTable): Issue[] {
+export function validateWorkflow(
+  workflow: Workflow,
+  source: SourceTable,
+): Issue[] {
   const errors = validateWorkflowConfiguration(workflow);
   if (errors.some((issue) => issue.code === "schema")) return errors;
   const keys = new Set(source.columns.map((c) => c.key));
@@ -112,7 +138,8 @@ export function validateWorkflow(workflow: Workflow, source: SourceTable): Issue
         scope: "workflow",
         severity: "error",
         reason: `Referenced source header “${ref}” is missing.`,
-        action: "Choose an available source column or correct and reupload the CSV.",
+        action:
+          "Choose an available source column or correct and reupload the CSV.",
       });
   return errors;
 }

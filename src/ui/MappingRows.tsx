@@ -1,7 +1,13 @@
+import { DECIMAL_INPUT_LIMIT } from "../engine/decimal";
 import { useEffect, useRef, useState, type DragEvent } from "react";
+import { CalculationSettings, NumericSettings } from "./CalculationSettings";
 import TextRecipeSettings from "./TextRecipeSettings";
 import { suggestMatches } from "../suggestions/matches";
-import { normalizeHeader, referencedHeaders, type Field } from "../engine/workflow";
+import {
+  normalizeHeader,
+  referencedHeaders,
+  type Field,
+} from "../engine/workflow";
 import { displayValue } from "../engine/values";
 import type { View } from "../session/worker-protocol";
 
@@ -16,8 +22,20 @@ type Props = {
 };
 type Card = { kind: "source" | "output" | "pair"; id: string };
 const sourceKey = (f: Field) =>
-  f.recipe?.kind === "copy" || f.recipe?.kind === "split" ? f.recipe.source : "";
-const configured = (f: Field) => Boolean(sourceKey(f) || f.recipe?.kind === "constant" || (f.recipe?.kind === "combine" && f.recipe.components.every((c) => c.kind === "literal" || c.source)));
+  f.recipe?.kind === "copy" || f.recipe?.kind === "split"
+    ? f.recipe.source
+    : "";
+const configured = (f: Field) =>
+  Boolean(
+    sourceKey(f) ||
+    f.recipe?.kind === "constant" ||
+    (f.recipe?.kind === "calculate" &&
+      [f.recipe.left, f.recipe.right].every((o) =>
+        o.kind === "number" ? o.decimal !== "" : o.source !== "",
+      )) ||
+    (f.recipe?.kind === "combine" &&
+      f.recipe.components.every((c) => c.kind === "literal" || c.source)),
+  );
 const fixedSummary = (f: Field) => {
   if (f.recipe?.kind !== "constant") return "";
   const value = f.recipe.value;
@@ -56,12 +74,19 @@ export default function MappingRows({
   const candidateKey = (f: Field, source: string) =>
     JSON.stringify([f.id, normalizeHeader(f.header), source]);
   const sourceHeaders = view.columns.map((c) => c.header);
-  const suggestions = new Map(unmatched.map((f) => {
-    const headers = new Set(f.recipe ? [] : suggestMatches(sourceHeaders, f.header));
-    return [f.id, view.columns.filter((c) =>
-      headers.has(c.header) && !rejected.has(candidateKey(f, c.key)),
-    )];
-  }));
+  const suggestions = new Map(
+    unmatched.map((f) => {
+      const headers = new Set(
+        f.recipe ? [] : suggestMatches(sourceHeaders, f.header),
+      );
+      return [
+        f.id,
+        view.columns.filter(
+          (c) => headers.has(c.header) && !rejected.has(candidateKey(f, c.key)),
+        ),
+      ];
+    }),
+  );
   const positions = new Map(fields.map((f, i) => [f, i + 1]));
   const usesBySource = new Map<string, number>();
   for (const f of matched) {
@@ -93,7 +118,26 @@ export default function MappingRows({
     else order.current?.close();
   }, [orderOpen]);
   const update = (id: string, patch: Partial<Field>) =>
-    change(fields.map((f) => (f.id === id ? { ...f, ...patch } : f)));
+    change(
+      fields.map((f) =>
+        f.id === id
+          ? {
+              ...f,
+              ...(patch.type === "text"
+                ? {
+                    rounding: undefined,
+                    scale: undefined,
+                    wholeNumber: undefined,
+                  }
+                : {}),
+              ...(patch.type === "number"
+                ? { trim: undefined, maxLength: undefined }
+                : {}),
+              ...patch,
+            }
+          : f,
+      ),
+    );
   const clearDrag = () => {
     drag.current = undefined;
     setDragging(undefined);
@@ -103,7 +147,12 @@ export default function MappingRows({
     const f = fields.find((f) => f.id === id),
       c = columnByKey.get(key);
     if (disabled || !f || !c) return;
-    update(id, { type: "text", recipe: { kind: "copy", source: key } });
+    const preserveNumericCopy =
+      f.type === "number" && (!f.recipe || f.recipe.kind === "copy");
+    update(id, {
+      ...(preserveNumericCopy ? {} : { type: "text" as const }),
+      recipe: { kind: "copy", source: key },
+    });
     setAnnouncement(
       `${f.header || "Output column"} now copies ${c.header}. Export order unchanged.`,
     );
@@ -249,10 +298,16 @@ export default function MappingRows({
   };
   const outputSummary = (f: Field, paired: boolean) => {
     if (f.recipe?.kind === "constant") return fixedSummary(f);
-    if (f.recipe?.kind === "split") return `Split · segment ${f.recipe.index + 1} of ${f.recipe.segments} · delimiter ${JSON.stringify(f.recipe.delimiter)}${f.recipe.trim ? " · trims segments" : ""}`;
-    if (f.recipe?.kind === "combine") return `Combine · ${f.recipe.components.length} components · separator ${JSON.stringify(f.recipe.separator)} · keeps empty positions`;
-    if (paired) return `Confirmed · copies ${columnByKey.get(sourceKey(f))?.header ?? sourceKey(f)}`;
-    if (suggestions.get(f.id)?.length) return "Suggested · review below to confirm";
+    if (f.recipe?.kind === "calculate")
+      return `Calculate · ${f.recipe.operation}${f.rounding ? ` · ${f.rounding.mode}, ${f.rounding.places} places` : " · exact, no rounding"}${f.wholeNumber ? " · whole numbers required" : ""}`;
+    if (f.recipe?.kind === "split")
+      return `Split · segment ${f.recipe.index + 1} of ${f.recipe.segments} · delimiter ${JSON.stringify(f.recipe.delimiter)}${f.recipe.trim ? " · trims segments" : ""}`;
+    if (f.recipe?.kind === "combine")
+      return `Combine · ${f.recipe.components.length} components · separator ${JSON.stringify(f.recipe.separator)} · keeps empty positions`;
+    if (paired)
+      return `Confirmed · copies ${columnByKey.get(sourceKey(f))?.header ?? sourceKey(f)}`;
+    if (suggestions.get(f.id)?.length)
+      return "Suggested · review below to confirm";
     return "Unmatched · drop a source here";
   };
   const outputCard = (f: Field, paired: boolean) => (
@@ -384,7 +439,10 @@ export default function MappingRows({
           </span>
         </div>
         {matched.some((f) => f.recipe?.kind === "constant") && (
-          <p className="helper">Completed outputs include fixed values. Fixed values need no source match and can be reordered with the pairs.</p>
+          <p className="helper">
+            Completed outputs include fixed values. Fixed values need no source
+            match and can be reordered with the pairs.
+          </p>
         )}
         <div className="matched-headings" aria-hidden="true">
           <span>Source column</span>
@@ -454,9 +512,35 @@ export default function MappingRows({
               ) : f.recipe?.kind === "combine" ? (
                 <div className="fixed-summary combination-summary">
                   <strong>Ordered combination</strong>
-                  <ol>{f.recipe.components.map((c, index) => <li key={index}>{c.kind === "source" ? columnByKey.get(c.source)?.header ?? `${c.source} (missing source)` : `Literal ${JSON.stringify(c.text)}`}</li>)}</ol>
+                  <ol>
+                    {f.recipe.components.map((c, index) => (
+                      <li key={index}>
+                        {c.kind === "source"
+                          ? (columnByKey.get(c.source)?.header ??
+                            `${c.source} (missing source)`)
+                          : `Literal ${JSON.stringify(c.text)}`}
+                      </li>
+                    ))}
+                  </ol>
                 </div>
-              ) : sourceCard(sourceKey(f), f)}
+              ) : f.recipe?.kind === "calculate" ? (
+                <div className="fixed-summary">
+                  <strong>Calculation · {f.recipe.operation}</strong>
+                  <span>
+                    {[f.recipe.left, f.recipe.right]
+                      .map((o) =>
+                        o.kind === "source"
+                          ? (columnByKey.get(o.source)?.header ?? o.source)
+                          : o.decimal,
+                      )
+                      .join(
+                        ` ${{ add: "+", subtract: "−", multiply: "×", divide: "÷" }[f.recipe.operation]} `,
+                      )}
+                  </span>
+                </div>
+              ) : (
+                sourceCard(sourceKey(f), f)
+              )}
               <span className="pair-mark" aria-hidden="true">
                 {f.recipe?.kind === "constant" ? "" : "↔"}
               </span>
@@ -465,8 +549,16 @@ export default function MappingRows({
                 <button
                   className="unlink"
                   disabled={disabled}
-                  aria-label={f.recipe?.kind === "constant" ? `Clear fixed value for ${f.header}` : `Unlink ${f.header}`}
-                  title={f.recipe?.kind === "constant" ? "Clear fixed value" : "Unlink match"}
+                  aria-label={
+                    f.recipe?.kind === "constant"
+                      ? `Clear fixed value for ${f.header}`
+                      : `Unlink ${f.header}`
+                  }
+                  title={
+                    f.recipe?.kind === "constant"
+                      ? "Clear fixed value"
+                      : "Unlink match"
+                  }
                   onClick={() => {
                     update(f.id, { recipe: undefined });
                     setSelected(undefined);
@@ -541,23 +633,41 @@ export default function MappingRows({
                   {outputCard(f, false)}
                   {editButton(f)}
                   {!!suggestions.get(f.id)?.length && (
-                    <div className="suggestions" role="group" aria-label={`Suggestions for ${f.header}`}>
-                      <p>{suggestions.get(f.id)!.length > 1
-                        ? "Suggested alternatives · choose one or match another source."
-                        : "Suggested source · accept or match another source."}</p>
+                    <div
+                      className="suggestions"
+                      role="group"
+                      aria-label={`Suggestions for ${f.header}`}
+                    >
+                      <p>
+                        {suggestions.get(f.id)!.length > 1
+                          ? "Suggested alternatives · choose one or match another source."
+                          : "Suggested source · accept or match another source."}
+                      </p>
                       {suggestions.get(f.id)!.map((c) => (
                         <div className="suggestion" key={c.key}>
                           <span>{c.header}</span>
-                          <button disabled={disabled}
+                          <button
+                            disabled={disabled}
                             aria-label={`Accept ${c.header} for ${f.header}`}
-                            onClick={() => match(f.id, c.key)}>Accept</button>
-                          <button disabled={disabled}
+                            onClick={() => match(f.id, c.key)}
+                          >
+                            Accept
+                          </button>
+                          <button
+                            disabled={disabled}
                             aria-label={`Reject ${c.header} for ${f.header}`}
                             onClick={() => {
-                              setRejected((previous) => new Set(previous).add(candidateKey(f, c.key)));
-                              setAnnouncement(`Suggestion from ${c.header} for ${f.header} rejected. You can still match any source.`);
+                              setRejected((previous) =>
+                                new Set(previous).add(candidateKey(f, c.key)),
+                              );
+                              setAnnouncement(
+                                `Suggestion from ${c.header} for ${f.header} rejected. You can still match any source.`,
+                              );
                               focus(`output-${f.id}`);
-                            }}>Reject</button>
+                            }}
+                          >
+                            Reject
+                          </button>
                         </div>
                       ))}
                     </div>
@@ -649,93 +759,272 @@ export default function MappingRows({
               <fieldset className="value-mode">
                 <legend>Output value</legend>
                 <label className="check">
-                  <input type="radio" name="value-mode" checked={!field.recipe || field.recipe.kind === "copy"}
-                    onChange={() => update(field.id, { type: "text", recipe: undefined })} />
+                  <input
+                    type="radio"
+                    name="value-mode"
+                    checked={!field.recipe || field.recipe.kind === "copy"}
+                    onChange={() =>
+                      update(field.id, { type: "text", recipe: undefined })
+                    }
+                  />
                   Copy a source column
                 </label>
                 <label className="check">
-                  <input type="radio" name="value-mode" checked={field.recipe?.kind === "constant"}
+                  <input
+                    type="radio"
+                    name="value-mode"
+                    checked={field.recipe?.kind === "constant"}
                     onChange={() => {
-                      update(field.id, { type: "text", recipe: { kind: "constant", value: { kind: "text", text: "" } } });
+                      update(field.id, {
+                        type: "text",
+                        recipe: {
+                          kind: "constant",
+                          value: { kind: "text", text: "" },
+                        },
+                      });
                       setSelected(undefined);
-                      setAnnouncement(`${field.header} uses a fixed value. No source match needed.`);
-                    }} />
+                      setAnnouncement(
+                        `${field.header} uses a fixed value. No source match needed.`,
+                      );
+                    }}
+                  />
                   Use a fixed value
                 </label>
                 <label className="check">
-                  <input type="radio" name="value-mode" checked={field.recipe?.kind === "split"}
-                    onChange={() => { update(field.id, { type: "text", recipe: { kind: "split", source: sourceKey(field), delimiter: ",", segments: 4, index: 0, trim: false, optionalEmpty: [] } }); setSelected(undefined); }} />
+                  <input
+                    type="radio"
+                    name="value-mode"
+                    checked={field.recipe?.kind === "split"}
+                    onChange={() => {
+                      update(field.id, {
+                        type: "text",
+                        recipe: {
+                          kind: "split",
+                          source: sourceKey(field),
+                          delimiter: ",",
+                          segments: 4,
+                          index: 0,
+                          trim: false,
+                          optionalEmpty: [],
+                        },
+                      });
+                      setSelected(undefined);
+                    }}
+                  />
                   Split a source column
                 </label>
                 <label className="check">
-                  <input type="radio" name="value-mode" checked={field.recipe?.kind === "combine"}
-                    onChange={() => { update(field.id, { type: "text", recipe: { kind: "combine", components: [{ kind: "source", source: sourceKey(field) }, { kind: "literal", text: "" }], separator: " " } }); setSelected(undefined); }} />
+                  <input
+                    type="radio"
+                    name="value-mode"
+                    checked={field.recipe?.kind === "combine"}
+                    onChange={() => {
+                      update(field.id, {
+                        type: "text",
+                        recipe: {
+                          kind: "combine",
+                          components: [
+                            { kind: "source", source: sourceKey(field) },
+                            { kind: "literal", text: "" },
+                          ],
+                          separator: " ",
+                        },
+                      });
+                      setSelected(undefined);
+                    }}
+                  />
                   Combine sources and text
                 </label>
+                <label className="check">
+                  <input
+                    type="radio"
+                    name="value-mode"
+                    checked={field.recipe?.kind === "calculate"}
+                    onChange={() => {
+                      update(field.id, {
+                        type: "number",
+                        recipe: {
+                          kind: "calculate",
+                          operation: "divide",
+                          left: { kind: "source", source: sourceKey(field) },
+                          right: { kind: "source", source: "" },
+                        },
+                      });
+                      setSelected(undefined);
+                    }}
+                  />
+                  Calculate with numbers
+                </label>
               </fieldset>
-              {field.recipe?.kind === "split" || field.recipe?.kind === "combine" ? (
-                <TextRecipeSettings key={field.recipe.kind} recipe={field.recipe} columns={view.columns} change={(recipe) => update(field.id, { recipe })} />
+              {field.recipe?.kind === "calculate" ? (
+                <CalculationSettings
+                  recipe={field.recipe}
+                  columns={view.columns}
+                  change={(recipe) => update(field.id, { recipe })}
+                />
+              ) : field.recipe?.kind === "split" ||
+                field.recipe?.kind === "combine" ? (
+                <TextRecipeSettings
+                  key={field.recipe.kind}
+                  recipe={field.recipe}
+                  columns={view.columns}
+                  change={(recipe) => update(field.id, { recipe })}
+                />
               ) : field.recipe?.kind === "constant" ? (
                 <>
                   <label>
                     Fixed value type
-                    <select aria-label="Fixed value type" value={field.recipe.value.kind} onChange={(e) => {
-                      const kind = e.target.value as "text" | "number" | "blank";
-                      const text = field.recipe?.kind === "constant" ? displayValue(field.recipe.value) : "";
-                      update(field.id, {
-                        type: kind === "number" ? "number" : "text",
-                        trim: kind === "number" ? undefined : field.trim,
-                        maxLength: kind === "number" ? undefined : field.maxLength,
-                        recipe: { kind: "constant", value: kind === "blank" ? { kind } : kind === "number" ? { kind, decimal: text } : { kind, text } },
-                      });
-                    }}>
+                    <select
+                      aria-label="Fixed value type"
+                      value={field.recipe.value.kind}
+                      onChange={(e) => {
+                        const kind = e.target.value as
+                          | "text"
+                          | "number"
+                          | "blank";
+                        const text =
+                          field.recipe?.kind === "constant"
+                            ? displayValue(field.recipe.value)
+                            : "";
+                        update(field.id, {
+                          type: kind === "number" ? "number" : "text",
+                          trim: kind === "number" ? undefined : field.trim,
+                          maxLength:
+                            kind === "number" ? undefined : field.maxLength,
+                          recipe: {
+                            kind: "constant",
+                            value:
+                              kind === "blank"
+                                ? { kind }
+                                : kind === "number"
+                                  ? { kind, decimal: text }
+                                  : { kind, text },
+                          },
+                        });
+                      }}
+                    >
                       <option value="text">Text — preserve exactly</option>
                       <option value="number">Number — exact decimal</option>
                       <option value="blank">Intentional blank</option>
                     </select>
                   </label>
                   {field.recipe.value.kind === "text" && (
-                    <label>Fixed text
-                      <textarea aria-label="Fixed text" rows={2} maxLength={4096} value={field.recipe.value.text}
-                        onChange={(e) => update(field.id, { recipe: { kind: "constant", value: { kind: "text", text: e.target.value } } })} />
+                    <label>
+                      Fixed text
+                      <textarea
+                        aria-label="Fixed text"
+                        rows={2}
+                        maxLength={4096}
+                        value={field.recipe.value.text}
+                        onChange={(e) =>
+                          update(field.id, {
+                            recipe: {
+                              kind: "constant",
+                              value: { kind: "text", text: e.target.value },
+                            },
+                          })
+                        }
+                      />
                     </label>
                   )}
                   {field.recipe.value.kind === "number" && (
-                    <label>Fixed number
-                      <input type="text" inputMode="decimal" maxLength={1000} value={field.recipe.value.decimal}
-                        onChange={(e) => update(field.id, { recipe: { kind: "constant", value: { kind: "number", decimal: e.target.value } } })} />
+                    <label>
+                      Fixed number
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        maxLength={DECIMAL_INPUT_LIMIT}
+                        value={field.recipe.value.decimal}
+                        onChange={(e) =>
+                          update(field.id, {
+                            recipe: {
+                              kind: "constant",
+                              value: {
+                                kind: "number",
+                                decimal: e.target.value,
+                              },
+                            },
+                          })
+                        }
+                      />
                     </label>
                   )}
-                  <p className="helper">{field.recipe.value.kind === "blank" ? "An empty value in every row. Required outputs cannot be blank." : field.recipe.value.kind === "number" ? "Use a decimal such as 12.50. No commas, currency symbols or exponents; digits and decimal places are preserved exactly." : "The same text in every row. Leading zeros and whitespace are preserved unless you enable trimming."}</p>
+                  <p className="helper">
+                    {field.recipe.value.kind === "blank"
+                      ? "An empty value in every row. Required outputs cannot be blank."
+                      : field.recipe.value.kind === "number"
+                        ? "Use a decimal such as 12.50. No commas, currency symbols or exponents; digits and decimal places are preserved exactly."
+                        : "The same text in every row. Leading zeros and whitespace are preserved unless you enable trimming."}
+                  </p>
                 </>
-              ) : <label>
-                Copy source for {field.header || "unnamed column"}
-                <select
-                  aria-label={`Copy source for ${field.header || "unnamed column"}`}
-                  value={sourceKey(field)}
-                  onChange={(e) => {
-                    if (e.target.value) match(field.id, e.target.value);
-                    else {
-                      update(field.id, { recipe: undefined });
-                      setAnnouncement(`${field.header} is unmatched.`);
+              ) : (
+                <label>
+                  Copy source for {field.header || "unnamed column"}
+                  <select
+                    aria-label={`Copy source for ${field.header || "unnamed column"}`}
+                    value={sourceKey(field)}
+                    onChange={(e) => {
+                      if (e.target.value) match(field.id, e.target.value);
+                      else {
+                        update(field.id, { recipe: undefined });
+                        setAnnouncement(`${field.header} is unmatched.`);
+                      }
+                    }}
+                  >
+                    <option value="">Unmatched — choose a source</option>
+                    {view.columns.map((c) => (
+                      <option key={c.key} value={c.key}>
+                        {c.header}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+              {field.recipe?.kind !== "calculate" &&
+                field.recipe?.kind !== "constant" && (
+                  <label>
+                    Output type
+                    <select
+                      aria-label="Output type"
+                      value={field.type}
+                      onChange={(e) =>
+                        update(field.id, {
+                          type: e.target.value as "text" | "number",
+                        })
+                      }
+                    >
+                      <option value="text">Text — preserve identifiers</option>
+                      <option value="number">
+                        Number — strict decimal validation
+                      </option>
+                    </select>
+                  </label>
+                )}
+              {field.type === "number" && (
+                <NumericSettings
+                  field={field}
+                  change={(patch) => update(field.id, patch)}
+                />
+              )}
+              {field.type === "text" && (
+                <label className="check">
+                  <input
+                    type="checkbox"
+                    checked={field.trim ?? false}
+                    onChange={(e) =>
+                      update(field.id, { trim: e.target.checked })
                     }
-                  }}
-                >
-                  <option value="">Unmatched — choose a source</option>
-                  {view.columns.map((c) => (
-                    <option key={c.key} value={c.key}>
-                      {c.header}
-                    </option>
-                  ))}
-                </select>
-              </label>}
-              {field.type === "text" && <label className="check">
-                <input type="checkbox" checked={field.trim ?? false}
-                  onChange={(e) => update(field.id, { trim: e.target.checked })} />
-                Remove leading and trailing whitespace
-              </label>}
+                  />
+                  Remove leading and trailing whitespace
+                </label>
+              )}
               <p className="helper">
-                Changes update preview automatically. {field.trim ? "Only boundary whitespace is removed; internal spacing and original source values stay unchanged." : "Trimming is off. Text keeps its original whitespace."}
+                Changes update preview automatically.{" "}
+                {field.type === "number"
+                  ? "Numbers use only your explicit precision and validation settings."
+                  : field.trim
+                    ? "Only boundary whitespace is removed; internal spacing and original source values stay unchanged."
+                    : "Trimming is off. Text keeps its original whitespace."}
               </p>
               <details className="column-validation">
                 <summary>Validation (optional)</summary>
@@ -749,23 +1038,25 @@ export default function MappingRows({
                   />
                   Required value
                 </label>
-                {field.type === "text" && <label>
-                  Maximum characters
-                  <input
-                    type="number"
-                    min="1"
-                    max="1000000"
-                    value={field.maxLength ?? ""}
-                    onChange={(e) =>
-                      update(field.id, {
-                        maxLength:
-                          e.target.value === ""
-                            ? undefined
-                            : Number(e.target.value),
-                      })
-                    }
-                  />
-                </label>}
+                {field.type === "text" && (
+                  <label>
+                    Maximum characters
+                    <input
+                      type="number"
+                      min="1"
+                      max="1000000"
+                      value={field.maxLength ?? ""}
+                      onChange={(e) =>
+                        update(field.id, {
+                          maxLength:
+                            e.target.value === ""
+                              ? undefined
+                              : Number(e.target.value),
+                        })
+                      }
+                    />
+                  </label>
+                )}
               </details>
               <div className="dialog-actions">
                 <button

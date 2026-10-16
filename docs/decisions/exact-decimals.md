@@ -1,0 +1,11 @@
+# Exact decimals (U7)
+
+The approved KTD-04 uses big.js 7.0.1 (MIT), pinned from npm with integrity in the lockfile. npm production audit reported zero advisories on 2026-10-16. TypeScript, production worker bundling and byte-level tests qualify its use; no runtime CDN or network service is involved. License retained in third-party-licenses.
+
+Strict grammar is `[+-]?(digits[.digits*]?|.digits+)`, with no trimming, locale, exponent, unit or currency inference. Input is bounded to 1000 characters before Big/BigInt parsing. Add/subtract/multiply are exact. Division builds a bounded integer ratio, reduces it by GCD, and counts denominator factors 2/5 to prove terminating scale. A local big.js constructor receives the proved scale and explicit truncation (which discards nothing for terminating division), or the user's precision/mode. No global DP/RM mutation or guessed division precision.
+
+Whole-number validation uses the exact result; division uses integer remainder before any rounded division. Maximum scale is a separate value constraint. Rounding is opt-in: half up, half even, truncate toward zero, 0–100 places. Rounding pads to its selected places; an unrounded calculation renders a canonical plain decimal. Existing unrounded fixed literals keep their representation for compatibility. Optional copied/constant blanks remain optional; arithmetic never treats absence as zero.
+
+Result expansion is bounded to 2000 integer plus fractional digits, including leading fractional zeros and selected output padding. Oversized exact division fails before the division; other arithmetic checks its bounded result before formatting. Smaller explicit rounding can make an excessive fractional expansion usable. Settings that contradict each other (rounding beyond maximum scale) are workflow errors. Invalid data yields row issues with provenance, never numeric sentinel values.
+
+The existing version 1 finite grammar already declares calculation operands, numeric type, wholeNumber, scale and rounding. U7 enables these through the shared semantic validator and configuration-only projection. No version bump or migration is needed; old U2–U6 configurations keep their meaning. Date/Excel behavior remains unsupported. Numeric text conversion is explicit via output type, and output fields remain independent.

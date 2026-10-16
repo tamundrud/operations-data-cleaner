@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { readdir } from "node:fs/promises";
-import { upload, add, map, preview, download, rename, move, fixed, edit, closeSettings, splitField } from "./helpers";
+import { upload, add, map, preview, download, rename, move, fixed, edit, closeSettings, splitField, calculation } from "./helpers";
 test("production journey sends no customer values, file names or IDs and stores no source data", async ({
   context,
   page,
@@ -8,7 +8,8 @@ test("production journey sends no customer values, file names or IDs and stores 
   const sentinel = "PRIVATE_U2_SENTINEL_9X";
   const headerSentinel = "PRIVATE_U2_HEADER_SENTINEL_Z7";
   const constantSentinel = "PRIVATE_U3_FIXED_SENTINEL_Q82";
-  const privateValues = [sentinel, headerSentinel, constantSentinel];
+  const numericSentinel = "7251983462.125";
+  const privateValues = [sentinel, headerSentinel, constantSentinel, numericSentinel];
   const unexpected: string[] = [];
   const seen: string[] = [];
   const diagnostics: string[] = [];
@@ -48,7 +49,7 @@ test("production journey sends no customer values, file names or IDs and stores 
   );
   await upload(
     page,
-    `ID,Note\n${sentinel},"<img src=x onerror=alert(1)>"`,
+    `ID,Note,Quantity,Factor\n${sentinel},"<img src=x onerror=alert(1)>",${numericSentinel},4`,
     `${sentinel}.csv`,
   );
   await add(page, ["Reference", "Note"]);
@@ -93,6 +94,13 @@ test("production journey sends no customer values, file names or IDs and stores 
   await page.getByLabel("Combination separator", { exact: true }).fill("|");
   await closeSettings(page);
   expect((await download(page)).toString()).toContain(`${sentinel}|${constantSentinel}`);
+  await add(page, ["Calculated cases", "Calculated weight"]);
+  await calculation(page, "Calculated cases", "quantity", "factor", "divide");
+  await calculation(page, "Calculated weight", "quantity", "12", "multiply", true);
+  await edit(page, "Calculated cases");
+  await page.getByLabel("Rounding", { exact: true }).selectOption("half-even");
+  await closeSettings(page);
+  expect((await download(page)).toString()).toContain("1812995865.53");
   await page.getByLabel("Show only rows with exceptions").check();
   await expect(page.getByLabel("Full dataset counts")).toBeVisible();
   const storage = await page.evaluate(async () => ({
@@ -120,6 +128,7 @@ test("production journey sends no customer values, file names or IDs and stores 
   expect(saved).toHaveLength(1);
   expect(Object.keys(saved[0]).sort()).toEqual(["id", "json"]);
   expect(saved[0].json).not.toContain(sentinel);
+  expect(saved[0].json).not.toContain(numericSentinel);
   expect(saved[0].json).toContain(headerSentinel); expect(saved[0].json).toContain(constantSentinel);
   const config = JSON.parse(saved[0].json);
   expect(Object.keys(config).sort()).toEqual(["fields", "id", "name", "output", "source", "version"]);
@@ -133,7 +142,7 @@ test("production journey sends no customer values, file names or IDs and stores 
   await page.getByRole("button", { name: "Open workflow", exact: true }).click();
   await expect(page.getByRole("region", { name: "Repeat workflow", exact: true })).toBeVisible();
   await expect(page.getByLabel("Upload source CSV")).toBeEnabled();
-  await page.getByLabel("Upload source CSV").setInputFiles({ name: `${sentinel}-repeat.csv`, mimeType: "text/csv", buffer: Buffer.from(`ID,Note\n${sentinel},repeat-note`) });
+  await page.getByLabel("Upload source CSV").setInputFiles({ name: `${sentinel}-repeat.csv`, mimeType: "text/csv", buffer: Buffer.from(`ID,Note,Quantity,Factor\n${sentinel},repeat-note,${numericSentinel},4`) });
   await preview(page);
   expect((await download(page)).toString()).toContain(sentinel);
   expect(await readSaved()).toEqual(saved);

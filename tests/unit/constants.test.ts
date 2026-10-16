@@ -59,8 +59,7 @@ test("malformed or incompatible constants and future modifiers fail closed", () 
     { type: "text", recipe: { kind: "constant", value: { kind: "number", decimal: "12.50" } } },
     { type: "number", recipe: { kind: "constant", value: { kind: "number", decimal: "1e3" } } },
     { type: "number", trim: true, recipe: { kind: "constant", value: { kind: "number", decimal: "1" } } },
-    { type: "number", recipe: { kind: "copy", source: "id" } },
-    { type: "number", scale: 2, recipe: { kind: "constant", value: { kind: "number", decimal: "1.00" } } },
+    { type: "number", scale: 2, rounding: { mode: "half-up", places: 3 }, recipe: { kind: "constant", value: { kind: "number", decimal: "1.00" } } },
   ]) {
     const w = makeWorkflow(["Invalid"]);
     Object.assign(w.fields[0], patch);

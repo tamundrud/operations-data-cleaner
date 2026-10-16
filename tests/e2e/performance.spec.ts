@@ -10,6 +10,7 @@ import {
   edit,
   closeSettings,
   splitField,
+  calculation,
 } from "./helpers";
 import Papa from "papaparse";
 import { readFile } from "node:fs/promises";
@@ -286,4 +287,21 @@ test("10000 U6 rows preserve every split and combined empty component", async ({
   await expect(page.getByLabel("Full dataset counts")).toContainText("10000");
   await testInfo.attach("u6-timings.json", { body: JSON.stringify({ rows: 10000, repeatImportThroughDownloadMs: elapsed, environment: "Codex cloud runner; not reference-laptop qualification" }), contentType: "application/json" });
   expect(elapsed).toBeLessThan(5000);
+});
+
+test("10000 U7 rows keep exact arithmetic, identifiers, counts and downloaded bytes", async ({ page, browser }, testInfo) => {
+  test.setTimeout(120000);
+  const start = performance.now();
+  await page.goto('/');
+  await upload(page,'ID,Units,Factor,Cases,A,B\r\n'+Array.from({length:10000},(_,i)=>`${String(i).padStart(6,'0')},24,4,15,0.1,0.2`).join('\r\n'));
+  await add(page,['Reference','Cases out','Weight','Sum']);
+  await map(page,'Reference','id');
+  await calculation(page,'Cases out','units','factor','divide');
+  await calculation(page,'Weight','cases','12','multiply',true);
+  await calculation(page,'Sum','a','b','add');
+  const bytes=await download(page);
+  const expected='Reference,Cases out,Weight,Sum\r\n'+Array.from({length:10000},(_,i)=>`${String(i).padStart(6,'0')},6,180,0.3\r\n`).join('');
+  expect(bytes.toString()).toBe(expected);
+  await expect(page.getByLabel('Full dataset counts')).toContainText('10000');
+  await testInfo.attach('u7-cloud-smoke.json',{body:JSON.stringify({browser:browser.version(),node:process.version,rows:10000,totalSetupAndExportMs:performance.now()-start,bytes:bytes.length}),contentType:'application/json'});
 });

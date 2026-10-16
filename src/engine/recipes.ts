@@ -1,3 +1,4 @@
+import { calculateDecimal, validateDecimal, NumericError } from "./decimal";
 import type { Workflow } from "./workflow";
 import { displayValue, type SourceTable, type Value } from "./values";
 import type { Issue } from "./issues";
@@ -8,8 +9,13 @@ export type ResultRow = {
   record: number;
   line: number;
   values: Value[];
-  provenance: ({ field: string; row: string; trim?: true; segment?: number; segmentTrim?: boolean } &
-    ({ source: string } | { constant: Value }))[];
+  provenance: ({
+    field: string;
+    row: string;
+    trim?: true;
+    segment?: number;
+    segmentTrim?: boolean;
+  } & ({ source: string } | { constant: Value }))[];
   issues: Issue[];
   status: "valid" | "warning" | "invalid";
 };
@@ -58,9 +64,11 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
       provenance: ResultRow["provenance"] = [];
     const values: Value[] = workflow.fields.map((f) => {
       const recipe = f.recipe;
-      if (!recipe || recipe.kind === "calculate")
-        throw new Error("Unvalidated recipe");
-      const sourceKey = recipe.kind === "copy" || recipe.kind === "split" ? recipe.source : undefined;
+      if (!recipe) throw new Error("Unvalidated recipe");
+      const sourceKey =
+        recipe.kind === "copy" || recipe.kind === "split"
+          ? recipe.source
+          : undefined;
       const add = (
         code: string,
         severity: "error" | "warning",
@@ -68,24 +76,64 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
         action: string,
       ) =>
         issues.push({
-          code, scope: "row", severity,
-          row: row.id, record: row.record, line: row.line,
-          field: f.id, source: sourceKey, reason, action,
+          code,
+          scope: "row",
+          severity,
+          row: row.id,
+          record: row.record,
+          line: row.line,
+          field: f.id,
+          source: sourceKey,
+          reason,
+          action,
         });
       const readSource = (source: string) => {
         provenance.push({
-          field: f.id, row: row.id, source,
+          field: f.id,
+          row: row.id,
+          source,
           ...(f.trim ? { trim: true as const } : {}),
-          ...(recipe.kind === "split" ? { segment: recipe.index, segmentTrim: recipe.trim } : {}),
+          ...(recipe.kind === "split"
+            ? { segment: recipe.index, segmentTrim: recipe.trim }
+            : {}),
         });
         return row.cells[positions.get(source)!]?.raw ?? "";
       };
       const readConstant = (constant: Value) => {
-        provenance.push({ field: f.id, row: row.id, constant: { ...constant }, ...(f.trim ? { trim: true as const } : {}) });
+        provenance.push({
+          field: f.id,
+          row: row.id,
+          constant: { ...constant },
+          ...(f.trim ? { trim: true as const } : {}),
+        });
         return { ...constant };
       };
       let value: Value;
       switch (recipe.kind) {
+        case "calculate": {
+          const operand = (o: typeof recipe.left) =>
+            o.kind === "source"
+              ? readSource(o.source)
+              : displayValue(readConstant(o));
+          const left = operand(recipe.left),
+            right = operand(recipe.right);
+          try {
+            value = {
+              kind: "number",
+              decimal: calculateDecimal(left, right, recipe.operation, f),
+            };
+          } catch (error) {
+            if (!(error instanceof NumericError)) throw error;
+            add(
+              error.code,
+              "error",
+              `${f.header}: ${error.message}`,
+              "Correct the operands or explicitly change numeric validation / rounding settings.",
+            );
+            value = { kind: "blank" };
+          }
+          break;
+        }
         case "copy":
           value = { kind: "text", text: readSource(recipe.source) };
           break;
@@ -93,28 +141,78 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
           value = readConstant(recipe.value);
           break;
         case "combine":
-          value = { kind: "text", text: recipe.components.map((c) => c.kind === "source"
-            ? readSource(c.source)
-            : displayValue(readConstant({ kind: "text", text: c.text }))).join(recipe.separator) };
+          value = {
+            kind: "text",
+            text: recipe.components
+              .map((c) =>
+                c.kind === "source"
+                  ? readSource(c.source)
+                  : displayValue(readConstant({ kind: "text", text: c.text })),
+              )
+              .join(recipe.separator),
+          };
           break;
         case "split": {
           const parts = readSource(recipe.source).split(recipe.delimiter);
           value = { kind: "blank" };
           if (parts.length !== recipe.segments) {
-            add("split-count", "error", `${f.header}: expected ${recipe.segments} segments but found ${parts.length}.`, "Correct the source delimiter positions or change the expected segment count.");
+            add(
+              "split-count",
+              "error",
+              `${f.header}: expected ${recipe.segments} segments but found ${parts.length}.`,
+              "Correct the source delimiter positions or change the expected segment count.",
+            );
             break;
           }
-          const segments = recipe.trim ? parts.map((part) => part.trim()) : parts;
-          const empty = segments.flatMap((part, index) => part === "" && !recipe.optionalEmpty.includes(index) ? [index + 1] : []);
+          const segments = recipe.trim
+            ? parts.map((part) => part.trim())
+            : parts;
+          const empty = segments.flatMap((part, index) =>
+            part === "" && !recipe.optionalEmpty.includes(index)
+              ? [index + 1]
+              : [],
+          );
           if (empty.length) {
-            add("split-empty", "error", `${f.header}: required segment ${empty.join(", ")} is empty.`, "Correct the source or explicitly mark that empty position optional; retain its delimiters.");
+            add(
+              "split-empty",
+              "error",
+              `${f.header}: required segment ${empty.join(", ")} is empty.`,
+              "Correct the source or explicitly mark that empty position optional; retain its delimiters.",
+            );
             break;
           }
           value = { kind: "text", text: segments[recipe.index] };
           break;
         }
       }
-      if (f.trim && value.kind === "text") value = { kind: "text", text: value.text.trim() };
+      if (f.trim && value.kind === "text")
+        value = { kind: "text", text: value.text.trim() };
+      if (
+        f.type === "number" &&
+        recipe.kind !== "calculate" &&
+        displayValue(value) !== ""
+      ) {
+        try {
+          const decimal = validateDecimal(displayValue(value), f);
+          // Preserve approved typed fixed literals byte-for-byte when no precision policy changes them.
+          value = {
+            kind: "number",
+            decimal:
+              recipe.kind === "constant" && !f.rounding
+                ? displayValue(value)
+                : decimal,
+          };
+        } catch (error) {
+          if (!(error instanceof NumericError)) throw error;
+          add(
+            error.code,
+            "error",
+            `${f.header}: ${error.message}`,
+            "Correct the numeric value or change the explicit numeric settings.",
+          );
+          value = { kind: "blank" };
+        }
+      }
       const text = displayValue(value);
       if (f.required && text.trim() === "")
         add(
