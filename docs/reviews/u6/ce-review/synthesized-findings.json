@@ -1,0 +1,64 @@
+{
+  "findings": [
+    {
+      "#": 1,
+      "autofix_class": "manual",
+      "confidence": 100,
+      "evidence": [
+        "src/ui/TextRecipeSettings.tsx:22 --           <input type=\"number\" min={1} max={100} value={recipe.segments} onChange={(e) => change({ ...recipe, segments: Number(e.target.value) })} />",
+        "src/ui/TextRecipeSettings.tsx:31 --         {Array.from({ length: Math.min(100, Math.max(0, recipe.segments)) }, (_, index) => (",
+        "src/engine/validation.ts:84 --       (r.index >= r.segments || r.optionalEmpty.some((i) => i >= r.segments) ||",
+        "src/ui/TextRecipeSettings.tsx:22 -- <input type=\"number\" min={1} max={100} value={recipe.segments} onChange={(e) => change({ ...recipe, segments: Number(e.target.value) })} />",
+        "Trigger: configure segments=4, index=0, optionalEmpty=[3], then set Expected segment count to 3. The change callback keeps optionalEmpty=[3].",
+        "src/ui/TextRecipeSettings.tsx:31 -- {Array.from({ length: Math.min(100, Math.max(0, recipe.segments)) }, (_, index) => ( -- renders only indices 0 through 2, hiding the retained optional position 3.",
+        "src/engine/validation.ts:84 -- (r.index >= r.segments || r.optionalEmpty.some((i) => i >= r.segments) || -- rejects the hidden position, producing split-index even if every visible setting is valid.",
+        "src/engine/recipes.ts:53 returns the run without evaluation when workflowIssues exist, and src/workflows/codec.ts:5-11 rejects configuration validation issues before snapshot/save/portable export."
+      ],
+      "file": "src/ui/TextRecipeSettings.tsx",
+      "first_evidence": "src/ui/TextRecipeSettings.tsx:22 -- <input type=\"number\" min={1} max={100} value={recipe.segments} onChange={(e) => change({ ...recipe, segments: Number(e.target.value) })} />",
+      "independent_reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "line": 22,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "For an accepted valid segment count, filter optionalEmpty to positions below that count and clamp the selected index into range in the same change callback. Preserve temporary invalid numeric input as draft state if needed. Add a browser regression that checks segment 4 as optional, reduces count to 3 and successfully previews/saves a three-segment source without re-expanding the count.",
+      "title": "Keep obsolete optional split positions editable after reducing the count",
+      "why_it_matters": "Configure a four-segment split selecting segment 1, mark segment 4 optional, then change the expected count to 3. The change retains optionalEmpty:[3], but the optional-position checkboxes now render only positions 1\u20133. validateWorkflowConfiguration rejects the hidden position as split-index, so a source containing three valid segments cannot preview, download or save even though every visible setting is valid. The user must discover that temporarily restoring count 4 exposes the stale checkbox. This affects ordinary editing of an existing split rule."
+    }
+  ],
+  "first_evidence_backfilled": 0,
+  "malformed_findings": 0,
+  "malformed_returns": 0,
+  "pre_existing_findings": [],
+  "residual_risks": [],
+  "status": "complete",
+  "suppressed_by_confidence": {},
+  "suppressed_findings": [],
+  "testing_gaps": [],
+  "triage_groups": [],
+  "fold_in_outcome": "in-process-fallback",
+  "coverage_notes": [
+    "Full depth: saved/portable public contract and data-fidelity boundary.",
+    "AGENTS.md instruction-file standards fallback governs all changed paths; no CODING_STANDARDS.md found.",
+    "Explicit caller includes untracked U6 implementation/tests without index mutation; evidence artifacts excluded.",
+    "Later README/Workspace footer/tests README copy changes communicated by parent; no behavior changes; current source may include these when inspected.",
+    "No build/e2e run by review leaves; parent owns full production validation.",
+    "Learning corpus search found only XLSX qualification/README; no plausible U6 match; learnings not selected.",
+    "Cross-model pass: not run; no different-family CLI installed (only Codex CLI present). Adversarial lens used in-process fallback.",
+    "Two reviewer claims merged: same hidden optional-position defect and fix path. Same-model corroboration grants no validator shortcut or confidence promotion.",
+    "Testing gaps omitted after current-source inspection: split formula-risk export regression and add/remove literal UI coverage now exist; parent owns test execution.",
+    "One actionable P2 selected for independent validator batch; shortcut-skipped 0.",
+    "first_evidence_backfilled: 0; missing-first-evidence demotions: 0; mode-aware demotions: 0."
+  ],
+  "mode_aware_demotions": 0,
+  "quote_gate_demotions": 0,
+  "validator_shortcut_skipped": 0
+}

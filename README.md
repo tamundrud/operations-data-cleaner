@@ -1,10 +1,10 @@
 # Operations Data Cleaner
 
-U5 internal preview: convert a CSV into explicitly matched, reordered output columns, including fixed text, exact decimal numbers and intentional blanks. Trim text only when you choose to. Select CSV delimiter, BOM and header settings, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
+U6 internal preview: convert a CSV into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits and ordered combinations. Trim text only when you choose to. Select CSV delimiter, BOM and header settings, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
 
 ## Run locally
 
-Use Node 24 LTS (U5 cloud verification: Node 24.19.0).
+Use Node 24 LTS (U6 cloud verification: Node 24.19.0).
 
 ```sh
 npm ci
@@ -30,6 +30,14 @@ Unmatched outputs show **Suggested** candidates for exact normalized header name
 
 Suggestions use headers only, stay local, and never inspect row values. Billing parties, sales orders, stop/shipment IDs and quantities with different units are not treated as equivalents. Only explicitly configured recipes can be saved or downloaded; unresolved outputs still need a mapping or removal. Saved mappings rerun directly, and renamed or missing source headers still block processing.
 
+## Split and combine text (U6)
+
+Open an output column's settings and choose **Split a source column**. Choose its source, literal delimiter, expected count and segment number (starting at 1). Trimming is off until explicitly enabled. Configure each destination independently from the same original source. The count must match exactly: missing or extra segments invalidate the row. Mark optional empty positions explicitly and keep their delimiters (`a,,c,d`); positions are never guessed. Every other segment must contain text, even when selecting a different segment.
+
+Choose **Combine sources and text** to arrange two or more source columns and literal components. Use the labeled Up/Down controls, add/remove components, and choose an exact separator (including an empty separator). Empty sources and empty literals retain their position and separator. Combination cards show the configured order; all sources remain reusable. Optional output trim affects only the combined value's boundaries.
+
+Both recipes save and transfer in workflow version 1, including trimming, optional positions, ordered components and separators. Renamed or missing source headers still block runs. Split/combination output uses the same required/maximum-length validation, formula safety and revision checks as existing recipes. General parsing, automatic address interpretation, arithmetic and date conversion remain unavailable.
+
 ## Save, repeat and recover
 
 Name the current configuration and choose **Save workflow**. Save is explicit: changing rules, uploading a source, or importing a workflow does not automatically update saved definitions. **Save changes** updates the opened saved definition; **Save a copy** needs a distinct name. Identity/name conflicts require an explicit replacement or copy. Changes from another tab are detected before replacement.
@@ -43,11 +51,11 @@ Browser storage belongs to this browser and site origin, can be cleared, and is 
 ## Delivered limits and privacy
 
 - UTF-8 CSV with optional input BOM; comma, semicolon or tab input. First nonblank record is the header; normalized empty/duplicate headers and malformed quotes/extra cells fail explicitly.
-- Every output must have a source copy or fixed text/number/blank recipe. Text supports optional required/max-length validation and explicit boundary trim. Numeric constants use a strict decimal string grammar: optional sign, digits and decimal point; no currency, thousands separators or exponents. `12.50`, `+0012.500` and long decimals retain their exact representation without floating-point conversion or rounding. Fixed text is limited to 4096 characters and decimal literals to 1000 characters. Numeric source conversion, scale and rounding rules remain deferred. Optional blanks succeed; required blank/whitespace-only values block the whole download.
+- Every output must have a source copy, fixed text/number/blank, split or combination recipe. Text supports optional required/max-length validation and explicit boundary trim. Numeric constants use a strict decimal string grammar: optional sign, digits and decimal point; no currency, thousands separators or exponents. `12.50`, `+0012.500` and long decimals retain their exact representation without floating-point conversion or rounding. Fixed text is limited to 4096 characters and decimal literals to 1000 characters. Numeric source conversion, scale and rounding rules remain deferred. Optional blanks succeed; required blank/whitespace-only values block the whole download.
 - Default output: UTF-8, no BOM, comma, headers, standard quoting, CRLF. Choose comma, semicolon or tab, BOM on/off and header on/off. Preview retains column labels for identification even when the exported header is omitted. Formula-like text (including constants) and included headers require an explicit escaped/raw choice; preview shows the selected representation. Typed numeric constants are not formula text. Escaping changes text and cannot promise protection in every spreadsheet/importer. Raw text may be unsafe to open in spreadsheets.
 - Full dataset counts with paginated output and exception rows (50 per page). Nonblank totals are ordinary candidates. No silent record truncation. Limits: 25 MiB source, 200 columns, 2 million inspected cells, 30-second cancellable worker watchdog.
 - Files and parsed data stay in browser memory and are cleared by reload or End session. Only explicitly saved workflow configurations use IndexedDB; no source data or filename is persisted. No localStorage, service worker, analytics, remote fonts, or upload endpoint. Static application code/assets still use ordinary host requests and metadata. Processing runs in a local Web Worker.
-- Excel, split/combine/arithmetic/date operations, source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
+- Excel, arithmetic/date operations, source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
 
 ## Verify
 

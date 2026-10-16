@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type DragEvent } from "react";
+import TextRecipeSettings from "./TextRecipeSettings";
 import { suggestMatches } from "../suggestions/matches";
-import { normalizeHeader, type Field } from "../engine/workflow";
+import { normalizeHeader, referencedHeaders, type Field } from "../engine/workflow";
 import { displayValue } from "../engine/values";
 import type { View } from "../session/worker-protocol";
 
@@ -15,8 +16,8 @@ type Props = {
 };
 type Card = { kind: "source" | "output" | "pair"; id: string };
 const sourceKey = (f: Field) =>
-  f.recipe?.kind === "copy" ? f.recipe.source : "";
-const configured = (f: Field) => Boolean(sourceKey(f) || f.recipe?.kind === "constant");
+  f.recipe?.kind === "copy" || f.recipe?.kind === "split" ? f.recipe.source : "";
+const configured = (f: Field) => Boolean(sourceKey(f) || f.recipe?.kind === "constant" || (f.recipe?.kind === "combine" && f.recipe.components.every((c) => c.kind === "literal" || c.source)));
 const fixedSummary = (f: Field) => {
   if (f.recipe?.kind !== "constant") return "";
   const value = f.recipe.value;
@@ -56,7 +57,7 @@ export default function MappingRows({
     JSON.stringify([f.id, normalizeHeader(f.header), source]);
   const sourceHeaders = view.columns.map((c) => c.header);
   const suggestions = new Map(unmatched.map((f) => {
-    const headers = new Set(suggestMatches(sourceHeaders, f.header));
+    const headers = new Set(f.recipe ? [] : suggestMatches(sourceHeaders, f.header));
     return [f.id, view.columns.filter((c) =>
       headers.has(c.header) && !rejected.has(candidateKey(f, c.key)),
     )];
@@ -64,8 +65,8 @@ export default function MappingRows({
   const positions = new Map(fields.map((f, i) => [f, i + 1]));
   const usesBySource = new Map<string, number>();
   for (const f of matched) {
-    const key = sourceKey(f);
-    if (key) usesBySource.set(key, (usesBySource.get(key) ?? 0) + 1);
+    for (const key of referencedHeaders([f]))
+      usesBySource.set(key, (usesBySource.get(key) ?? 0) + 1);
   }
   const field = fields.find((f) => f.id === editing);
   const manualHeaders = manual.split("\n").filter((h) => h.trim());
@@ -248,6 +249,8 @@ export default function MappingRows({
   };
   const outputSummary = (f: Field, paired: boolean) => {
     if (f.recipe?.kind === "constant") return fixedSummary(f);
+    if (f.recipe?.kind === "split") return `Split · segment ${f.recipe.index + 1} of ${f.recipe.segments} · delimiter ${JSON.stringify(f.recipe.delimiter)}${f.recipe.trim ? " · trims segments" : ""}`;
+    if (f.recipe?.kind === "combine") return `Combine · ${f.recipe.components.length} components · separator ${JSON.stringify(f.recipe.separator)} · keeps empty positions`;
     if (paired) return `Confirmed · copies ${columnByKey.get(sourceKey(f))?.header ?? sourceKey(f)}`;
     if (suggestions.get(f.id)?.length) return "Suggested · review below to confirm";
     return "Unmatched · drop a source here";
@@ -448,6 +451,11 @@ export default function MappingRows({
                   <strong>Fixed value</strong>
                   <span>No source needed</span>
                 </div>
+              ) : f.recipe?.kind === "combine" ? (
+                <div className="fixed-summary combination-summary">
+                  <strong>Ordered combination</strong>
+                  <ol>{f.recipe.components.map((c, index) => <li key={index}>{c.kind === "source" ? columnByKey.get(c.source)?.header ?? `${c.source} (missing source)` : `Literal ${JSON.stringify(c.text)}`}</li>)}</ol>
+                </div>
               ) : sourceCard(sourceKey(f), f)}
               <span className="pair-mark" aria-hidden="true">
                 {f.recipe?.kind === "constant" ? "" : "↔"}
@@ -641,7 +649,7 @@ export default function MappingRows({
               <fieldset className="value-mode">
                 <legend>Output value</legend>
                 <label className="check">
-                  <input type="radio" name="value-mode" checked={field.recipe?.kind !== "constant"}
+                  <input type="radio" name="value-mode" checked={!field.recipe || field.recipe.kind === "copy"}
                     onChange={() => update(field.id, { type: "text", recipe: undefined })} />
                   Copy a source column
                 </label>
@@ -654,8 +662,20 @@ export default function MappingRows({
                     }} />
                   Use a fixed value
                 </label>
+                <label className="check">
+                  <input type="radio" name="value-mode" checked={field.recipe?.kind === "split"}
+                    onChange={() => { update(field.id, { type: "text", recipe: { kind: "split", source: sourceKey(field), delimiter: ",", segments: 4, index: 0, trim: false, optionalEmpty: [] } }); setSelected(undefined); }} />
+                  Split a source column
+                </label>
+                <label className="check">
+                  <input type="radio" name="value-mode" checked={field.recipe?.kind === "combine"}
+                    onChange={() => { update(field.id, { type: "text", recipe: { kind: "combine", components: [{ kind: "source", source: sourceKey(field) }, { kind: "literal", text: "" }], separator: " " } }); setSelected(undefined); }} />
+                  Combine sources and text
+                </label>
               </fieldset>
-              {field.recipe?.kind === "constant" ? (
+              {field.recipe?.kind === "split" || field.recipe?.kind === "combine" ? (
+                <TextRecipeSettings key={field.recipe.kind} recipe={field.recipe} columns={view.columns} change={(recipe) => update(field.id, { recipe })} />
+              ) : field.recipe?.kind === "constant" ? (
                 <>
                   <label>
                     Fixed value type

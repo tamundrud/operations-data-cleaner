@@ -1,0 +1,36 @@
+
+Running 1 test using 1 worker
+
+(node:5889) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [chromium] › tests/e2e/address-recipes.spec.ts:102:1 › reducing split count removes obsolete optional positions visibly and keeps the recipe usable
+  1) [chromium] › tests/e2e/address-recipes.spec.ts:102:1 › reducing split count removes obsolete optional positions visibly and keeps the recipe usable 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('status').filter({ hasText: 'Optional empty positions beyond the new segment count were removed.' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('status').filter({ hasText: 'Optional empty positions beyond the new segment count were removed.' }) with timeout 5000ms
+      - waiting for getByRole('status').filter({ hasText: 'Optional empty positions beyond the new segment count were removed.' })
+
+
+      106 |   await page.getByLabel("Segment 4 may be empty", { exact: true }).check();
+      107 |   await page.getByLabel("Expected segment count", { exact: true }).fill("3");
+    > 108 |   await expect(page.getByRole("status").filter({ hasText: "Optional empty positions beyond the new segment count were removed." })).toBeVisible();
+          |                                                                                                                                     ^
+      109 |   await closeSettings(page);
+      110 |   expect((await download(page)).toString()).toBe("Street\r\na\r\n");
+      111 |   const pending = page.waitForEvent("download");
+        at /workspace/operations-data-cleaner/tests/e2e/address-recipes.spec.ts:108:133
+
+    Error Context: ../../tmp/u6-count-red-results/address-recipes-reducing-s-e49cc-and-keeps-the-recipe-usable-chromium/error-context.md
+
+
+  1 failed
+    [chromium] › tests/e2e/address-recipes.spec.ts:102:1 › reducing split count removes obsolete optional positions visibly and keeps the recipe usable 

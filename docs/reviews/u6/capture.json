@@ -1,0 +1,48 @@
+{
+  "browser": "154.0.8037.57",
+  "observations": [
+    {
+      "state": "workspace",
+      "width": 1440,
+      "noPageOverflow": true,
+      "noDialogOverflow": true
+    },
+    {
+      "state": "workspace",
+      "width": 1024,
+      "noPageOverflow": true,
+      "noDialogOverflow": true
+    },
+    {
+      "state": "workspace",
+      "width": 390,
+      "noPageOverflow": true,
+      "noDialogOverflow": true
+    },
+    {
+      "state": "split-settings",
+      "width": 1440,
+      "noPageOverflow": true,
+      "noDialogOverflow": true
+    },
+    {
+      "state": "split-settings",
+      "width": 390,
+      "noPageOverflow": true,
+      "noDialogOverflow": true
+    },
+    {
+      "state": "combine-settings",
+      "width": 1440,
+      "noPageOverflow": true,
+      "noDialogOverflow": true
+    },
+    {
+      "state": "combine-settings",
+      "width": 390,
+      "noPageOverflow": true,
+      "noDialogOverflow": true
+    }
+  ],
+  "errors": []
+}

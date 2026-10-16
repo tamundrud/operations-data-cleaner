@@ -6,7 +6,7 @@ function requireUsable(workflow: Workflow): Workflow {
   if (issues.length) {
     const unsupported = issues.some((issue) => issue.code.startsWith("unsupported-"));
     throw new Error(unsupported
-      ? "Unsupported workflow capability. Use CSV, text copies and typed fixed values with delivered settings."
+      ? "Unsupported workflow capability. Use CSV, copies, fixed values, splits and combinations with delivered settings."
       : "Workflow configuration is invalid. Complete mappings and correct output names, identities and field settings.");
   }
   return workflow;
@@ -30,6 +30,17 @@ function projectRecipe(recipe: Field["recipe"]): Field["recipe"] {
     if (value.kind === "number") return { kind: "constant", value: { kind: "number", decimal: value.decimal } };
     if (value.kind === "blank") return { kind: "constant", value: { kind: "blank" } };
   }
+  if (recipe?.kind === "split") return {
+    kind: "split", source: recipe.source, delimiter: recipe.delimiter,
+    segments: recipe.segments, index: recipe.index, trim: recipe.trim,
+    optionalEmpty: [...recipe.optionalEmpty],
+  };
+  if (recipe?.kind === "combine") return {
+    kind: "combine", separator: recipe.separator,
+    components: recipe.components.map((c) => c.kind === "source"
+      ? { kind: "source", source: c.source }
+      : { kind: "literal", text: c.text }),
+  };
   // Leave unsupported/malformed variants for the shared validators to reject.
   return recipe;
 }

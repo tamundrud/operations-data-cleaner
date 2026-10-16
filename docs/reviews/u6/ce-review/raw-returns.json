@@ -1,0 +1,93 @@
+[
+  {
+    "reviewer": "correctness",
+    "findings": [
+      {
+        "title": "Keep removed optional positions editable after count reduction",
+        "severity": "P2",
+        "file": "src/ui/TextRecipeSettings.tsx",
+        "line": 22,
+        "autofix_class": "gated_auto",
+        "owner": "downstream-resolver",
+        "requires_verification": true,
+        "confidence": 75,
+        "pre_existing": false,
+        "suggested_fix": "When a valid expected count is reduced, explicitly remove optionalEmpty entries outside the new count and inform the user that removed positions were cleared; alternatively retain visible removable controls for stale optional positions until corrected. Add a browser regression for mark segment 4 optional \u2192 reduce count to 3 \u2192 valid three-part source \u2192 preview/save/download succeed after correction, without requiring a temporary count increase.",
+        "first_evidence": "src/ui/TextRecipeSettings.tsx:22 --           <input type=\"number\" min={1} max={100} value={recipe.segments} onChange={(e) => change({ ...recipe, segments: Number(e.target.value) })} />",
+        "evidence": [
+          "src/ui/TextRecipeSettings.tsx:22 --           <input type=\"number\" min={1} max={100} value={recipe.segments} onChange={(e) => change({ ...recipe, segments: Number(e.target.value) })} />",
+          "src/ui/TextRecipeSettings.tsx:31 --         {Array.from({ length: Math.min(100, Math.max(0, recipe.segments)) }, (_, index) => (",
+          "src/engine/validation.ts:84 --       (r.index >= r.segments || r.optionalEmpty.some((i) => i >= r.segments) ||"
+        ]
+      }
+    ],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "project-standards",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "testing",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": [
+      "tests/unit/split-combine.test.ts exercises formula detection for combinations but not a split that exposes formula-like text from a source whose full value is safe (for example, a,=1 selecting segment 2). Add an exact escaped/raw CSV assertion for that case so risk classification and exported representation are verified after splitting.",
+      "tests/e2e/address-recipes.spec.ts covers source-component addition and ordering, but never invokes Add literal component or Remove component in TextRecipeSettings. Extend the existing combination journey to add a literal, remove a middle component, and assert the resulting ordered components and exact CSV separators after saving/reopening."
+    ]
+  },
+  {
+    "reviewer": "maintainability",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "security",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "performance",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "api-contract",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "adversarial",
+    "findings": [
+      {
+        "title": "Reducing segment count hides an option that blocks export",
+        "severity": "P2",
+        "file": "src/ui/TextRecipeSettings.tsx",
+        "line": 22,
+        "autofix_class": "manual",
+        "owner": "downstream-resolver",
+        "requires_verification": true,
+        "confidence": 100,
+        "suggested_fix": "For an accepted valid segment count, filter optionalEmpty to positions below that count and clamp the selected index into range in the same change callback. Preserve temporary invalid numeric input as draft state if needed. Add a browser regression that checks segment 4 as optional, reduces count to 3 and successfully previews/saves a three-segment source without re-expanding the count.",
+        "pre_existing": false,
+        "first_evidence": "src/ui/TextRecipeSettings.tsx:22 -- <input type=\"number\" min={1} max={100} value={recipe.segments} onChange={(e) => change({ ...recipe, segments: Number(e.target.value) })} />",
+        "evidence": [
+          "src/ui/TextRecipeSettings.tsx:22 -- <input type=\"number\" min={1} max={100} value={recipe.segments} onChange={(e) => change({ ...recipe, segments: Number(e.target.value) })} />",
+          "Trigger: configure segments=4, index=0, optionalEmpty=[3], then set Expected segment count to 3. The change callback keeps optionalEmpty=[3].",
+          "src/ui/TextRecipeSettings.tsx:31 -- {Array.from({ length: Math.min(100, Math.max(0, recipe.segments)) }, (_, index) => ( -- renders only indices 0 through 2, hiding the retained optional position 3.",
+          "src/engine/validation.ts:86 -- (r.index >= r.segments || r.optionalEmpty.some((i) => i >= r.segments) || -- rejects the hidden position, producing split-index even if every visible setting is valid.",
+          "src/engine/recipes.ts:53 returns the run without evaluation when workflowIssues exist, and src/workflows/codec.ts:5-11 rejects configuration validation issues before snapshot/save/portable export."
+        ]
+      }
+    ],
+    "residual_risks": [],
+    "testing_gaps": []
+  }
+]

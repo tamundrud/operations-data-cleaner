@@ -1,0 +1,125 @@
+{
+  "run_id": "20261016-053319-u6",
+  "run_dir": "/tmp/compound-engineering-0/ce-code-review/20261016-053319-u6",
+  "findings": [
+    {
+      "#": 1,
+      "autofix_class": "manual",
+      "confidence": 100,
+      "evidence": [
+        "src/ui/TextRecipeSettings.tsx:22 --           <input type=\"number\" min={1} max={100} value={recipe.segments} onChange={(e) => change({ ...recipe, segments: Number(e.target.value) })} />",
+        "src/ui/TextRecipeSettings.tsx:31 --         {Array.from({ length: Math.min(100, Math.max(0, recipe.segments)) }, (_, index) => (",
+        "src/engine/validation.ts:84 --       (r.index >= r.segments || r.optionalEmpty.some((i) => i >= r.segments) ||",
+        "src/ui/TextRecipeSettings.tsx:22 -- <input type=\"number\" min={1} max={100} value={recipe.segments} onChange={(e) => change({ ...recipe, segments: Number(e.target.value) })} />",
+        "Trigger: configure segments=4, index=0, optionalEmpty=[3], then set Expected segment count to 3. The change callback keeps optionalEmpty=[3].",
+        "src/ui/TextRecipeSettings.tsx:31 -- {Array.from({ length: Math.min(100, Math.max(0, recipe.segments)) }, (_, index) => ( -- renders only indices 0 through 2, hiding the retained optional position 3.",
+        "src/engine/validation.ts:84 -- (r.index >= r.segments || r.optionalEmpty.some((i) => i >= r.segments) || -- rejects the hidden position, producing split-index even if every visible setting is valid.",
+        "src/engine/recipes.ts:53 returns the run without evaluation when workflowIssues exist, and src/workflows/codec.ts:5-11 rejects configuration validation issues before snapshot/save/portable export."
+      ],
+      "file": "src/ui/TextRecipeSettings.tsx",
+      "first_evidence": "src/ui/TextRecipeSettings.tsx:22 -- <input type=\"number\" min={1} max={100} value={recipe.segments} onChange={(e) => change({ ...recipe, segments: Number(e.target.value) })} />",
+      "independent_reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "line": 22,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "For an accepted valid segment count, filter optionalEmpty to positions below that count and clamp the selected index into range in the same change callback. Preserve temporary invalid numeric input as draft state if needed. Add a browser regression that checks segment 4 as optional, reduces count to 3 and successfully previews/saves a three-segment source without re-expanding the count.",
+      "title": "Keep obsolete optional split positions editable after reducing the count",
+      "why_it_matters": "Configure a four-segment split selecting segment 1, mark segment 4 optional, then change the expected count to 3. The change retains optionalEmpty:[3], but the optional-position checkboxes now render only positions 1\u20133. validateWorkflowConfiguration rejects the hidden position as split-index, so a source containing three valid segments cannot preview, download or save even though every visible setting is valid. The user must discover that temporarily restoring count 4 exposes the stale checkbox. This affects ordinary editing of an existing split rule."
+    }
+  ],
+  "selected_findings": [
+    {
+      "#": 1,
+      "autofix_class": "manual",
+      "confidence": 100,
+      "evidence": [
+        "src/ui/TextRecipeSettings.tsx:22 --           <input type=\"number\" min={1} max={100} value={recipe.segments} onChange={(e) => change({ ...recipe, segments: Number(e.target.value) })} />",
+        "src/ui/TextRecipeSettings.tsx:31 --         {Array.from({ length: Math.min(100, Math.max(0, recipe.segments)) }, (_, index) => (",
+        "src/engine/validation.ts:84 --       (r.index >= r.segments || r.optionalEmpty.some((i) => i >= r.segments) ||",
+        "src/ui/TextRecipeSettings.tsx:22 -- <input type=\"number\" min={1} max={100} value={recipe.segments} onChange={(e) => change({ ...recipe, segments: Number(e.target.value) })} />",
+        "Trigger: configure segments=4, index=0, optionalEmpty=[3], then set Expected segment count to 3. The change callback keeps optionalEmpty=[3].",
+        "src/ui/TextRecipeSettings.tsx:31 -- {Array.from({ length: Math.min(100, Math.max(0, recipe.segments)) }, (_, index) => ( -- renders only indices 0 through 2, hiding the retained optional position 3.",
+        "src/engine/validation.ts:84 -- (r.index >= r.segments || r.optionalEmpty.some((i) => i >= r.segments) || -- rejects the hidden position, producing split-index even if every visible setting is valid.",
+        "src/engine/recipes.ts:53 returns the run without evaluation when workflowIssues exist, and src/workflows/codec.ts:5-11 rejects configuration validation issues before snapshot/save/portable export."
+      ],
+      "file": "src/ui/TextRecipeSettings.tsx",
+      "first_evidence": "src/ui/TextRecipeSettings.tsx:22 -- <input type=\"number\" min={1} max={100} value={recipe.segments} onChange={(e) => change({ ...recipe, segments: Number(e.target.value) })} />",
+      "independent_reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "line": 22,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "For an accepted valid segment count, filter optionalEmpty to positions below that count and clamp the selected index into range in the same change callback. Preserve temporary invalid numeric input as draft state if needed. Add a browser regression that checks segment 4 as optional, reduces count to 3 and successfully previews/saves a three-segment source without re-expanding the count.",
+      "title": "Keep obsolete optional split positions editable after reducing the count",
+      "why_it_matters": "Configure a four-segment split selecting segment 1, mark segment 4 optional, then change the expected count to 3. The change retains optionalEmpty:[3], but the optional-position checkboxes now render only positions 1\u20133. validateWorkflowConfiguration rejects the hidden position as split-index, so a source containing three valid segments cannot preview, download or save even though every visible setting is valid. The user must discover that temporarily restoring count 4 exposes the stale checkbox. This affects ordinary editing of an existing split rule."
+    }
+  ],
+  "selected_count": 1,
+  "skip_count": 0,
+  "skip_evidence_basis": "No independently verified different-family adversarial reviewer; same-model agreement never licenses shortcut.",
+  "scope": {
+    "mode": "standalone",
+    "base": "8afed66",
+    "diff_a": "origin/main",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u6-strict-split-ordered-combine",
+    "head_sha": "8afed6641295b79e1822c7b6eb06541bb1d0a2f7",
+    "files": "/tmp/compound-engineering-0/ce-code-review/20261016-053319-u6/files.txt",
+    "diff": "/tmp/compound-engineering-0/ce-code-review/20261016-053319-u6/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": [
+      "docs/reviews/u6/ (review evidence outside implementation scope)"
+    ]
+  },
+  "intent": {
+    "summary": "Implement U6 only: strict literal-delimiter splitting with exact count, explicit selected position, optional-empty positions and opt-in trim; ordered source/literal combination retaining empties. Preserve U2-U5 paired-card UX, privacy, exact data, saved/portable workflow v1, independent output sources and revision-safe exports; arithmetic/date/U7 excluded.",
+    "confidence": "explicit"
+  },
+  "plan": {
+    "path": "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "source": "explicit",
+    "requirements": [
+      "U6: R3; FR-13\u201314,38; AC-03\u201304. Strict split exact literal delimiter/count/position/optional-empty/trim; each destination reads original source independently. Combine source/literal ordered components/separator, retain empties. Preserve existing invariants and roundtrip both recipes."
+    ],
+    "implementation_units": [
+      "U6 only: four-part address exact optional trimming; missing/fifth/required-empty invalid; optional empty unambiguous; combination exact ordered literals/separators/empties; reject output dependencies; source-to-export, row field refs, schema/privacy/10000 checks. U1\u2013U5 already approved; U7+ explicitly excluded."
+    ],
+    "settled_decisions": []
+  },
+  "constraints": [
+    "Review U6 only. Preserve approved U2\u2013U5 interface, privacy, data fidelity, saved workflows and revision safety. No arithmetic/date/U7.",
+    "Report-only: no production fixes, Git index writes, commits, build or e2e.",
+    "Review actual git working tree including untracked source/tests."
+  ],
+  "diff_path": "/tmp/compound-engineering-0/ce-code-review/20261016-053319-u6/full.diff",
+  "files_path": "/tmp/compound-engineering-0/ce-code-review/20261016-053319-u6/files.txt",
+  "scope_context": "standalone actual working tree including untracked U6 sources/tests; repository /workspace/operations-data-cleaner; origin/main base. Report-only: no source changes, Git index writes, builds or e2e."
+}

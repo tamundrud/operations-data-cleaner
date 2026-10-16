@@ -101,3 +101,12 @@ export async function download(page: Page) {
   expect(path).not.toBeNull();
   return readFile(path!);
 }
+
+export async function splitField(page: Page, header: string, source: string, position: number, trim = true) {
+  await edit(page, header);
+  await page.getByLabel("Split a source column", { exact: true }).check();
+  await page.getByLabel("Split source", { exact: true }).selectOption(source);
+  await page.getByLabel("Use segment number", { exact: true }).fill(String(position));
+  if (trim) await page.getByLabel("Trim whitespace around each segment", { exact: true }).check();
+  await closeSettings(page);
+}

@@ -1,0 +1,220 @@
+
+> operations-data-cleaner@0.2.0 test:unit
+> vitest run tests/unit/split-combine.test.ts
+
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+ ❯ tests/unit/split-combine.test.ts (8 tests | 7 failed) 64ms
+   × AC-03 independent split destinations produce exact trimmed CSV and retain original provenance 31ms
+   × strict segment count rejects extra and missing segments with actionable row/field/source references 4ms
+   × only explicitly optional empty positions succeed, without shifting or guessing missing delimiters 3ms
+   × literal multi-character delimiters and trimming are explicit, including unselected empty segments 1ms
+   × AC-04 ordered source/literal combination preserves repeats, empty positions and exact whitespace 5ms
+   × new recipes use existing required/max-length/formula safety and missing-header rules 1ms
+   × split and combine portable snapshots retain settings and detach configuration without source data 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/split-combine.test.ts > AC-03 independent split destinations produce exact trimmed CSV and retain original provenance
+AssertionError: expected [ { …(6) }, { …(6) }, { …(6) }, …(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "action": "Use a source copy or a fixed value.",
++     "code": "unsupported-recipe",
++     "field": "field-0",
++     "reason": "split is not supported in this build.",
++     "scope": "workflow",
++     "severity": "error",
++   },
++   {
++     "action": "Use a source copy or a fixed value.",
++     "code": "unsupported-recipe",
++     "field": "field-1",
++     "reason": "split is not supported in this build.",
++     "scope": "workflow",
++     "severity": "error",
++   },
++   {
++     "action": "Use a source copy or a fixed value.",
++     "code": "unsupported-recipe",
++     "field": "field-2",
++     "reason": "split is not supported in this build.",
++     "scope": "workflow",
++     "severity": "error",
++   },
++   {
++     "action": "Use a source copy or a fixed value.",
++     "code": "unsupported-recipe",
++     "field": "field-3",
++     "reason": "split is not supported in this build.",
++     "scope": "workflow",
++     "severity": "error",
++   },
++ ]
+
+ ❯ tests/unit/split-combine.test.ts:18:30
+     16|   const source = parse('Address\r\n"123 Main St, Vancouver, BC, V5K 0A…
+     17|   const run = evaluate(w, source);
+     18|   expect(run.workflowIssues).toEqual([]);
+       |                              ^
+     19|   expect(run.rows[0].values.map(displayValue)).toEqual(["123 Main St",…
+     20|   expect(Buffer.from(serializeCsv(w, run, undefined)).toString()).toBe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  tests/unit/split-combine.test.ts > strict segment count rejects extra and missing segments with actionable row/field/source references
+AssertionError: expected [ { …(6) }, { …(6) }, { …(6) }, …(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "action": "Use a source copy or a fixed value.",
++     "code": "unsupported-recipe",
++     "field": "field-0",
++     "reason": "split is not supported in this build.",
++     "scope": "workflow",
++     "severity": "error",
++   },
++   {
++     "action": "Use a source copy or a fixed value.",
++     "code": "unsupported-recipe",
++     "field": "field-1",
++     "reason": "split is not supported in this build.",
++     "scope": "workflow",
++     "severity": "error",
++   },
++   {
++     "action": "Use a source copy or a fixed value.",
++     "code": "unsupported-recipe",
++     "field": "field-2",
++     "reason": "split is not supported in this build.",
++     "scope": "workflow",
++     "severity": "error",
++   },
++   {
++     "action": "Use a source copy or a fixed value.",
++     "code": "unsupported-recipe",
++     "field": "field-3",
++     "reason": "split is not supported in this build.",
++     "scope": "workflow",
++     "severity": "error",
++   },
++ ]
+
+ ❯ tests/unit/split-combine.test.ts:27:30
+     25| test("strict segment count rejects extra and missing segments with act…
+     26|   const run = evaluate(split(), parse('Address\n"a,b,c,d,e"\n"a,b,c"')…
+     27|   expect(run.workflowIssues).toEqual([]);
+       |                              ^
+     28|   expect(run.summary.invalid).toBe(2);
+     29|   run.rows.forEach((row, i) => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  tests/unit/split-combine.test.ts > only explicitly optional empty positions succeed, without shifting or guessing missing delimiters
+AssertionError: expected [] to deeply equal [ 'valid', 'valid', 'invalid', …(1) ]
+
+- Expected
++ Received
+
+- [
+-   "valid",
+-   "valid",
+-   "invalid",
+-   "invalid",
+- ]
++ []
+
+ ❯ tests/unit/split-combine.test.ts:42:41
+     40|   w.fields.forEach((f) => { if (f.recipe?.kind === "split") f.recipe.o…
+     41|   const run = evaluate(w, parse('Address\n"a,,c,d"\n"a, ,c,d"\n"a,b,,d…
+     42|   expect(run.rows.map((r) => r.status)).toEqual(["valid", "valid", "in…
+       |                                         ^
+     43|   expect(run.rows[0].values.map(displayValue)).toEqual(["a", "", "c", …
+     44|   expect(run.rows[2].issues[0]).toMatchObject({ code: "split-empty" });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  tests/unit/split-combine.test.ts > literal multi-character delimiters and trimming are explicit, including unselected empty segments
+TypeError: Cannot read properties of undefined (reading 'values')
+ ❯ tests/unit/split-combine.test.ts:53:64
+     51|   const w = split(); w.fields = [w.fields[0]];
+     52|   w.fields[0].recipe = { kind: "split", source: "address", delimiter: …
+     53|   expect(evaluate(w, parse('Address\n left .* right ')).rows[0].values…
+       |                                                                ^
+     54|   expect(evaluate(w, parse('Address\n.*right')).rows[0].status).toBe("…
+     55|   w.fields[0].trim = true;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  tests/unit/split-combine.test.ts > AC-04 ordered source/literal combination preserves repeats, empty positions and exact whitespace
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "action": "Use a source copy or a fixed value.",
++     "code": "unsupported-recipe",
++     "field": "field-0",
++     "reason": "combine is not supported in this build.",
++     "scope": "workflow",
++     "severity": "error",
++   },
++ ]
+
+ ❯ tests/unit/split-combine.test.ts:66:30
+     64| test("AC-04 ordered source/literal combination preserves repeats, empt…
+     65|   const w = combine(), run = evaluate(w, parse("ID,Empty\n0012,"));
+     66|   expect(run.workflowIssues).toEqual([]);
+       |                              ^
+     67|   expect(run.rows[0].values.map(displayValue)).toEqual(["0012 |  |  | …
+     68|   expect(Buffer.from(serializeCsv(w, run, undefined)).toString()).toBe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  tests/unit/split-combine.test.ts > new recipes use existing required/max-length/formula safety and missing-header rules
+TypeError: Cannot read properties of undefined (reading 'issues')
+ ❯ tests/unit/split-combine.test.ts:78:53
+     76|   const w = combine();
+     77|   w.fields[0].maxLength = 2;
+     78|   expect(evaluate(w, parse("ID,Empty\n=1,")).rows[0].issues.map((i) =>…
+       |                                                     ^
+     79|   expect(evaluate(w, parse("Renamed,Empty\n1,")).workflowIssues.map((i…
+     80|   w.fields[0].recipe = { kind: "combine", components: [{ kind: "litera…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  tests/unit/split-combine.test.ts > split and combine portable snapshots retain settings and detach configuration without source data
+Error: Unsupported workflow capability. Use CSV, text copies and typed fixed values with delivered settings.
+ ❯ requireUsable src/workflows/codec.ts:8:11
+      6|   if (issues.length) {
+      7|     const unsupported = issues.some((issue) => issue.code.startsWith("…
+      8|     throw new Error(unsupported
+       |           ^
+      9|       ? "Unsupported workflow capability. Use CSV, text copies and typ…
+     10|       : "Workflow configuration is invalid. Complete mappings and corr…
+ ❯ decodeUsableWorkflow src/workflows/codec.ts:17:20
+ ❯ snapshotWorkflow src/workflows/codec.ts:71:10
+ ❯ encodeWorkflow src/workflows/codec.ts:75:31
+ ❯ tests/unit/split-combine.test.ts:87:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 1 passed (8)
+   Start at  05:26:39
+   Duration  806ms (transform 43%, import 41%, tests 15%, worker 2%)
+

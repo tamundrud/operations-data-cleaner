@@ -54,11 +54,11 @@ export function validateWorkflowConfiguration(workflow: Workflow): Issue[] {
         "Choose a source column or remove this output column.",
         f.id,
       );
-    if (f.recipe && f.recipe.kind !== "copy" && f.recipe.kind !== "constant")
+    if (f.recipe?.kind === "calculate")
       add(
         "unsupported-recipe",
         `${f.recipe.kind} is not supported in this build.`,
-        "Use a source copy or a fixed value.",
+        "Use a source copy, fixed value, split or combination.",
         f.id,
       );
     if (
@@ -81,11 +81,12 @@ export function validateWorkflowConfiguration(workflow: Workflow): Issue[] {
       add("trim-type", "Trimming requires a text output.", "Use text or turn off whitespace trimming.", f.id);
     if (
       r?.kind === "split" &&
-      (r.index >= r.segments || r.optionalEmpty.some((i) => i >= r.segments))
+      (r.index >= r.segments || r.optionalEmpty.some((i) => i >= r.segments) ||
+        new Set(r.optionalEmpty).size !== r.optionalEmpty.length)
     )
       add(
         "split-index",
-        "Split positions exceed the expected segment count.",
+        "Split positions must be unique and within the expected segment count.",
         "Correct the segment positions.",
         f.id,
       );

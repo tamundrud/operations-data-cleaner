@@ -9,6 +9,7 @@ import {
   fixed,
   edit,
   closeSettings,
+  splitField,
 } from "./helpers";
 import Papa from "papaparse";
 import { readFile } from "node:fs/promises";
@@ -262,4 +263,27 @@ test("499 x 20 import to preview stays under the one-second smoke budget", async
     contentType: "application/json",
   });
   expect(warm[4]).toBeLessThan(1000);
+});
+
+
+test("10000 U6 rows preserve every split and combined empty component", async ({ page }, testInfo) => {
+  test.setTimeout(120000);
+  const lines = Array.from({ length: 10000 }, (_, i) => `${String(i).padStart(6, "0")},"${i} Main St, Vancouver, BC, V5K 0A1"`);
+  const csv = "ID,Address\r\n" + lines.join("\r\n") + "\r\n";
+  await page.goto("/"); await upload(page, csv);
+  await add(page, ["City", "Label"]);
+  await splitField(page, "City", "address", 2);
+  await edit(page, "Label");
+  await page.getByLabel("Combine sources and text", { exact: true }).check();
+  await page.getByLabel("Component 1 source", { exact: true }).selectOption("id");
+  await page.getByLabel("Combination separator", { exact: true }).fill("|");
+  await closeSettings(page);
+  const start = performance.now();
+  await upload(page, csv); await preview(page);
+  const bytes = await download(page), elapsed = performance.now() - start;
+  const expected = "City,Label\r\n" + Array.from({ length: 10000 }, (_, i) => `Vancouver,${String(i).padStart(6, "0")}|\r\n`).join("");
+  expect(bytes).toEqual(Buffer.from(expected));
+  await expect(page.getByLabel("Full dataset counts")).toContainText("10000");
+  await testInfo.attach("u6-timings.json", { body: JSON.stringify({ rows: 10000, repeatImportThroughDownloadMs: elapsed, environment: "Codex cloud runner; not reference-laptop qualification" }), contentType: "application/json" });
+  expect(elapsed).toBeLessThan(5000);
 });

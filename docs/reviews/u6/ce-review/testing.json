@@ -1,0 +1,9 @@
+{
+  "reviewer": "testing",
+  "findings": [],
+  "residual_risks": [],
+  "testing_gaps": [
+    "tests/unit/split-combine.test.ts exercises formula detection for combinations but not a split that exposes formula-like text from a source whose full value is safe (for example, a,=1 selecting segment 2). Add an exact escaped/raw CSV assertion for that case so risk classification and exported representation are verified after splitting.",
+    "tests/e2e/address-recipes.spec.ts covers source-component addition and ordering, but never invokes Add literal component or Remove component in TextRecipeSettings. Extend the existing combination journey to add a literal, remove a middle component, and assert the resulting ordered components and exact CSV separators after saving/reopening."
+  ]
+}

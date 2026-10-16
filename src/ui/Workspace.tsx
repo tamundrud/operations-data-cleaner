@@ -643,7 +643,7 @@ export default function Workspace() {
         </div>
       )}
       <footer>
-        U5 internal preview · Confirmable header suggestions and reusable local workflows. Data is cleared on reload
+        U6 internal preview · Strict splits, ordered combinations and reusable local workflows. Data is cleared on reload
         or End session. Source data and file names are never saved. Static
         application assets are requested from the host; customer file processing
         stays local.

@@ -1,0 +1,164 @@
+{
+  "run_id": "20261016-053319-u6",
+  "run_dir": "/tmp/compound-engineering-0/ce-code-review/20261016-053319-u6",
+  "skill_dir": "/home/agent/.agents/skills/ce-code-review",
+  "docs_root": "docs",
+  "mode": {
+    "agent": true,
+    "apply_local": false,
+    "grouping": "auto",
+    "depth": "auto"
+  },
+  "invocation": {
+    "arguments": "mode:agent base:origin/main plan:docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "constraints": [
+      "Review U6 only. Preserve approved U2\u2013U5 interface, privacy, data fidelity, saved workflows and revision safety. No arithmetic/date/U7.",
+      "Report-only: no production fixes, Git index writes, commits, build or e2e.",
+      "Review actual git working tree including untracked source/tests.",
+      "Caller rejects automatic clamping of selected split index because that silently changes explicit output meaning; keep selected index visible for deliberate adjustment. For count reduction remove only out-of-range optional positions with visible feedback, or retain removable stale controls."
+    ]
+  },
+  "scope": {
+    "mode": "standalone",
+    "base": "8afed66",
+    "diff_a": "origin/main",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u6-strict-split-ordered-combine",
+    "head_sha": "8afed6641295b79e1822c7b6eb06541bb1d0a2f7",
+    "files": "/tmp/compound-engineering-0/ce-code-review/20261016-053319-u6/files.txt",
+    "diff": "/tmp/compound-engineering-0/ce-code-review/20261016-053319-u6/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": [
+      "docs/reviews/u6/ (review evidence outside implementation scope)"
+    ]
+  },
+  "intent": {
+    "summary": "Implement U6 only: strict literal-delimiter splitting with exact count, explicit selected position, optional-empty positions and opt-in trim; ordered source/literal combination retaining empties. Preserve U2-U5 paired-card UX, privacy, exact data, saved/portable workflow v1, independent output sources and revision-safe exports; arithmetic/date/U7 excluded.",
+    "confidence": "explicit"
+  },
+  "plan": {
+    "path": "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "source": "explicit",
+    "requirements": [
+      "U6: R3; FR-13\u201314,38; AC-03\u201304. Strict split exact literal delimiter/count/position/optional-empty/trim; each destination reads original source independently. Combine source/literal ordered components/separator, retain empties. Preserve existing invariants and roundtrip both recipes."
+    ],
+    "implementation_units": [
+      "U6 only: four-part address exact optional trimming; missing/fifth/required-empty invalid; optional empty unambiguous; combination exact ordered literals/separators/empties; reject output dependencies; source-to-export, row field refs, schema/privacy/10000 checks. U1\u2013U5 already approved; U7+ explicitly excluded."
+    ],
+    "settled_decisions": []
+  },
+  "roster": {
+    "selected": [
+      {
+        "reviewer": "correctness",
+        "tier": "session",
+        "reason": "always-on"
+      },
+      {
+        "reviewer": "project-standards",
+        "tier": "mid",
+        "reason": "AGENTS fallback applies"
+      },
+      {
+        "reviewer": "testing",
+        "tier": "mid",
+        "reason": "new behavior and tests"
+      },
+      {
+        "reviewer": "maintainability",
+        "tier": "mid",
+        "reason": "new component + >200 executable tracked/untracked lines"
+      },
+      {
+        "reviewer": "security",
+        "tier": "session",
+        "reason": "untrusted portable JSON/text"
+      },
+      {
+        "reviewer": "performance",
+        "tier": "mid",
+        "reason": "large row-loop transforms"
+      },
+      {
+        "reviewer": "api-contract",
+        "tier": "mid",
+        "reason": "portable saved workflow v1 supported recipes"
+      },
+      {
+        "reviewer": "adversarial",
+        "tier": "session",
+        "reason": ">50 executable lines; saved definitions and ordered transforms"
+      }
+    ],
+    "standards": {
+      "criteria": [
+        {
+          "path": "AGENTS.md",
+          "files": [
+            "README.md",
+            "src/engine/recipes.ts",
+            "src/engine/validation.ts",
+            "src/ui/MappingRows.tsx",
+            "src/ui/Workspace.tsx",
+            "src/ui/styles.css",
+            "src/workflows/codec.ts",
+            "tests/e2e/helpers.ts",
+            "tests/e2e/performance.spec.ts",
+            "tests/e2e/privacy.spec.ts",
+            "tests/unit/workflow-roundtrip.test.ts",
+            "tests/unit/workflow.test.ts",
+            "src/ui/TextRecipeSettings.tsx",
+            "tests/e2e/address-recipes.spec.ts",
+            "tests/unit/split-combine.test.ts",
+            "tests/fixtures/addresses/source.csv"
+          ]
+        }
+      ],
+      "fallback_named": true,
+      "not_run_reason": null
+    },
+    "packs": {
+      "roots": [],
+      "errors": [],
+      "warnings": []
+    }
+  },
+  "collection": {
+    "returns": "/tmp/compound-engineering-0/ce-code-review/20261016-053319-u6/raw-returns.json",
+    "unstructured_returns": [],
+    "failed_reviewers": [],
+    "bound_exceeded": [],
+    "fast_pass": {
+      "emitted_preliminary": false,
+      "candidates": []
+    }
+  },
+  "peer": {
+    "selected": true,
+    "target": null,
+    "route": null,
+    "preference_source": "default",
+    "outcome": "in-process-fallback",
+    "artifact": null,
+    "coverage": "Cross-model pass: not run; no different-family CLI installed (only Codex CLI present). Adversarial lens used in-process fallback."
+  },
+  "coverage_notes": [
+    "Full depth: saved/portable public contract and data-fidelity boundary.",
+    "AGENTS.md instruction-file standards fallback governs all changed paths; no CODING_STANDARDS.md found.",
+    "Explicit caller includes untracked U6 implementation/tests without index mutation; evidence artifacts excluded.",
+    "Later README/Workspace footer/tests README copy changes communicated by parent; no behavior changes; current source may include these when inspected.",
+    "No build/e2e run by review leaves; parent owns full production validation.",
+    "Learning corpus search found only XLSX qualification/README; no plausible U6 match; learnings not selected."
+  ]
+}
