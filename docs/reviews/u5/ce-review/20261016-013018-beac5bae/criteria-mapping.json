@@ -1,0 +1,13 @@
+{
+  "AGENTS.md": [
+    "README.md",
+    "src/ui/MappingRows.tsx",
+    "src/ui/Workspace.tsx",
+    "src/ui/styles.css",
+    "tests/README.md",
+    "src/suggestions/dictionary.ts",
+    "src/suggestions/matches.ts",
+    "tests/unit/suggestions.test.ts",
+    "tests/e2e/suggestions.spec.ts"
+  ]
+}

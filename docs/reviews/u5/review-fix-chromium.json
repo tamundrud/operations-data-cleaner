@@ -1,0 +1,59 @@
+{
+  "stats": {
+    "startTime": "2026-10-16T01:36:42.690Z",
+    "duration": 38249.090000000004,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "file": "suggestions.spec.ts",
+      "title": "keyboard accept/reject leaves candidates unconfirmed and existing recipes authoritative",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 12408
+        }
+      ]
+    },
+    {
+      "file": "suggestions.spec.ts",
+      "title": "ambiguous exact/dictionary candidates remain alternatives until an explicit choice",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3381
+        }
+      ]
+    },
+    {
+      "file": "suggestions.spec.ts",
+      "title": "only accepted mappings save, back up and rerun; renamed headers still block",
+      "project": "chromium",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 12331
+        }
+      ]
+    }
+  ],
+  "command": "U2_CHROMIUM_PATH=/usr/bin/chromium npx playwright test tests/e2e/suggestions.spec.ts --project=chromium --reporter=line,json",
+  "note": "After CE privacy finding #1 fix; all guards active through reload and separate-context import. No source changes between timed-out attempt and passing recheck.",
+  "prior_attempt": {
+    "startTime": "2026-10-16T01:35:28.864Z",
+    "duration": 47252.988000000005,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  },
+  "prior_attempt_note": "Keyboard journey reached Axe scan but exceeded its 30-second whole-test limit; ambiguity and strengthened privacy/persistence cases passed. Same test source passed the full regression run and unchanged recheck."
+}

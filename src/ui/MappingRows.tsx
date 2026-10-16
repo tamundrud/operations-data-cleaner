@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type DragEvent } from "react";
-import type { Field } from "../engine/workflow";
+import { suggestMatches } from "../suggestions/matches";
+import { normalizeHeader, type Field } from "../engine/workflow";
 import { displayValue } from "../engine/values";
 import type { View } from "../session/worker-protocol";
 
@@ -32,6 +33,7 @@ export default function MappingRows({
   makeFields,
   importTemplate,
 }: Props) {
+  const [rejected, setRejected] = useState<Set<string>>(() => new Set());
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Card>();
   const [dragging, setDragging] = useState<Card>();
@@ -50,6 +52,15 @@ export default function MappingRows({
     requestAnimationFrame(() => cards.current.get(id)?.focus());
   const matched = fields.filter(configured);
   const unmatched = fields.filter((f) => !configured(f));
+  const candidateKey = (f: Field, source: string) =>
+    JSON.stringify([f.id, normalizeHeader(f.header), source]);
+  const sourceHeaders = view.columns.map((c) => c.header);
+  const suggestions = new Map(unmatched.map((f) => {
+    const headers = new Set(suggestMatches(sourceHeaders, f.header));
+    return [f.id, view.columns.filter((c) =>
+      headers.has(c.header) && !rejected.has(candidateKey(f, c.key)),
+    )];
+  }));
   const positions = new Map(fields.map((f, i) => [f, i + 1]));
   const usesBySource = new Map<string, number>();
   for (const f of matched) {
@@ -235,6 +246,12 @@ export default function MappingRows({
       </button>
     );
   };
+  const outputSummary = (f: Field, paired: boolean) => {
+    if (f.recipe?.kind === "constant") return fixedSummary(f);
+    if (paired) return `Confirmed · copies ${columnByKey.get(sourceKey(f))?.header ?? sourceKey(f)}`;
+    if (suggestions.get(f.id)?.length) return "Suggested · review below to confirm";
+    return "Unmatched · drop a source here";
+  };
   const outputCard = (f: Field, paired: boolean) => (
     <button
       ref={(node) => {
@@ -252,9 +269,7 @@ export default function MappingRows({
         {f.header || "Name this output column"}
       </strong>
       <span className={paired ? "confirmed" : "waiting"}>
-        {f.recipe?.kind === "constant" ? fixedSummary(f) : paired
-          ? `Confirmed · copies ${columnByKey.get(sourceKey(f))?.header ?? sourceKey(f)}`
-          : "Unmatched · drop a source here"}
+        {outputSummary(f, paired)}
         {f.trim && " · trims boundary whitespace"}
       </span>
     </button>
@@ -517,6 +532,28 @@ export default function MappingRows({
                 <div key={f.id} className="dest-wrap" data-field-id={f.id}>
                   {outputCard(f, false)}
                   {editButton(f)}
+                  {!!suggestions.get(f.id)?.length && (
+                    <div className="suggestions" role="group" aria-label={`Suggestions for ${f.header}`}>
+                      <p>{suggestions.get(f.id)!.length > 1
+                        ? "Suggested alternatives · choose one or match another source."
+                        : "Suggested source · accept or match another source."}</p>
+                      {suggestions.get(f.id)!.map((c) => (
+                        <div className="suggestion" key={c.key}>
+                          <span>{c.header}</span>
+                          <button disabled={disabled}
+                            aria-label={`Accept ${c.header} for ${f.header}`}
+                            onClick={() => match(f.id, c.key)}>Accept</button>
+                          <button disabled={disabled}
+                            aria-label={`Reject ${c.header} for ${f.header}`}
+                            onClick={() => {
+                              setRejected((previous) => new Set(previous).add(candidateKey(f, c.key)));
+                              setAnnouncement(`Suggestion from ${c.header} for ${f.header} rejected. You can still match any source.`);
+                              focus(`output-${f.id}`);
+                            }}>Reject</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
               {!unmatched.length && (

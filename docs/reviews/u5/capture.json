@@ -1,0 +1,21 @@
+{
+  "observations": [
+    {
+      "state": "suggested",
+      "width": 1440,
+      "noPageOverflow": true
+    },
+    {
+      "state": "suggested",
+      "width": 1024,
+      "noPageOverflow": true
+    },
+    {
+      "state": "suggested",
+      "width": 390,
+      "noPageOverflow": true
+    }
+  ],
+  "errors": [],
+  "browser": "154.0.8037.57"
+}

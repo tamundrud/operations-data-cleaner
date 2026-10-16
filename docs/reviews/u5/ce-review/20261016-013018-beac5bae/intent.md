@@ -1,0 +1,1 @@
+Implement U5 only: header-only deterministic normalized-name and small curated logistics candidates with explicit Accept/Reject in existing paired cards. Existing confirmed copy/fixed recipes stay authoritative, with unchanged schema, persistence and execution; unknown saved source headers continue to block.

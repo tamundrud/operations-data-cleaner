@@ -1,0 +1,28 @@
+{
+  "reviewer": "correctness",
+  "findings": [
+    {
+      "title": "Keep U5 privacy interception active across the complete journey",
+      "severity": "P2",
+      "file": "tests/e2e/suggestions.spec.ts",
+      "line": 45,
+      "confidence": 100,
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "pre_existing": false,
+      "suggested_fix": "Install a reusable browser-context request/WebSocket/diagnostic guard before initial navigation, keep it through reload and reuse, and install it in the fresh import context before its first navigation. Allow only known static assets including / and /index.html; assert U5 header/value/file sentinels and unexpected traffic remain absent at the end of each context.",
+      "first_evidence": "tests/e2e/suggestions.spec.ts:45 -- await page.route(\"**/*\", async (route) => {",
+      "why_it_matters": "The U5 privacy test can pass while a Web Worker sends source headers or a later reopen/import step emits requests: its guard covers one page, starts after navigation, and is removed before reuse. The approved plan explicitly requires context-wide interception before load and coverage of all added stages, including WebSockets and diagnostics, so the new journey does not establish its claimed privacy acceptance.",
+      "evidence": [
+        "tests/e2e/suggestions.spec.ts:45 -- await page.route(\"**/*\", async (route) => {",
+        "tests/e2e/suggestions.spec.ts:43 -- await page.goto(\"/\");",
+        "tests/e2e/suggestions.spec.ts:72 -- await page.unroute(\"**/*\");",
+        "tests/e2e/suggestions.spec.ts:80 -- const next = await fresh.newPage(); await next.goto(\"/\");",
+        "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md:510 requires whole-context interception before load, WebSocket monitoring, diagnostics and all added stages. Existing tests/e2e/privacy.spec.ts has these guards but never accepts/rejects U5 suggestions."
+      ]
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}
