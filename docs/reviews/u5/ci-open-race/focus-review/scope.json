@@ -1,0 +1,33 @@
+{
+  "scope_mode": "local-aligned",
+  "base": "ec11fd4200ff46db68d393b4142019289d4856f7",
+  "changed_files": [
+    "tests/e2e/suggestions.spec.ts"
+  ],
+  "criteria_mapping": {
+    "AGENTS.md": [
+      "tests/e2e/suggestions.spec.ts"
+    ]
+  },
+  "excluded_untracked": [],
+  "scope_signals": {
+    "changed_lines": 1,
+    "exec_nontest_lines": 0,
+    "size_band": "small",
+    "unclassified_lines": {},
+    "hard_block_full": false
+  },
+  "depth": "focused",
+  "depth_reason": "Test-only synchronization affects temporal ordering; independent adversarial read checks fidelity and sequencing.",
+  "plan_discovery": {
+    "result": null,
+    "reason": "No plan argument or PR metadata; no plan filename matches current branch keywords u5/confirmable/logistics/suggestions."
+  },
+  "cross_model": {
+    "status": "not run",
+    "reason": "No installed attested different-family route; only Codex installed."
+  },
+  "local_reviewer_tiers": {
+    "adversarial": "session"
+  }
+}

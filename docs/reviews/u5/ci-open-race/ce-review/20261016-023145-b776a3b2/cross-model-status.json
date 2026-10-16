@@ -1,0 +1,6 @@
+{
+  "status": "not_run",
+  "host_harness": "codex",
+  "host_family": "codex",
+  "reason": "No installed attested-different-provider route: only codex CLI present; claude, grok, cursor-agent, agent, opencode absent. No provider content sent."
+}

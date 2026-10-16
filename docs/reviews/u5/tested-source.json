@@ -1,0 +1,148 @@
+{
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "node": "v24.19.0",
+  "browser": "Chromium 154.0.8037.57 (system executable)",
+  "build_assets": [
+    "index-CFTDsdpH.js",
+    "index-7ZlJOamX.css",
+    "processing.worker-DdVB6Aq4.js"
+  ],
+  "files": [
+    {
+      "path": "src/engine/issues.ts",
+      "sha256": "01b0813349c91c40aa8d4b63d3b83b87c02f144ff10cb8e24e87303ce609ca44"
+    },
+    {
+      "path": "src/engine/recipes.ts",
+      "sha256": "298a551817cc1f27a81aebb432d25d7aa53af5a574ecd158e7a32d4512069246"
+    },
+    {
+      "path": "src/engine/validation.ts",
+      "sha256": "5bf00577ae9d3c6fba0cfd8108565db536fd767b1a919bcd6ca770624503cc91"
+    },
+    {
+      "path": "src/engine/values.ts",
+      "sha256": "6e619adcd297b496e9ff2d11f9e77e037c764ba0373260f1e2ae974671abc979"
+    },
+    {
+      "path": "src/engine/workflow.ts",
+      "sha256": "7f69b17f49a669e25b60449c1d0780a68161652b579d9d7b7443903e40d8a29d"
+    },
+    {
+      "path": "src/formats/csv.ts",
+      "sha256": "6917be680e603a70c696a9ccb7dfdc8bce8e5f6fa89c245b1dfe5665e5f57c57"
+    },
+    {
+      "path": "src/formats/spreadsheet-safety.ts",
+      "sha256": "d1d57044598705ee416db9e8a426639d4b59b750860cf88d9ef534d159439061"
+    },
+    {
+      "path": "src/main.tsx",
+      "sha256": "0b5b2c1ae8f361ea6f21db77eee6dcf68bf1a85e13ffe5539b7a0bd79d33049e"
+    },
+    {
+      "path": "src/processing.worker.ts",
+      "sha256": "4be61f5c79ff67b2c049dd79a7ee70c50b750eaaba656987e8184d942eeec9ff"
+    },
+    {
+      "path": "src/schema-runtime.ts",
+      "sha256": "53b6265aceaa134933ee68f88def6e4a7fe6a80064545e81efa54e14408fe4c0"
+    },
+    {
+      "path": "src/session/controller.ts",
+      "sha256": "3e74bbbd92cf7b7df37c606bb56dd863bee7bef15635169dfce8650609e49ee3"
+    },
+    {
+      "path": "src/session/worker-protocol.ts",
+      "sha256": "65d104eb20beec14408da4e27d7e0fc9c4caa2b6525992bd2493508e1cbc88e9"
+    },
+    {
+      "path": "src/suggestions/dictionary.ts",
+      "sha256": "f9dd8e200882e39bd3d273a06a3899bcef1b03566be9cc05ff50989634265547"
+    },
+    {
+      "path": "src/suggestions/matches.ts",
+      "sha256": "3ab393095b9196c0999f3f0ad9e407fea47ae7a9bded50fcd7a41edd976e68c9"
+    },
+    {
+      "path": "src/ui/MappingRows.tsx",
+      "sha256": "6f1c938cb3d30e378577f3d1a7b41e045f18c240e99a870206787d87b1401a34"
+    },
+    {
+      "path": "src/ui/SavedWorkflows.tsx",
+      "sha256": "1c6385a793b9ac1b24d913ab0b68da1065bf0d539044a52c6aac8e421b0ec7a7"
+    },
+    {
+      "path": "src/ui/Workspace.tsx",
+      "sha256": "40938d250a8845c9c67138ffc73e2690c6ac99d466ee0d02f509a637888f33aa"
+    },
+    {
+      "path": "src/ui/styles.css",
+      "sha256": "2e0184a50e1083f55dd78f81506b75a770eb7d76cca45fe95595ea5517bd5052"
+    },
+    {
+      "path": "src/workflows/codec.ts",
+      "sha256": "df92f608344a52c7677988906c0e017959199eca54d7698d3a961b95ee9034a9"
+    },
+    {
+      "path": "src/workflows/indexeddb-store.ts",
+      "sha256": "7678489fa52f2f9754885e2dcaee7bf5e847e5465f900063c0d1bfb71c22a34e"
+    },
+    {
+      "path": "tests/unit/constants.test.ts",
+      "sha256": "5e44d1bb0d546c54e0992db25c6db7f3ef5c9fa8014a007199629cf50379ade5"
+    },
+    {
+      "path": "tests/unit/copy.test.ts",
+      "sha256": "e978aed1720bb3765a5fc978d9c4cf90cd9ff7f4e1c263658765d0567de5e9a3"
+    },
+    {
+      "path": "tests/unit/counts.test.ts",
+      "sha256": "61d0cd3ed50945a3c18f3b51b327094f860ce7c785d3f7251c35fb3664b9c237"
+    },
+    {
+      "path": "tests/unit/csv-options.test.ts",
+      "sha256": "3979d4d25573e821d41a468efcca672978b9f1c3b6d5eb7de0cebc4f4bf463aa"
+    },
+    {
+      "path": "tests/unit/csv.test.ts",
+      "sha256": "90bea29572fabce31e13547932e92a5782fddd6f734f1234c07e7a543be9d8c5"
+    },
+    {
+      "path": "tests/unit/safety.test.ts",
+      "sha256": "545c9a14522a7a22c23f59b72407d3a85260dda399d975e3eef7dcf1192221b8"
+    },
+    {
+      "path": "tests/unit/sample.test.ts",
+      "sha256": "85e76a3dbe27195f6462bc146242217a756a5ac596e8e04e2f32d0699ab4ef52"
+    },
+    {
+      "path": "tests/unit/session.test.ts",
+      "sha256": "a94312e41f800fec9013243e83efc5bca4afcb1d734d0b84786f7125eeba6d3b"
+    },
+    {
+      "path": "tests/unit/suggestions.test.ts",
+      "sha256": "d635c298b2e8f80015d011710e68c6fffb8171fe2d4c48b6de5c3781b7c1d7ac"
+    },
+    {
+      "path": "tests/unit/trim.test.ts",
+      "sha256": "e12676343189fcef1f6be1bc8d6e98c82050197ba6f348d35661cc0f4d3b5e9e"
+    },
+    {
+      "path": "tests/unit/workflow-roundtrip.test.ts",
+      "sha256": "0b7fce2cc9d3f926969fb9689a29e39345859e8d9f0ef78d0b6a51c905c78c1b"
+    },
+    {
+      "path": "tests/unit/workflow-store.test.ts",
+      "sha256": "3c48896ad030caa96e2a33467026a0eadfd6eabd535d0479536a890f5741dca9"
+    },
+    {
+      "path": "tests/unit/workflow.test.ts",
+      "sha256": "9bb95f5c4cef04a75a1f18989a3021fbac1e10114f25830265f0d9a6c4e4f971"
+    },
+    {
+      "path": "tests/e2e/suggestions.spec.ts",
+      "sha256": "f77a08c37876d97ccdf9818d3ef08fe5c2eb9935c9fb9578621ef7c7b37d6ea9"
+    }
+  ]
+}

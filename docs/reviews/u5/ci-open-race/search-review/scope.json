@@ -1,0 +1,33 @@
+{
+  "scope_mode": "local-aligned",
+  "base": "3e6c8c5693615426914bfbd40105ae738f598540",
+  "changed_files": [
+    "tests/e2e/row-mapping.spec.ts"
+  ],
+  "criteria_mapping": {
+    "AGENTS.md": [
+      "tests/e2e/row-mapping.spec.ts"
+    ]
+  },
+  "excluded_untracked": [],
+  "scope_signals": {
+    "changed_lines": 2,
+    "exec_nontest_lines": 0,
+    "size_band": "small",
+    "unclassified_lines": {},
+    "hard_block_full": false
+  },
+  "depth": "focused",
+  "depth_reason": "Small test-only synchronization change; asynchronous ordering and verification fidelity warrant independent adversarial read.",
+  "plan_discovery": {
+    "result": null,
+    "reason": "No plan argument or PR metadata; no filename matching branch keywords u5/confirmable/logistics/suggestions."
+  },
+  "cross_model": {
+    "status": "not run",
+    "reason": "Only same-family Codex CLI installed."
+  },
+  "local_reviewer_tiers": {
+    "adversarial": "session"
+  }
+}

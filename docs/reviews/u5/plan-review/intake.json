@@ -1,0 +1,33 @@
+{
+  "mode": "non-interactive",
+  "document_type": "unified-plan",
+  "origin": "docs/PRD.md",
+  "settled_ktds": "none",
+  "scope": "U5, KTD-09, R2/R9, FR-08\u201310, AC-02, existing privacy/fidelity/persistence invariants",
+  "source_sha256": {
+    "AGENTS.md": "f3bd66507f1085cbafd7fa1e5745c1ca6d03acbca57e85129bd35617ede607cb",
+    "docs/PRD.md": "9f7347e5fdced66921043a5735aac36be503290e6f5f0ff0b35375979f071885",
+    "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md": "04cbd98da7e69c960254d1bc3a243991eb63b592297fea015f9bf43eb7d3e308"
+  },
+  "pack_resolution": {
+    "roots": [],
+    "warnings": [],
+    "errors": [],
+    "entries": 0
+  },
+  "cross_model": {
+    "host_harness": "codex",
+    "host_family": "codex",
+    "status": "skipped",
+    "reason": "No installed attested-different provider route; codex host family excluded.",
+    "installed_routes": {
+      "codex": "/opt/codex/bin/codex",
+      "claude": null,
+      "grok": null,
+      "cursor-agent": null,
+      "opencode": null
+    }
+  },
+  "fresh_review": true,
+  "prior_u3_evidence_reused": false
+}

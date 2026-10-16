@@ -1,0 +1,31 @@
+{
+  "agent_surface": false,
+  "changed_files": [
+    "README.md",
+    "src/ui/MappingRows.tsx",
+    "src/ui/Workspace.tsx",
+    "src/ui/styles.css",
+    "tests/README.md"
+  ],
+  "changed_lines": 74,
+  "declared_packs": false,
+  "exec_lines": 47,
+  "exec_nontest_lines": 47,
+  "hard_block_classes": [],
+  "hard_block_full": false,
+  "has_learnings_corpus": true,
+  "pack_roots": 0,
+  "reason": null,
+  "signals": [
+    "frontend"
+  ],
+  "silent_pass_classes": [],
+  "size_band": "small",
+  "status": "complete",
+  "test_files_changed": true,
+  "unclassified_lines": {
+    ".css": 13,
+    ".md": 12
+  },
+  "uncounted_files": 0
+}

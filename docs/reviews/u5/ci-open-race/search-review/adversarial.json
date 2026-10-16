@@ -1,0 +1,10 @@
+{
+  "reviewer": "adversarial",
+  "findings": [],
+  "residual_risks": [
+    "The WebKit failure's proposed focus-race cause remains unconfirmed: source inspection shows match() schedules requestAnimationFrame focus restoration, but does not establish that it caused the reported retained search filter. The caller reports no Chromium reproduction and no locally available WebKit."
+  ],
+  "testing_gaps": [
+    "The modified 25-source/30-output scenario still needs WebKit execution to establish whether waiting for restored Output 30 focus prevents the observed filter-clear failure; this review ran no tests, builds, or server."
+  ]
+}

@@ -915,3 +915,16 @@ h3 {
 .repeat-summary { margin-bottom: 16px; }
 .repeat-summary p { font-size: 13px; }
 @media (max-width: 700px) { .workflow-actions label { max-width: 100%; flex-basis: 100%; } }
+
+.suggestions {
+  margin-top: 6px;
+  padding: 8px;
+  border-left: 3px solid #a47821;
+  background: #fff8e8;
+  font-size: 12px;
+}
+.suggestions p { margin: 0 0 6px; }
+.suggestion { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.suggestion + .suggestion { margin-top: 6px; }
+.suggestion span { flex: 1 1 100px; overflow-wrap: anywhere; }
+.suggestion button { padding: 5px 8px; }

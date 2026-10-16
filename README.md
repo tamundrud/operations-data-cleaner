@@ -1,10 +1,10 @@
 # Operations Data Cleaner
 
-U4 internal preview: convert a CSV into explicitly matched, reordered output columns, including fixed text, exact decimal numbers and intentional blanks. Trim text only when you choose to. Select CSV delimiter, BOM and header settings, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
+U5 internal preview: convert a CSV into explicitly matched, reordered output columns, including fixed text, exact decimal numbers and intentional blanks. Trim text only when you choose to. Select CSV delimiter, BOM and header settings, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
 
 ## Run locally
 
-Use Node 24 LTS (U4 verification: Node 24.21.0).
+Use Node 24 LTS (U5 cloud verification: Node 24.19.0).
 
 ```sh
 npm ci
@@ -24,6 +24,12 @@ Open an output card’s **⋯** settings to choose **Copy a source column** or *
 
 The existing [U2 source](examples/u2/source.csv), [template](examples/u2/template.csv) and [configuration](examples/u2/workflow.json) remain available. Bundled configurations use the same version 1 model as saved and portable workflows. The approved U2/U3 paired-card interface and contextual settings are retained.
 
+## Review suggested matches
+
+Unmatched outputs show **Suggested** candidates for exact normalized header names and the curated pairs **Ship To ↔ Consignee** and **PO # ↔ Purchase Order Reference**. Choose **Accept** for a candidate, **Reject** to dismiss it in this editor session, or match another source using the existing cards/settings. Multiple candidates remain alternatives; none is selected automatically. Existing confirmed mappings and fixed values take precedence.
+
+Suggestions use headers only, stay local, and never inspect row values. Billing parties, sales orders, stop/shipment IDs and quantities with different units are not treated as equivalents. Only explicitly configured recipes can be saved or downloaded; unresolved outputs still need a mapping or removal. Saved mappings rerun directly, and renamed or missing source headers still block processing.
+
 ## Save, repeat and recover
 
 Name the current configuration and choose **Save workflow**. Save is explicit: changing rules, uploading a source, or importing a workflow does not automatically update saved definitions. **Save changes** updates the opened saved definition; **Save a copy** needs a distinct name. Identity/name conflicts require an explicit replacement or copy. Changes from another tab are detected before replacement.
@@ -41,7 +47,7 @@ Browser storage belongs to this browser and site origin, can be cleared, and is 
 - Default output: UTF-8, no BOM, comma, headers, standard quoting, CRLF. Choose comma, semicolon or tab, BOM on/off and header on/off. Preview retains column labels for identification even when the exported header is omitted. Formula-like text (including constants) and included headers require an explicit escaped/raw choice; preview shows the selected representation. Typed numeric constants are not formula text. Escaping changes text and cannot promise protection in every spreadsheet/importer. Raw text may be unsafe to open in spreadsheets.
 - Full dataset counts with paginated output and exception rows (50 per page). Nonblank totals are ordinary candidates. No silent record truncation. Limits: 25 MiB source, 200 columns, 2 million inspected cells, 30-second cancellable worker watchdog.
 - Files and parsed data stay in browser memory and are cleared by reload or End session. Only explicitly saved workflow configurations use IndexedDB; no source data or filename is persisted. No localStorage, service worker, analytics, remote fonts, or upload endpoint. Static application code/assets still use ordinary host requests and metadata. Processing runs in a local Web Worker.
-- Excel, split/combine/arithmetic/date operations, suggestions, source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
+- Excel, split/combine/arithmetic/date operations, source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
 
 ## Verify
 

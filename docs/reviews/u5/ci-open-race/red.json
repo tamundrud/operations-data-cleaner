@@ -1,0 +1,27 @@
+{
+  "stats": {
+    "startTime": "2026-10-16T02:27:43.563Z",
+    "duration": 13229.041,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "title": "upload helper waits for the selected saved workflow to activate",
+      "file": "persistence.spec.ts",
+      "project": "chromium",
+      "status": "unexpected",
+      "results": [
+        {
+          "status": "failed",
+          "duration_ms": 8468,
+          "errors": [
+            "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.workspace')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" locator('.workspace') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.workspace')\u001b[22m\n\n\n   at helpers.ts:9\n\n   7 |   await expect(\n   8 |     page.locator(\".workspace\"),\n>  9 |   ).toBeVisible();\n     |     ^\n  10 |   await expect(page.getByLabel(\"Upload source CSV\")).toBeEnabled();\n  11 | }\n  12 | export async function add(page: Page, headers: string[]) {\n    at upload (/workspace/operations-data-cleaner/tests/e2e/helpers.ts:9:5)\n    at /workspace/operations-data-cleaner/tests/e2e/persistence.spec.ts:216:5"
+          ]
+        }
+      ]
+    }
+  ]
+}

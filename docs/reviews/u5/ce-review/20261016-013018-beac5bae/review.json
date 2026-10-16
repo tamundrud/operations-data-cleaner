@@ -1,0 +1,121 @@
+{
+  "status": "complete",
+  "verdict": "Ready with fixes",
+  "scope": {
+    "base": "8d0882a462639ed374b7cc1a6889cc918599e576",
+    "branch": "feat/u5-confirmable-logistics-suggestions",
+    "head_sha": "8d0882a462639ed374b7cc1a6889cc918599e576",
+    "pr_url": null,
+    "files_changed": 9,
+    "scope_mode": "local-aligned",
+    "includes_uncommitted": true
+  },
+  "intent": "Implement U5 only: header-only deterministic normalized-name and small curated logistics candidates with explicit Accept/Reject in existing paired cards. Existing confirmed copy/fixed recipes stay authoritative, with unchanged schema, persistence and execution; unknown saved source headers continue to block.",
+  "intent_confidence": "explicit",
+  "reviewers": [
+    "correctness",
+    "adversarial"
+  ],
+  "findings": [
+    {
+      "title": "Keep U5 privacy interception active across the complete journey",
+      "severity": "P2",
+      "file": "tests/e2e/suggestions.spec.ts",
+      "line": 45,
+      "confidence": 100,
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "pre_existing": false,
+      "suggested_fix": "Install a reusable browser-context request/WebSocket/diagnostic guard before initial navigation, keep it through reload and reuse, and install it in the fresh import context before its first navigation. Allow only known static assets including / and /index.html; assert U5 header/value/file sentinels and unexpected traffic remain absent at the end of each context.",
+      "first_evidence": "tests/e2e/suggestions.spec.ts:45 -- await page.route(\"**/*\", async (route) => {",
+      "why_it_matters": "The U5 privacy test can pass while a Web Worker sends source headers or a later reopen/import step emits requests: its guard covers one page, starts after navigation, and is removed before reuse. The approved plan explicitly requires context-wide interception before load and coverage of all added stages, including WebSockets and diagnostics, so the new journey does not establish its claimed privacy acceptance.",
+      "evidence": [
+        "tests/e2e/suggestions.spec.ts:45 -- await page.route(\"**/*\", async (route) => {",
+        "tests/e2e/suggestions.spec.ts:43 -- await page.goto(\"/\");",
+        "tests/e2e/suggestions.spec.ts:72 -- await page.unroute(\"**/*\");",
+        "tests/e2e/suggestions.spec.ts:80 -- const next = await fresh.newPage(); await next.goto(\"/\");",
+        "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md:510 requires whole-context interception before load, WebSocket monitoring, diagnostics and all added stages. Existing tests/e2e/privacy.spec.ts has these guards but never accepts/rejects U5 suggestions."
+      ],
+      "#": 1,
+      "reviewers": [
+        "correctness"
+      ],
+      "independent_reviewers": []
+    }
+  ],
+  "actionable_findings": [
+    {
+      "title": "Keep U5 privacy interception active across the complete journey",
+      "severity": "P2",
+      "file": "tests/e2e/suggestions.spec.ts",
+      "line": 45,
+      "confidence": 100,
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "pre_existing": false,
+      "suggested_fix": "Install a reusable browser-context request/WebSocket/diagnostic guard before initial navigation, keep it through reload and reuse, and install it in the fresh import context before its first navigation. Allow only known static assets including / and /index.html; assert U5 header/value/file sentinels and unexpected traffic remain absent at the end of each context.",
+      "first_evidence": "tests/e2e/suggestions.spec.ts:45 -- await page.route(\"**/*\", async (route) => {",
+      "why_it_matters": "The U5 privacy test can pass while a Web Worker sends source headers or a later reopen/import step emits requests: its guard covers one page, starts after navigation, and is removed before reuse. The approved plan explicitly requires context-wide interception before load and coverage of all added stages, including WebSockets and diagnostics, so the new journey does not establish its claimed privacy acceptance.",
+      "evidence": [
+        "tests/e2e/suggestions.spec.ts:45 -- await page.route(\"**/*\", async (route) => {",
+        "tests/e2e/suggestions.spec.ts:43 -- await page.goto(\"/\");",
+        "tests/e2e/suggestions.spec.ts:72 -- await page.unroute(\"**/*\");",
+        "tests/e2e/suggestions.spec.ts:80 -- const next = await fresh.newPage(); await next.goto(\"/\");",
+        "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md:510 requires whole-context interception before load, WebSocket monitoring, diagnostics and all added stages. Existing tests/e2e/privacy.spec.ts has these guards but never accepts/rejects U5 suggestions."
+      ],
+      "#": 1,
+      "reviewers": [
+        "correctness"
+      ],
+      "independent_reviewers": []
+    }
+  ],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "requirements_completeness": {
+    "plan": "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "plan_source": "explicit",
+    "scope": "U5 only; U1-U4 approved baseline, U6 onward out of scope",
+    "implemented_units": [
+      "U5"
+    ],
+    "verified_requirements": [
+      "R2/R9 within U5",
+      "FR-08",
+      "FR-09",
+      "AC-02",
+      "KTD-09 header-only candidates and explicit accept/reject/change",
+      "confirmed recipes authoritative",
+      "accepted mapping portable reuse and unknown-header block"
+    ],
+    "result": "U5 product behavior implemented; privacy verification guard incomplete as finding 1",
+    "unrequested_behavior_rules": []
+  },
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [],
+  "testing_gaps": [],
+  "coverage": {
+    "depth": "focused",
+    "depth_reason": "Small isolated UI/suggestion diff with no helper full floor; acceptance and rejection can fail silently across existing mapping/session state, requiring one independent adversarial read. Schema, persistence and engine remain unchanged.",
+    "criteria": [
+      "AGENTS.md"
+    ],
+    "criteria_kind": "instruction-file fallback; no CODING_STANDARDS.md governs changed paths",
+    "criteria_search": "complete in reviewed local tree",
+    "cross_model_pass": "not run",
+    "cross_model_reason": "Host harness and serving family codex. No CE config overrides. Only installed route codex is same serving family; claude/grok/cursor-agent/opencode absent. No external provider started or simulated.",
+    "independent_read": "Separately dispatched local adversarial reviewer completed, no findings; same serving family, not cross-model.",
+    "validator": "not run on focused path",
+    "other_reviewers": "No other reviewers dispatched; learnings, agent-native gaps and deployment notes not assessed; declared Compound Packs not applied.",
+    "untracked_source_override": "Invocation explicitly included src/suggestions/dictionary.ts, src/suggestions/matches.ts, tests/unit/suggestions.test.ts, tests/e2e/suggestions.spec.ts; inspected exact new-file diffs. Untracked docs/reviews/u5 artifacts excluded from product review.",
+    "scope_helper_limit": "Bundled helper counts tracked diff only:47 executable non-test lines and74 total. Authorized untracked source/test files additionally reviewed manually; see full.diff/files.txt.",
+    "validation_evidence": "Parent reports typecheck, lint,104 unit tests, production build and corrected U5 browser tests3pass. This readonly review did not rerun builds/browser server to avoid contention. Parent full Chromium suite pending at review completion; no claim of all-browser acceptance.",
+    "reviewed_at_utc": "2026-10-16T01:31:54.327198+00:00"
+  },
+  "artifact_path": "/workspace/operations-data-cleaner/docs/reviews/u5/ce-review/20261016-013018-beac5bae",
+  "run_id": "20261016-013018-beac5bae"
+}

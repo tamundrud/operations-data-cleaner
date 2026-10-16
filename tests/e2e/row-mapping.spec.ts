@@ -178,7 +178,9 @@ test("25 sources and 30 outputs stay searchable and aligned at desktop and lapto
   ).toHaveCount(1);
   await source(page, "Source 25").click();
   await output(page, "Output 30").click();
+  await expect(output(page, "Output 30")).toBeFocused();
   await page.getByLabel("Search source columns").fill("");
+  await expect(page.getByLabel("Search source columns")).toHaveValue("");
   for (let i = 1; i <= 10; i++) await map(page, `Output ${i}`, `source ${i}`);
   for (const width of [1440, 1024]) {
     await page.setViewportSize({ width, height: 900 });

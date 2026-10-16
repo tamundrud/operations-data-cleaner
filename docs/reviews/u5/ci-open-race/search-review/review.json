@@ -1,0 +1,58 @@
+{
+  "status": "complete",
+  "verdict": "Ready to merge",
+  "scope": {
+    "base": "3e6c8c5693615426914bfbd40105ae738f598540",
+    "branch": "feat/u5-confirmable-logistics-suggestions",
+    "head_sha": "3e6c8c5693615426914bfbd40105ae738f598540",
+    "pr_url": null,
+    "files_changed": 1
+  },
+  "intent": "Await Output 30 focus restoration after mapping before clearing the source search; verify that search cleared before looking up Source 1. Preserve existing mapping, layout, and exported-byte checks.",
+  "intent_confidence": "explicit",
+  "reviewers": [
+    "correctness",
+    "adversarial"
+  ],
+  "findings": [],
+  "actionable_findings": [],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "requirements_completeness": null,
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [
+    "The WebKit failure's proposed focus-race cause remains unconfirmed: source inspection shows match() schedules requestAnimationFrame focus restoration, but does not establish that it caused the reported retained search filter. The caller reports no Chromium reproduction and no locally available WebKit."
+  ],
+  "testing_gaps": [
+    "The modified 25-source/30-output scenario still needs WebKit execution to establish whether waiting for restored Output 30 focus prevents the observed filter-clear failure; this review ran no tests, builds, or server."
+  ],
+  "coverage": {
+    "depth": "focused",
+    "scope_mode": "local-aligned",
+    "changed_lines": 2,
+    "criteria_checked": [
+      "AGENTS.md"
+    ],
+    "criteria_source": "instruction-file fallback; no governing CODING_STANDARDS.md",
+    "plan": "No explicit plan or PR metadata; no unambiguous branch-keyword filename match.",
+    "cross_model": {
+      "status": "not run",
+      "reason": "Only same-family Codex CLI installed; no attested different-family route available."
+    },
+    "adversarial_lens": "One separately dispatched local adversarial reviewer completed; same serving family, no cross-model corroboration.",
+    "other_reviewer_agents": "None; no validator ran.",
+    "compound_packs": "Not applied; none declared.",
+    "not_assessed": [
+      "learnings",
+      "agent-native gaps",
+      "deployment notes",
+      "requirements completeness"
+    ],
+    "validation": "Source inspection and existing CI trace/reproduction-output inspection only. No tests, server, or build launched by reviewers; caller owns running checks. Chromium controlled attempt did not reproduce; no claim of deterministic reproduction.",
+    "excluded_untracked": []
+  },
+  "artifact_path": "/tmp/compound-engineering-1000/ce-code-review/20261016-044904-76428ce3",
+  "run_id": "20261016-044904-76428ce3"
+}

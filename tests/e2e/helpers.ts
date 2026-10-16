@@ -1,13 +1,13 @@
 import { expect, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 export async function upload(page: Page, text: string, name = "synthetic.csv") {
-  await page
-    .getByLabel("Upload source CSV")
-    .setInputFiles({ name, mimeType: "text/csv", buffer: Buffer.from(text) });
+  const source = page.getByLabel("Upload source CSV");
+  await expect(source).toBeEnabled();
+  await source.setInputFiles({ name, mimeType: "text/csv", buffer: Buffer.from(text) });
   await expect(
     page.locator(".workspace"),
   ).toBeVisible();
-  await expect(page.getByLabel("Upload source CSV")).toBeEnabled();
+  await expect(source).toBeEnabled();
 }
 export async function add(page: Page, headers: string[]) {
   const bulk = page.locator("details.bulk-columns");

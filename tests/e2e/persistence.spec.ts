@@ -176,44 +176,52 @@ test("a delayed saved-workflow read uses current confirmation after a draft edit
 });
 
 
-test("immediate source upload waits for the selected saved workflow to activate", async ({ page }) => {
-  await page.goto("/");
-  await page.getByLabel("Import workflow", { exact: true }).setInputFiles("examples/u3-workflow.json");
-  await expect(page.getByLabel("Workflow name", { exact: true })).toHaveValue("Synthetic fixed fields and trim");
-  await save(page);
-  const stored = (await records(page))[0];
-  await page.reload();
-  await page.getByLabel("Saved workflows", { exact: true }).selectOption(stored.id);
-  await page.evaluate(() => {
-    const open = IDBFactory.prototype.open;
-    IDBFactory.prototype.open = function (...args: Parameters<IDBFactory["open"]>) {
-      const request = open.apply(this, args);
-      request.addEventListener("success", (event) => {
-        event.stopImmediatePropagation();
-        Reflect.set(window, "releaseImmediateOpen", () => request.dispatchEvent(new Event("success")));
-      }, { once: true });
-      IDBFactory.prototype.open = open;
-      return request;
-    };
+for (const method of ["native chooser", "upload helper"] as const) {
+  test(`${method} waits for the selected saved workflow to activate`, async ({ page }) => {
+    await page.goto("/");
+    await page.getByLabel("Import workflow", { exact: true }).setInputFiles("examples/u3-workflow.json");
+    await expect(page.getByLabel("Workflow name", { exact: true })).toHaveValue("Synthetic fixed fields and trim");
+    await save(page);
+    const stored = (await records(page))[0];
+    await page.reload();
+    await page.getByLabel("Saved workflows", { exact: true }).selectOption(stored.id);
+    await page.evaluate(() => {
+      const open = IDBFactory.prototype.open;
+      IDBFactory.prototype.open = function (...args: Parameters<IDBFactory["open"]>) {
+        const request = open.apply(this, args);
+        request.addEventListener("success", (event) => {
+          event.stopImmediatePropagation();
+          Reflect.set(window, "releaseImmediateOpen", () => request.dispatchEvent(new Event("success")));
+        }, { once: true });
+        IDBFactory.prototype.open = open;
+        return request;
+      };
+    });
+    await page.getByRole("button", { name: "Open workflow", exact: true }).click();
+    await expect.poll(() => page.evaluate(() => typeof Reflect.get(window, "releaseImmediateOpen"))).toBe("function");
+    const source = page.getByLabel("Upload source CSV");
+    await expect(source).toBeDisabled();
+    await expect(page.getByRole("status").filter({ hasText: "Opening workflow…" })).toBeVisible();
+    await expect(page.getByLabel("Import workflow", { exact: true })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Try sample data", exact: true })).toBeDisabled();
+    if (method === "native chooser") {
+      const chooserEvent = page.waitForEvent("filechooser");
+      const immediateUpload = source.click();
+      await page.evaluate(() => Reflect.get(window, "releaseImmediateOpen")());
+      const chooser = await chooserEvent; await immediateUpload;
+      await chooser.setFiles({ name: "synthetic-immediate.csv", mimeType: "text/csv", buffer: Buffer.from("Order,Consignee\n000088,  New depot  ") });
+    } else {
+      // Model a slow IndexedDB read; the helper must wait before transferring the file.
+      await page.evaluate(() => setTimeout(() => Reflect.get(window, "releaseImmediateOpen")(), 250));
+      await upload(page, "Order,Consignee\n000088,  New depot  ", "synthetic-immediate.csv");
+    }
+    await preview(page);
+    await expect(page.getByLabel("Workflow name", { exact: true })).toHaveValue("Synthetic fixed fields and trim");
+    await expect(page.getByRole("region", { name: "Repeat workflow", exact: true })).toContainText("5 output columns");
+    expect(await download(page)).toEqual(Buffer.concat([Buffer.from([239, 187, 191]), Buffer.from("000088;0012;New depot;12.50;\r\n")]));
+    expect(await records(page)).toEqual([stored]);
   });
-  await page.getByRole("button", { name: "Open workflow", exact: true }).click();
-  await expect.poll(() => page.evaluate(() => typeof Reflect.get(window, "releaseImmediateOpen"))).toBe("function");
-  const source = page.getByLabel("Upload source CSV");
-  await expect(source).toBeDisabled();
-  await expect(page.getByRole("status").filter({ hasText: "Opening workflow…" })).toBeVisible();
-  await expect(page.getByLabel("Import workflow", { exact: true })).toBeDisabled();
-  await expect(page.getByRole("button", { name: "Try sample data", exact: true })).toBeDisabled();
-  const chooserEvent = page.waitForEvent("filechooser");
-  const immediateUpload = source.click();
-  await page.evaluate(() => Reflect.get(window, "releaseImmediateOpen")());
-  const chooser = await chooserEvent; await immediateUpload;
-  await chooser.setFiles({ name: "synthetic-immediate.csv", mimeType: "text/csv", buffer: Buffer.from("Order,Consignee\n000088,  New depot  ") });
-  await preview(page);
-  await expect(page.getByLabel("Workflow name", { exact: true })).toHaveValue("Synthetic fixed fields and trim");
-  await expect(page.getByRole("region", { name: "Repeat workflow", exact: true })).toContainText("5 output columns");
-  expect(await download(page)).toEqual(Buffer.concat([Buffer.from([239, 187, 191]), Buffer.from("000088;0012;New depot;12.50;\r\n")]));
-  expect(await records(page)).toEqual([stored]);
-});
+}
 
 
 for (const outcome of ["cancel", "missing"] as const) {
