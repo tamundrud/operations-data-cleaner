@@ -1,0 +1,54 @@
+{
+  "branch": "feat/u5-confirmable-logistics-suggestions",
+  "completed_at": "2026-10-16T04:49:56.074384+00:00",
+  "cost": {
+    "host": "codex",
+    "scope": {
+      "changed_lines": 2,
+      "depth": "focused",
+      "exec_nontest_lines": 0,
+      "size_band": "small",
+      "unclassified_lines": {}
+    },
+    "stages": [
+      {
+        "elapsed_seconds": 0.137,
+        "ended_at": "2026-10-16T04:49:04.705795+00:00",
+        "facts": {
+          "changed_lines": 2,
+          "depth": "focused",
+          "exec_nontest_lines": 0,
+          "size_band": "small",
+          "unclassified_lines": {}
+        },
+        "stage": "scope",
+        "started_at": "2026-10-16T04:49:04.568943+00:00"
+      },
+      {
+        "candidates": 0,
+        "elapsed_seconds": 51.498,
+        "ended_at": "2026-10-16T04:49:56.203748+00:00",
+        "reviewers": 2,
+        "stage": "review",
+        "started_at": "2026-10-16T04:49:04.705795+00:00"
+      },
+      {
+        "elapsed_seconds": 0.264,
+        "ended_at": "2026-10-16T04:49:56.467595+00:00",
+        "stage": "receipt",
+        "started_at": "2026-10-16T04:49:56.203748+00:00"
+      }
+    ],
+    "status": "complete",
+    "totals": {
+      "artifact_bytes": 6788,
+      "candidates": 0,
+      "elapsed_seconds": 51.899,
+      "reviewers": 2
+    },
+    "truncated_events": 0
+  },
+  "head_sha": "3e6c8c5693615426914bfbd40105ae738f598540",
+  "run_id": "20261016-044904-76428ce3",
+  "verdict": "Ready to merge"
+}

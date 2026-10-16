@@ -1,0 +1,15 @@
+{
+  "reviewer": "correctness",
+  "findings": [],
+  "residual_risks": [
+    "WebKit-specific root cause remains inferred: CI trace shows completed fill with retained search and Output30 focused, but controlled Chromium attempt cleared successfully and no local WebKit reproduction is available."
+  ],
+  "testing_gaps": [],
+  "review_notes": [
+    "match() changes field from unmatched to matched parent and schedules output focus through requestAnimationFrame. Waiting for current output focus orders search clearing after that restoration.",
+    "Search is a controlled input with onChange updating search; no other search setter or supported alternative diagnosis found.",
+    "Added value assertion checks real search state, and subsequent Source1 lookup plus mapping/layout/export assertions remain unchanged.",
+    "Reviewed actual trace fill events and unsuccessful Chromium reproduction script/output without executing tests.",
+    "No production code, timeout, action, or existing assertion changed. AGENTS.md instruction-file fallback checked."
+  ]
+}
