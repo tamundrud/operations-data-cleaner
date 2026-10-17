@@ -1,0 +1,28 @@
+
+> operations-data-cleaner@0.2.0 test:unit
+> vitest run tests/unit/xlsx-import.test.ts
+
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+ ❯ tests/unit/xlsx-import.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/xlsx-import.test.ts [ tests/unit/xlsx-import.test.ts ]
+Error: Cannot find module '../../src/formats/xlsx' imported from /workspace/operations-data-cleaner/tests/unit/xlsx-import.test.ts
+ ❯ tests/unit/xlsx-import.test.ts:3:1
+      1| import { expect, test } from "vitest";
+      2| import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
+      3| import { parseXlsx } from "../../src/formats/xlsx";
+       | ^
+      4| // @ts-expect-error U1's independently authored synthetic OOXML fixtur…
+      5| import { workbook, dates, fidelity, hostile, representative } from "..…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  17:11:30
+   Duration  162ms (worker 97%, environment 3%)

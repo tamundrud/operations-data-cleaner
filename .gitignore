@@ -174,3 +174,6 @@ __pycache__/
 
 playwright-report/
 test-results/
+
+# Approved, integrity-verified offline SheetJS distribution
+!vendor/xlsx-0.20.3.tgz

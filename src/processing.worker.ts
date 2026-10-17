@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 import "./schema-runtime";
 declare const self: DedicatedWorkerGlobalScope;
+import { parseXlsx } from "./formats/xlsx";
 import { parseCsv, serializeCsv } from "./formats/csv";
 import { evaluate, type Run, type ResultRow } from "./engine/recipes";
 import { makeWorkflow, type Workflow } from "./engine/workflow";
@@ -29,13 +30,15 @@ function view(page = 0, exceptions = false): View {
     workflowIssues: run.workflowIssues,
     summary: run.summary,
     riskyHeaders: run.riskyHeaders,
+    csvRisk: run.csvRisk,
     page,
     totalPages,
     exceptions,
     delimiter: source.delimiter,
+    worksheet: source.worksheet,
   };
 }
-self.onmessage = (event: MessageEvent<Request>) => {
+self.onmessage = async (event: MessageEvent<Request>) => {
   const m = event.data;
   const envelope = {
     request: m.request,
@@ -44,27 +47,25 @@ self.onmessage = (event: MessageEvent<Request>) => {
   };
   const send = (payload: Response) => self.postMessage(payload);
   try {
-    if (m.kind === "template") {
-      const template = parseCsv(
-        new Uint8Array(m.bytes),
-        m.delimiter,
-        "template",
-        true,
-      );
-      send({
-        ...envelope,
-        kind: "template",
-        headers: template.columns.map((c) => c.header),
-      });
-      return;
+    let candidate: SourceTable | undefined;
+    if (m.kind === "template" || m.kind === "import") {
+      if (m.format === "xlsx") {
+        const result = await parseXlsx(new Uint8Array(m.bytes), m.dataset, m.worksheet, m.kind === "template");
+        if (!result.table) {
+          send({ ...envelope, kind: "worksheets", sheets: result.sheets });
+          return;
+        }
+        candidate = result.table;
+      } else candidate = parseCsv(new Uint8Array(m.bytes), m.delimiter, m.dataset, m.kind === "template");
+      if (m.kind === "template") {
+        send({ ...envelope, kind: "template", headers: candidate.columns.map((c) => c.header) });
+        return;
+      }
     }
     if (m.kind === "import") {
-      const candidate = parseCsv(
-        new Uint8Array(m.bytes),
-        m.delimiter,
-        m.dataset,
-      );
-      const candidateWorkflow = m.workflow ?? makeWorkflow([]);
+      if (!candidate) throw new Error("No source table was imported.");
+      const original = m.workflow ?? makeWorkflow([]);
+      const candidateWorkflow = { ...original, source: { ...original.source, format: m.format ?? "csv", worksheet: candidate.worksheet, delimiter: m.delimiter } };
       const candidateRun = evaluate(candidateWorkflow, candidate);
       source = candidate;
       workflow = candidateWorkflow;

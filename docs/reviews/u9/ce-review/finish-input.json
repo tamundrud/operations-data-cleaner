@@ -1,0 +1,203 @@
+{
+  "run_id": "u9-integration-20261017",
+  "run_dir": "/tmp/compound-engineering-0/ce-code-review/u9-integration-20261017",
+  "skill_dir": "/home/agent/.agents/skills/ce-code-review",
+  "docs_root": "docs",
+  "mode": {
+    "agent": true,
+    "apply_local": false,
+    "grouping": "auto",
+    "depth": "auto"
+  },
+  "invocation": {
+    "arguments": "mode:agent base:81f74a2886fc3590af264dab50683e34c7cb4613 plan:docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "constraints": [
+      "Only U9 is active; do not assess U10 or later as missing requirements.",
+      "Preserve completed ZIP preflight code, tests, and CE review evidence at commit 81f74a2 unchanged.",
+      "No implementation/index/commit/push writes. Do not merge, deploy, or begin U10. Leave PR #9 draft."
+    ]
+  },
+  "scope": {
+    "mode": "standalone",
+    "base": "81f74a2886fc3590af264dab50683e34c7cb4613",
+    "diff_a": "81f74a2886fc3590af264dab50683e34c7cb4613",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u9-metadata-aware-excel-input",
+    "head_sha": "81f74a2886fc3590af264dab50683e34c7cb4613",
+    "files": "/tmp/compound-engineering-0/ce-code-review/u9-integration-20261017/files.txt",
+    "diff": "/tmp/compound-engineering-0/ce-code-review/u9-integration-20261017/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": []
+  },
+  "intent": {
+    "summary": "Complete U9 metadata-aware Excel input: select a worksheet, retain raw/display/type/format/formula-cache metadata, interpret text/numeric/date recipes faithfully, and export CSV safely. Preserve the qualified ZIP preflight checkpoint and previous successful run on failed replacement.",
+    "confidence": "explicit"
+  },
+  "plan": {
+    "path": "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "source": "explicit",
+    "requirements": [
+      {
+        "id": "U9",
+        "text": "Metadata-aware Excel input. R1/R6/R7; FR-01\u201306,36\u201337,41,47; AC-08\u201309 input,17 input. Preserve first-nonblank headers, selected worksheet/provenance, cached-formula warnings, header-only templates, workflow settings round-trips; qualify hostile archives, metadata and CSV bytes, 10,000-row worker and privacy."
+      }
+    ],
+    "implementation_units": [
+      "U9"
+    ],
+    "settled_decisions": []
+  },
+  "roster": {
+    "selected": [
+      {
+        "reviewer": "correctness",
+        "tier": "session",
+        "reason": "always-on"
+      },
+      {
+        "reviewer": "project-standards",
+        "tier": "mid-tier",
+        "reason": "AGENTS.md criteria govern every changed file"
+      },
+      {
+        "reviewer": "testing",
+        "tier": "mid-tier",
+        "reason": "meaningful runtime changes and changed unit/browser tests"
+      },
+      {
+        "reviewer": "maintainability",
+        "tier": "mid-tier",
+        "reason": "397 executable non-test changed lines and cross-layer metadata types"
+      },
+      {
+        "reviewer": "security",
+        "tier": "session",
+        "reason": "untrusted Excel input, formula caches and export safety"
+      },
+      {
+        "reviewer": "performance",
+        "tier": "mid-tier",
+        "reason": "worksheet expansion and large import transforms"
+      },
+      {
+        "reviewer": "reliability",
+        "tier": "mid-tier",
+        "reason": "async worker failure, cancellation and retained source transitions"
+      },
+      {
+        "reviewer": "adversarial",
+        "tier": "session",
+        "reason": "cross-component metadata and replacement sequences"
+      },
+      {
+        "reviewer": "julik-frontend-races",
+        "tier": "mid-tier",
+        "reason": "async worksheet picker and source/template transitions"
+      },
+      {
+        "reviewer": "learnings",
+        "tier": "mid-tier",
+        "reason": "matching XLSX qualification solution"
+      }
+    ],
+    "standards": {
+      "criteria": [
+        {
+          "path": "AGENTS.md",
+          "files": [
+            ".gitignore",
+            "README.md",
+            "docs/decisions/excel-fidelity.md",
+            "docs/reviews/u9/excel-desktop.png",
+            "docs/reviews/u9/excel-mobile.png",
+            "docs/reviews/u9/integration/u9-cache-safety-red.txt",
+            "docs/reviews/u9/integration/u9-dependency-audit.json",
+            "docs/reviews/u9/integration/u9-engine-red.txt",
+            "docs/reviews/u9/integration/u9-exponent-red.txt",
+            "docs/reviews/u9/integration/u9-reader-red.txt",
+            "docs/reviews/u9/integration/u9-session-red.txt",
+            "docs/reviews/u9/integration/u9-workflow-red.txt",
+            "docs/reviews/u9/simplification/efficiency.md",
+            "docs/reviews/u9/simplification/quality.md",
+            "docs/reviews/u9/simplification/reuse.md",
+            "docs/reviews/u9/simplification/verification.md",
+            "package-lock.json",
+            "package.json",
+            "public/SheetJS-LICENSE.txt",
+            "src/engine/recipes.ts",
+            "src/engine/validation.ts",
+            "src/engine/values.ts",
+            "src/engine/workflow.ts",
+            "src/formats/csv.ts",
+            "src/formats/xlsx.ts",
+            "src/processing.worker.ts",
+            "src/session/controller.ts",
+            "src/session/worker-protocol.ts",
+            "src/ui/DateSettings.tsx",
+            "src/ui/MappingRows.tsx",
+            "src/ui/Workspace.tsx",
+            "src/workflows/codec.ts",
+            "tests/e2e/excel-input.spec.ts",
+            "tests/unit/excel-values.test.ts",
+            "tests/unit/session.test.ts",
+            "tests/unit/workflow-roundtrip.test.ts",
+            "tests/unit/xlsx-import.test.ts",
+            "vendor/README.md",
+            "vendor/SheetJS-LICENSE.txt",
+            "vendor/xlsx-0.20.3.tgz"
+          ]
+        }
+      ],
+      "fallback_named": true,
+      "not_run_reason": null
+    },
+    "packs": {
+      "roots": [],
+      "errors": [],
+      "warnings": []
+    }
+  },
+  "collection": {
+    "returns": "/tmp/compound-engineering-0/ce-code-review/u9-integration-20261017/raw-returns.json",
+    "unstructured_returns": [
+      {
+        "reviewer": "learnings-researcher",
+        "path": "/tmp/compound-engineering-0/ce-code-review/u9-integration-20261017/learnings-researcher.md"
+      }
+    ],
+    "failed_reviewers": [],
+    "bound_exceeded": [],
+    "fast_pass": {
+      "emitted_preliminary": false,
+      "candidates": []
+    }
+  },
+  "peer": {
+    "selected": true,
+    "target": null,
+    "route": null,
+    "preference_source": "default",
+    "outcome": "in-process-fallback",
+    "artifact": null,
+    "coverage": "Cross-model pass: not run; only Codex CLI is installed on this Codex host, so no different-provider route is available. The adversarial lens ran through the local in-process fallback."
+  },
+  "coverage_notes": [
+    "Full review: 397 executable non-test changed lines, large size floor.",
+    "Standards use AGENTS.md as fallback; no CODING_STANDARDS.md exists.",
+    "Reviewed current staged and unstaged integration relative to the immutable preflight checkpoint.",
+    "All reviewers were read-only. Test execution and evidence are parent-owned; no reviewer ran tests or browser servers.",
+    "Only U9 is assessed for explicit-plan completeness; U10 onward is excluded.",
+    "Fast pass found no urgent candidate."
+  ]
+}

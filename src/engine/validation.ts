@@ -25,10 +25,10 @@ export function validateWorkflowConfiguration(workflow: Workflow): Issue[] {
     );
     return errors;
   }
-  if (workflow.source.format !== "csv" || workflow.output.format !== "csv")
+  if (workflow.output.format !== "csv")
     add(
       "unsupported-format",
-      "This build supports CSV input and output only.",
+      "This build supports CSV and XLSX input with CSV output.",
       "Use UTF-8 CSV with comma, semicolon or tab and CRLF output.",
     );
   const ids = new Set<string>(),

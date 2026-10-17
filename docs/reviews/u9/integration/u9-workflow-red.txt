@@ -1,0 +1,30 @@
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+ ❯ tests/unit/workflow-roundtrip.test.ts (9 tests | 1 failed) 148ms
+   × Excel worksheet and explicit date interpretation survive portable round trip 9ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/workflow-roundtrip.test.ts > Excel worksheet and explicit date interpretation survive portable round trip
+Error: Workflow structure is invalid. Use the strict version 1 fields and supported recipe settings.
+ ❯ decodeWorkflow src/engine/workflow.ts:148:11
+    146|   const parsed = workflowSchema.safeParse(value);
+    147|   if (!parsed.success)
+    148|     throw new Error(
+       |           ^
+    149|       "Workflow structure is invalid. Use the strict version 1 fields …
+    150|     );
+ ❯ decodeUsableWorkflow src/workflows/codec.ts:26:34
+ ❯ snapshotWorkflow src/workflows/codec.ts:137:10
+ ❯ encodeWorkflow src/workflows/codec.ts:141:31
+ ❯ reopen tests/unit/workflow-roundtrip.test.ts:10:54
+ ❯ tests/unit/workflow-roundtrip.test.ts:119:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 passed (9)
+   Start at  17:11:12
+   Duration  444ms (tests 45%, transform 32%, import 21%, worker 1%)

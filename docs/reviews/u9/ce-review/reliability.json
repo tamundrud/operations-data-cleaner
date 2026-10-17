@@ -1,0 +1,26 @@
+{
+  "reviewer": "reliability",
+  "findings": [
+    {
+      "title": "Fresh workbooks silently reuse the previous worksheet",
+      "severity": "P2",
+      "file": "src/session/controller.ts",
+      "line": 141,
+      "why_it_matters": "After a user selects a sheet and configures a run, uploading another multi-sheet workbook inherits the old worksheet name. If the name exists, the new workbook is imported without a choice and may produce results from the wrong sheet. If it does not exist, the import fails without offering the available sheets. This is a silent wrong-result or missing-result path for replacement uploads.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 75,
+      "evidence": [
+        "src/session/controller.ts:141:       const worksheet = options.worksheet ?? (options.template ? undefined : (options.workflow ?? this.workflow)?.source.worksheet);",
+        "src/formats/xlsx.ts:56:   if (worksheet === undefined && names.length > 1) return { sheets: names };",
+        "src/formats/xlsx.ts:58:   if (!names.includes(selected)) throw new Error(\"Selected worksheet is missing. Choose an available worksheet.\");",
+        "docs/decisions/excel-fidelity.md:70: Multiple sheets require selection; saved workflows reuse the explicit worksheet name and reject a missing sheet."
+      ],
+      "pre_existing": false,
+      "suggested_fix": "Distinguish a fresh manual replacement from an activated saved workflow. Use options.worksheet for an explicit choice, options.workflow?.source.worksheet for explicit workflow reuse, and this.workflow?.source.worksheet only when no source run is active (the activated-workflow case). Leave worksheet undefined for a manual replacement so a multi-sheet workbook prompts for selection. Verify same-name and missing-name replacement cases."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

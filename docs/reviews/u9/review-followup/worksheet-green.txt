@@ -1,0 +1,15 @@
+
+> operations-data-cleaner@0.2.0 test:e2e
+> playwright test --project=chromium tests/e2e/excel-input.spec.ts -g manual replacements|XLSX templates
+
+[WebServer] (node:12842) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:12854) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/excel-input.spec.ts:142:1 › U9 XLSX templates supply names and order only; saved and portable workflows reuse Excel input (3.7s)
+  ✓  2 [chromium] › tests/e2e/excel-input.spec.ts:287:1 › U9 manual replacements require a fresh worksheet choice and preserve the prior run after a selected-sheet failure (2.4s)
+
+  2 passed (7.5s)

@@ -1,0 +1,35 @@
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+ ❯ tests/unit/session.test.ts (6 tests | 1 failed) 34ms
+   × Excel worksheet discovery keeps the committed run until a selected sheet succeeds 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/session.test.ts > Excel worksheet discovery keeps the committed run until a selected sheet succeeds
+AssertionError: expected { request: 1, …(6) } to match object { kind: 'import', format: 'xlsx' }
+(6 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "format": "xlsx",
+    "kind": "import",
+  }
+
+ ❯ tests/unit/session.test.ts:184:19
+    182|   await s.upload(new File(['synthetic'], 'orders.xlsx'), ',');
+    183|   const request = latest().requests.at(-1)!;
+    184|   expect(request).toMatchObject({ kind: 'import', format: 'xlsx' });
+       |                   ^
+    185|   latest().onmessage?.({ data: { request: request.request, dataset: re…
+    186|   expect(s.state.view).toBe(committed);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  17:11:50
+   Duration  296ms (import 42%, transform 36%, tests 19%, worker 2%)

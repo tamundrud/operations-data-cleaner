@@ -7,12 +7,16 @@ export type Request = { request: number; dataset: string; revision: number } & (
   | {
       kind: "import";
       bytes: ArrayBuffer;
+      format?: "csv" | "xlsx";
+      worksheet?: string;
       delimiter: "auto" | "," | ";" | "\t";
       workflow?: Workflow;
     }
   | {
       kind: "template";
       bytes: ArrayBuffer;
+      format?: "csv" | "xlsx";
+      worksheet?: string;
       delimiter: "auto" | "," | ";" | "\t";
     }
   | { kind: "run"; workflow: Workflow }
@@ -26,10 +30,12 @@ export type View = {
   workflowIssues: Issue[];
   summary: Run["summary"];
   riskyHeaders: string[];
+  csvRisk: boolean;
   page: number;
   totalPages: number;
   exceptions: boolean;
   delimiter: string;
+  worksheet?: string;
 };
 export type Response = {
   request: number;
@@ -37,6 +43,7 @@ export type Response = {
   revision: number;
 } & (
   | { kind: "view"; view: View }
+  | { kind: "worksheets"; sheets: string[] }
   | { kind: "template"; headers: string[] }
   | { kind: "download"; bytes: Uint8Array }
   | { kind: "error"; message: string }

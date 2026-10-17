@@ -1,0 +1,32 @@
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+ ❯ tests/unit/excel-values.test.ts (10 tests | 1 failed) 26ms
+   × native Excel numbers in exponent notation become plain decimals for numeric interpretation 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/excel-values.test.ts > native Excel numbers in exponent notation become plain decimals for numeric interpretation
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/unit/excel-values.test.ts:309:34
+    307| test("native Excel numbers in exponent notation become plain decimals …
+    308|   const result = run({ type: "n", value: 1e-7, date1904: false }, "1e-…
+    309|   expect(result.summary.invalid).toBe(0);
+       |                                  ^
+    310|   expect(result.rows[0].values.map(displayValue)).toEqual(["0.0000001"…
+    311| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 passed (10)
+   Start at  17:16:04
+   Duration  322ms (transform 46%, import 37%, tests 14%, worker 3%)

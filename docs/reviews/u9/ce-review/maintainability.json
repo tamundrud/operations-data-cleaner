@@ -1,0 +1,23 @@
+{
+  "reviewer": "maintainability",
+  "findings": [
+    {
+      "title": "Separate worksheet and delimiter status branches",
+      "severity": "P3",
+      "file": "src/ui/Workspace.tsx",
+      "line": 335,
+      "why_it_matters": "The new worksheet arm is nested inside a CSV delimiter expression, so an Excel import announces a worksheet as a detected delimiter. The packed conditional also makes later source-specific status changes easy to apply to only one fragment of the sentence.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": false,
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:335:               ? `Source loaded · ${view.summary.candidates.toLocaleString()} candidate rows · ${view.worksheet ? `worksheet ${view.worksheet}` : view.delimiter === \"\\t\" ? \"tab\" : view.delimiter === \";\" ? \"semicolon\" : \"comma\"} delimiter detected. Verify the source columns below.`"
+      ],
+      "pre_existing": false,
+      "suggested_fix": "Build the complete source detail before rendering: for Excel use `worksheet ${view.worksheet}`; for CSV use the current delimiter label followed by `delimiter detected`. Interpolate that complete detail into the shared row-count/status sentence."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

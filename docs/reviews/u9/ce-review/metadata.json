@@ -1,0 +1,84 @@
+{
+  "branch": "feat/u9-metadata-aware-excel-input",
+  "completed_at": "2026-10-17T22:02:07.163940+00:00",
+  "cost": {
+    "host": "codex",
+    "scope": {
+      "changed_lines": 1949,
+      "depth": "full",
+      "exec_nontest_lines": 397,
+      "size_band": "large",
+      "unclassified_lines": {
+        "": 3,
+        ".json": 36,
+        ".md": 83,
+        ".txt": 716
+      }
+    },
+    "stages": [
+      {
+        "elapsed_seconds": 0.047,
+        "ended_at": "2026-10-17T17:19:50.838596+00:00",
+        "facts": {
+          "changed_lines": 1949,
+          "depth": "full",
+          "exec_nontest_lines": 397,
+          "size_band": "large",
+          "unclassified_lines": {
+            "": 3,
+            ".json": 36,
+            ".md": 83,
+            ".txt": 716
+          }
+        },
+        "stage": "scope",
+        "started_at": "2026-10-17T17:19:50.791402+00:00"
+      },
+      {
+        "elapsed_seconds": 16630.565,
+        "ended_at": "2026-10-17T21:57:01.403212+00:00",
+        "reviewers": 10,
+        "stage": "select",
+        "started_at": "2026-10-17T17:19:50.838596+00:00"
+      },
+      {
+        "candidates": 4,
+        "elapsed_seconds": 148.582,
+        "ended_at": "2026-10-17T21:59:29.985432+00:00",
+        "stage": "dispatch",
+        "started_at": "2026-10-17T21:57:01.403212+00:00"
+      },
+      {
+        "candidates": 4,
+        "elapsed_seconds": 28.336,
+        "ended_at": "2026-10-17T22:00:29.907373+00:00",
+        "stage": "merge",
+        "started_at": "2026-10-17T22:00:01.571768+00:00"
+      },
+      {
+        "elapsed_seconds": 39.182,
+        "ended_at": "2026-10-17T22:01:19.035876+00:00",
+        "stage": "validate",
+        "started_at": "2026-10-17T22:00:39.854063+00:00"
+      },
+      {
+        "candidates": 4,
+        "elapsed_seconds": 24.054,
+        "ended_at": "2026-10-17T22:02:07.202585+00:00",
+        "stage": "report",
+        "started_at": "2026-10-17T22:01:43.148432+00:00"
+      }
+    ],
+    "status": "complete",
+    "totals": {
+      "artifact_bytes": 858417,
+      "candidates": 4,
+      "elapsed_seconds": 16870.766,
+      "reviewers": 10
+    },
+    "truncated_events": 0
+  },
+  "head_sha": "81f74a2886fc3590af264dab50683e34c7cb4613",
+  "run_id": "u9-integration-20261017",
+  "verdict": "Ready with fixes"
+}

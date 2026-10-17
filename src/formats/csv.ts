@@ -171,7 +171,7 @@ export function serializeCsv(
     throw new Error(
       "Export blocked. Map every field, resolve invalid rows and include at least one data row.",
     );
-  if ((run.summary.warningIssues || run.riskyHeaders.length) && !choice)
+  if ((run.csvRisk || run.riskyHeaders.length) && !choice)
     throw new Error(
       "Choose escaped output or raw TMS text before downloading formula-like content.",
     );

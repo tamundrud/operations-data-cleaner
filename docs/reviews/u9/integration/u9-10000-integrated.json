@@ -1,0 +1,12 @@
+{
+  "rows": 10000,
+  "columns": 20,
+  "browser": "154.0.8037.57",
+  "repeatImportThroughDownloadMs": 1218.5063199999859,
+  "heartbeat": {
+    "previous": 7017.79999999702,
+    "maxGap": 1306.4000000022352,
+    "ticks": 215
+  },
+  "environment": "Cloud runner; reference laptop qualification pending"
+}
