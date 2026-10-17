@@ -14,7 +14,7 @@ function requireUsable(workflow: Workflow): Workflow {
     );
     throw new Error(
       unsupported
-        ? "Unsupported workflow capability. Use CSV, copies, fixed values, splits, combinations and calculations with delivered settings."
+        ? "Unsupported workflow capability. Use CSV, copies, fixed values, splits, combinations, calculations and explicit date formats with delivered settings."
         : "Workflow configuration is invalid. Complete mappings and correct output names, identities and field settings.",
     );
   }

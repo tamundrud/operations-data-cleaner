@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { DATE_PATTERNS } from "./dates";
 import { DECIMAL_GRAMMAR, DECIMAL_INPUT_LIMIT } from "./decimal";
 export const normalizeHeader = (name: string) =>
   name.trim().replace(/\s+/gu, " ").toLowerCase();
@@ -44,7 +45,7 @@ const recipe = z.discriminatedUnion("kind", [
     right: operand,
   }),
 ]);
-const pattern = z.enum(["YYYY-MM-DD", "MM/DD/YYYY", "DD/MM/YYYY"]);
+const pattern = z.enum(DATE_PATTERNS);
 const field = z.strictObject({
   id: bounded.min(1),
   header: bounded.min(1),

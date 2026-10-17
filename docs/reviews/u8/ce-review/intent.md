@@ -1,0 +1,1 @@
+Implement U8 explicit CSV calendar date formats only: user-selected source and target patterns, strict calendar validation, graphical configuration, and workflow v1 persistence/portable round trips. Preserve U2–U7 behavior, privacy/data fidelity, provenance and revision safety; Excel and U9 are outside scope.

@@ -1,0 +1,46 @@
+{
+  "mode": "non-interactive",
+  "document_type": "unified-plan",
+  "origin": "docs/PRD.md",
+  "settled_ktds": "none (no session-settled annotations in source plan)",
+  "base_commit": "bad9233bdabb571f493fabdcc8e1ec3f5486c7ef",
+  "scope": "U8 text CSV dates; related KTD-03/04/05/08/09, R3/R4, FR-19/20/41, AC-09 text dates, Verification Contract",
+  "packs": {
+    "roots": [],
+    "warnings": [],
+    "errors": [],
+    "entries": 0
+  },
+  "reviewers": [
+    {
+      "reviewer": "coherence",
+      "agent": "/root/u8_plan_review/coherence",
+      "model_override": "gpt-6-luna",
+      "reasoning_effort": "high"
+    },
+    {
+      "reviewer": "feasibility",
+      "agent": "/root/u8_plan_review/feasibility",
+      "model_override": null
+    },
+    {
+      "reviewer": "design-lens",
+      "agent": "/root/u8_plan_review/design",
+      "model_override": "gpt-6-sol",
+      "reasoning_effort": "high"
+    },
+    {
+      "reviewer": "scope-guardian",
+      "agent": "/root/u8_plan_review/scope",
+      "model_override": "gpt-6-sol",
+      "reasoning_effort": "high"
+    }
+  ],
+  "fixes_applied": 0,
+  "proposed_fixes_count": 0,
+  "decisions_count": 0,
+  "fyi_count": 0,
+  "review_status": "complete",
+  "plan_changed": false,
+  "cross_model_pass": "not activated: no conditional judgment-trio persona selected for bounded U8 scope"
+}

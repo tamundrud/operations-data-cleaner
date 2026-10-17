@@ -305,3 +305,22 @@ test("10000 U7 rows keep exact arithmetic, identifiers, counts and downloaded by
   await expect(page.getByLabel('Full dataset counts')).toContainText('10000');
   await testInfo.attach('u7-cloud-smoke.json',{body:JSON.stringify({browser:browser.version(),node:process.version,rows:10000,totalSetupAndExportMs:performance.now()-start,bytes:bytes.length}),contentType:'application/json'});
 });
+
+test("10000 U8 rows preserve every explicit date, identifier and exported byte", async ({ page, browser }, info) => {
+  test.setTimeout(120000);
+  const csv = "ID,Date\r\n" + Array.from({ length: 10000 }, (_, i) => `${String(i).padStart(6, "0")},02/29/2024\r\n`).join("");
+  await page.goto("/"); await upload(page, csv);
+  await add(page, ["Reference", "Delivery"]);
+  await map(page, "Reference", "id"); await map(page, "Delivery", "date");
+  await edit(page, "Delivery");
+  await page.getByLabel("Output type", { exact: true }).selectOption("date");
+  await page.getByLabel("Source date format", { exact: true }).selectOption("MM/DD/YYYY");
+  await page.getByLabel("Output date format", { exact: true }).selectOption("YYYY-MM-DD");
+  await closeSettings(page);
+  const start = performance.now();
+  await upload(page, csv);
+  const bytes = await download(page);
+  expect(bytes).toEqual(Buffer.from("Reference,Delivery\r\n" + Array.from({ length: 10000 }, (_, i) => `${String(i).padStart(6, "0")},2024-02-29\r\n`).join("")));
+  await expect(page.getByLabel("Full dataset counts")).toContainText("10000");
+  await info.attach("u8-cloud-smoke.json", { body: JSON.stringify({ browser: browser.version(), rows: 10000, repeatImportThroughDownloadMs: performance.now() - start, bytes: bytes.length }), contentType: "application/json" });
+});

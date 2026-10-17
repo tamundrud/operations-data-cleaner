@@ -1,0 +1,200 @@
+{
+  "run_id": "20261017-025947-2b668869",
+  "run_dir": "/tmp/compound-engineering-1000/ce-code-review/20261017-025947-2b668869",
+  "skill_dir": "/home/agent/.agents/skills/ce-code-review",
+  "docs_root": "docs",
+  "mode": {
+    "agent": true,
+    "apply_local": false,
+    "grouping": "auto",
+    "depth": "auto"
+  },
+  "invocation": {
+    "arguments": "mode:agent base:origin/main plan:docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md depth:auto",
+    "constraints": [
+      "Report-only; do not fix findings.",
+      "User authorizes only U8 explicit CSV calendar date formats; preserve U2\u2013U7 interface, privacy/data fidelity, schema v1 portability, revision safety.",
+      "No Excel/U9/merge/deploy.",
+      "Do not launch browser servers or mutate source/tests/index.",
+      "Do not write PR/comments, commit, push, or ask user questions."
+    ]
+  },
+  "scope": {
+    "mode": "standalone",
+    "base": "bad9233bdabb571f493fabdcc8e1ec3f5486c7ef",
+    "diff_a": "origin/main",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u8-explicit-date-formats",
+    "head_sha": "bad9233bdabb571f493fabdcc8e1ec3f5486c7ef",
+    "files": "/tmp/compound-engineering-1000/ce-code-review/20261017-025947-2b668869/files.txt",
+    "diff": "/tmp/compound-engineering-1000/ce-code-review/20261017-025947-2b668869/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": [
+      "docs/reviews/u8/simplification/verification.md"
+    ]
+  },
+  "intent": {
+    "summary": "Implement U8 explicit CSV calendar date formats only: user-selected source and target patterns, strict calendar validation, graphical configuration, and workflow v1 persistence/portable round trips. Preserve U2\u2013U7 behavior, privacy/data fidelity, provenance and revision safety; Excel and U9 are outside scope.",
+    "confidence": "explicit"
+  },
+  "plan": {
+    "path": "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "source": "explicit",
+    "requirements": [
+      {
+        "id": "R3",
+        "text": "FR-12\u201317,40\u201341,43: dates within current U8 scope; preserve prior constants/trim/split/combine/arithmetic."
+      },
+      {
+        "id": "R4",
+        "text": "FR-19\u201325,44: date type/configuration validation and whole-dataset invalid-row handling within U8."
+      },
+      {
+        "id": "AC-09",
+        "text": "Text calendar dates: three explicit patterns, strict valid leap/calendar dates, ambiguous inputs only per selected pattern, no timestamps or timezone dependence."
+      },
+      {
+        "id": "U8-crosscutting",
+        "text": "Preserve privacy, exact CSV bytes/identifiers, independent recipes, schema v1 saved/portable meaning, revision safety and 10,000-row completeness."
+      }
+    ],
+    "implementation_units": [
+      {
+        "id": "U8",
+        "text": "Explicit date formats only. Strict parser, compatible modifiers, graphical source/target format configuration, optional blank succeeds/required blank fails, calendar bytes/timezone/privacy tests."
+      }
+    ],
+    "settled_decisions": []
+  },
+  "roster": {
+    "selected": [
+      {
+        "reviewer": "correctness",
+        "tier": "session",
+        "reason": "always-on"
+      },
+      {
+        "reviewer": "project-standards",
+        "tier": "mid",
+        "reason": "AGENTS fallback governs all changes"
+      },
+      {
+        "reviewer": "testing",
+        "tier": "mid",
+        "reason": "new and changed unit/browser tests"
+      },
+      {
+        "reviewer": "maintainability",
+        "tier": "mid",
+        "reason": "240 executable non-test changed lines and type boundary"
+      },
+      {
+        "reviewer": "security",
+        "tier": "session",
+        "reason": "untrusted CSV/workflow data and formula/privacy safety"
+      },
+      {
+        "reviewer": "api-contract",
+        "tier": "mid",
+        "reason": "portable version 1 workflow schema"
+      },
+      {
+        "reviewer": "adversarial",
+        "tier": "session",
+        "reason": "more than 50 changed code lines; boundary composition"
+      }
+    ],
+    "standards": {
+      "criteria": [
+        {
+          "path": "AGENTS.md",
+          "files": [
+            "README.md",
+            "docs/reviews/u8/date-errors.png",
+            "docs/reviews/u8/date-settings-desktop.png",
+            "docs/reviews/u8/date-settings-green.txt",
+            "docs/reviews/u8/date-settings-mobile.png",
+            "docs/reviews/u8/date-workspace.png",
+            "docs/reviews/u8/fixed-date-red.txt",
+            "docs/reviews/u8/full-chromium.txt",
+            "docs/reviews/u8/plan-review/README.md",
+            "docs/reviews/u8/plan-review/coherence.json",
+            "docs/reviews/u8/plan-review/design-lens.json",
+            "docs/reviews/u8/plan-review/feasibility.json",
+            "docs/reviews/u8/plan-review/resolved-review.json",
+            "docs/reviews/u8/plan-review/result.txt",
+            "docs/reviews/u8/plan-review/scope-guardian.json",
+            "docs/reviews/u8/plan-review/source-hashes.json",
+            "docs/reviews/u8/simplification/efficiency.md",
+            "docs/reviews/u8/simplification/quality.md",
+            "docs/reviews/u8/simplification/reuse.md",
+            "docs/reviews/u8/verification.md",
+            "src/engine/dates.ts",
+            "src/engine/recipes.ts",
+            "src/engine/validation.ts",
+            "src/engine/values.ts",
+            "src/engine/workflow.ts",
+            "src/ui/DateSettings.tsx",
+            "src/ui/MappingRows.tsx",
+            "src/workflows/codec.ts",
+            "tests/README.md",
+            "tests/e2e/dates.spec.ts",
+            "tests/e2e/performance.spec.ts",
+            "tests/e2e/privacy.spec.ts",
+            "tests/unit/dates.test.ts",
+            "tests/unit/workflow-roundtrip.test.ts"
+          ]
+        }
+      ],
+      "fallback_named": true,
+      "not_run_reason": null
+    },
+    "packs": {
+      "roots": [],
+      "errors": [],
+      "warnings": []
+    }
+  },
+  "collection": {
+    "returns": "/tmp/compound-engineering-1000/ce-code-review/20261017-025947-2b668869/raw-returns.json",
+    "unstructured_returns": [],
+    "failed_reviewers": [],
+    "bound_exceeded": [],
+    "fast_pass": {
+      "emitted_preliminary": false,
+      "candidates": []
+    }
+  },
+  "peer": {
+    "selected": true,
+    "target": null,
+    "route": null,
+    "preference_source": "default",
+    "outcome": "in-process-fallback",
+    "artifact": null,
+    "coverage": "Cross-model pass not run: no installed different-family route; only Codex CLI is present. Adversarial lens completed using the in-process fallback; no independent cross-model corroboration."
+  },
+  "coverage_notes": [
+    "Depth full: helper hard floor, 240 executable non-test lines, large; four binary artifacts uncounted.",
+    "Project standards uses AGENTS.md instruction fallback for all changed files; no CODING_STANDARDS.md.",
+    "Scope standalone current working tree versus origin/main, including staged and working changes. Untracked simplification verification excluded at dispatch.",
+    "Implementation completeness is U8 only; U9\u2013U13 are explicitly outside authorized scope.",
+    "Independent leaf personas all completed; all seven returned zero findings.",
+    "No learnings lens: only xlsx-qualification corpus concerns deferred Excel; no declared packs.",
+    "Baseline typecheck/lint/build/166 unit tests/full 76 Chromium passed before final date regression fix and simplifications. Final production verification: typecheck/lint/build/166 unit tests passed; Chromium dates/constants/calculations/privacy/performance 28/28 passed, including both timezone contexts and 10,000 U8 rows. Evidence /tmp/u8-post-simplification.txt (parent ran; reviewed tail).",
+    "Correctness leaf ran read-only exhaustive parser probe: 2,519,748 pattern/calendar boundary combinations across years 0001\u20139999 and all three formats, all passed.",
+    "Only evidence documents/images changed while review ran; parent attests application/test source unchanged.",
+    "Not assessed: agent-native, migration/deployment, prior PR comments, Swift; no applicable changed surface."
+  ]
+}

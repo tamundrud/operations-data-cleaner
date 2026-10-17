@@ -1,0 +1,22 @@
+[WebServer] (node:6976) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 13 tests using 1 worker
+
+(node:6988) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › tests/e2e/constants.spec.ts:5:1 › switching trimmed max-length fixed text to number clears text-only settings (2.1s)
+  ✓   2 [chromium] › tests/e2e/constants.spec.ts:27:1 › numeric constant clear and copy radio restore unmatched and faithful text states (2.5s)
+  ✓   3 [chromium] › tests/e2e/constants.spec.ts:51:1 › U3 sample demonstrates constants, trim and nondefault CSV settings (792ms)
+  ✓   4 [chromium] › tests/e2e/constants.spec.ts:62:1 › fixed fields complete without sources, trim validates resulting text and reorder preserves values (4.7s)
+  ✓   5 [chromium] › tests/e2e/constants.spec.ts:105:1 › constant reorder permutes configured slots while unmatched outputs stay fixed (1.9s)
+  ✓   6 [chromium] › tests/e2e/constants.spec.ts:123:1 › intentional required blanks and invalid numeric literals block export with actionable errors (2.9s)
+  ✓   7 [chromium] › tests/e2e/constants.spec.ts:145:1 › all twelve CSV setting combinations download independent exact UTF-8 byte goldens (6.7s)
+  ✓   8 [chromium] › tests/e2e/constants.spec.ts:166:1 › formula constants require renewed choice after constant, trim and every export setting edit (2.4s)
+  ✓   9 [chromium] › tests/e2e/constants.spec.ts:199:1 › constant and CSV edits during an older evaluation cannot export stale settings (1.5s)
+  ✓  10 [chromium] › tests/e2e/dates.spec.ts:26:1 › AC-09 contextual dates, exact downloads, local reopen and portable timezone reuse (4.9s)
+  ✓  11 [chromium] › tests/e2e/dates.spec.ts:108:1 › strict dates, optional/required blanks, explicit ambiguity and source replacement (4.2s)
+  ✓  12 [chromium] › tests/e2e/dates.spec.ts:170:1 › mobile date settings preserve layout and type changes clear incompatible rules and CSV acknowledgement (3.3s)
+  ✓  13 [chromium] › tests/e2e/dates.spec.ts:212:1 › date rules survive first source choice; fixed dates and trimming remain explicit (2.2s)
+
+  13 passed (41.6s)

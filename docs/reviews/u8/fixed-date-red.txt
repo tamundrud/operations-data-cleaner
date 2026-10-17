@@ -1,0 +1,79 @@
+[WebServer] (node:6525) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:6537) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/dates.spec.ts:209:1 › date rules survive first source choice; fixed dates and trimming remain explicit (30.2s)
+
+
+  1) [chromium] › tests/e2e/dates.spec.ts:209:1 › date rules survive first source choice; fixed dates and trimming remain explicit 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.waitForEvent: Test timeout of 30000ms exceeded.
+    =========================== logs ===========================
+    waiting for event "download"
+    ============================================================
+
+       at helpers.ts:95
+
+      93 | }
+      94 | export async function download(page: Page) {
+    > 95 |   const pending = page.waitForEvent("download");
+         |                        ^
+      96 |   await page
+      97 |     .getByRole("button", { name: "Download converted CSV", exact: true })
+      98 |     .click();
+        at download (/workspace/operations-data-cleaner/tests/e2e/helpers.ts:95:24)
+        at /workspace/operations-data-cleaner/tests/e2e/dates.spec.ts:249:17
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Download converted CSV', exact: true })
+        - locator resolved to <button disabled class="primary download">Download converted CSV</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is not enabled
+        - retrying click action
+        - waiting 20ms
+        - waiting for element to be visible, enabled and stable
+        - element is not enabled
+      - retrying click action
+        - waiting 100ms
+        - waiting for element to be visible, enabled and stable
+        - element is not stable
+      - retrying click action
+        - waiting 100ms
+        54 × waiting for element to be visible, enabled and stable
+           - element is not enabled
+         - retrying click action
+           - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+
+
+       at helpers.ts:98
+
+       96 |   await page
+       97 |     .getByRole("button", { name: "Download converted CSV", exact: true })
+    >  98 |     .click();
+          |      ^
+       99 |   const result = await pending;
+      100 |   expect(result.suggestedFilename()).toBe("converted.csv");
+      101 |   const path = await result.path();
+        at download (/workspace/operations-data-cleaner/tests/e2e/helpers.ts:98:6)
+        at /workspace/operations-data-cleaner/tests/e2e/dates.spec.ts:249:17
+
+    Error Context: test-results/dates-date-rules-survive-f-93371-nd-trimming-remain-explicit-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/dates-date-rules-survive-f-93371-nd-trimming-remain-explicit-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/dates-date-rules-survive-f-93371-nd-trimming-remain-explicit-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests/e2e/dates.spec.ts:209:1 › date rules survive first source choice; fixed dates and trimming remain explicit 

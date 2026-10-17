@@ -1,3 +1,4 @@
+import { DateSettings } from "./DateSettings";
 import { DECIMAL_INPUT_LIMIT } from "../engine/decimal";
 import { useEffect, useRef, useState, type DragEvent } from "react";
 import { CalculationSettings, NumericSettings } from "./CalculationSettings";
@@ -28,19 +29,39 @@ const sourceKey = (f: Field) =>
 const configured = (f: Field) =>
   Boolean(
     sourceKey(f) ||
-    f.recipe?.kind === "constant" ||
-    (f.recipe?.kind === "calculate" &&
-      [f.recipe.left, f.recipe.right].every((o) =>
-        o.kind === "number" ? o.decimal !== "" : o.source !== "",
-      )) ||
-    (f.recipe?.kind === "combine" &&
-      f.recipe.components.every((c) => c.kind === "literal" || c.source)),
+      f.recipe?.kind === "constant" ||
+      (f.recipe?.kind === "calculate" &&
+        [f.recipe.left, f.recipe.right].every((o) =>
+          o.kind === "number" ? o.decimal !== "" : o.source !== "",
+        )) ||
+      (f.recipe?.kind === "combine" &&
+        f.recipe.components.every((c) => c.kind === "literal" || c.source)),
   );
 const fixedSummary = (f: Field) => {
   if (f.recipe?.kind !== "constant") return "";
   const value = f.recipe.value;
   if (value.kind === "blank") return "Intentional blank";
   return `Fixed ${value.kind} · ${value.kind === "text" ? JSON.stringify(value.text) : value.decimal}`;
+};
+
+const fixedHelp = (f: Field) => {
+  if (f.recipe?.kind !== "constant") return "";
+  if (f.recipe.value.kind === "blank")
+    return "An empty value in every row. Required outputs cannot be blank.";
+  if (f.recipe.value.kind === "number")
+    return "Use a decimal such as 12.50. No commas, currency symbols or exponents; digits and decimal places are preserved exactly.";
+  if (f.type === "date")
+    return "Enter a calendar date in the source format below. It is converted using only your chosen formats.";
+  return "The same text in every row. Leading zeros and whitespace are preserved unless you enable trimming.";
+};
+const outputHelp = (f: Field) => {
+  if (f.type === "date")
+    return "Date conversion uses only your chosen formats. Original source values stay unchanged.";
+  if (f.type === "number")
+    return "Numbers use only your explicit precision and validation settings.";
+  if (f.trim)
+    return "Only boundary whitespace is removed; internal spacing and original source values stay unchanged.";
+  return "Trimming is off. Text keeps its original whitespace.";
 };
 
 export default function MappingRows({
@@ -123,13 +144,17 @@ export default function MappingRows({
         f.id === id
           ? {
               ...f,
-              ...(patch.type === "text"
+              ...(patch.type && patch.type !== "date"
+                ? { date: undefined }
+                : {}),
+              ...(patch.type === "text" || patch.type === "date"
                 ? {
                     rounding: undefined,
                     scale: undefined,
                     wholeNumber: undefined,
                   }
                 : {}),
+              ...(patch.type === "date" ? { maxLength: undefined } : {}),
               ...(patch.type === "number"
                 ? { trim: undefined, maxLength: undefined }
                 : {}),
@@ -147,10 +172,11 @@ export default function MappingRows({
     const f = fields.find((f) => f.id === id),
       c = columnByKey.get(key);
     if (disabled || !f || !c) return;
-    const preserveNumericCopy =
-      f.type === "number" && (!f.recipe || f.recipe.kind === "copy");
+    const preserveTypedCopy =
+      (f.type === "number" || f.type === "date") &&
+      (!f.recipe || f.recipe.kind === "copy");
     update(id, {
-      ...(preserveNumericCopy ? {} : { type: "text" as const }),
+      ...(preserveTypedCopy ? {} : { type: "text" as const }),
       recipe: { kind: "copy", source: key },
     });
     setAnnouncement(
@@ -297,6 +323,8 @@ export default function MappingRows({
     );
   };
   const outputSummary = (f: Field, paired: boolean) => {
+    if (f.type === "date")
+      return `Date · ${f.date?.source || "choose source format"} → ${f.date?.target || "choose output format"}${f.trim ? " · trims whitespace" : ""}`;
     if (f.recipe?.kind === "constant") return fixedSummary(f);
     if (f.recipe?.kind === "calculate")
       return `Calculate · ${f.recipe.operation}${f.rounding ? ` · ${f.rounding.mode}, ${f.rounding.places} places` : " · exact, no rounding"}${f.wholeNumber ? " · whole numbers required" : ""}`;
@@ -876,21 +904,26 @@ export default function MappingRows({
                     Fixed value type
                     <select
                       aria-label="Fixed value type"
-                      value={field.recipe.value.kind}
+                      value={
+                        field.type === "date" ? "date" : field.recipe.value.kind
+                      }
                       onChange={(e) => {
                         const kind = e.target.value as
                           | "text"
                           | "number"
-                          | "blank";
+                          | "blank"
+                          | "date";
                         const text =
                           field.recipe?.kind === "constant"
                             ? displayValue(field.recipe.value)
                             : "";
                         update(field.id, {
-                          type: kind === "number" ? "number" : "text",
-                          trim: kind === "number" ? undefined : field.trim,
-                          maxLength:
-                            kind === "number" ? undefined : field.maxLength,
+                          type:
+                            kind === "number"
+                              ? "number"
+                              : kind === "date"
+                                ? "date"
+                                : "text",
                           recipe: {
                             kind: "constant",
                             value:
@@ -898,7 +931,7 @@ export default function MappingRows({
                                 ? { kind }
                                 : kind === "number"
                                   ? { kind, decimal: text }
-                                  : { kind, text },
+                                  : { kind: "text", text },
                           },
                         });
                       }}
@@ -906,13 +939,16 @@ export default function MappingRows({
                       <option value="text">Text — preserve exactly</option>
                       <option value="number">Number — exact decimal</option>
                       <option value="blank">Intentional blank</option>
+                      <option value="date">Date — explicit formats</option>
                     </select>
                   </label>
                   {field.recipe.value.kind === "text" && (
                     <label>
-                      Fixed text
+                      {field.type === "date" ? "Fixed date" : "Fixed text"}
                       <textarea
-                        aria-label="Fixed text"
+                        aria-label={
+                          field.type === "date" ? "Fixed date" : "Fixed text"
+                        }
                         rows={2}
                         maxLength={4096}
                         value={field.recipe.value.text}
@@ -949,13 +985,7 @@ export default function MappingRows({
                       />
                     </label>
                   )}
-                  <p className="helper">
-                    {field.recipe.value.kind === "blank"
-                      ? "An empty value in every row. Required outputs cannot be blank."
-                      : field.recipe.value.kind === "number"
-                        ? "Use a decimal such as 12.50. No commas, currency symbols or exponents; digits and decimal places are preserved exactly."
-                        : "The same text in every row. Leading zeros and whitespace are preserved unless you enable trimming."}
-                  </p>
+                  <p className="helper">{fixedHelp(field)}</p>
                 </>
               ) : (
                 <label>
@@ -989,7 +1019,7 @@ export default function MappingRows({
                       value={field.type}
                       onChange={(e) =>
                         update(field.id, {
-                          type: e.target.value as "text" | "number",
+                          type: e.target.value as Field["type"],
                         })
                       }
                     >
@@ -997,16 +1027,23 @@ export default function MappingRows({
                       <option value="number">
                         Number — strict decimal validation
                       </option>
+                      <option value="date">Date — explicit formats</option>
                     </select>
                   </label>
                 )}
+              {field.type === "date" && (
+                <DateSettings
+                  field={field}
+                  change={(patch) => update(field.id, patch)}
+                />
+              )}
               {field.type === "number" && (
                 <NumericSettings
                   field={field}
                   change={(patch) => update(field.id, patch)}
                 />
               )}
-              {field.type === "text" && (
+              {(field.type === "text" || field.type === "date") && (
                 <label className="check">
                   <input
                     type="checkbox"
@@ -1019,12 +1056,7 @@ export default function MappingRows({
                 </label>
               )}
               <p className="helper">
-                Changes update preview automatically.{" "}
-                {field.type === "number"
-                  ? "Numbers use only your explicit precision and validation settings."
-                  : field.trim
-                    ? "Only boundary whitespace is removed; internal spacing and original source values stay unchanged."
-                    : "Trimming is off. Text keeps its original whitespace."}
+                Changes update preview automatically. {outputHelp(field)}
               </p>
               <details className="column-validation">
                 <summary>Validation (optional)</summary>
