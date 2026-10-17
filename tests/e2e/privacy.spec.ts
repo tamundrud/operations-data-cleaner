@@ -9,7 +9,8 @@ test("production journey sends no customer values, file names or IDs and stores 
   const headerSentinel = "PRIVATE_U2_HEADER_SENTINEL_Z7";
   const constantSentinel = "PRIVATE_U3_FIXED_SENTINEL_Q82";
   const numericSentinel = "7251983462.125";
-  const privateValues = [sentinel, headerSentinel, constantSentinel, numericSentinel];
+  const dateSentinel = "08/17/2032";
+  const privateValues = [sentinel, headerSentinel, constantSentinel, numericSentinel, dateSentinel];
   const unexpected: string[] = [];
   const seen: string[] = [];
   const diagnostics: string[] = [];
@@ -49,7 +50,7 @@ test("production journey sends no customer values, file names or IDs and stores 
   );
   await upload(
     page,
-    `ID,Note,Quantity,Factor\n${sentinel},"<img src=x onerror=alert(1)>",${numericSentinel},4`,
+    `ID,Note,Quantity,Factor,Date\n${sentinel},"<img src=x onerror=alert(1)>",${numericSentinel},4,${dateSentinel}`,
     `${sentinel}.csv`,
   );
   await add(page, ["Reference", "Note"]);
@@ -101,6 +102,14 @@ test("production journey sends no customer values, file names or IDs and stores 
   await page.getByLabel("Rounding", { exact: true }).selectOption("half-even");
   await closeSettings(page);
   expect((await download(page)).toString()).toContain("1812995865.53");
+  await add(page, ["Delivery date"]);
+  await map(page, "Delivery date", "date");
+  await edit(page, "Delivery date");
+  await page.getByLabel("Output type", { exact: true }).selectOption("date");
+  await page.getByLabel("Source date format", { exact: true }).selectOption("MM/DD/YYYY");
+  await page.getByLabel("Output date format", { exact: true }).selectOption("YYYY-MM-DD");
+  await closeSettings(page);
+  expect((await download(page)).toString()).toContain("2032-08-17");
   await page.getByLabel("Show only rows with exceptions").check();
   await expect(page.getByLabel("Full dataset counts")).toBeVisible();
   const storage = await page.evaluate(async () => ({
@@ -129,6 +138,8 @@ test("production journey sends no customer values, file names or IDs and stores 
   expect(Object.keys(saved[0]).sort()).toEqual(["id", "json"]);
   expect(saved[0].json).not.toContain(sentinel);
   expect(saved[0].json).not.toContain(numericSentinel);
+  expect(saved[0].json).not.toContain(dateSentinel);
+  expect(saved[0].json).not.toContain("2032-08-17");
   expect(saved[0].json).toContain(headerSentinel); expect(saved[0].json).toContain(constantSentinel);
   const config = JSON.parse(saved[0].json);
   expect(Object.keys(config).sort()).toEqual(["fields", "id", "name", "output", "source", "version"]);
@@ -142,7 +153,7 @@ test("production journey sends no customer values, file names or IDs and stores 
   await page.getByRole("button", { name: "Open workflow", exact: true }).click();
   await expect(page.getByRole("region", { name: "Repeat workflow", exact: true })).toBeVisible();
   await expect(page.getByLabel("Upload source CSV")).toBeEnabled();
-  await page.getByLabel("Upload source CSV").setInputFiles({ name: `${sentinel}-repeat.csv`, mimeType: "text/csv", buffer: Buffer.from(`ID,Note,Quantity,Factor\n${sentinel},repeat-note,${numericSentinel},4`) });
+  await page.getByLabel("Upload source CSV").setInputFiles({ name: `${sentinel}-repeat.csv`, mimeType: "text/csv", buffer: Buffer.from(`ID,Note,Quantity,Factor,Date\n${sentinel},repeat-note,${numericSentinel},4,${dateSentinel}`) });
   await preview(page);
   expect((await download(page)).toString()).toContain(sentinel);
   expect(await readSaved()).toEqual(saved);

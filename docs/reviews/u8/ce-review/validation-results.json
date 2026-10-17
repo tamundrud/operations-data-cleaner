@@ -1,0 +1,16 @@
+{
+  "outcome": "empty-batch",
+  "selected": 0,
+  "confirmed": 0,
+  "rejected": 0,
+  "unresolved": 0,
+  "malformed": 0,
+  "failed": 0,
+  "shortcut_skipped": 0,
+  "reason": "No primary findings were selected for validation.",
+  "shortcut_evidence_basis": "No primary findings survived synthesis; no cross-model validation shortcut was used.",
+  "batch_launched": false,
+  "bound_exceeded": false,
+  "protected_subject_reclassifications": [],
+  "degraded_blockers": []
+}

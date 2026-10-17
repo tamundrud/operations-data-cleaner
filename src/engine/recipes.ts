@@ -1,3 +1,4 @@
+import { parseDate } from "./dates";
 import { calculateDecimal, validateDecimal, NumericError } from "./decimal";
 import type { Workflow } from "./workflow";
 import { displayValue, type SourceTable, type Value } from "./values";
@@ -13,6 +14,7 @@ export type ResultRow = {
     field: string;
     row: string;
     trim?: true;
+    date?: NonNullable<Workflow["fields"][number]["date"]>;
     segment?: number;
     segmentTrim?: boolean;
   } & ({ source: string } | { constant: Value }))[];
@@ -93,6 +95,7 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
           row: row.id,
           source,
           ...(f.trim ? { trim: true as const } : {}),
+          ...(f.date ? { date: { ...f.date } } : {}),
           ...(recipe.kind === "split"
             ? { segment: recipe.index, segmentTrim: recipe.trim }
             : {}),
@@ -105,6 +108,7 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
           row: row.id,
           constant: { ...constant },
           ...(f.trim ? { trim: true as const } : {}),
+          ...(f.date ? { date: { ...f.date } } : {}),
         });
         return { ...constant };
       };
@@ -209,6 +213,19 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
             "error",
             `${f.header}: ${error.message}`,
             "Correct the numeric value or change the explicit numeric settings.",
+          );
+          value = { kind: "blank" };
+        }
+      }
+      if (f.date && displayValue(value) !== "") {
+        const date = parseDate(displayValue(value), f.date.source);
+        if (date) value = { kind: "date", ...date, format: f.date.target };
+        else {
+          add(
+            "date-input",
+            "error",
+            `${f.header}: expected a real calendar date in ${f.date.source} format.`,
+            "Correct the source date or choose its exact format. Use zero-padded dates, years 0001–9999, and no time component; whitespace is preserved unless trimming is enabled.",
           );
           value = { kind: "blank" };
         }

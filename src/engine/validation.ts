@@ -51,11 +51,11 @@ export function validateWorkflowConfiguration(workflow: Workflow): Issue[] {
         "Choose a source column or remove this output column.",
         f.id,
       );
-    if (f.type === "date" || f.date)
+    if ((f.type === "date") !== (f.date !== undefined))
       add(
-        "unsupported-settings",
-        "Date conversion is not supported in this build.",
-        "Use text or number outputs.",
+        "date-settings",
+        "Date outputs require explicit source and output formats; date conversion requires a date output.",
+        "Choose date output and both formats, or remove date settings.",
         f.id,
       );
     if (f.recipe?.kind === "calculate" && f.type !== "number")
@@ -86,19 +86,19 @@ export function validateWorkflowConfiguration(workflow: Workflow): Issue[] {
     if (
       r?.kind === "constant" &&
       r.value.kind !== "blank" &&
-      r.value.kind !== f.type
+      r.value.kind !== (f.type === "date" ? "text" : f.type)
     )
       add(
         "constant-type",
         "The fixed value type must match the output type.",
-        "Choose text for a text literal or number for a decimal literal.",
+        "Use a text literal for text/date output or a number literal for number output.",
         f.id,
       );
-    if (f.trim && f.type !== "text")
+    if (f.trim && f.type === "number")
       add(
         "trim-type",
-        "Trimming requires a text output.",
-        "Use text or turn off whitespace trimming.",
+        "Trimming requires a text or date output.",
+        "Use text/date or turn off whitespace trimming.",
         f.id,
       );
     if (

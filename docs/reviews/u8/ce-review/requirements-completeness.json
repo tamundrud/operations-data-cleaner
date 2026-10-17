@@ -1,0 +1,58 @@
+{
+  "plan_path": "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+  "plan_source": "explicit",
+  "scope": "U8 explicit CSV dates only; later implementation units are intentionally outside scope.",
+  "requirements": [
+    {
+      "id": "R3",
+      "status": "met",
+      "evidence": [
+        "src/engine/dates.ts: strict parser/formatter for all three explicit patterns",
+        "src/engine/recipes.ts: date conversion follows primary recipe and explicit trim",
+        "tests/unit/dates.test.ts: all nine source/target pairs and compatible text recipes"
+      ]
+    },
+    {
+      "id": "R4",
+      "status": "met",
+      "evidence": [
+        "src/engine/validation.ts: date formats and compatible field/recipe settings are required",
+        "tests/unit/dates.test.ts: invalid calendar dates, optional/required blanks and invalid configuration",
+        "tests/e2e/dates.spec.ts: full invalid-row reporting and blocked export"
+      ]
+    },
+    {
+      "id": "AC-09",
+      "status": "met",
+      "evidence": [
+        "src/engine/dates.ts: calendar arithmetic without Date.parse or timezone conversion",
+        "tests/unit/dates.test.ts: leap/calendar boundaries, explicit ambiguity, unsupported timestamps and exact CSV bytes",
+        "tests/e2e/dates.spec.ts: identical downloads in America/Los_Angeles and Pacific/Kiritimati"
+      ]
+    },
+    {
+      "id": "U8-crosscutting",
+      "status": "met",
+      "evidence": [
+        "tests/unit/workflow-roundtrip.test.ts: schema v1 date settings preserve portable meaning",
+        "tests/e2e/dates.spec.ts: save/reload/import, leading-zero identifiers and revision-bound CSV acknowledgement",
+        "tests/e2e/privacy.spec.ts: date values do not enter saved configuration or requests",
+        "tests/e2e/performance.spec.ts: all 10,000 dates and identifiers compared as exact output bytes"
+      ]
+    }
+  ],
+  "implementation_units": [
+    {
+      "id": "U8",
+      "status": "met",
+      "evidence": [
+        "Strict parser, graphical source/output format controls, compatible modifiers, blank semantics, portable settings, timezone/privacy and golden-byte coverage are present."
+      ]
+    }
+  ],
+  "reverse_check": {
+    "status": "complete",
+    "unrequested_behavior_rules": [],
+    "note": "Compared the application/test diff with U8, KTD-03 and KTD-04 in the full plan. Fixed text date input, explicit trim, incompatible-setting cleanup and source remapping implement the planned finite recipe/date contract."
+  }
+}

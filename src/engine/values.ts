@@ -1,8 +1,9 @@
+import { formatDate, type CalendarDate, type DatePattern } from "./dates";
 export type Value =
   | { kind: "blank" }
   | { kind: "text"; text: string }
   | { kind: "number"; decimal: string }
-  | { kind: "date"; year: number; month: number; day: number };
+  | ({ kind: "date"; format: DatePattern } & CalendarDate);
 export type SourceColumn = { position: number; header: string; key: string };
 export type SourceRow = {
   id: string;
@@ -27,6 +28,6 @@ export function displayValue(v: Value): string {
     case "number":
       return v.decimal;
     case "date":
-      return `${v.year}-${String(v.month).padStart(2, "0")}-${String(v.day).padStart(2, "0")}`;
+      return formatDate(v, v.format);
   }
 }

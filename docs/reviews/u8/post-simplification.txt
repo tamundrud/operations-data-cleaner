@@ -1,0 +1,37 @@
+[WebServer] (node:8128) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 28 tests using 1 worker
+
+(node:8140) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › tests/e2e/calculations.spec.ts:14:1 › AC-05/06/10 contextual calculations export exact bytes, save/reopen and portable reuse (4.5s)
+  ✓   2 [chromium] › tests/e2e/calculations.spec.ts:83:1 › errors stay visible, rounding is explicit, and fractional cases fail before rounding (3.3s)
+  ✓   3 [chromium] › tests/e2e/calculations.spec.ts:119:1 › mobile calculation settings, output type switches and keyboard focus preserve paired cards (2.5s)
+  ✓   4 [chromium] › tests/e2e/calculations.spec.ts:153:1 › numeric copy validation and precision edits renew CSV safety decisions (3.6s)
+  ✓   5 [chromium] › tests/e2e/calculations.spec.ts:205:3 › numeric copy source retains rules when first choosing a source (2.4s)
+  ✓   6 [chromium] › tests/e2e/calculations.spec.ts:205:3 › numeric copy source retains rules when replacing a source (2.5s)
+  ✓   7 [chromium] › tests/e2e/constants.spec.ts:5:1 › switching trimmed max-length fixed text to number clears text-only settings (2.1s)
+  ✓   8 [chromium] › tests/e2e/constants.spec.ts:27:1 › numeric constant clear and copy radio restore unmatched and faithful text states (2.3s)
+  ✓   9 [chromium] › tests/e2e/constants.spec.ts:51:1 › U3 sample demonstrates constants, trim and nondefault CSV settings (818ms)
+  ✓  10 [chromium] › tests/e2e/constants.spec.ts:62:1 › fixed fields complete without sources, trim validates resulting text and reorder preserves values (4.8s)
+  ✓  11 [chromium] › tests/e2e/constants.spec.ts:105:1 › constant reorder permutes configured slots while unmatched outputs stay fixed (1.9s)
+  ✓  12 [chromium] › tests/e2e/constants.spec.ts:123:1 › intentional required blanks and invalid numeric literals block export with actionable errors (2.6s)
+  ✓  13 [chromium] › tests/e2e/constants.spec.ts:145:1 › all twelve CSV setting combinations download independent exact UTF-8 byte goldens (6.7s)
+  ✓  14 [chromium] › tests/e2e/constants.spec.ts:166:1 › formula constants require renewed choice after constant, trim and every export setting edit (2.3s)
+  ✓  15 [chromium] › tests/e2e/constants.spec.ts:199:1 › constant and CSV edits during an older evaluation cannot export stale settings (1.5s)
+  ✓  16 [chromium] › tests/e2e/dates.spec.ts:26:1 › AC-09 contextual dates, exact downloads, local reopen and portable timezone reuse (4.7s)
+  ✓  17 [chromium] › tests/e2e/dates.spec.ts:108:1 › strict dates, optional/required blanks, explicit ambiguity and source replacement (4.2s)
+  ✓  18 [chromium] › tests/e2e/dates.spec.ts:170:1 › mobile date settings preserve layout and type changes clear incompatible rules and CSV acknowledgement (3.2s)
+  ✓  19 [chromium] › tests/e2e/dates.spec.ts:212:1 › date rules survive first source choice; fixed dates and trimming remain explicit (2.1s)
+  ✓  20 [chromium] › tests/e2e/performance.spec.ts:17:1 › 10000 U3 rows preserve every fixed value, exact decimal, trim result and original reference (7.0s)
+  ✓  21 [chromium] › tests/e2e/performance.spec.ts:44:1 › 10000 x 20 rows remain intact; record cold and five warm full-pipeline runs (20.9s)
+  ✓  22 [chromium] › tests/e2e/performance.spec.ts:135:1 › busy cancel and retry preserve the active mapping and full downloaded data (1.6s)
+  ✓  23 [chromium] › tests/e2e/performance.spec.ts:173:1 › cancellation terminates an active parsing worker and retries the original file (3.8s)
+  ✓  24 [chromium] › tests/e2e/performance.spec.ts:206:1 › 499 x 20 import to preview stays under the one-second smoke budget (4.6s)
+  ✓  25 [chromium] › tests/e2e/performance.spec.ts:270:1 › 10000 U6 rows preserve every split and combined empty component (2.1s)
+  ✓  26 [chromium] › tests/e2e/performance.spec.ts:292:1 › 10000 U7 rows keep exact arithmetic, identifiers, counts and downloaded bytes (2.3s)
+  ✓  27 [chromium] › tests/e2e/performance.spec.ts:309:1 › 10000 U8 rows preserve every explicit date, identifier and exported byte (1.9s)
+  ✓  28 [chromium] › tests/e2e/privacy.spec.ts:4:1 › production journey sends no customer values, file names or IDs and stores no source data (6.8s)
+
+  28 passed (1.8m)

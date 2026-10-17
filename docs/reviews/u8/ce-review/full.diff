@@ -1,0 +1,1948 @@
+diff --git a/README.md b/README.md
+index a935e2a..b3ef875 100644
+--- a/README.md
++++ b/README.md
+@@ -1,13 +1,13 @@
+ # Operations Data Cleaner
+ 
+-U7 internal preview: convert a CSV into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations and exact decimal calculations. Trim text only when you choose to. Select CSV delimiter, BOM and header settings, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
++U8 internal preview: convert a CSV into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations, exact decimal calculations and explicit date conversions. Trim text only when you choose to. Select CSV delimiter, BOM and header settings, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
+ 
+ ## Run locally
+ 
+ Use Node 24 LTS (U6 cloud verification: Node 24.19.0).
+ 
+ ```sh
+ npm ci
+ npm run build
+ npm run preview
+ ```
+@@ -29,50 +29,56 @@ The existing [U2 source](examples/u2/source.csv), [template](examples/u2/templat
+ Unmatched outputs show **Suggested** candidates for exact normalized header names and the curated pairs **Ship To ↔ Consignee** and **PO # ↔ Purchase Order Reference**. Choose **Accept** for a candidate, **Reject** to dismiss it in this editor session, or match another source using the existing cards/settings. Multiple candidates remain alternatives; none is selected automatically. Existing confirmed mappings and fixed values take precedence.
+ 
+ Suggestions use headers only, stay local, and never inspect row values. Billing parties, sales orders, stop/shipment IDs and quantities with different units are not treated as equivalents. Only explicitly configured recipes can be saved or downloaded; unresolved outputs still need a mapping or removal. Saved mappings rerun directly, and renamed or missing source headers still block processing.
+ 
+ ## Split and combine text (U6)
+ 
+ Open an output column's settings and choose **Split a source column**. Choose its source, literal delimiter, expected count and segment number (starting at 1). Trimming is off until explicitly enabled. Configure each destination independently from the same original source. The count must match exactly: missing or extra segments invalidate the row. Mark optional empty positions explicitly and keep their delimiters (`a,,c,d`); positions are never guessed. Every other segment must contain text, even when selecting a different segment.
+ 
+ Choose **Combine sources and text** to arrange two or more source columns and literal components. Use the labeled Up/Down controls, add/remove components, and choose an exact separator (including an empty separator). Empty sources and empty literals retain their position and separator. Combination cards show the configured order; all sources remain reusable. Optional output trim affects only the combined value's boundaries.
+ 
+-Both recipes save and transfer in workflow version 1, including trimming, optional positions, ordered components and separators. Renamed or missing source headers still block runs. Split/combination output uses the same required/maximum-length validation, formula safety and revision checks as existing recipes. General parsing, automatic address interpretation and date conversion remain unavailable.
++Both recipes save and transfer in workflow version 1, including trimming, optional positions, ordered components and separators. Renamed or missing source headers still block runs. Split/combination output uses the same required/maximum-length validation, formula safety and revision checks as existing recipes. General parsing and automatic address interpretation remain unavailable.
+ 
+ ## Exact calculations and numeric validation (U7)
+ 
+ Choose **Calculate with numbers** in an output column's settings. Choose two operands (each a source column or fixed decimal) and Add, Subtract, Multiply or Divide. For example, 24 units divided by a source factor of 4 yields 6 cases; 15 cases multiplied by the fixed number `12` yields 180. Field names may describe units; operands must be plain numbers (`12`, not `12 kg/case`). No factor or unit is inferred.
+ 
+ Calculations keep exact decimal strings (`0.1 + 0.2 = 0.3`). **No rounding — require exact result** is the default. Missing operands, non-numbers, zero divisors and nonterminating division are row errors even for optional outputs. **Maximum decimal places** limits precision without rounding or padding; excess precision is an error unless you explicitly select rounding. **Require whole numbers before rounding** rejects fractional results even if rounding would hide them. Choose **Round half up**, **Round half to even** or **Truncate toward zero** with 0–100 decimal places; rounding outputs exactly that many places, including trailing zeros. Rounding places cannot exceed the configured maximum. Optional blank copies/constants remain permitted.
+ 
+ For source copies, splits or combinations, choose **Output type → Number** to validate the resulting string as a strict decimal. Text remains the default to preserve identifiers. Numeric parsing accepts an optional sign, digits and a decimal point (`12.50`, `+.5`, `-2.`); whitespace, currency, separators, units and exponents fail. Number fields do not trim input; correct source whitespace explicitly. Fixed numeric literals without rounding retain the approved original representation.
+ 
+ Inputs are limited to 1000 characters each before numeric parsing; results are limited to 2000 digits, counting integer and fractional padding. Excess expansion is an explicit precision-limit error, never a truncated result. Exact division beyond this budget can use explicitly chosen rounding. All settings remain compatible with workflow version 1, local saves and portable JSON. Missing source headers still block runs; changing numeric settings invalidates old export decisions.
+ 
++## Explicit date formats (U8)
++
++In an output column's settings choose **Output type → Date** (or **Fixed value type → Date**). Choose both **Source date format** and **Output date format**: `YYYY-MM-DD`, `MM/DD/YYYY`, or `DD/MM/YYYY`. Neither is inferred. With source `MM/DD/YYYY`, `10/08/2026` becomes `2026-10-08`, and `03/04/2026` means March 4; choose `DD/MM/YYYY` to interpret it as April 3.
++
++Only zero-padded calendar dates with years `0001`–`9999` are accepted. Impossible dates, invalid leap days, timestamps and mismatched patterns fail visibly. Dates use calendar arithmetic without browser timezone conversion. Empty optional dates remain blank; required blanks fail. Whitespace changes only with explicit trimming. Date interpretation follows the independent primary recipe (copy, fixed text, split or combine), and keeps original source values intact. Numeric calculations cannot become dates. Formats, trimming and required rules save and transfer in workflow version 1; changing rules renews export safety decisions. Excel dates remain deferred to U9/U10.
++
+ ## Save, repeat and recover
+ 
+ Name the current configuration and choose **Save workflow**. Save is explicit: changing rules, uploading a source, or importing a workflow does not automatically update saved definitions. **Save changes** updates the opened saved definition; **Save a copy** needs a distinct name. Identity/name conflicts require an explicit replacement or copy. Changes from another tab are detected before replacement.
+ 
+ Choose a definition under **Saved workflows**, then **Open workflow**, upload a compatible new CSV, review and download. Source columns may be reordered or have extra unused columns; missing/duplicate/changed required headers block the run without guessing. **Edit workflow** reveals the existing matching board. Opening another definition clears the old source only after validation and any replacement confirmation.
+ 
+ **Download workflow** produces `workflow.json` without needing a source or working browser storage. Use **Import workflow** in another browser or local instance, then upload its compatible source. Import validates supported configuration before replacing anything and opens a draft; Save separately if you want it in that browser. Future versions and currently undelivered recipes/settings are rejected clearly.
+ 
+ Browser storage belongs to this browser and site origin, can be cleared, and is not shared automatically. Keep the prompted portable backup and store it somewhere durable. Workflow files contain field names and configured constants that may reveal business information; review them before sharing. Source records and filenames are excluded. Reload and **End session** clear source data; saved definitions remain available. **New conversion** starts an ad hoc draft after confirming replacement when needed. If storage fails, continue ad hoc or download a backup; **Retry workflow storage** retries the local library without discarding your conversion.
+ 
+ ## Delivered limits and privacy
+ 
+ - UTF-8 CSV with optional input BOM; comma, semicolon or tab input. First nonblank record is the header; normalized empty/duplicate headers and malformed quotes/extra cells fail explicitly.
+ - Every output must have a source copy, fixed text/number/blank, split, combination or calculation recipe. Text supports optional required/max-length validation and explicit boundary trim. Numeric constants use a strict decimal string grammar: optional sign, digits and decimal point; no currency, thousands separators or exponents. `12.50`, `+0012.500` and long decimals retain their exact representation without floating-point conversion or rounding. Fixed text is limited to 4096 characters and decimal literals to 1000 characters. Number outputs support strict source conversion, whole-number checks, maximum decimal places and explicit rounding. Optional blanks succeed; required blank/whitespace-only values block the whole download.
+ - Default output: UTF-8, no BOM, comma, headers, standard quoting, CRLF. Choose comma, semicolon or tab, BOM on/off and header on/off. Preview retains column labels for identification even when the exported header is omitted. Formula-like text (including constants) and included headers require an explicit escaped/raw choice; preview shows the selected representation. Typed numeric constants are not formula text. Escaping changes text and cannot promise protection in every spreadsheet/importer. Raw text may be unsafe to open in spreadsheets.
+ - Full dataset counts with paginated output and exception rows (50 per page). Nonblank totals are ordinary candidates. No silent record truncation. Limits: 25 MiB source, 200 columns, 2 million inspected cells, 30-second cancellable worker watchdog.
+ - Files and parsed data stay in browser memory and are cleared by reload or End session. Only explicitly saved workflow configurations use IndexedDB; no source data or filename is persisted. No localStorage, service worker, analytics, remote fonts, or upload endpoint. Static application code/assets still use ordinary host requests and metadata. Processing runs in a local Web Worker.
+-- Excel, date operations, source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
++- Excel, source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
+ 
+ ## Verify
+ 
+ ```sh
+ npm run typecheck
+ npm run lint
+ npm run test:unit
+ npm run build
+ npx playwright install --with-deps chromium firefox webkit
+ npm run test:e2e
+diff --git a/docs/reviews/u8/date-errors.png b/docs/reviews/u8/date-errors.png
+new file mode 100644
+index 0000000..8d6f9b7
+Binary files /dev/null and b/docs/reviews/u8/date-errors.png differ
+diff --git a/docs/reviews/u8/date-settings-desktop.png b/docs/reviews/u8/date-settings-desktop.png
+new file mode 100644
+index 0000000..235fe86
+Binary files /dev/null and b/docs/reviews/u8/date-settings-desktop.png differ
+diff --git a/docs/reviews/u8/date-settings-green.txt b/docs/reviews/u8/date-settings-green.txt
+new file mode 100644
+index 0000000..1adc667
+--- /dev/null
++++ b/docs/reviews/u8/date-settings-green.txt
+@@ -0,0 +1,22 @@
++[WebServer] (node:6976) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
++[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
++
++Running 13 tests using 1 worker
++
++(node:6988) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
++(Use `node --trace-warnings ...` to show where the warning was created)
++  ✓   1 [chromium] › tests/e2e/constants.spec.ts:5:1 › switching trimmed max-length fixed text to number clears text-only settings (2.1s)
++  ✓   2 [chromium] › tests/e2e/constants.spec.ts:27:1 › numeric constant clear and copy radio restore unmatched and faithful text states (2.5s)
++  ✓   3 [chromium] › tests/e2e/constants.spec.ts:51:1 › U3 sample demonstrates constants, trim and nondefault CSV settings (792ms)
++  ✓   4 [chromium] › tests/e2e/constants.spec.ts:62:1 › fixed fields complete without sources, trim validates resulting text and reorder preserves values (4.7s)
++  ✓   5 [chromium] › tests/e2e/constants.spec.ts:105:1 › constant reorder permutes configured slots while unmatched outputs stay fixed (1.9s)
++  ✓   6 [chromium] › tests/e2e/constants.spec.ts:123:1 › intentional required blanks and invalid numeric literals block export with actionable errors (2.9s)
++  ✓   7 [chromium] › tests/e2e/constants.spec.ts:145:1 › all twelve CSV setting combinations download independent exact UTF-8 byte goldens (6.7s)
++  ✓   8 [chromium] › tests/e2e/constants.spec.ts:166:1 › formula constants require renewed choice after constant, trim and every export setting edit (2.4s)
++  ✓   9 [chromium] › tests/e2e/constants.spec.ts:199:1 › constant and CSV edits during an older evaluation cannot export stale settings (1.5s)
++  ✓  10 [chromium] › tests/e2e/dates.spec.ts:26:1 › AC-09 contextual dates, exact downloads, local reopen and portable timezone reuse (4.9s)
++  ✓  11 [chromium] › tests/e2e/dates.spec.ts:108:1 › strict dates, optional/required blanks, explicit ambiguity and source replacement (4.2s)
++  ✓  12 [chromium] › tests/e2e/dates.spec.ts:170:1 › mobile date settings preserve layout and type changes clear incompatible rules and CSV acknowledgement (3.3s)
++  ✓  13 [chromium] › tests/e2e/dates.spec.ts:212:1 › date rules survive first source choice; fixed dates and trimming remain explicit (2.2s)
++
++  13 passed (41.6s)
+diff --git a/docs/reviews/u8/date-settings-mobile.png b/docs/reviews/u8/date-settings-mobile.png
+new file mode 100644
+index 0000000..f2bd5bf
+Binary files /dev/null and b/docs/reviews/u8/date-settings-mobile.png differ
+diff --git a/docs/reviews/u8/date-workspace.png b/docs/reviews/u8/date-workspace.png
+new file mode 100644
+index 0000000..4458dd8
+Binary files /dev/null and b/docs/reviews/u8/date-workspace.png differ
+diff --git a/docs/reviews/u8/fixed-date-red.txt b/docs/reviews/u8/fixed-date-red.txt
+new file mode 100644
+index 0000000..767a152
+--- /dev/null
++++ b/docs/reviews/u8/fixed-date-red.txt
+@@ -0,0 +1,79 @@
++[WebServer] (node:6525) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
++[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
++
++Running 1 test using 1 worker
++
++(node:6537) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
++(Use `node --trace-warnings ...` to show where the warning was created)
++  ✘  1 [chromium] › tests/e2e/dates.spec.ts:209:1 › date rules survive first source choice; fixed dates and trimming remain explicit (30.2s)
++
++
++  1) [chromium] › tests/e2e/dates.spec.ts:209:1 › date rules survive first source choice; fixed dates and trimming remain explicit 
++
++    Test timeout of 30000ms exceeded.
++
++    Error: page.waitForEvent: Test timeout of 30000ms exceeded.
++    =========================== logs ===========================
++    waiting for event "download"
++    ============================================================
++
++       at helpers.ts:95
++
++      93 | }
++      94 | export async function download(page: Page) {
++    > 95 |   const pending = page.waitForEvent("download");
++         |                        ^
++      96 |   await page
++      97 |     .getByRole("button", { name: "Download converted CSV", exact: true })
++      98 |     .click();
++        at download (/workspace/operations-data-cleaner/tests/e2e/helpers.ts:95:24)
++        at /workspace/operations-data-cleaner/tests/e2e/dates.spec.ts:249:17
++
++    Error: locator.click: Test timeout of 30000ms exceeded.
++    Call log:
++      - waiting for getByRole('button', { name: 'Download converted CSV', exact: true })
++        - locator resolved to <button disabled class="primary download">Download converted CSV</button>
++      - attempting click action
++        2 × waiting for element to be visible, enabled and stable
++          - element is not enabled
++        - retrying click action
++        - waiting 20ms
++        - waiting for element to be visible, enabled and stable
++        - element is not enabled
++      - retrying click action
++        - waiting 100ms
++        - waiting for element to be visible, enabled and stable
++        - element is not stable
++      - retrying click action
++        - waiting 100ms
++        54 × waiting for element to be visible, enabled and stable
++           - element is not enabled
++         - retrying click action
++           - waiting 500ms
++        - waiting for element to be visible, enabled and stable
++
++
++       at helpers.ts:98
++
++       96 |   await page
++       97 |     .getByRole("button", { name: "Download converted CSV", exact: true })
++    >  98 |     .click();
++          |      ^
++       99 |   const result = await pending;
++      100 |   expect(result.suggestedFilename()).toBe("converted.csv");
++      101 |   const path = await result.path();
++        at download (/workspace/operations-data-cleaner/tests/e2e/helpers.ts:98:6)
++        at /workspace/operations-data-cleaner/tests/e2e/dates.spec.ts:249:17
++
++    Error Context: test-results/dates-date-rules-survive-f-93371-nd-trimming-remain-explicit-chromium/error-context.md
++
++    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
++    test-results/dates-date-rules-survive-f-93371-nd-trimming-remain-explicit-chromium/trace.zip
++    Usage:
++
++        npx playwright show-trace test-results/dates-date-rules-survive-f-93371-nd-trimming-remain-explicit-chromium/trace.zip
++
++    ────────────────────────────────────────────────────────────────────────────────────────────────
++
++  1 failed
++    [chromium] › tests/e2e/dates.spec.ts:209:1 › date rules survive first source choice; fixed dates and trimming remain explicit 
+diff --git a/docs/reviews/u8/full-chromium.txt b/docs/reviews/u8/full-chromium.txt
+new file mode 100644
+index 0000000..69be038
+--- /dev/null
++++ b/docs/reviews/u8/full-chromium.txt
+@@ -0,0 +1,89 @@
++
++> operations-data-cleaner@0.2.0 test:e2e
++> playwright test --project=chromium
++
++[WebServer] (node:2991) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
++[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
++
++Running 76 tests using 1 worker
++
++(node:3015) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
++(Use `node --trace-warnings ...` to show where the warning was created)
++  ✓   1 [chromium] › tests/e2e/accessibility.spec.ts:4:1 › labelled keyboard controls, laptop/mobile layouts and automated accessibility (4.0s)
++  ✓   2 [chromium] › tests/e2e/accessibility.spec.ts:35:1 › U3 fixed fields, CSV options and contextual trim controls remain accessible (3.1s)
++  ✓   3 [chromium] › tests/e2e/accessibility.spec.ts:48:1 › workflow metadata stays literal and keyboard collision cancellation restores focus (1.9s)
++  ✓   4 [chromium] › tests/e2e/address-recipes.spec.ts:24:1 › AC-03/04 contextual split/combine, saved reuse and fresh-context JSON preserve exact output (5.2s)
++  ✓   5 [chromium] › tests/e2e/address-recipes.spec.ts:60:1 › strict count and optional empty slots show row/field errors and block invalid download (3.0s)
++  ✓   6 [chromium] › tests/e2e/address-recipes.spec.ts:78:1 › keyboard recipe controls retain paired-card ordering, literal-only combinations and mobile accessibility (2.9s)
++  ✓   7 [chromium] › tests/e2e/address-recipes.spec.ts:102:1 › reducing split count removes obsolete optional positions visibly and keeps the recipe usable (2.4s)
++  ✓   8 [chromium] › tests/e2e/calculations.spec.ts:14:1 › AC-05/06/10 contextual calculations export exact bytes, save/reopen and portable reuse (4.5s)
++  ✓   9 [chromium] › tests/e2e/calculations.spec.ts:83:1 › errors stay visible, rounding is explicit, and fractional cases fail before rounding (3.3s)
++  ✓  10 [chromium] › tests/e2e/calculations.spec.ts:119:1 › mobile calculation settings, output type switches and keyboard focus preserve paired cards (2.5s)
++  ✓  11 [chromium] › tests/e2e/calculations.spec.ts:153:1 › numeric copy validation and precision edits renew CSV safety decisions (3.6s)
++  ✓  12 [chromium] › tests/e2e/calculations.spec.ts:205:3 › numeric copy source retains rules when first choosing a source (2.4s)
++  ✓  13 [chromium] › tests/e2e/calculations.spec.ts:205:3 › numeric copy source retains rules when replacing a source (2.7s)
++  ✓  14 [chromium] › tests/e2e/constants.spec.ts:5:1 › switching trimmed max-length fixed text to number clears text-only settings (2.3s)
++  ✓  15 [chromium] › tests/e2e/constants.spec.ts:27:1 › numeric constant clear and copy radio restore unmatched and faithful text states (2.7s)
++  ✓  16 [chromium] › tests/e2e/constants.spec.ts:51:1 › U3 sample demonstrates constants, trim and nondefault CSV settings (1.1s)
++  ✓  17 [chromium] › tests/e2e/constants.spec.ts:62:1 › fixed fields complete without sources, trim validates resulting text and reorder preserves values (5.6s)
++  ✓  18 [chromium] › tests/e2e/constants.spec.ts:105:1 › constant reorder permutes configured slots while unmatched outputs stay fixed (1.9s)
++  ✓  19 [chromium] › tests/e2e/constants.spec.ts:123:1 › intentional required blanks and invalid numeric literals block export with actionable errors (2.8s)
++  ✓  20 [chromium] › tests/e2e/constants.spec.ts:145:1 › all twelve CSV setting combinations download independent exact UTF-8 byte goldens (7.6s)
++  ✓  21 [chromium] › tests/e2e/constants.spec.ts:166:1 › formula constants require renewed choice after constant, trim and every export setting edit (2.5s)
++  ✓  22 [chromium] › tests/e2e/constants.spec.ts:199:1 › constant and CSV edits during an older evaluation cannot export stale settings (1.5s)
++  ✓  23 [chromium] › tests/e2e/conversion.spec.ts:15:1 › upload template, keyboard map, rename, reorder, preview and verify actual bytes (2.3s)
++  ✓  24 [chromium] › tests/e2e/conversion.spec.ts:57:1 › sample produces golden bytes without any customer file (769ms)
++  ✓  25 [chromium] › tests/e2e/conversion.spec.ts:69:1 › unmapped and invalid rows block download, all exceptions are reachable (2.0s)
++  ✓  26 [chromium] › tests/e2e/conversion.spec.ts:114:1 › formula headers and text block export until explicit choice, representation matches bytes (1.9s)
++  ✓  27 [chromium] › tests/e2e/conversion.spec.ts:140:1 › failed replacement retains active file and valid mapping; ending session clears it (1.4s)
++  ✓  28 [chromium] › tests/e2e/dates.spec.ts:26:1 › AC-09 contextual dates, exact downloads, local reopen and portable timezone reuse (4.5s)
++  ✓  29 [chromium] › tests/e2e/dates.spec.ts:102:1 › strict dates, optional/required blanks, explicit ambiguity and source replacement (4.2s)
++  ✓  30 [chromium] › tests/e2e/dates.spec.ts:164:1 › mobile date settings preserve layout and type changes clear incompatible rules and CSV acknowledgement (3.3s)
++  ✓  31 [chromium] › tests/e2e/dates.spec.ts:206:1 › date rules survive first source choice; fixed dates and trimming remain explicit (2.2s)
++  ✓  32 [chromium] › tests/e2e/performance.spec.ts:17:1 › 10000 U3 rows preserve every fixed value, exact decimal, trim result and original reference (6.0s)
++  ✓  33 [chromium] › tests/e2e/performance.spec.ts:44:1 › 10000 x 20 rows remain intact; record cold and five warm full-pipeline runs (21.2s)
++  ✓  34 [chromium] › tests/e2e/performance.spec.ts:135:1 › busy cancel and retry preserve the active mapping and full downloaded data (1.5s)
++  ✓  35 [chromium] › tests/e2e/performance.spec.ts:173:1 › cancellation terminates an active parsing worker and retries the original file (3.7s)
++  ✓  36 [chromium] › tests/e2e/performance.spec.ts:206:1 › 499 x 20 import to preview stays under the one-second smoke budget (4.4s)
++  ✓  37 [chromium] › tests/e2e/performance.spec.ts:270:1 › 10000 U6 rows preserve every split and combined empty component (2.0s)
++  ✓  38 [chromium] › tests/e2e/performance.spec.ts:292:1 › 10000 U7 rows keep exact arithmetic, identifiers, counts and downloaded bytes (2.3s)
++  ✓  39 [chromium] › tests/e2e/performance.spec.ts:309:1 › 10000 U8 rows preserve every explicit date, identifier and exported byte (1.9s)
++  ✓  40 [chromium] › tests/e2e/persistence.spec.ts:31:1 › ad hoc edits persist nothing; explicit save commits configuration that survives reload (1.3s)
++  ✓  41 [chromium] › tests/e2e/persistence.spec.ts:50:1 › two tabs cannot silently replace a workflow changed since opening (1.2s)
++  ✓  42 [chromium] › tests/e2e/persistence.spec.ts:67:1 › write abort after request success preserves the draft and independent portable download (688ms)
++  ✓  43 [chromium] › tests/e2e/persistence.spec.ts:89:1 › corrupt records stay untouched while intact saved definitions remain available (872ms)
++  ✓  44 [chromium] › tests/e2e/persistence.spec.ts:111:1 › save acknowledges its submitted snapshot while newer name edits remain unsaved (720ms)
++  ✓  45 [chromium] › tests/e2e/persistence.spec.ts:136:1 › storage denial keeps portable workflow download and ad hoc processing available (762ms)
++  ✓  46 [chromium] › tests/e2e/persistence.spec.ts:149:1 › a delayed saved-workflow read uses current confirmation after a draft edit (1.1s)
++  ✓  47 [chromium] › tests/e2e/persistence.spec.ts:180:3 › native chooser waits for the selected saved workflow to activate (1.1s)
++  ✓  48 [chromium] › tests/e2e/persistence.spec.ts:180:3 › upload helper waits for the selected saved workflow to activate (1.4s)
++  ✓  49 [chromium] › tests/e2e/persistence.spec.ts:228:3 › pending Open releases controls after cancel without activating a late workflow (1.2s)
++  ✓  50 [chromium] › tests/e2e/persistence.spec.ts:228:3 › pending Open releases controls after missing without activating a late workflow (1.1s)
++  ✓  51 [chromium] › tests/e2e/privacy.spec.ts:4:1 › production journey sends no customer values, file names or IDs and stores no source data (6.7s)
++  ✓  52 [chromium] › tests/e2e/review-regressions.spec.ts:4:1 › CE #1: removing a previewed field and repreviewing cannot render stale values (1.8s)
++  ✓  53 [chromium] › tests/e2e/review-regressions.spec.ts:20:1 › CE #1: sample transaction replaces a wider completed preview (1.7s)
++  ✓  54 [chromium] › tests/e2e/review-regressions.spec.ts:39:1 › CE #4: failed sample read retains the prior active mapping and visible failure (1.3s)
++  ✓  55 [chromium] › tests/e2e/review-regressions.spec.ts:65:1 › CE #5: cancelled sample and active-file retry keep matching preview and output (1.5s)
++  ✓  56 [chromium] › tests/e2e/review-regressions.spec.ts:96:1 › new source upload requires a fresh CSV safety choice (1.4s)
++  ✓  57 [chromium] › tests/e2e/row-mapping.spec.ts:19:1 › both drag directions, grouping, source reuse, replacement and unlink preserve export order (2.4s)
++  ✓  58 [chromium] › tests/e2e/row-mapping.spec.ts:63:1 › keyboard counterpart selection in both directions, Escape and pair reordering retain focus (2.5s)
++  ✓  59 [chromium] › tests/e2e/row-mapping.spec.ts:162:1 › 25 sources and 30 outputs stay searchable and aligned at desktop and laptop widths (6.2s)
++  ✓  60 [chromium] › tests/e2e/row-mapping.spec.ts:218:1 › rapid edits debounce and never enable an old export (1.6s)
++  ✓  61 [chromium] › tests/e2e/row-mapping.spec.ts:239:1 › edits during an older worker evaluation queue the latest draft (2.0s)
++  ✓  62 [chromium] › tests/e2e/row-mapping.spec.ts:308:1 › template replacement is deliberate and failed parsing preserves mapped columns (2.2s)
++  ✓  63 [chromium] › tests/e2e/row-mapping.spec.ts:366:1 › automatic evaluation waits for a fresh 250 ms quiet period (1.2s)
++  ✓  64 [chromium] › tests/e2e/row-mapping.spec.ts:407:1 › a failed automatic evaluation stops until explicit recovery (1.1s)
++  ✓  65 [chromium] › tests/e2e/row-mapping.spec.ts:459:1 › zero output columns give an actionable empty state rather than a pending preview (1.3s)
++  ✓  66 [chromium] › tests/e2e/row-mapping.spec.ts:479:1 › external drops cannot create mappings; contextual settings and deletion restore focus (1.0s)
++  ✓  67 [chromium] › tests/e2e/suggestions.spec.ts:6:1 › keyboard accept/reject leaves candidates unconfirmed and existing recipes authoritative (2.3s)
++  ✓  68 [chromium] › tests/e2e/suggestions.spec.ts:33:1 › ambiguous exact/dictionary candidates remain alternatives until an explicit choice (1.2s)
++  ✓  69 [chromium] › tests/e2e/suggestions.spec.ts:68:1 › only accepted mappings save, back up and rerun; renamed headers still block (2.5s)
++  ✓  70 [chromium] › tests/e2e/workflow-portability.spec.ts:32:1 › portable backup runs in a fresh browser and separate local origin without remapping (1.6s)
++  ✓  71 [chromium] › tests/e2e/workflow-portability.spec.ts:63:1 › invalid workflow imports preserve the prior run and compatible headers never guess (1.2s)
++  ✓  72 [chromium] › tests/e2e/workflow-portability.spec.ts:81:1 › identity and name collisions require an explicit target or distinct copy (1.0s)
++  ✓  73 [chromium] › tests/e2e/workflow-portability.spec.ts:102:1 › saved source delimiter policy is committed independently of the next upload picker (951ms)
++  ✓  74 [chromium] › tests/e2e/workflow-portability.spec.ts:121:1 › a late workflow read cannot resurrect a conversion after New conversion (668ms)
++  ✓  75 [chromium] › tests/e2e/workflow-portability.spec.ts:139:1 › opening a workflow resets formula permission and added output IDs remain unique (1.7s)
++  ✓  76 [chromium] › tests/e2e/workflow-portability.spec.ts:163:1 › a delayed workflow read confirms against the current newly uploaded source (1.2s)
++
++  76 passed (3.3m)
+diff --git a/docs/reviews/u8/plan-review/README.md b/docs/reviews/u8/plan-review/README.md
+new file mode 100644
+index 0000000..af04f20
+--- /dev/null
++++ b/docs/reviews/u8/plan-review/README.md
+@@ -0,0 +1,35 @@
++# U8 CE document review and planning intake
++
++The installed `ce-doc-review` workflow ran in non-interactive mode against the approved plan, bounded to U8 text CSV dates and its governing decisions/verification. Native skill invocation is unavailable in this host; the installed skill and required references were read and executed. This evidence was requested by the user's CE workflow and saved by the parent agent's explicit task instruction; the approved PRD and plan were not edited.
++
++## Coverage
++
++| Persona | Why selected | Result |
++| --- | --- | --- |
++| Coherence | Always required; internal consistency and source traceability | Completed, 0 findings |
++| Feasibility | Always required; implementation and failure paths | Completed, 0 findings |
++| Design | Contextual paired-card date controls and accessible interaction | Completed, 0 findings |
++| Scope guardian | Plan sizing and U8-only delivery boundary | Completed, 0 findings |
++
++Each reviewer received a separately rendered payload containing the full installed persona, CE template/schema, complete source plan, `unified-plan` classification, `docs/PRD.md` origin, no session-settled annotations, and the same bounded scope. All returned valid JSON; the complete responses are saved alongside this file. No reviewer failed. Compound Pack resolution returned no roots, warnings, or errors. The platform has no agent-release primitive; all four child agents returned final results.
++
++Conditional product/security/adversarial personas were not selected: U8 implements an already approved product decision, introduces no architectural abstraction or alternative tradeoff, and handles ordinary explicit date strings within the existing local-processing boundary. Existing privacy invariants are inherited, with privacy/schema/storage correctness reviewed and tested during implementation. This is bounded U8 planning coverage, not a new review of the full product's privacy architecture. No conditional judgment trio was active, so the additional cross-model judgment pass was not activated. The cheap extraction tier and middle-tier overrides follow the installed skill's dispatch preferences; feasibility inherited its parent model.
++
++## Synthesis
++
++All four complete responses contain empty findings, residual risks, and deferred questions. No confidence promotions, deduplication, rejected claims, corrections, proposed edits, or user decisions remain. The approved plan is sufficient for U8; its historical statements withholding implementation authority are superseded by the current explicit user request. Source hashes identify the exact reviewed documents. This document review makes no test-execution claim and does not grant UX acceptance.
++
++## Planning intake / approved-plan reuse
++
++Read the installed `ce-plan` skill and required Phase 0 output/resume references. The named plan already has the unified Product Contract, Planning Contract, concrete U8 unit, Verification Contract, and Definition of Done. Reuse that approved implementation plan in place without authoring, deepening, or expanding it. The current request authorizes execution, and pipeline mode returns to `ce-work` without another menu or approval request. The approved-plan reuse does not invoke plan-authoring/model-elevation phases.
++
++Confidence check passed for the bounded active unit: U7 is merged at base `bad9233bdabb571f493fabdcc8e1ec3f5486c7ef`; strict calendar parsing, three explicit patterns, optional/required blanks, timezone-independent results, contextual UI, versioned schema compatibility, and actual CSV download verification are all covered by the plan and existing project conventions. There are no launch-blocking plan questions. Deferred Excel serial/epoch/input/export work remains U9/U10.
++
++Execute U8 as follows:
++
++1. Add a pure strict calendar parser/formatter using year/month/day integers for `YYYY-MM-DD`, `MM/DD/YYYY`, and `DD/MM/YYYY`; reject impossible dates, malformed widths, unsupported datetime text, and unconfigured interpretations. Apply the existing recipe → explicit trim/date → validation order.
++2. Extend finite workflow schema and semantic compatibility validation for date type/source/target settings. Preserve old U2–U7 workflow meaning and enforce strict unknown-property rejection. Optional blanks remain blank; required blanks fail. Date settings must not bypass underlying recipe errors.
++3. Put labeled source/target date choices in the existing contextual paired-card controls. Retain revision-safe automatic preview refresh and stale-export blocking; do not infer formats from headers, samples, locale, or browser timezone.
++4. Extend unit/calendar and CSV byte goldens, graphical browser dates, multi-timezone checks, saved/portable round trips, privacy interception, and 10,000-row smoke coverage. Run the existing required checks against a production build. Save actual review/test evidence and screenshots in the draft PR.
++
++Proceed with `ce-work` for U8 only. No merge, deployment, U9 implementation, or claim of hands-on UX acceptance is authorized.
+diff --git a/docs/reviews/u8/plan-review/coherence.json b/docs/reviews/u8/plan-review/coherence.json
+new file mode 100644
+index 0000000..9e75bbd
+--- /dev/null
++++ b/docs/reviews/u8/plan-review/coherence.json
+@@ -0,0 +1,6 @@
++{
++  "reviewer": "coherence",
++  "findings": [],
++  "residual_risks": [],
++  "deferred_questions": []
++}
+diff --git a/docs/reviews/u8/plan-review/design-lens.json b/docs/reviews/u8/plan-review/design-lens.json
+new file mode 100644
+index 0000000..2c00b2a
+--- /dev/null
++++ b/docs/reviews/u8/plan-review/design-lens.json
+@@ -0,0 +1,6 @@
++{
++  "reviewer": "design-lens",
++  "findings": [],
++  "residual_risks": [],
++  "deferred_questions": []
++}
+diff --git a/docs/reviews/u8/plan-review/feasibility.json b/docs/reviews/u8/plan-review/feasibility.json
+new file mode 100644
+index 0000000..e933568
+--- /dev/null
++++ b/docs/reviews/u8/plan-review/feasibility.json
+@@ -0,0 +1,6 @@
++{
++  "reviewer": "feasibility",
++  "findings": [],
++  "residual_risks": [],
++  "deferred_questions": []
++}
+diff --git a/docs/reviews/u8/plan-review/resolved-review.json b/docs/reviews/u8/plan-review/resolved-review.json
+new file mode 100644
+index 0000000..dce96fc
+--- /dev/null
++++ b/docs/reviews/u8/plan-review/resolved-review.json
+@@ -0,0 +1,46 @@
++{
++  "mode": "non-interactive",
++  "document_type": "unified-plan",
++  "origin": "docs/PRD.md",
++  "settled_ktds": "none (no session-settled annotations in source plan)",
++  "base_commit": "bad9233bdabb571f493fabdcc8e1ec3f5486c7ef",
++  "scope": "U8 text CSV dates; related KTD-03/04/05/08/09, R3/R4, FR-19/20/41, AC-09 text dates, Verification Contract",
++  "packs": {
++    "roots": [],
++    "warnings": [],
++    "errors": [],
++    "entries": 0
++  },
++  "reviewers": [
++    {
++      "reviewer": "coherence",
++      "agent": "/root/u8_plan_review/coherence",
++      "model_override": "gpt-6-luna",
++      "reasoning_effort": "high"
++    },
++    {
++      "reviewer": "feasibility",
++      "agent": "/root/u8_plan_review/feasibility",
++      "model_override": null
++    },
++    {
++      "reviewer": "design-lens",
++      "agent": "/root/u8_plan_review/design",
++      "model_override": "gpt-6-sol",
++      "reasoning_effort": "high"
++    },
++    {
++      "reviewer": "scope-guardian",
++      "agent": "/root/u8_plan_review/scope",
++      "model_override": "gpt-6-sol",
++      "reasoning_effort": "high"
++    }
++  ],
++  "fixes_applied": 0,
++  "proposed_fixes_count": 0,
++  "decisions_count": 0,
++  "fyi_count": 0,
++  "review_status": "complete",
++  "plan_changed": false,
++  "cross_model_pass": "not activated: no conditional judgment-trio persona selected for bounded U8 scope"
++}
+diff --git a/docs/reviews/u8/plan-review/result.txt b/docs/reviews/u8/plan-review/result.txt
+new file mode 100644
+index 0000000..9c60415
+--- /dev/null
++++ b/docs/reviews/u8/plan-review/result.txt
+@@ -0,0 +1,5 @@
++Document review complete (non-interactive mode).
++
++Applied 0 fixes.
++
++Review complete
+diff --git a/docs/reviews/u8/plan-review/scope-guardian.json b/docs/reviews/u8/plan-review/scope-guardian.json
+new file mode 100644
+index 0000000..6cdcb06
+--- /dev/null
++++ b/docs/reviews/u8/plan-review/scope-guardian.json
+@@ -0,0 +1,6 @@
++{
++  "reviewer": "scope-guardian",
++  "findings": [],
++  "residual_risks": [],
++  "deferred_questions": []
++}
+diff --git a/docs/reviews/u8/plan-review/source-hashes.json b/docs/reviews/u8/plan-review/source-hashes.json
+new file mode 100644
+index 0000000..1157662
+--- /dev/null
++++ b/docs/reviews/u8/plan-review/source-hashes.json
+@@ -0,0 +1,7 @@
++{
++  "AGENTS.md": "f3bd66507f1085cbafd7fa1e5745c1ca6d03acbca57e85129bd35617ede607cb",
++  "docs/PRD.md": "9f7347e5fdced66921043a5735aac36be503290e6f5f0ff0b35375979f071885",
++  "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md": "04cbd98da7e69c960254d1bc3a243991eb63b592297fea015f9bf43eb7d3e308",
++  "docs/design/u2/paired-cards/SPECIFICATION.md": "c5adf5ec04656f9a8a69758b1812925ba3c7787a32f4aeaee71421cad486ec8d",
++  "docs/plans/2026-10-14-u2-paired-card-matching.md": "9c39480e1f77d85f4b7db50db2d3422c56099c4eb82490ca088fabb3bd1a0a7d"
++}
+diff --git a/docs/reviews/u8/simplification/efficiency.md b/docs/reviews/u8/simplification/efficiency.md
+new file mode 100644
+index 0000000..5bbcadf
+--- /dev/null
++++ b/docs/reviews/u8/simplification/efficiency.md
+@@ -0,0 +1,27 @@
++# U8 simplification review — efficiency
++
++Reviewed the current human-authored tracked diff against `origin/main` and the four new date implementation/test files. Read the U8 and KTD-04 plan requirements and relevant evaluator/worker context. This was a static, read-only implementation review; no source or tests were changed and no tests or mutating checks were run.
++
++## Findings
++
++### E1 — Repeated retained copies of field-level date settings (low priority)
++
++**Location:** `src/engine/recipes.ts:98` and `src/engine/recipes.ts:111`.
++
++**Inefficiency:** Every source or constant provenance entry creates a fresh `{ ...f.date }` even though source/target formats are identical for that field throughout the evaluation. A copy recipe retains one such allocation per row; a combination repeats it for every component of every row. These objects remain reachable in the full `Run`, rather than being temporary parse allocations. For example, the new 10,000-row single-date case retains 10,000 equivalent settings objects. This is bounded by the dataset/recipe limits, but needlessly increases memory and garbage collection work when settings trigger full reevaluation.
++
++**Concrete fix:** Snapshot each date field's settings once before entering the row loop, then reference that immutable evaluation-owned snapshot from that field's provenance entries. Preserve the per-entry `date` property and its exact source/target values; do not reference the mutable caller-owned workflow settings directly. There are no provenance date mutations in the reviewed evaluator or worker paths. This keeps provenance and workflow v1 behavior while avoiding repeated equivalent nested objects. No measured latency or memory regression is claimed.
++
++### E2 — Month-length table allocated for every parsed date (low priority)
++
++**Location:** `src/engine/dates.ts:27`.
++
++**Inefficiency:** Every successfully pattern-matched date allocates a 12-element array to answer one month-length lookup. Parsing is inside the full row/field evaluation loop, so this adds one short-lived array for each date candidate on every run.
++
++**Concrete fix:** Move a common-year month-length tuple to module scope and compute the February override with `month === 2 && leap ? 29 : DAYS_IN_MONTH[month - 1]`. Retain all current range checks, exact pattern matching, years 0001–9999, leap rules, and timezone-free calendar arithmetic. This is an allocation reduction, not a demonstrated performance blocker.
++
++## Other reviewed categories
++
++No additional actionable findings in redundant I/O/API calls, missed concurrency, startup/render blocking work, recurring no-op reducer/event updates, existence prechecks, cleanup/listener leaks, or overly broad reads. The new parser is synchronous and bounded by fixed-width patterns; adding async/concurrency infrastructure would not simplify this path. The added date settings controls follow the existing field-update flow and introduce no polling or effects. Existing evaluator/UI work outside the U8 changes was not treated as a new finding.
++
++The repeated `displayValue(value)` calls around date parsing are simple string access for the permitted primary text/blank values, so they do not justify a separate performance finding. Test timezone contexts are closed with `finally`; their sequential execution bounds simultaneous browser resources. Explicit format selection, strict parsing, paired-card behavior, privacy/export safety, workflow v1, and deferred Excel/U9 scope require no changes for these suggestions.
+diff --git a/docs/reviews/u8/simplification/quality.md b/docs/reviews/u8/simplification/quality.md
+new file mode 100644
+index 0000000..f1ecac1
+--- /dev/null
++++ b/docs/reviews/u8/simplification/quality.md
+@@ -0,0 +1,21 @@
++# U8 simplification — code quality review
++
++Scope: current human-authored code diff against `origin/main`, plus the complete new `src/engine/dates.ts`, `src/ui/DateSettings.tsx`, `tests/unit/dates.test.ts`, and `tests/e2e/dates.spec.ts`. Reviewed repository instructions and plan U8/KTD-04. Read-only inspection and structural searches; no source/test/index edits or checks that generate output files were performed.
++
++## Findings
++
++1. **`src/engine/dates.ts:20` — redundant month-index conditional.** The first two branches both select capture group 2; only `MM/DD/YYYY` selects group 1. Replace the nested expression with `Number(match[pattern === "MM/DD/YYYY" ? 1 : 2])`. This is equivalent for all three `DatePattern` members and preserves the regexes, full-match safeguard, calendar validation, and explicit parsing behavior.
++
++2. **`src/ui/MappingRows.tsx:908` — fixed-value handler repeats type-transition cleanup.** The new date branch duplicates the `maxLength` removal already performed by `update` at lines 139–142; number cleanup is duplicated there too. Remove the handler's `maxLength` property and let `update` own this policy. For number/date transitions `update` already sets it to `undefined`; for text/blank transitions spreading the original field already preserves its value. The handler's analogous `trim` property at line 907 can also be removed: number cleanup is centralized in `update`, while all other selections preserve the existing value. Keep the central cleanup and its existing patch ordering.
++
++3. **`src/ui/MappingRows.tsx:975` and `src/ui/MappingRows.tsx:1053` — helper copy now uses three nested conditional operators.** Both additions introduce a third decision inside JSX, making the fixed-value explanation and output explanation harder to scan. Move each explanation into a small, separately named helper with flat early returns, preserving the exact strings and precedence: fixed blank → fixed number → date → text; output date → number → trimmed text → untrimmed text. Keep these two concepts separate rather than creating a generic message-selection abstraction.
++
++All findings are small maintainability improvements; none requires changing product behavior or expanding U8.
++
++## Preserved constraints and exclusions
++
++- Incomplete date draft values deliberately fail strict validation; the empty placeholder casts in `DateSettings` are not flagged as a request to change that behavior.
++- Retain explicit source/target patterns, full-match strictness (including trailing-newline rejection), calendar arithmetic, optional/required blank behavior, and workflow version 1.
++- Preserve the paired-card interface, independent recipe/provenance behavior, export acknowledgements, privacy checks, and CSV safety. No Excel/U9 work is proposed.
++- Keep literal expected date strings/CSV bytes in tests independent of production formatting; the test pattern table is not flagged for replacement by the production constant.
++- Structural search verified the new date exports/component have consumers. No unused exports, state duplication, compatibility-removal candidates, or unnecessary UI wrappers were established in this scope.
+diff --git a/docs/reviews/u8/simplification/reuse.md b/docs/reviews/u8/simplification/reuse.md
+new file mode 100644
+index 0000000..3be658a
+--- /dev/null
++++ b/docs/reviews/u8/simplification/reuse.md
+@@ -0,0 +1,13 @@
++# U8 code reuse review
++
++Reviewed the current human-authored diff against `origin/main` at HEAD `bad9233`, including the full new date engine, date settings, unit tests and browser tests. Consulted `AGENTS.md`, plan U8/KTD-04, existing workflow validation/codec, numeric and text settings, value display, CSV serialization and browser helpers. Read-only inspection; no source/test/index edits or checks were run.
++
++## Finding
++
++- **Low — `src/engine/values.ts:6`: reuse `CalendarDate` from `src/engine/dates.ts:7`.** The date arm of `Value` repeats the existing `year: number; month: number; day: number` contract. Import `CalendarDate` as a type and express that arm as `({ kind: "date"; format: DatePattern } & CalendarDate)`. This keeps the parser result, formatter input and stored date value tied to the same existing calendar shape without changing runtime output, errors, ordering, provenance or serialization. This is optional type-level cleanup.
++
++## Other reuse checks
++
++No additional behavior-equivalent utility, built-in, or verified downstream guarantee warrants replacement in the U8 changes. `DATE_PATTERNS` is already shared by the schema and date UI, while `displayValue` already delegates date output to `formatDate`. Existing recipe evaluation, validation, provenance and workflow codec paths are reused.
++
++Keep calendar arithmetic and exact full-input validation: JavaScript `Date`/locale parsing would alter strictness or timezone behavior, and the extra full-match check protects against the regex `$` final-newline behavior. Keep the incomplete UI draft formats and strict schema boundary. Keep independent literal expected formats/bytes in tests rather than deriving expectations with production formatting helpers. No Excel/U9 expansion is suggested.
+diff --git a/docs/reviews/u8/verification.md b/docs/reviews/u8/verification.md
+new file mode 100644
+index 0000000..a0d1d48
+--- /dev/null
++++ b/docs/reviews/u8/verification.md
+@@ -0,0 +1,19 @@
++# U8 explicit date formats
++
++Started from fetched `origin/main` at `bad9233` (merged/approved U7), with clean status and no local-only commits. Dedicated branch: `feat/u8-explicit-date-formats`. `$ce-work` was verified at `$HOME/.agents/skills/ce-work/SKILL.md`; the installed definition and required references govern execution through the filesystem fallback. Native inline implementation covers the single U8 unit. The approved plan and PRD remain unchanged; the current user instruction authorizes this unit despite historical planning-only notices.
++
++## Behavior and scope
++
++Strict explicit source/output patterns: YYYY-MM-DD, MM/DD/YYYY, DD/MM/YYYY. Parsing uses Gregorian leap-year/calendar arithmetic and a plain year/month/day value, with an explicit presentation format; no Date object, locale inference or timezone conversion. Four-digit years 0001–9999 and padded month/day are required. Impossible dates, unsupported datetime text, whitespace without configured trimming, and mismatched formats fail. Empty optional dates pass; required blanks fail. A failed primary recipe remains invalid even for optional dates.
++
++Date conversion follows copy, fixed text, split or combine, after explicit trim. Number/calculation settings and text maximum lengths are incompatible with date outputs. Original source text stays intact. Existing workflow version 1 date settings are enabled through shared semantic validation; unknown patterns/properties still fail strictly. Saves and portable JSON contain configuration only. Source compatibility, revision checks, stale replies, CSV formula decisions and the approved paired-card interface keep their existing paths. No Excel support, U9, merge or deployment is included.
++
++## Evidence strategy
++
++Existing workflow, numeric validation, constants, split/combine, session, persistence, privacy, performance and paired-card tests were inspected. Six new engine tests were run before production changes: all six failed because date execution/portable validation was unsupported. They then passed after implementation. A seventh regression rejects a trailing newline instead of accepting a regex prefix. Coverage checks all nine pattern pairs with literal CSV byte expectations, ambiguity, leap centuries, impossible dates, unsupported input, blank behavior, primary recipes, explicit trim, source/provenance and strict workflow compatibility.
++
++Browser tests use the production build. Assertions check actual downloaded bytes, local reopen, reordered headers, portable reuse in fresh contexts with America/Los_Angeles and Pacific/Kiritimati timezones, mobile Axe/layout/focus, strict errors, optional/required blanks, first/replacement source choice, fixed dates and renewed formula acknowledgement. The existing privacy interception journey adds a distinctive source date, checks its converted output, and excludes both representations from stored configuration. A new 10,000-row journey compares every output byte and identifier.
++
++Browser setup: Playwright download was denied with `403 Domain forbidden` by environment network policy. System Chromium is available through the repository's existing `U2_CHROMIUM_PATH=/usr/bin/chromium` override. Firefox/WebKit are not locally claimed. Existing three-browser GitHub CI remains unchanged. Cloud performance is smoke evidence, not reference-laptop/full-MVP qualification.
++
++Validation results and CE receipts are appended after their runs complete. Screenshots contain synthetic data only; hands-on UX acceptance remains with the user.
+diff --git a/src/engine/dates.ts b/src/engine/dates.ts
+new file mode 100644
+index 0000000..6e171a7
+--- /dev/null
++++ b/src/engine/dates.ts
+@@ -0,0 +1,41 @@
++export const DATE_PATTERNS = [
++  "YYYY-MM-DD",
++  "MM/DD/YYYY",
++  "DD/MM/YYYY",
++] as const;
++export type DatePattern = (typeof DATE_PATTERNS)[number];
++export type CalendarDate = { year: number; month: number; day: number };
++
++const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] as const;
++
++// Calendar arithmetic only: no locale parser, Date object, or timezone conversion.
++export function parseDate(
++  text: string,
++  pattern: DatePattern,
++): CalendarDate | undefined {
++  const match =
++    pattern === "YYYY-MM-DD"
++      ? /^(\d{4})-(\d{2})-(\d{2})$/u.exec(text)
++      : /^(\d{2})\/(\d{2})\/(\d{4})$/u.exec(text);
++  if (!match || match[0] !== text) return undefined;
++  const year = Number(match[pattern === "YYYY-MM-DD" ? 1 : 3]);
++  const month = Number(match[pattern === "MM/DD/YYYY" ? 1 : 2]);
++  const day = Number(
++    match[pattern === "YYYY-MM-DD" ? 3 : pattern === "DD/MM/YYYY" ? 1 : 2],
++  );
++  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
++  const days = month === 2 && leap ? 29 : DAYS_IN_MONTH[month - 1];
++  if (year < 1 || month < 1 || month > 12 || day < 1 || day > days)
++    return undefined;
++  return { year, month, day };
++}
++
++export function formatDate(date: CalendarDate, pattern: DatePattern): string {
++  const year = String(date.year).padStart(4, "0"),
++    month = String(date.month).padStart(2, "0"),
++    day = String(date.day).padStart(2, "0");
++  if (pattern === "YYYY-MM-DD") return `${year}-${month}-${day}`;
++  return pattern === "MM/DD/YYYY"
++    ? `${month}/${day}/${year}`
++    : `${day}/${month}/${year}`;
++}
+diff --git a/src/engine/recipes.ts b/src/engine/recipes.ts
+index 1423180..a2ce540 100644
+--- a/src/engine/recipes.ts
++++ b/src/engine/recipes.ts
+@@ -1,25 +1,27 @@
++import { parseDate } from "./dates";
+ import { calculateDecimal, validateDecimal, NumericError } from "./decimal";
+ import type { Workflow } from "./workflow";
+ import { displayValue, type SourceTable, type Value } from "./values";
+ import type { Issue } from "./issues";
+ import { validateWorkflow } from "./validation";
+ import { riskyText } from "../formats/spreadsheet-safety";
+ export type ResultRow = {
+   id: string;
+   record: number;
+   line: number;
+   values: Value[];
+   provenance: ({
+     field: string;
+     row: string;
+     trim?: true;
++    date?: NonNullable<Workflow["fields"][number]["date"]>;
+     segment?: number;
+     segmentTrim?: boolean;
+   } & ({ source: string } | { constant: Value }))[];
+   issues: Issue[];
+   status: "valid" | "warning" | "invalid";
+ };
+ export type Run = {
+   workflowIssues: Issue[];
+   rows: ResultRow[];
+   summary: {
+@@ -86,32 +88,34 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+           source: sourceKey,
+           reason,
+           action,
+         });
+       const readSource = (source: string) => {
+         provenance.push({
+           field: f.id,
+           row: row.id,
+           source,
+           ...(f.trim ? { trim: true as const } : {}),
++          ...(f.date ? { date: { ...f.date } } : {}),
+           ...(recipe.kind === "split"
+             ? { segment: recipe.index, segmentTrim: recipe.trim }
+             : {}),
+         });
+         return row.cells[positions.get(source)!]?.raw ?? "";
+       };
+       const readConstant = (constant: Value) => {
+         provenance.push({
+           field: f.id,
+           row: row.id,
+           constant: { ...constant },
+           ...(f.trim ? { trim: true as const } : {}),
++          ...(f.date ? { date: { ...f.date } } : {}),
+         });
+         return { ...constant };
+       };
+       let value: Value;
+       switch (recipe.kind) {
+         case "calculate": {
+           const operand = (o: typeof recipe.left) =>
+             o.kind === "source"
+               ? readSource(o.source)
+               : displayValue(readConstant(o));
+@@ -206,20 +210,33 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+           if (!(error instanceof NumericError)) throw error;
+           add(
+             error.code,
+             "error",
+             `${f.header}: ${error.message}`,
+             "Correct the numeric value or change the explicit numeric settings.",
+           );
+           value = { kind: "blank" };
+         }
+       }
++      if (f.date && displayValue(value) !== "") {
++        const date = parseDate(displayValue(value), f.date.source);
++        if (date) value = { kind: "date", ...date, format: f.date.target };
++        else {
++          add(
++            "date-input",
++            "error",
++            `${f.header}: expected a real calendar date in ${f.date.source} format.`,
++            "Correct the source date or choose its exact format. Use zero-padded dates, years 0001–9999, and no time component; whitespace is preserved unless trimming is enabled.",
++          );
++          value = { kind: "blank" };
++        }
++      }
+       const text = displayValue(value);
+       if (f.required && text.trim() === "")
+         add(
+           "required",
+           "error",
+           `${f.header} is required but blank.`,
+           "Correct the source file and reupload, or change the field rule.",
+         );
+       if (f.maxLength && [...text].length > f.maxLength)
+         add(
+diff --git a/src/engine/validation.ts b/src/engine/validation.ts
+index 847e1eb..0674768 100644
+--- a/src/engine/validation.ts
++++ b/src/engine/validation.ts
+@@ -44,25 +44,25 @@ export function validateWorkflowConfiguration(workflow: Workflow): Issue[] {
+       );
+     ids.add(f.id);
+     headers.add(header);
+     if (!f.recipe)
+       add(
+         "unmapped",
+         `${f.header || "Output column"} is unmapped.`,
+         "Choose a source column or remove this output column.",
+         f.id,
+       );
+-    if (f.type === "date" || f.date)
++    if ((f.type === "date") !== (f.date !== undefined))
+       add(
+-        "unsupported-settings",
+-        "Date conversion is not supported in this build.",
+-        "Use text or number outputs.",
++        "date-settings",
++        "Date outputs require explicit source and output formats; date conversion requires a date output.",
++        "Choose date output and both formats, or remove date settings.",
+         f.id,
+       );
+     if (f.recipe?.kind === "calculate" && f.type !== "number")
+       add(
+         "calculation-type",
+         "Calculations require a number output.",
+         "Choose number output.",
+         f.id,
+       );
+     if (
+@@ -79,33 +79,33 @@ export function validateWorkflowConfiguration(workflow: Workflow): Issue[] {
+       add(
+         "numeric-settings",
+         "Rounding decimal places exceed the maximum decimal places.",
+         "Reduce rounding places or increase the maximum.",
+         f.id,
+       );
+     const r = f.recipe;
+     if (
+       r?.kind === "constant" &&
+       r.value.kind !== "blank" &&
+-      r.value.kind !== f.type
++      r.value.kind !== (f.type === "date" ? "text" : f.type)
+     )
+       add(
+         "constant-type",
+         "The fixed value type must match the output type.",
+-        "Choose text for a text literal or number for a decimal literal.",
++        "Use a text literal for text/date output or a number literal for number output.",
+         f.id,
+       );
+-    if (f.trim && f.type !== "text")
++    if (f.trim && f.type === "number")
+       add(
+         "trim-type",
+-        "Trimming requires a text output.",
+-        "Use text or turn off whitespace trimming.",
++        "Trimming requires a text or date output.",
++        "Use text/date or turn off whitespace trimming.",
+         f.id,
+       );
+     if (
+       r?.kind === "split" &&
+       (r.index >= r.segments ||
+         r.optionalEmpty.some((i) => i >= r.segments) ||
+         new Set(r.optionalEmpty).size !== r.optionalEmpty.length)
+     )
+       add(
+         "split-index",
+diff --git a/src/engine/values.ts b/src/engine/values.ts
+index 432dece..2c7aebc 100644
+--- a/src/engine/values.ts
++++ b/src/engine/values.ts
+@@ -1,15 +1,16 @@
++import { formatDate, type CalendarDate, type DatePattern } from "./dates";
+ export type Value =
+   | { kind: "blank" }
+   | { kind: "text"; text: string }
+   | { kind: "number"; decimal: string }
+-  | { kind: "date"; year: number; month: number; day: number };
++  | ({ kind: "date"; format: DatePattern } & CalendarDate);
+ export type SourceColumn = { position: number; header: string; key: string };
+ export type SourceRow = {
+   id: string;
+   record: number;
+   line: number;
+   cells: { kind: "text"; raw: string; display: string }[];
+ };
+ export type SourceTable = {
+   dataset: string;
+   columns: SourceColumn[];
+@@ -20,13 +21,13 @@ export type SourceTable = {
+ };
+ export function displayValue(v: Value): string {
+   switch (v.kind) {
+     case "blank":
+       return "";
+     case "text":
+       return v.text;
+     case "number":
+       return v.decimal;
+     case "date":
+-      return `${v.year}-${String(v.month).padStart(2, "0")}-${String(v.day).padStart(2, "0")}`;
++      return formatDate(v, v.format);
+   }
+ }
+diff --git a/src/engine/workflow.ts b/src/engine/workflow.ts
+index aed81a8..be4e59d 100644
+--- a/src/engine/workflow.ts
++++ b/src/engine/workflow.ts
+@@ -1,11 +1,12 @@
+ import { z } from "zod";
++import { DATE_PATTERNS } from "./dates";
+ import { DECIMAL_GRAMMAR, DECIMAL_INPUT_LIMIT } from "./decimal";
+ export const normalizeHeader = (name: string) =>
+   name.trim().replace(/\s+/gu, " ").toLowerCase();
+ const bounded = z.string().max(4096);
+ const key = bounded
+   .min(1)
+   .refine((v) => normalizeHeader(v) === v, "Use a normalized source header");
+ const decimal = z.string().max(DECIMAL_INPUT_LIMIT).regex(DECIMAL_GRAMMAR);
+ const literal = z.discriminatedUnion("kind", [
+   z.strictObject({ kind: z.literal("text"), text: bounded }),
+@@ -37,21 +38,21 @@ const recipe = z.discriminatedUnion("kind", [
+     components: z.array(component).min(2).max(100),
+     separator: bounded,
+   }),
+   z.strictObject({
+     kind: z.literal("calculate"),
+     operation: z.enum(["add", "subtract", "multiply", "divide"]),
+     left: operand,
+     right: operand,
+   }),
+ ]);
+-const pattern = z.enum(["YYYY-MM-DD", "MM/DD/YYYY", "DD/MM/YYYY"]);
++const pattern = z.enum(DATE_PATTERNS);
+ const field = z.strictObject({
+   id: bounded.min(1),
+   header: bounded.min(1),
+   type: z.enum(["text", "number", "date"]),
+   required: z.boolean(),
+   maxLength: z.int().min(1).max(1000000).optional(),
+   wholeNumber: z.boolean().optional(),
+   scale: z.int().min(0).max(100).optional(),
+   recipe: recipe.optional(),
+   trim: z.boolean().optional(),
+diff --git a/src/ui/DateSettings.tsx b/src/ui/DateSettings.tsx
+new file mode 100644
+index 0000000..d43c708
+--- /dev/null
++++ b/src/ui/DateSettings.tsx
+@@ -0,0 +1,52 @@
++import { DATE_PATTERNS, type DatePattern } from "../engine/dates";
++import type { Field } from "../engine/workflow";
++export function DateSettings({
++  field,
++  change,
++}: {
++  field: Field;
++  change: (patch: Partial<Field>) => void;
++}) {
++  return (
++    <fieldset className="recipe-settings">
++      <legend>Date formats</legend>
++      <p className="helper">
++        Choose both formats explicitly. Dates are never guessed from your
++        browser or locale. Use zero-padded day/month and a four-digit year;
++        times are not supported.
++      </p>
++      {(["source", "target"] as const).map((side) => (
++        <label key={side}>
++          {side === "source" ? "Source date format" : "Output date format"}
++          <select
++            aria-label={
++              side === "source" ? "Source date format" : "Output date format"
++            }
++            value={field.date?.[side] ?? ""}
++            onChange={(e) =>
++              change({
++                date: {
++                  source: field.date?.source ?? ("" as DatePattern),
++                  target: field.date?.target ?? ("" as DatePattern),
++                  [side]: e.target.value as DatePattern,
++                },
++              })
++            }
++          >
++            <option value="">Choose a format</option>
++            {DATE_PATTERNS.map((pattern) => (
++              <option key={pattern} value={pattern}>
++                {pattern}
++              </option>
++            ))}
++          </select>
++        </label>
++      ))}
++      <p className="helper">
++        For example, 03/04/2026 means March 4 with MM/DD/YYYY, and April 3 with
++        DD/MM/YYYY. Impossible dates fail validation. Empty optional dates stay
++        blank.
++      </p>
++    </fieldset>
++  );
++}
+diff --git a/src/ui/MappingRows.tsx b/src/ui/MappingRows.tsx
+index f3a3502..63dcfc6 100644
+--- a/src/ui/MappingRows.tsx
++++ b/src/ui/MappingRows.tsx
+@@ -1,10 +1,11 @@
++import { DateSettings } from "./DateSettings";
+ import { DECIMAL_INPUT_LIMIT } from "../engine/decimal";
+ import { useEffect, useRef, useState, type DragEvent } from "react";
+ import { CalculationSettings, NumericSettings } from "./CalculationSettings";
+ import TextRecipeSettings from "./TextRecipeSettings";
+ import { suggestMatches } from "../suggestions/matches";
+ import {
+   normalizeHeader,
+   referencedHeaders,
+   type Field,
+ } from "../engine/workflow";
+@@ -21,35 +22,55 @@ type Props = {
+   importTemplate: (file: File) => void;
+ };
+ type Card = { kind: "source" | "output" | "pair"; id: string };
+ const sourceKey = (f: Field) =>
+   f.recipe?.kind === "copy" || f.recipe?.kind === "split"
+     ? f.recipe.source
+     : "";
+ const configured = (f: Field) =>
+   Boolean(
+     sourceKey(f) ||
+-    f.recipe?.kind === "constant" ||
+-    (f.recipe?.kind === "calculate" &&
+-      [f.recipe.left, f.recipe.right].every((o) =>
+-        o.kind === "number" ? o.decimal !== "" : o.source !== "",
+-      )) ||
+-    (f.recipe?.kind === "combine" &&
+-      f.recipe.components.every((c) => c.kind === "literal" || c.source)),
++      f.recipe?.kind === "constant" ||
++      (f.recipe?.kind === "calculate" &&
++        [f.recipe.left, f.recipe.right].every((o) =>
++          o.kind === "number" ? o.decimal !== "" : o.source !== "",
++        )) ||
++      (f.recipe?.kind === "combine" &&
++        f.recipe.components.every((c) => c.kind === "literal" || c.source)),
+   );
+ const fixedSummary = (f: Field) => {
+   if (f.recipe?.kind !== "constant") return "";
+   const value = f.recipe.value;
+   if (value.kind === "blank") return "Intentional blank";
+   return `Fixed ${value.kind} · ${value.kind === "text" ? JSON.stringify(value.text) : value.decimal}`;
+ };
+ 
++const fixedHelp = (f: Field) => {
++  if (f.recipe?.kind !== "constant") return "";
++  if (f.recipe.value.kind === "blank")
++    return "An empty value in every row. Required outputs cannot be blank.";
++  if (f.recipe.value.kind === "number")
++    return "Use a decimal such as 12.50. No commas, currency symbols or exponents; digits and decimal places are preserved exactly.";
++  if (f.type === "date")
++    return "Enter a calendar date in the source format below. It is converted using only your chosen formats.";
++  return "The same text in every row. Leading zeros and whitespace are preserved unless you enable trimming.";
++};
++const outputHelp = (f: Field) => {
++  if (f.type === "date")
++    return "Date conversion uses only your chosen formats. Original source values stay unchanged.";
++  if (f.type === "number")
++    return "Numbers use only your explicit precision and validation settings.";
++  if (f.trim)
++    return "Only boundary whitespace is removed; internal spacing and original source values stay unchanged.";
++  return "Trimming is off. Text keeps its original whitespace.";
++};
++
+ export default function MappingRows({
+   view,
+   fields,
+   disabled,
+   importing,
+   change,
+   makeFields,
+   importTemplate,
+ }: Props) {
+   const [rejected, setRejected] = useState<Set<string>>(() => new Set());
+@@ -116,48 +137,53 @@ export default function MappingRows({
+   useEffect(() => {
+     if (orderOpen) order.current?.showModal();
+     else order.current?.close();
+   }, [orderOpen]);
+   const update = (id: string, patch: Partial<Field>) =>
+     change(
+       fields.map((f) =>
+         f.id === id
+           ? {
+               ...f,
+-              ...(patch.type === "text"
++              ...(patch.type && patch.type !== "date"
++                ? { date: undefined }
++                : {}),
++              ...(patch.type === "text" || patch.type === "date"
+                 ? {
+                     rounding: undefined,
+                     scale: undefined,
+                     wholeNumber: undefined,
+                   }
+                 : {}),
++              ...(patch.type === "date" ? { maxLength: undefined } : {}),
+               ...(patch.type === "number"
+                 ? { trim: undefined, maxLength: undefined }
+                 : {}),
+               ...patch,
+             }
+           : f,
+       ),
+     );
+   const clearDrag = () => {
+     drag.current = undefined;
+     setDragging(undefined);
+     setTarget(undefined);
+   };
+   const match = (id: string, key: string) => {
+     const f = fields.find((f) => f.id === id),
+       c = columnByKey.get(key);
+     if (disabled || !f || !c) return;
+-    const preserveNumericCopy =
+-      f.type === "number" && (!f.recipe || f.recipe.kind === "copy");
++    const preserveTypedCopy =
++      (f.type === "number" || f.type === "date") &&
++      (!f.recipe || f.recipe.kind === "copy");
+     update(id, {
+-      ...(preserveNumericCopy ? {} : { type: "text" as const }),
++      ...(preserveTypedCopy ? {} : { type: "text" as const }),
+       recipe: { kind: "copy", source: key },
+     });
+     setAnnouncement(
+       `${f.header || "Output column"} now copies ${c.header}. Export order unchanged.`,
+     );
+     setSelected(undefined);
+     clearDrag();
+     focus(`output-${id}`);
+   };
+   const select = (card: Card) => {
+@@ -290,20 +316,22 @@ export default function MappingRows({
+         )}
+         {!c && (
+           <span className="error-text">
+             Source missing — choose another source
+           </span>
+         )}
+       </button>
+     );
+   };
+   const outputSummary = (f: Field, paired: boolean) => {
++    if (f.type === "date")
++      return `Date · ${f.date?.source || "choose source format"} → ${f.date?.target || "choose output format"}${f.trim ? " · trims whitespace" : ""}`;
+     if (f.recipe?.kind === "constant") return fixedSummary(f);
+     if (f.recipe?.kind === "calculate")
+       return `Calculate · ${f.recipe.operation}${f.rounding ? ` · ${f.rounding.mode}, ${f.rounding.places} places` : " · exact, no rounding"}${f.wholeNumber ? " · whole numbers required" : ""}`;
+     if (f.recipe?.kind === "split")
+       return `Split · segment ${f.recipe.index + 1} of ${f.recipe.segments} · delimiter ${JSON.stringify(f.recipe.delimiter)}${f.recipe.trim ? " · trims segments" : ""}`;
+     if (f.recipe?.kind === "combine")
+       return `Combine · ${f.recipe.components.length} components · separator ${JSON.stringify(f.recipe.separator)} · keeps empty positions`;
+     if (paired)
+       return `Confirmed · copies ${columnByKey.get(sourceKey(f))?.header ?? sourceKey(f)}`;
+     if (suggestions.get(f.id)?.length)
+@@ -869,57 +897,65 @@ export default function MappingRows({
+                   recipe={field.recipe}
+                   columns={view.columns}
+                   change={(recipe) => update(field.id, { recipe })}
+                 />
+               ) : field.recipe?.kind === "constant" ? (
+                 <>
+                   <label>
+                     Fixed value type
+                     <select
+                       aria-label="Fixed value type"
+-                      value={field.recipe.value.kind}
++                      value={
++                        field.type === "date" ? "date" : field.recipe.value.kind
++                      }
+                       onChange={(e) => {
+                         const kind = e.target.value as
+                           | "text"
+                           | "number"
+-                          | "blank";
++                          | "blank"
++                          | "date";
+                         const text =
+                           field.recipe?.kind === "constant"
+                             ? displayValue(field.recipe.value)
+                             : "";
+                         update(field.id, {
+-                          type: kind === "number" ? "number" : "text",
+-                          trim: kind === "number" ? undefined : field.trim,
+-                          maxLength:
+-                            kind === "number" ? undefined : field.maxLength,
++                          type:
++                            kind === "number"
++                              ? "number"
++                              : kind === "date"
++                                ? "date"
++                                : "text",
+                           recipe: {
+                             kind: "constant",
+                             value:
+                               kind === "blank"
+                                 ? { kind }
+                                 : kind === "number"
+                                   ? { kind, decimal: text }
+-                                  : { kind, text },
++                                  : { kind: "text", text },
+                           },
+                         });
+                       }}
+                     >
+                       <option value="text">Text — preserve exactly</option>
+                       <option value="number">Number — exact decimal</option>
+                       <option value="blank">Intentional blank</option>
++                      <option value="date">Date — explicit formats</option>
+                     </select>
+                   </label>
+                   {field.recipe.value.kind === "text" && (
+                     <label>
+-                      Fixed text
++                      {field.type === "date" ? "Fixed date" : "Fixed text"}
+                       <textarea
+-                        aria-label="Fixed text"
++                        aria-label={
++                          field.type === "date" ? "Fixed date" : "Fixed text"
++                        }
+                         rows={2}
+                         maxLength={4096}
+                         value={field.recipe.value.text}
+                         onChange={(e) =>
+                           update(field.id, {
+                             recipe: {
+                               kind: "constant",
+                               value: { kind: "text", text: e.target.value },
+                             },
+                           })
+@@ -942,27 +978,21 @@ export default function MappingRows({
+                               value: {
+                                 kind: "number",
+                                 decimal: e.target.value,
+                               },
+                             },
+                           })
+                         }
+                       />
+                     </label>
+                   )}
+-                  <p className="helper">
+-                    {field.recipe.value.kind === "blank"
+-                      ? "An empty value in every row. Required outputs cannot be blank."
+-                      : field.recipe.value.kind === "number"
+-                        ? "Use a decimal such as 12.50. No commas, currency symbols or exponents; digits and decimal places are preserved exactly."
+-                        : "The same text in every row. Leading zeros and whitespace are preserved unless you enable trimming."}
+-                  </p>
++                  <p className="helper">{fixedHelp(field)}</p>
+                 </>
+               ) : (
+                 <label>
+                   Copy source for {field.header || "unnamed column"}
+                   <select
+                     aria-label={`Copy source for ${field.header || "unnamed column"}`}
+                     value={sourceKey(field)}
+                     onChange={(e) => {
+                       if (e.target.value) match(field.id, e.target.value);
+                       else {
+@@ -982,56 +1012,58 @@ export default function MappingRows({
+               )}
+               {field.recipe?.kind !== "calculate" &&
+                 field.recipe?.kind !== "constant" && (
+                   <label>
+                     Output type
+                     <select
+                       aria-label="Output type"
+                       value={field.type}
+                       onChange={(e) =>
+                         update(field.id, {
+-                          type: e.target.value as "text" | "number",
++                          type: e.target.value as Field["type"],
+                         })
+                       }
+                     >
+                       <option value="text">Text — preserve identifiers</option>
+                       <option value="number">
+                         Number — strict decimal validation
+                       </option>
++                      <option value="date">Date — explicit formats</option>
+                     </select>
+                   </label>
+                 )}
++              {field.type === "date" && (
++                <DateSettings
++                  field={field}
++                  change={(patch) => update(field.id, patch)}
++                />
++              )}
+               {field.type === "number" && (
+                 <NumericSettings
+                   field={field}
+                   change={(patch) => update(field.id, patch)}
+                 />
+               )}
+-              {field.type === "text" && (
++              {(field.type === "text" || field.type === "date") && (
+                 <label className="check">
+                   <input
+                     type="checkbox"
+                     checked={field.trim ?? false}
+                     onChange={(e) =>
+                       update(field.id, { trim: e.target.checked })
+                     }
+                   />
+                   Remove leading and trailing whitespace
+                 </label>
+               )}
+               <p className="helper">
+-                Changes update preview automatically.{" "}
+-                {field.type === "number"
+-                  ? "Numbers use only your explicit precision and validation settings."
+-                  : field.trim
+-                    ? "Only boundary whitespace is removed; internal spacing and original source values stay unchanged."
+-                    : "Trimming is off. Text keeps its original whitespace."}
++                Changes update preview automatically. {outputHelp(field)}
+               </p>
+               <details className="column-validation">
+                 <summary>Validation (optional)</summary>
+                 <label className="check">
+                   <input
+                     type="checkbox"
+                     checked={field.required}
+                     onChange={(e) =>
+                       update(field.id, { required: e.target.checked })
+                     }
+diff --git a/src/workflows/codec.ts b/src/workflows/codec.ts
+index f01acf1..839cf3f 100644
+--- a/src/workflows/codec.ts
++++ b/src/workflows/codec.ts
+@@ -7,21 +7,21 @@ import {
+ import { validateWorkflowConfiguration } from "../engine/validation";
+ 
+ function requireUsable(workflow: Workflow): Workflow {
+   const issues = validateWorkflowConfiguration(workflow);
+   if (issues.length) {
+     const unsupported = issues.some((issue) =>
+       issue.code.startsWith("unsupported-"),
+     );
+     throw new Error(
+       unsupported
+-        ? "Unsupported workflow capability. Use CSV, copies, fixed values, splits, combinations and calculations with delivered settings."
++        ? "Unsupported workflow capability. Use CSV, copies, fixed values, splits, combinations, calculations and explicit date formats with delivered settings."
+         : "Workflow configuration is invalid. Complete mappings and correct output names, identities and field settings.",
+     );
+   }
+   return workflow;
+ }
+ 
+ /** Strict boundary for untrusted portable and stored configuration. */
+ export function decodeUsableWorkflow(json: string): Workflow {
+   const workflow = requireUsable(decodeWorkflow(json));
+   const expected = new Set(referencedHeaders(workflow.fields));
+diff --git a/tests/README.md b/tests/README.md
+index 1a7b468..ca05906 100644
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -20,10 +20,12 @@ Use synthetic fixtures only. See `docs/reviews/u3/` for actual command results,
+ 
+ U4 adds `workflow-roundtrip.test.ts`, `workflow-store.test.ts`, native IndexedDB journeys in `persistence.spec.ts` and separate-context/origin downloads in `workflow-portability.spec.ts`. Codec goldens retain exact text/decimal/blank/order/settings semantics. Native tests cover transaction abort after request success, stale replacement from a second tab, denial, corrupt records, and saved-snapshot acknowledgement while newer edits remain unsaved.
+ 
+ The existing privacy journey now distinguishes empty ad hoc workflow storage from explicit configuration-only records. Source filenames, rows and record IDs remain excluded; deliberately configured headers/constants may be saved, and are still prohibited from network/diagnostic egress. Every storage envelope is inspected, and portable JSON is compared with the stored codec output. The 10,000 × 20 test saves/reopens before its warm repeats and imports an actual backup into another fresh context, checking all downloaded bytes against independent generated source/output data.
+ 
+ Portability tests start a second copy of the existing static server with `ODC_PREVIEW_PORT=4174` and stop it after the file finishes. The production default remains 4173. Neither server receives user file content. Desktop/laptop and keyboard/accessibility evidence belongs under `docs/reviews/u4/`; screenshots alone do not establish operator usability approval.
+ 
+ U5 adds `suggestions.test.ts` for exact normalized matches, the two curated equivalence groups, negative identifiers/units, and deterministic ambiguous alternatives. `suggestions.spec.ts` covers keyboard accept/reject, deliberate manual changes, fixed-value authority, ambiguous candidate choice, production request interception, and accepted mapping save/reopen/portable reuse. Unresolved candidates cannot be saved as approved recipes; renamed saved source headers remain incompatible. See `docs/reviews/u5/` for actual results and screenshots.
+ 
+ U6 adds `split-combine.test.ts` and `address-recipes.spec.ts`: exact segment counts, explicit optional-empty positions, literal delimiters, configured trim, ordered source/literal components, retained empties, independent source provenance, malformed configuration/dependency rejection, and exact CSV downloads. Browser checks cover contextual settings, component reordering, mobile keyboard/Axe, local save/reopen and fresh-context portable reuse with reordered headers. Existing production privacy interception now exercises split/combine before saving and repeating, and the U6 performance case compares every byte of a 10,000-row result. Review evidence, test-first failure, screenshots, and environment limits are recorded in `docs/reviews/u6/`.
++
++U8 adds strict calendar/date integration tests in `dates.test.ts` and graphical configuration, local/portable reuse, ambiguity and timezone checks in `dates.spec.ts`. Downloaded bytes are checked against literal expectations in UTC and fresh Los Angeles/Kiritimati browser contexts. The production privacy journey includes a date sentinel through transformation/save/reopen; the U8 performance journey checks every byte of 10,000 converted dates. Screenshots and CE evidence live in `docs/reviews/u8/`. Local system Chromium is smoke coverage; CI retains all three browser projects.
+diff --git a/tests/e2e/dates.spec.ts b/tests/e2e/dates.spec.ts
+new file mode 100644
+index 0000000..028d31a
+--- /dev/null
++++ b/tests/e2e/dates.spec.ts
+@@ -0,0 +1,253 @@
++import { expect, test, type Page } from "@playwright/test";
++import AxeBuilder from "@axe-core/playwright";
++import { readFile } from "node:fs/promises";
++import { add, closeSettings, download, edit, map, upload } from "./helpers";
++async function dateField(
++  page: Page,
++  source = "MM/DD/YYYY",
++  target = "YYYY-MM-DD",
++) {
++  await edit(page, "Delivery");
++  await page.getByLabel("Output type", { exact: true }).selectOption("date");
++  await expect(
++    page.getByLabel("Source date format", { exact: true }),
++  ).toHaveValue("");
++  await expect(
++    page.getByLabel("Output date format", { exact: true }),
++  ).toHaveValue("");
++  await page
++    .getByLabel("Source date format", { exact: true })
++    .selectOption(source);
++  await page
++    .getByLabel("Output date format", { exact: true })
++    .selectOption(target);
++  await closeSettings(page);
++}
++test("AC-09 contextual dates, exact downloads, local reopen and portable timezone reuse", async ({
++  page,
++  browser,
++}, info) => {
++  await page.setViewportSize({ width: 1440, height: 900 });
++  await page.goto("/");
++  await upload(page, "Date,ID\n10/08/2026,001234\n03/04/2026,0002\n,0003");
++  await add(page, ["Delivery", "Reference"]);
++  await map(page, "Delivery", "date");
++  await map(page, "Reference", "id");
++  await dateField(page);
++  const expected =
++    "Delivery,Reference\r\n2026-10-08,001234\r\n2026-03-04,0002\r\n,0003\r\n";
++  expect((await download(page)).toString()).toBe(expected);
++  await expect(page.locator(".pair")).toHaveCount(2);
++  await expect(page.locator(".matching")).toContainText(
++    "MM/DD/YYYY → YYYY-MM-DD",
++  );
++  await page.screenshot({
++    path: info.outputPath("date-workspace.png"),
++    fullPage: true,
++  });
++  await edit(page, "Delivery");
++  await page
++    .getByLabel("Output date format", { exact: true })
++    .scrollIntoViewIfNeeded();
++  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
++  await page.screenshot({ path: info.outputPath("date-settings-desktop.png") });
++  await closeSettings(page);
++  await expect(
++    page.getByRole("button", { name: "Edit Delivery", exact: true }),
++  ).toBeFocused();
++  const workflowName = page.getByLabel("Workflow name", { exact: true });
++  await workflowName.scrollIntoViewIfNeeded();
++  await workflowName.fill("Synthetic U8");
++  await expect(workflowName).toHaveValue("Synthetic U8");
++  await page
++    .getByRole("button", { name: "Save workflow", exact: true })
++    .click();
++  await expect(
++    page.getByText("Saved in this browser.", { exact: true }),
++  ).toBeVisible();
++  const id = await page
++    .getByLabel("Saved workflows", { exact: true })
++    .inputValue();
++  const pending = page.waitForEvent("download");
++  await page
++    .getByRole("button", { name: "Download workflow", exact: true })
++    .click();
++  const json = await readFile((await (await pending).path())!, "utf8");
++  expect(json).not.toMatch(/001234|10\/08\/2026|synthetic.csv/);
++  await page.reload();
++  await page.getByLabel("Saved workflows", { exact: true }).selectOption(id);
++  await page
++    .getByRole("button", { name: "Open workflow", exact: true })
++    .click();
++  await upload(
++    page,
++    "ID,Unused,Date\n001234,x,10/08/2026\n0002,x,03/04/2026\n0003,x,",
++  );
++  expect((await download(page)).toString()).toBe(expected);
++  for (const timezoneId of ["America/Los_Angeles", "Pacific/Kiritimati"]) {
++    const fresh = await browser.newContext({
++      baseURL: "http://127.0.0.1:4173",
++      serviceWorkers: "block",
++      timezoneId,
++    });
++    try {
++      const next = await fresh.newPage();
++      await next.goto("/");
++      await next.getByLabel("Import workflow", { exact: true }).setInputFiles({
++        name: "u8.json",
++        mimeType: "application/json",
++        buffer: Buffer.from(json),
++      });
++      await upload(next, "Date,ID\n10/08/2026,001234\n03/04/2026,0002\n,0003");
++      expect((await download(next)).toString()).toBe(expected);
++    } finally {
++      await fresh.close();
++    }
++  }
++});
++test("strict dates, optional/required blanks, explicit ambiguity and source replacement", async ({
++  page,
++}, info) => {
++  await page.goto("/");
++  await upload(
++    page,
++    "Date,Other,ID\n2024-02-29,03/04/2026,1\n2023-02-29,03/04/2026,2\n1900-02-29,03/04/2026,3\n2026-04-31,03/04/2026,4\n2026-10-08T12:00:00,03/04/2026,5\n,03/04/2026,6",
++  );
++  await add(page, ["Delivery"]);
++  await map(page, "Delivery", "date");
++  await dateField(page, "YYYY-MM-DD");
++  await expect(page.getByLabel("Full dataset counts")).toContainText("4");
++  await page.getByLabel("Show only rows with exceptions").check();
++  await expect(page.locator(".issues li")).toHaveCount(4);
++  await expect(page.locator(".issues li").first()).toContainText(
++    "real calendar date in YYYY-MM-DD",
++  );
++  await expect(
++    page.getByRole("button", { name: "Download converted CSV", exact: true }),
++  ).toBeDisabled();
++  await page.screenshot({
++    path: info.outputPath("date-errors.png"),
++    fullPage: true,
++  });
++  await edit(page, "Delivery");
++  await page.locator("details.column-validation summary").click();
++  await page.getByLabel("Required value", { exact: true }).check();
++  await closeSettings(page);
++  await page.getByLabel("Show only rows with exceptions").check();
++  await expect(page.locator(".issues li")).toHaveCount(9);
++  await expect(page.locator(".issues li").last()).toContainText(
++    "required but blank",
++  );
++  await upload(page, "Date,Other,ID\n03/04/2026,10/08/2026,1");
++  await edit(page, "Delivery");
++  await page
++    .getByLabel("Source date format", { exact: true })
++    .selectOption("MM/DD/YYYY");
++  await closeSettings(page);
++  expect((await download(page)).toString()).toBe("Delivery\r\n2026-03-04\r\n");
++  await edit(page, "Delivery");
++  await page
++    .getByLabel("Source date format", { exact: true })
++    .selectOption("DD/MM/YYYY");
++  await closeSettings(page);
++  expect((await download(page)).toString()).toBe("Delivery\r\n2026-04-03\r\n");
++  await edit(page, "Delivery");
++  await page
++    .getByLabel("Copy source for Delivery", { exact: true })
++    .selectOption("other");
++  await expect(page.getByLabel("Output type", { exact: true })).toHaveValue(
++    "date",
++  );
++  await expect(
++    page.getByLabel("Source date format", { exact: true }),
++  ).toHaveValue("DD/MM/YYYY");
++  await page
++    .getByLabel("Output date format", { exact: true })
++    .selectOption("MM/DD/YYYY");
++  await closeSettings(page);
++  expect((await download(page)).toString()).toBe("Delivery\r\n08/10/2026\r\n");
++});
++test("mobile date settings preserve layout and type changes clear incompatible rules and CSV acknowledgement", async ({
++  page,
++}, info) => {
++  await page.setViewportSize({ width: 390, height: 844 });
++  await page.goto("/");
++  await upload(page, "Date,Risk\n03/04/2026,=1+1");
++  await add(page, ["Delivery", "Risk"]);
++  await map(page, "Delivery", "date");
++  await map(page, "Risk", "risk");
++  await dateField(page);
++  await page.getByLabel(/Preserve raw text for TMS import/).check();
++  expect((await download(page)).toString()).toContain("2026-03-04");
++  await edit(page, "Delivery");
++  await page.screenshot({ path: info.outputPath("date-settings-mobile.png") });
++  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
++  await page
++    .getByLabel("Output date format", { exact: true })
++    .selectOption("DD/MM/YYYY");
++  await closeSettings(page);
++  await expect(
++    page.getByLabel(/Preserve raw text for TMS import/),
++  ).not.toBeChecked();
++  await expect(
++    page.getByRole("button", { name: "Download converted CSV", exact: true }),
++  ).toBeDisabled();
++  await page.getByLabel(/Preserve raw text for TMS import/).check();
++  expect((await download(page)).toString()).toContain("04/03/2026");
++  await edit(page, "Delivery");
++  await page.getByLabel("Output type", { exact: true }).selectOption("text");
++  await expect(
++    page.getByLabel("Source date format", { exact: true }),
++  ).toHaveCount(0);
++  await closeSettings(page);
++  await page.getByLabel(/Preserve raw text for TMS import/).check();
++  expect((await download(page)).toString()).toContain("03/04/2026");
++  expect(
++    await page
++      .locator("html")
++      .evaluate((el) => el.scrollWidth <= el.clientWidth),
++  ).toBe(true);
++});
++
++test("date rules survive first source choice; fixed dates and trimming remain explicit", async ({
++  page,
++}) => {
++  await page.goto("/");
++  await upload(page, "Date,ID\n 2024-02-29 ,1");
++  await add(page, ["Delivery"]);
++  await dateField(page, "YYYY-MM-DD", "DD/MM/YYYY");
++  await edit(page, "Delivery");
++  await page
++    .getByLabel("Copy source for Delivery", { exact: true })
++    .selectOption("date");
++  await expect(page.getByLabel("Output type", { exact: true })).toHaveValue(
++    "date",
++  );
++  await expect(
++    page.getByLabel("Output date format", { exact: true }),
++  ).toHaveValue("DD/MM/YYYY");
++  await closeSettings(page);
++  await expect(
++    page.getByRole("button", { name: "Download converted CSV", exact: true }),
++  ).toBeDisabled();
++  await edit(page, "Delivery");
++  await page.getByLabel("Remove leading and trailing whitespace").check();
++  await closeSettings(page);
++  expect((await download(page)).toString()).toBe("Delivery\r\n29/02/2024\r\n");
++  await edit(page, "Delivery");
++  await page.getByLabel("Use a fixed value", { exact: true }).check();
++  await page.locator("details.column-validation summary").click();
++  await page.getByLabel("Maximum characters", { exact: true }).fill("2");
++  await page
++    .getByLabel("Fixed value type", { exact: true })
++    .selectOption("date");
++  await page.getByLabel("Fixed date", { exact: true }).fill("10/08/2026");
++  await page
++    .getByLabel("Source date format", { exact: true })
++    .selectOption("MM/DD/YYYY");
++  await page
++    .getByLabel("Output date format", { exact: true })
++    .selectOption("YYYY-MM-DD");
++  await closeSettings(page);
++  expect((await download(page)).toString()).toBe("Delivery\r\n2026-10-08\r\n");
++});
+diff --git a/tests/e2e/performance.spec.ts b/tests/e2e/performance.spec.ts
+index c27c28a..25eb460 100644
+--- a/tests/e2e/performance.spec.ts
++++ b/tests/e2e/performance.spec.ts
+@@ -298,10 +298,29 @@ test("10000 U7 rows keep exact arithmetic, identifiers, counts and downloaded by
+   await map(page,'Reference','id');
+   await calculation(page,'Cases out','units','factor','divide');
+   await calculation(page,'Weight','cases','12','multiply',true);
+   await calculation(page,'Sum','a','b','add');
+   const bytes=await download(page);
+   const expected='Reference,Cases out,Weight,Sum\r\n'+Array.from({length:10000},(_,i)=>`${String(i).padStart(6,'0')},6,180,0.3\r\n`).join('');
+   expect(bytes.toString()).toBe(expected);
+   await expect(page.getByLabel('Full dataset counts')).toContainText('10000');
+   await testInfo.attach('u7-cloud-smoke.json',{body:JSON.stringify({browser:browser.version(),node:process.version,rows:10000,totalSetupAndExportMs:performance.now()-start,bytes:bytes.length}),contentType:'application/json'});
+ });
++
++test("10000 U8 rows preserve every explicit date, identifier and exported byte", async ({ page, browser }, info) => {
++  test.setTimeout(120000);
++  const csv = "ID,Date\r\n" + Array.from({ length: 10000 }, (_, i) => `${String(i).padStart(6, "0")},02/29/2024\r\n`).join("");
++  await page.goto("/"); await upload(page, csv);
++  await add(page, ["Reference", "Delivery"]);
++  await map(page, "Reference", "id"); await map(page, "Delivery", "date");
++  await edit(page, "Delivery");
++  await page.getByLabel("Output type", { exact: true }).selectOption("date");
++  await page.getByLabel("Source date format", { exact: true }).selectOption("MM/DD/YYYY");
++  await page.getByLabel("Output date format", { exact: true }).selectOption("YYYY-MM-DD");
++  await closeSettings(page);
++  const start = performance.now();
++  await upload(page, csv);
++  const bytes = await download(page);
++  expect(bytes).toEqual(Buffer.from("Reference,Delivery\r\n" + Array.from({ length: 10000 }, (_, i) => `${String(i).padStart(6, "0")},2024-02-29\r\n`).join("")));
++  await expect(page.getByLabel("Full dataset counts")).toContainText("10000");
++  await info.attach("u8-cloud-smoke.json", { body: JSON.stringify({ browser: browser.version(), rows: 10000, repeatImportThroughDownloadMs: performance.now() - start, bytes: bytes.length }), contentType: "application/json" });
++});
+diff --git a/tests/e2e/privacy.spec.ts b/tests/e2e/privacy.spec.ts
+index 456a1d6..e3f70bf 100644
+--- a/tests/e2e/privacy.spec.ts
++++ b/tests/e2e/privacy.spec.ts
+@@ -2,21 +2,22 @@ import { test, expect } from "@playwright/test";
+ import { readdir } from "node:fs/promises";
+ import { upload, add, map, preview, download, rename, move, fixed, edit, closeSettings, splitField, calculation } from "./helpers";
+ test("production journey sends no customer values, file names or IDs and stores no source data", async ({
+   context,
+   page,
+ }) => {
+   const sentinel = "PRIVATE_U2_SENTINEL_9X";
+   const headerSentinel = "PRIVATE_U2_HEADER_SENTINEL_Z7";
+   const constantSentinel = "PRIVATE_U3_FIXED_SENTINEL_Q82";
+   const numericSentinel = "7251983462.125";
+-  const privateValues = [sentinel, headerSentinel, constantSentinel, numericSentinel];
++  const dateSentinel = "08/17/2032";
++  const privateValues = [sentinel, headerSentinel, constantSentinel, numericSentinel, dateSentinel];
+   const unexpected: string[] = [];
+   const seen: string[] = [];
+   const diagnostics: string[] = [];
+   const assets = new Set(
+     (await readdir("dist/assets")).map((f) => "/assets/" + f),
+   );
+   assets.add("/");
+   assets.add("/index.html");
+   await context.route("**/*", async (route) => {
+     const r = route.request(),
+@@ -42,21 +43,21 @@ test("production journey sends no customer values, file names or IDs and stores
+   page.on("pageerror", (e) => diagnostics.push(e.message));
+   const response = await page.goto("/");
+   expect(response!.headers()["content-security-policy"]).toContain(
+     "connect-src 'none'",
+   );
+   expect(response!.headers()["content-security-policy"]).toContain(
+     "style-src 'self'",
+   );
+   await upload(
+     page,
+-    `ID,Note,Quantity,Factor\n${sentinel},"<img src=x onerror=alert(1)>",${numericSentinel},4`,
++    `ID,Note,Quantity,Factor,Date\n${sentinel},"<img src=x onerror=alert(1)>",${numericSentinel},4,${dateSentinel}`,
+     `${sentinel}.csv`,
+   );
+   await add(page, ["Reference", "Note"]);
+   await map(page, "Reference", "id");
+   await page.getByLabel("Search source columns").fill("note");
+   await page
+     .getByRole("button", { name: "Select source Note", exact: true })
+     .dragTo(
+       page.getByRole("button", { name: "Select output Note", exact: true }),
+     );
+@@ -94,20 +95,28 @@ test("production journey sends no customer values, file names or IDs and stores
+   await page.getByLabel("Combination separator", { exact: true }).fill("|");
+   await closeSettings(page);
+   expect((await download(page)).toString()).toContain(`${sentinel}|${constantSentinel}`);
+   await add(page, ["Calculated cases", "Calculated weight"]);
+   await calculation(page, "Calculated cases", "quantity", "factor", "divide");
+   await calculation(page, "Calculated weight", "quantity", "12", "multiply", true);
+   await edit(page, "Calculated cases");
+   await page.getByLabel("Rounding", { exact: true }).selectOption("half-even");
+   await closeSettings(page);
+   expect((await download(page)).toString()).toContain("1812995865.53");
++  await add(page, ["Delivery date"]);
++  await map(page, "Delivery date", "date");
++  await edit(page, "Delivery date");
++  await page.getByLabel("Output type", { exact: true }).selectOption("date");
++  await page.getByLabel("Source date format", { exact: true }).selectOption("MM/DD/YYYY");
++  await page.getByLabel("Output date format", { exact: true }).selectOption("YYYY-MM-DD");
++  await closeSettings(page);
++  expect((await download(page)).toString()).toContain("2032-08-17");
+   await page.getByLabel("Show only rows with exceptions").check();
+   await expect(page.getByLabel("Full dataset counts")).toBeVisible();
+   const storage = await page.evaluate(async () => ({
+     local: Object.keys(localStorage),
+     session: Object.keys(sessionStorage),
+     dbs: await indexedDB.databases(),
+     caches: await caches.keys(),
+   }));
+   expect(storage.local).toEqual([]); expect(storage.session).toEqual([]); expect(storage.caches).toEqual([]);
+   expect(storage.dbs.map((db) => db.name)).toEqual(["operations-data-cleaner-workflows"]);
+@@ -122,34 +131,36 @@ test("production journey sends no customer values, file names or IDs and stores
+   }));
+   expect(await readSaved()).toEqual([]);
+   await page.getByLabel("Workflow name", { exact: true }).fill("Synthetic private workflow");
+   await page.getByRole("button", { name: "Save workflow", exact: true }).click();
+   await expect(page.getByText("Saved in this browser.", { exact: true })).toBeVisible();
+   const saved = await readSaved();
+   expect(saved).toHaveLength(1);
+   expect(Object.keys(saved[0]).sort()).toEqual(["id", "json"]);
+   expect(saved[0].json).not.toContain(sentinel);
+   expect(saved[0].json).not.toContain(numericSentinel);
++  expect(saved[0].json).not.toContain(dateSentinel);
++  expect(saved[0].json).not.toContain("2032-08-17");
+   expect(saved[0].json).toContain(headerSentinel); expect(saved[0].json).toContain(constantSentinel);
+   const config = JSON.parse(saved[0].json);
+   expect(Object.keys(config).sort()).toEqual(["fields", "id", "name", "output", "source", "version"]);
+   const jsonEvent = page.waitForEvent("download");
+   await page.getByRole("button", { name: "Download workflow", exact: true }).click();
+   const jsonFile = await jsonEvent;
+   const { readFile } = await import("node:fs/promises");
+   expect(await readFile((await jsonFile.path())!, "utf8")).toBe(saved[0].json);
+   await page.reload();
+   await page.getByLabel("Saved workflows", { exact: true }).selectOption(saved[0].id);
+   await page.getByRole("button", { name: "Open workflow", exact: true }).click();
+   await expect(page.getByRole("region", { name: "Repeat workflow", exact: true })).toBeVisible();
+   await expect(page.getByLabel("Upload source CSV")).toBeEnabled();
+-  await page.getByLabel("Upload source CSV").setInputFiles({ name: `${sentinel}-repeat.csv`, mimeType: "text/csv", buffer: Buffer.from(`ID,Note,Quantity,Factor\n${sentinel},repeat-note,${numericSentinel},4`) });
++  await page.getByLabel("Upload source CSV").setInputFiles({ name: `${sentinel}-repeat.csv`, mimeType: "text/csv", buffer: Buffer.from(`ID,Note,Quantity,Factor,Date\n${sentinel},repeat-note,${numericSentinel},4,${dateSentinel}`) });
+   await preview(page);
+   expect((await download(page)).toString()).toContain(sentinel);
+   expect(await readSaved()).toEqual(saved);
+   expect(await page.locator("img").count()).toBe(0);
+   expect(unexpected).toEqual([]);
+   expect(
+     diagnostics.filter((s) => privateValues.some((value) => s.includes(value))),
+   ).toEqual([]);
+   // WebKit emits this exact blocked-style diagnostic during native file/form
+   // interaction under our strict CSP. It does not correspond to an application
+diff --git a/tests/unit/dates.test.ts b/tests/unit/dates.test.ts
+new file mode 100644
+index 0000000..457bfcf
+--- /dev/null
++++ b/tests/unit/dates.test.ts
+@@ -0,0 +1,202 @@
++import { parseDate } from "../../src/engine/dates";
++import { expect, test } from "vitest";
++import { makeWorkflow, type Field } from "../../src/engine/workflow";
++import { evaluate } from "../../src/engine/recipes";
++import { parseCsv, serializeCsv } from "../../src/formats/csv";
++import { displayValue } from "../../src/engine/values";
++import {
++  encodeWorkflow,
++  decodeUsableWorkflow,
++} from "../../src/workflows/codec";
++const patterns = ["YYYY-MM-DD", "MM/DD/YYYY", "DD/MM/YYYY"] as const;
++const workflow = (
++  source: (typeof patterns)[number] = "MM/DD/YYYY",
++  target: (typeof patterns)[number] = "YYYY-MM-DD",
++) => {
++  const w = makeWorkflow(["Date", "ID"]);
++  w.fields[0] = {
++    ...w.fields[0],
++    type: "date",
++    date: { source, target },
++    recipe: { kind: "copy", source: "date" },
++  };
++  w.fields[1].recipe = { kind: "copy", source: "id" };
++  return w;
++};
++const input = (text: string) =>
++  parseCsv(new TextEncoder().encode(`Date,ID\n${text},001234`), ",", "dates");
++test("AC-09 all nine explicit pattern pairs preserve calendar dates and exact CSV bytes through portable JSON", () => {
++  const dates = ["2026-10-08", "10/08/2026", "08/10/2026"];
++  for (const [s, source] of patterns.entries())
++    for (const [t, target] of patterns.entries()) {
++      const w = decodeUsableWorkflow(encodeWorkflow(workflow(source, target)));
++      const table = input(dates[s]);
++      const run = evaluate(w, table);
++      expect(run.workflowIssues).toEqual([]);
++      expect(run.summary.valid).toBe(1);
++      expect(run.rows[0].values[0]).toMatchObject({
++        kind: "date",
++        year: 2026,
++        month: 10,
++        day: 8,
++      });
++      expect(run.rows[0].values.map(displayValue)).toEqual([
++        dates[t],
++        "001234",
++      ]);
++      expect(Buffer.from(serializeCsv(w, run, undefined))).toEqual(
++        Buffer.from(`Date,ID\r\n${dates[t]},001234\r\n`),
++      );
++      expect(table.rows[0].cells[0].raw).toBe(dates[s]);
++      expect(encodeWorkflow(w)).not.toContain("001234");
++      expect(run.rows[0].provenance[0]).toMatchObject({
++        source: "date",
++        date: { source, target },
++      });
++    }
++});
++test("ambiguous text changes meaning only with the explicitly selected pattern", () => {
++  expect(
++    displayValue(evaluate(workflow(), input("03/04/2026")).rows[0].values[0]),
++  ).toBe("2026-03-04");
++  expect(
++    displayValue(
++      evaluate(workflow("DD/MM/YYYY"), input("03/04/2026")).rows[0].values[0],
++    ),
++  ).toBe("2026-04-03");
++});
++test("strict calendar validation rejects impossible, nonpadded, inferred, datetime and whitespace inputs", () => {
++  for (const text of [
++    "2023-02-29",
++    "1900-02-29",
++    "2100-02-29",
++    "2026-04-31",
++    "2026-00-01",
++    "2026-13-01",
++    "2026-01-00",
++    "2026-01-32",
++    "0000-01-01",
++    "2026-1-01",
++    "26-01-01",
++    "2026/01/01",
++    "2026-01-01T00:00:00Z",
++    " 2026-01-01",
++    "2026-01-01 ",
++    " ",
++    "October 8 2026",
++    "10/08/2026",
++  ]) {
++    const w = workflow("YYYY-MM-DD");
++    const run = evaluate(w, input(text));
++    expect(run.workflowIssues).toEqual([]);
++    expect(run.rows[0].status, text).toBe("invalid");
++    expect(run.rows[0].issues[0]).toMatchObject({
++      code: "date-input",
++      field: "field-0",
++      source: "date",
++      record: 2,
++      line: 2,
++    });
++    expect(() => serializeCsv(w, run, undefined)).toThrow();
++  }
++  for (const text of [
++    "0001-01-01",
++    "2024-02-29",
++    "2000-02-29",
++    "2026-04-30",
++    "9999-12-31",
++  ]) {
++    const run = evaluate(workflow("YYYY-MM-DD", "YYYY-MM-DD"), input(text));
++    expect(run.rows[0].status, text).toBe("valid");
++    expect(displayValue(run.rows[0].values[0])).toBe(text);
++  }
++});
++test("optional blank dates pass and required blanks fail; failed split stays invalid", () => {
++  const w = workflow();
++  expect(evaluate(w, input("")).rows[0].status).toBe("valid");
++  w.fields[0].required = true;
++  expect(evaluate(w, input("")).rows[0].issues.map((i) => i.code)).toEqual([
++    "required",
++  ]);
++  w.fields[0].required = false;
++  w.fields[0].recipe = {
++    kind: "split",
++    source: "date",
++    delimiter: "|",
++    segments: 2,
++    index: 0,
++    trim: false,
++    optionalEmpty: [0],
++  };
++  expect(evaluate(w, input("|")).rows[0].status).toBe("invalid");
++  w.fields[0].recipe.optionalEmpty = [0, 1];
++  expect(evaluate(w, input("|")).rows[0].status).toBe("valid");
++});
++test("date interpretation follows primary text recipes and explicit trim", () => {
++  const w = workflow("YYYY-MM-DD", "DD/MM/YYYY");
++  for (const recipe of [
++    { kind: "constant", value: { kind: "text", text: "2024-02-29" } },
++    {
++      kind: "split",
++      source: "date",
++      delimiter: "|",
++      segments: 2,
++      index: 1,
++      trim: true,
++      optionalEmpty: [],
++    },
++    {
++      kind: "combine",
++      components: [
++        { kind: "literal", text: "2024-" },
++        { kind: "literal", text: "02-29" },
++      ],
++      separator: "",
++    },
++  ] as Field["recipe"][]) {
++    w.fields[0].recipe = recipe;
++    expect(
++      displayValue(evaluate(w, input("x| 2024-02-29 ")).rows[0].values[0]),
++    ).toBe("29/02/2024");
++  }
++  w.fields[0].recipe = { kind: "copy", source: "date" };
++  w.fields[0].trim = true;
++  expect(
++    displayValue(evaluate(w, input(" 2024-02-29 ")).rows[0].values[0]),
++  ).toBe("29/02/2024");
++});
++test("missing formats and incompatible date/numeric/text settings cannot execute or save", () => {
++  for (const patch of [
++    { date: undefined },
++    { type: "text" },
++    { type: "number" },
++    { wholeNumber: true },
++    { scale: 2 },
++    { rounding: { mode: "half-up", places: 2 } },
++    { maxLength: 20 },
++    {
++      recipe: { kind: "constant", value: { kind: "number", decimal: "2026" } },
++    },
++  ] as Partial<Field>[]) {
++    const w = workflow();
++    Object.assign(w.fields[0], patch);
++    expect(
++      evaluate(w, input("10/08/2026")).workflowIssues.length,
++    ).toBeGreaterThan(0);
++    expect(() => encodeWorkflow(w)).toThrow();
++  }
++  const w = workflow();
++  const json = JSON.parse(encodeWorkflow(w));
++  for (const date of [
++    { source: "auto", target: "YYYY-MM-DD" },
++    { source: "YYYY-MM-DD" },
++    { source: "YYYY-MM-DD", target: "YYYY-MM-DD", script: "1" },
++  ]) {
++    json.fields[0].date = date;
++    expect(() => decodeUsableWorkflow(JSON.stringify(json))).toThrow();
++  }
++});
++
++test("date parser rejects trailing newlines instead of accepting an anchored prefix", () => {
++  expect(parseDate("2026-01-01\n", "YYYY-MM-DD")).toBeUndefined();
++});
+diff --git a/tests/unit/workflow-roundtrip.test.ts b/tests/unit/workflow-roundtrip.test.ts
+index 1634362..a96d1e6 100644
+--- a/tests/unit/workflow-roundtrip.test.ts
++++ b/tests/unit/workflow-roundtrip.test.ts
+@@ -50,22 +50,20 @@ test("untrusted JSON rejects versions, budgets, nested injection and malformed r
+     { ...golden(), source: { ...golden().source, filename: 'private.csv' } },
+     { ...golden(), output: { ...golden().output, safetyChoice: 'raw' } },
+     { ...golden(), fields: [{ ...golden().fields[0], sample: 'private' }] },
+     { ...golden(), fields: [{ ...golden().fields[0], recipe: { kind: 'script', code: '1' } }] },
+     { ...golden(), fields: [{ ...golden().fields[0], recipe: { kind: 'constant', value: { kind: 'number', decimal: 'NaN' } } }] },
+   ]) expect(() => decodeUsableWorkflow(JSON.stringify(injected))).toThrow(/structure/);
+ });
+ 
+ test("declared future capabilities decode structurally but fail the usable boundary", () => {
+   const variants: Workflow[] = [];
+-  for (const change of [{ type: 'date', date: { source: 'YYYY-MM-DD', target: 'MM/DD/YYYY' } }])
+-    variants.push(decodeWorkflow(JSON.stringify({ ...golden(), fields: [{ ...golden().fields[0], ...change }] })));
+   variants.push({ ...golden(), source: { ...golden().source, format: 'xlsx' } }, { ...golden(), output: { ...golden().output, format: 'xlsx' } });
+   for (const w of variants) expect(() => decodeUsableWorkflow(JSON.stringify(w))).toThrow(/unsupported/i);
+ });
+ 
+ test("usable configuration rejects unfinished, conflicting and inconsistent declarations", () => {
+   const bad: Workflow[] = [];
+   const unmapped = golden(); delete unmapped.fields[0].recipe; bad.push(unmapped);
+   const duplicate = golden(); duplicate.fields[1].id = duplicate.fields[0].id; bad.push(duplicate);
+   const names = golden(); names.fields[1].header = ' reference '; bad.push(names);
+   const blank = golden(); blank.fields[0].header = '  '; bad.push(blank);
