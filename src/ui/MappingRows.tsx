@@ -405,7 +405,7 @@ export default function MappingRows({
             <input
               type="file"
               aria-label="Upload destination CSV template"
-              accept=".csv,text/csv"
+              accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
               disabled={importing}
               onChange={(e) => {
                 const file = e.target.files?.[0];
@@ -753,7 +753,7 @@ export default function MappingRows({
       </p>
       <div className="order-bar">
         <strong>Export order</strong>
-        <div className="order-overflow">
+        <div className="order-overflow" tabIndex={0} role="region" aria-label="Output column order, scroll horizontally">
           {fields.map((f, i) => (
             <span
               key={f.id}

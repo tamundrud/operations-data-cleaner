@@ -1,0 +1,279 @@
+{
+  "run_id": "u9-integration-20261017",
+  "run_dir": "/tmp/compound-engineering-0/ce-code-review/u9-integration-20261017",
+  "findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/session/controller.ts:141:       const worksheet = options.worksheet ?? (options.template ? undefined : (options.workflow ?? this.workflow)?.source.worksheet);",
+        "src/formats/xlsx.ts:56:   if (worksheet === undefined && names.length > 1) return { sheets: names };",
+        "src/formats/xlsx.ts:58:   if (!names.includes(selected)) throw new Error(\"Selected worksheet is missing. Choose an available worksheet.\");",
+        "docs/decisions/excel-fidelity.md:70: Multiple sheets require selection; saved workflows reuse the explicit worksheet name and reject a missing sheet."
+      ],
+      "file": "src/session/controller.ts",
+      "first_evidence": "src/session/controller.ts:141:       const worksheet = options.worksheet ?? (options.template ? undefined : (options.workflow ?? this.workflow)?.source.worksheet);",
+      "independent_reviewers": [
+        "reliability"
+      ],
+      "line": 141,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "reliability"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Distinguish a fresh manual replacement from an activated saved workflow. Use options.worksheet for an explicit choice, options.workflow?.source.worksheet for explicit workflow reuse, and this.workflow?.source.worksheet only when no source run is active (the activated-workflow case). Leave worksheet undefined for a manual replacement so a multi-sheet workbook prompts for selection. Verify same-name and missing-name replacement cases.",
+      "title": "Fresh workbooks silently reuse the previous worksheet",
+      "why_it_matters": "After a user selects a sheet and configures a run, uploading another multi-sheet workbook inherits the old worksheet name. If the name exists, the new workbook is imported without a choice and may produce results from the wrong sheet. If it does not exist, the import fails without offering the available sheets. This is a silent wrong-result or missing-result path for replacement uploads."
+    },
+    {
+      "#": 2,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:318: <select aria-label=\"Worksheet\" value={state.worksheets.includes(worksheet) ? worksheet : \"\"} onChange={(e) => setWorksheet(e.target.value)}>",
+        "src/ui/Workspace.tsx:323: <button disabled={!state.worksheets.includes(worksheet)} onClick={() => session.selectWorksheet(worksheet)}>Import selected worksheet</button>",
+        "src/ui/Workspace.tsx:324: <button onClick={() => { session.cancelWorksheetSelection(); setWorksheet(\"\"); }}>Cancel worksheet selection</button>",
+        "src/ui/Workspace.tsx:425: void session.upload(file, delimiter, { template: true });",
+        "docs/decisions/excel-fidelity.md:70: Templates have independent sheet selection and import names/order only."
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:318: <select aria-label=\"Worksheet\" value={state.worksheets.includes(worksheet) ? worksheet : \"\"} onChange={(e) => setWorksheet(e.target.value)}>",
+      "independent_reviewers": [
+        "julik-frontend-races"
+      ],
+      "line": 318,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "julik-frontend-races"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Clear the local worksheet choice whenever a new file is submitted or a new worksheet list is presented, including destination templates. Preserve automatic reuse only through the explicit saved-workflow worksheet sent to the session. Add a UI check that choosing a source sheet called Orders does not preselect Orders in a subsequent multi-sheet template.",
+      "title": "Worksheet choice leaks into the next workbook",
+      "why_it_matters": "After choosing a source worksheet, a later multi-sheet destination template can open with that same sheet name already selected. If the user proceeds without making a fresh template choice, headers come from the coincidentally named sheet in the template. This defeats the template's independent worksheet choice and can replace the output mapping with unintended headers."
+    },
+    {
+      "#": 3,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "tests/unit/session.test.ts:189:   s.cancelWorksheetSelection();",
+        "src/session/controller.ts:179:     void this.upload(selection.file, selection.delimiter, { ...selection.options, worksheet });",
+        "tests/e2e/excel-input.spec.ts:214:   for (const [name, bytes] of Object.entries(attacks)) {"
+      ],
+      "file": "tests/unit/session.test.ts",
+      "first_evidence": "tests/unit/session.test.ts:189:   s.cancelWorksheetSelection();",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 189,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Extend the session test to call selectWorksheet, assert that the second import request carries the chosen worksheet, respond with a worker error, and verify the committed view and export remain available. Then select and complete a valid replacement to verify the commit transition.",
+      "title": "Test failure after selecting a worksheet",
+      "why_it_matters": "The new worksheet chooser requires a second import. If that import fails because the selected sheet cannot be parsed or has invalid headers, the prior committed run must remain usable. The session test ends at chooser cancellation, and the browser rejection test fails during initial discovery, so neither detects a regression in the second import's failure transition."
+    },
+    {
+      "#": 4,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:335:               ? `Source loaded \u00b7 ${view.summary.candidates.toLocaleString()} candidate rows \u00b7 ${view.worksheet ? `worksheet ${view.worksheet}` : view.delimiter === \"\\t\" ? \"tab\" : view.delimiter === \";\" ? \"semicolon\" : \"comma\"} delimiter detected. Verify the source columns below.`"
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:335:               ? `Source loaded \u00b7 ${view.summary.candidates.toLocaleString()} candidate rows \u00b7 ${view.worksheet ? `worksheet ${view.worksheet}` : view.delimiter === \"\\t\" ? \"tab\" : view.delimiter === \";\" ? \"semicolon\" : \"comma\"} delimiter detected. Verify the source columns below.`",
+      "independent_reviewers": [
+        "maintainability"
+      ],
+      "line": 335,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": false,
+      "reviewers": [
+        "maintainability"
+      ],
+      "severity": "P3",
+      "suggested_fix": "Build the complete source detail before rendering: for Excel use `worksheet ${view.worksheet}`; for CSV use the current delimiter label followed by `delimiter detected`. Interpolate that complete detail into the shared row-count/status sentence.",
+      "title": "Separate worksheet and delimiter status branches",
+      "why_it_matters": "The new worksheet arm is nested inside a CSV delimiter expression, so an Excel import announces a worksheet as a detected delimiter. The packed conditional also makes later source-specific status changes easy to apply to only one fragment of the sentence."
+    }
+  ],
+  "selected_findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/session/controller.ts:141:       const worksheet = options.worksheet ?? (options.template ? undefined : (options.workflow ?? this.workflow)?.source.worksheet);",
+        "src/formats/xlsx.ts:56:   if (worksheet === undefined && names.length > 1) return { sheets: names };",
+        "src/formats/xlsx.ts:58:   if (!names.includes(selected)) throw new Error(\"Selected worksheet is missing. Choose an available worksheet.\");",
+        "docs/decisions/excel-fidelity.md:70: Multiple sheets require selection; saved workflows reuse the explicit worksheet name and reject a missing sheet."
+      ],
+      "file": "src/session/controller.ts",
+      "first_evidence": "src/session/controller.ts:141:       const worksheet = options.worksheet ?? (options.template ? undefined : (options.workflow ?? this.workflow)?.source.worksheet);",
+      "independent_reviewers": [
+        "reliability"
+      ],
+      "line": 141,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "reliability"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Distinguish a fresh manual replacement from an activated saved workflow. Use options.worksheet for an explicit choice, options.workflow?.source.worksheet for explicit workflow reuse, and this.workflow?.source.worksheet only when no source run is active (the activated-workflow case). Leave worksheet undefined for a manual replacement so a multi-sheet workbook prompts for selection. Verify same-name and missing-name replacement cases.",
+      "title": "Fresh workbooks silently reuse the previous worksheet",
+      "why_it_matters": "After a user selects a sheet and configures a run, uploading another multi-sheet workbook inherits the old worksheet name. If the name exists, the new workbook is imported without a choice and may produce results from the wrong sheet. If it does not exist, the import fails without offering the available sheets. This is a silent wrong-result or missing-result path for replacement uploads."
+    },
+    {
+      "#": 2,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:318: <select aria-label=\"Worksheet\" value={state.worksheets.includes(worksheet) ? worksheet : \"\"} onChange={(e) => setWorksheet(e.target.value)}>",
+        "src/ui/Workspace.tsx:323: <button disabled={!state.worksheets.includes(worksheet)} onClick={() => session.selectWorksheet(worksheet)}>Import selected worksheet</button>",
+        "src/ui/Workspace.tsx:324: <button onClick={() => { session.cancelWorksheetSelection(); setWorksheet(\"\"); }}>Cancel worksheet selection</button>",
+        "src/ui/Workspace.tsx:425: void session.upload(file, delimiter, { template: true });",
+        "docs/decisions/excel-fidelity.md:70: Templates have independent sheet selection and import names/order only."
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:318: <select aria-label=\"Worksheet\" value={state.worksheets.includes(worksheet) ? worksheet : \"\"} onChange={(e) => setWorksheet(e.target.value)}>",
+      "independent_reviewers": [
+        "julik-frontend-races"
+      ],
+      "line": 318,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "julik-frontend-races"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Clear the local worksheet choice whenever a new file is submitted or a new worksheet list is presented, including destination templates. Preserve automatic reuse only through the explicit saved-workflow worksheet sent to the session. Add a UI check that choosing a source sheet called Orders does not preselect Orders in a subsequent multi-sheet template.",
+      "title": "Worksheet choice leaks into the next workbook",
+      "why_it_matters": "After choosing a source worksheet, a later multi-sheet destination template can open with that same sheet name already selected. If the user proceeds without making a fresh template choice, headers come from the coincidentally named sheet in the template. This defeats the template's independent worksheet choice and can replace the output mapping with unintended headers."
+    },
+    {
+      "#": 3,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "tests/unit/session.test.ts:189:   s.cancelWorksheetSelection();",
+        "src/session/controller.ts:179:     void this.upload(selection.file, selection.delimiter, { ...selection.options, worksheet });",
+        "tests/e2e/excel-input.spec.ts:214:   for (const [name, bytes] of Object.entries(attacks)) {"
+      ],
+      "file": "tests/unit/session.test.ts",
+      "first_evidence": "tests/unit/session.test.ts:189:   s.cancelWorksheetSelection();",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 189,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Extend the session test to call selectWorksheet, assert that the second import request carries the chosen worksheet, respond with a worker error, and verify the committed view and export remain available. Then select and complete a valid replacement to verify the commit transition.",
+      "title": "Test failure after selecting a worksheet",
+      "why_it_matters": "The new worksheet chooser requires a second import. If that import fails because the selected sheet cannot be parsed or has invalid headers, the prior committed run must remain usable. The session test ends at chooser cancellation, and the browser rejection test fails during initial discovery, so neither detects a regression in the second import's failure transition."
+    },
+    {
+      "#": 4,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:335:               ? `Source loaded \u00b7 ${view.summary.candidates.toLocaleString()} candidate rows \u00b7 ${view.worksheet ? `worksheet ${view.worksheet}` : view.delimiter === \"\\t\" ? \"tab\" : view.delimiter === \";\" ? \"semicolon\" : \"comma\"} delimiter detected. Verify the source columns below.`"
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:335:               ? `Source loaded \u00b7 ${view.summary.candidates.toLocaleString()} candidate rows \u00b7 ${view.worksheet ? `worksheet ${view.worksheet}` : view.delimiter === \"\\t\" ? \"tab\" : view.delimiter === \";\" ? \"semicolon\" : \"comma\"} delimiter detected. Verify the source columns below.`",
+      "independent_reviewers": [
+        "maintainability"
+      ],
+      "line": 335,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": false,
+      "reviewers": [
+        "maintainability"
+      ],
+      "severity": "P3",
+      "suggested_fix": "Build the complete source detail before rendering: for Excel use `worksheet ${view.worksheet}`; for CSV use the current delimiter label followed by `delimiter detected`. Interpolate that complete detail into the shared row-count/status sentence.",
+      "title": "Separate worksheet and delimiter status branches",
+      "why_it_matters": "The new worksheet arm is nested inside a CSV delimiter expression, so an Excel import announces a worksheet as a detected delimiter. The packed conditional also makes later source-specific status changes easy to apply to only one fragment of the sentence."
+    }
+  ],
+  "selected_count": 4,
+  "skip_count": 0,
+  "shortcut_skipped": [],
+  "skip_evidence_basis": "No finding has ordinary-reviewer and independence_verified adversarial-provider corroboration.",
+  "scope": {
+    "mode": "standalone",
+    "base": "81f74a2886fc3590af264dab50683e34c7cb4613",
+    "diff_a": "81f74a2886fc3590af264dab50683e34c7cb4613",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u9-metadata-aware-excel-input",
+    "head_sha": "81f74a2886fc3590af264dab50683e34c7cb4613",
+    "files": "/tmp/compound-engineering-0/ce-code-review/u9-integration-20261017/files.txt",
+    "diff": "/tmp/compound-engineering-0/ce-code-review/u9-integration-20261017/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": []
+  },
+  "scope_context": {
+    "mode": "standalone",
+    "repo": "/workspace/operations-data-cleaner",
+    "base": "81f74a2886fc3590af264dab50683e34c7cb4613",
+    "reviewed_tree": "Current staged and unstaged working tree relative to base; working tree is reviewed tree.",
+    "constraints": [
+      "Only U9 is active; do not assess U10 or later as missing requirements.",
+      "Preserve completed ZIP preflight code, tests, and CE review evidence at commit 81f74a2 unchanged.",
+      "No implementation/index/commit/push writes. Do not merge, deploy, or begin U10. Leave PR #9 draft."
+    ]
+  },
+  "diff": "/tmp/compound-engineering-0/ce-code-review/u9-integration-20261017/full.diff",
+  "files": "/tmp/compound-engineering-0/ce-code-review/u9-integration-20261017/files.txt",
+  "intent": {
+    "summary": "Complete U9 metadata-aware Excel input: select a worksheet, retain raw/display/type/format/formula-cache metadata, interpret text/numeric/date recipes faithfully, and export CSV safely. Preserve the qualified ZIP preflight checkpoint and previous successful run on failed replacement.",
+    "confidence": "explicit"
+  },
+  "plan": {
+    "path": "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "source": "explicit",
+    "requirements": [
+      {
+        "id": "U9",
+        "text": "Metadata-aware Excel input. R1/R6/R7; FR-01\u201306,36\u201337,41,47; AC-08\u201309 input,17 input. Preserve first-nonblank headers, selected worksheet/provenance, cached-formula warnings, header-only templates, workflow settings round-trips; qualify hostile archives, metadata and CSV bytes, 10,000-row worker and privacy."
+      }
+    ],
+    "implementation_units": [
+      "U9"
+    ],
+    "settled_decisions": []
+  },
+  "batch_cap": 8,
+  "selected_order": "severity then stable #",
+  "wall_clock_limit_minutes": 15
+}

@@ -1,0 +1,25 @@
+{
+  "reviewer": "performance",
+  "findings": [
+    {
+      "title": "Bound XML tag scanning against quadratic malformed input",
+      "severity": "P2",
+      "file": "src/formats/archive-budget.ts",
+      "line": 87,
+      "why_it_matters": "A roughly 2.4 KiB ZIP with a 120 KiB worksheet containing repeated unterminated `<c ` prefixes makes preflight spend several seconds synchronously scanning XML; larger inputs within the resource budget grow quadratically. The tag regex retries its unbounded tail at every prefix, so expansion and cell limits do not prevent this CPU exhaustion and AbortSignal cannot interrupt the scan. Direct calls to the new preflight measured approximately 278 ms, 983 ms and 3742 ms for 10,000, 20,000 and 40,000 prefixes respectively.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "suggested_fix": "Replace unbounded tag-tail matching in both package and worksheet tag scans with a forward-only scanner that rejects a new '<' before the current tag closes, or minimally use `[^<>]*>` instead of `[^>]*>` and explicitly reject malformed unterminated tags. Add a hostile fixture with repeated unterminated cell/package tag prefixes and verify processing stays bounded before parser dispatch.",
+      "confidence": 100,
+      "evidence": [
+        "src/formats/archive-budget.ts:87 --     for (const m of xml.matchAll(/<(?:\\w+:)?(?:dimension|c|row)\\b[^>]*>/g)) {",
+        "src/formats/archive-budget.ts:51 --     /<(?:\\w+:)?(?:Override|Default|Relationship)\\b[^>]*>/g,",
+        "Read-only Node 24 reproduction: preflight(workbook('', {extra: {'xl/worksheets/sheet1.xml': '<worksheet>' + '<c '.repeat(n)}})) took 277.8 ms at n=10000, 983.0 ms at n=20000, and 3741.5 ms at n=40000; largest archive was 2410 bytes with 122777 total expanded bytes."
+      ],
+      "pre_existing": false
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

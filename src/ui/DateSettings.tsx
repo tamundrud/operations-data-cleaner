@@ -34,6 +34,7 @@ export function DateSettings({
             }
           >
             <option value="">Choose a format</option>
+            {side === "source" && <option value="excel">Excel date cell (workbook calendar)</option>}
             {DATE_PATTERNS.map((pattern) => (
               <option key={pattern} value={pattern}>
                 {pattern}

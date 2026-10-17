@@ -1,6 +1,6 @@
 # Operations Data Cleaner
 
-U8 internal preview: convert a CSV into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations, exact decimal calculations and explicit date conversions. Trim text only when you choose to. Select CSV delimiter, BOM and header settings, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
+U9 internal preview: convert a CSV or one selected Excel worksheet into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations, exact decimal calculations and explicit date conversions. Trim text only when you choose to. Select CSV delimiter, BOM and header settings, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
 
 ## Run locally
 
@@ -52,13 +52,23 @@ Inputs are limited to 1000 characters each before numeric parsing; results are l
 
 In an output column's settings choose **Output type → Date** (or **Fixed value type → Date**). Choose both **Source date format** and **Output date format**: `YYYY-MM-DD`, `MM/DD/YYYY`, or `DD/MM/YYYY`. Neither is inferred. With source `MM/DD/YYYY`, `10/08/2026` becomes `2026-10-08`, and `03/04/2026` means March 4; choose `DD/MM/YYYY` to interpret it as April 3.
 
-Only zero-padded calendar dates with years `0001`–`9999` are accepted. Impossible dates, invalid leap days, timestamps and mismatched patterns fail visibly. Dates use calendar arithmetic without browser timezone conversion. Empty optional dates remain blank; required blanks fail. Whitespace changes only with explicit trimming. Date interpretation follows the independent primary recipe (copy, fixed text, split or combine), and keeps original source values intact. Numeric calculations cannot become dates. Formats, trimming and required rules save and transfer in workflow version 1; changing rules renews export safety decisions. Excel dates remain deferred to U9/U10.
+Only zero-padded calendar dates with years `0001`–`9999` are accepted. Impossible dates, invalid leap days, timestamps and mismatched patterns fail visibly. Dates use calendar arithmetic without browser timezone conversion. Empty optional dates remain blank; required blanks fail. Whitespace changes only with explicit trimming. Date interpretation follows the independent primary recipe (copy, fixed text, split or combine), and keeps original source values intact. Numeric calculations cannot become dates. Formats, trimming and required rules save and transfer in workflow version 1; changing rules renews export safety decisions. For date-formatted numeric Excel cells, choose **Excel date cell (workbook calendar)** as the source format. Both workbook calendars are honored; invalid serials and time components fail visibly.
+
+## Excel input (U9)
+
+Upload an ordinary `.xlsx` table and choose one worksheet when the workbook has several. Sheets are never merged. The first nonblank row supplies unique headers; blank rows are counted separately and footer rows remain data. XLSX destination templates supply names and order only.
+
+Inspect **Excel cell details** for original type, raw value, displayed text, format, workbook calendar and formula. Supported zero padding preserves `001234`; arithmetic uses the raw numeric value. Unsupported formats and suspicious numeric identifiers carry warnings; digits already lost in Excel cannot be recovered. Referenced cached formula values may be stale; missing/error caches block the dependent rows. No formula, hyperlink, HTML or external relationship is executed or fetched. Use **Show only rows with exceptions** to read warning reasons.
+
+Workbooks are checked before parsing: 25 MiB source, 100 MiB actual expanded data, 4,096 archive entries, 2 million cells, at most 200 table columns and 256 characters per number format. Unsupported ZIP64/encrypted/unsafe archives fail with remediation rather than truncation. A 30-second watchdog and cancellation terminate worker processing; these budgets are not a heap-memory cap. Browsers need native `DecompressionStream("deflate-raw")`; update an unsupported browser or save UTF-8 CSV. Failed imports retain the previous run. Selected worksheet and import settings travel with saved workflows, without source records or filenames. Excel output is not included.
+
+SheetJS CE 0.20.3 is vendored from the verified official distribution; its [Apache-2.0 license](public/SheetJS-LICENSE.txt) ships with the application. See [qualification and limits](docs/decisions/excel-fidelity.md).
 
 ## Save, repeat and recover
 
 Name the current configuration and choose **Save workflow**. Save is explicit: changing rules, uploading a source, or importing a workflow does not automatically update saved definitions. **Save changes** updates the opened saved definition; **Save a copy** needs a distinct name. Identity/name conflicts require an explicit replacement or copy. Changes from another tab are detected before replacement.
 
-Choose a definition under **Saved workflows**, then **Open workflow**, upload a compatible new CSV, review and download. Source columns may be reordered or have extra unused columns; missing/duplicate/changed required headers block the run without guessing. **Edit workflow** reveals the existing matching board. Opening another definition clears the old source only after validation and any replacement confirmation.
+Choose a definition under **Saved workflows**, then **Open workflow**, upload a compatible new CSV or Excel workbook, review and download. Source columns may be reordered or have extra unused columns; missing/duplicate/changed required headers block the run without guessing. **Edit workflow** reveals the existing matching board. Opening another definition clears the old source only after validation and any replacement confirmation.
 
 **Download workflow** produces `workflow.json` without needing a source or working browser storage. Use **Import workflow** in another browser or local instance, then upload its compatible source. Import validates supported configuration before replacing anything and opens a draft; Save separately if you want it in that browser. Future versions and currently undelivered recipes/settings are rejected clearly.
 
@@ -71,7 +81,7 @@ Browser storage belongs to this browser and site origin, can be cleared, and is 
 - Default output: UTF-8, no BOM, comma, headers, standard quoting, CRLF. Choose comma, semicolon or tab, BOM on/off and header on/off. Preview retains column labels for identification even when the exported header is omitted. Formula-like text (including constants) and included headers require an explicit escaped/raw choice; preview shows the selected representation. Typed numeric constants are not formula text. Escaping changes text and cannot promise protection in every spreadsheet/importer. Raw text may be unsafe to open in spreadsheets.
 - Full dataset counts with paginated output and exception rows (50 per page). Nonblank totals are ordinary candidates. No silent record truncation. Limits: 25 MiB source, 200 columns, 2 million inspected cells, 30-second cancellable worker watchdog.
 - Files and parsed data stay in browser memory and are cleared by reload or End session. Only explicitly saved workflow configurations use IndexedDB; no source data or filename is persisted. No localStorage, service worker, analytics, remote fonts, or upload endpoint. Static application code/assets still use ordinary host requests and metadata. Processing runs in a local Web Worker.
-- Excel, source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
+- Typed Excel output, source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
 
 ## Verify
 

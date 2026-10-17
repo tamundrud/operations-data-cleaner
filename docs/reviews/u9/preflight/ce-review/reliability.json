@@ -1,0 +1,26 @@
+{
+  "reviewer": "reliability",
+  "findings": [
+    {
+      "title": "Recheck cancellation after the final member yield",
+      "severity": "P2",
+      "file": "src/formats/archive-budget.ts",
+      "line": 334,
+      "why_it_matters": "A caller can receive successful preflight metrics even though its AbortSignal was aborted before preflight completed. The last member yields to the event loop after its final cancellation check, then returns without checking again; a caller awaiting this guard can therefore start parser work after cancellation. Checking the signal after that yield closes this explicit asynchronous cancellation window.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "suggested_fix": "Call cancelled() after the per-member await (or immediately before return metrics), and add a regression that aborts during the last member's timer yield and expects rejection.",
+      "confidence": 100,
+      "evidence": [
+        "src/formats/archive-budget.ts:334 --   return metrics;",
+        "src/formats/archive-budget.ts:332 --     await new Promise<void>((resolve) => setTimeout(resolve, 0));",
+        "src/formats/archive-budget.ts:317 --     cancelled();",
+        "Read-only Node 24 reproduction using workbook('') and an AbortController aborted in the eighth/final setTimeout callback returned {\"resolved\":true,\"aborted\":true,\"yields\":8,\"entries\":8}."
+      ],
+      "pre_existing": false
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

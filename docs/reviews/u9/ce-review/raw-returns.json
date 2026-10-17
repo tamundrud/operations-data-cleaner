@@ -1,0 +1,112 @@
+[
+  {
+    "reviewer": "correctness",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "project-standards",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "testing",
+    "findings": [
+      {
+        "title": "Test failure after selecting a worksheet",
+        "severity": "P2",
+        "file": "tests/unit/session.test.ts",
+        "line": 189,
+        "autofix_class": "gated_auto",
+        "owner": "downstream-resolver",
+        "requires_verification": true,
+        "confidence": 75,
+        "pre_existing": false,
+        "suggested_fix": "Extend the session test to call selectWorksheet, assert that the second import request carries the chosen worksheet, respond with a worker error, and verify the committed view and export remain available. Then select and complete a valid replacement to verify the commit transition.",
+        "first_evidence": "tests/unit/session.test.ts:189:   s.cancelWorksheetSelection();"
+      }
+    ],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "maintainability",
+    "findings": [
+      {
+        "title": "Separate worksheet and delimiter status branches",
+        "severity": "P3",
+        "file": "src/ui/Workspace.tsx",
+        "line": 335,
+        "autofix_class": "gated_auto",
+        "owner": "downstream-resolver",
+        "requires_verification": false,
+        "confidence": 75,
+        "pre_existing": false,
+        "suggested_fix": "Build the complete source detail before rendering: for Excel use `worksheet ${view.worksheet}`; for CSV use the current delimiter label followed by `delimiter detected`. Interpolate that complete detail into the shared row-count/status sentence.",
+        "first_evidence": "src/ui/Workspace.tsx:335:               ? `Source loaded \u00b7 ${view.summary.candidates.toLocaleString()} candidate rows \u00b7 ${view.worksheet ? `worksheet ${view.worksheet}` : view.delimiter === \"\\t\" ? \"tab\" : view.delimiter === \";\" ? \"semicolon\" : \"comma\"} delimiter detected. Verify the source columns below.`"
+      }
+    ],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "security",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "performance",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "reliability",
+    "findings": [
+      {
+        "title": "Fresh workbooks silently reuse the previous worksheet",
+        "severity": "P2",
+        "file": "src/session/controller.ts",
+        "line": 141,
+        "autofix_class": "gated_auto",
+        "owner": "downstream-resolver",
+        "requires_verification": true,
+        "confidence": 75,
+        "pre_existing": false,
+        "suggested_fix": "Distinguish a fresh manual replacement from an activated saved workflow. Use options.worksheet for an explicit choice, options.workflow?.source.worksheet for explicit workflow reuse, and this.workflow?.source.worksheet only when no source run is active (the activated-workflow case). Leave worksheet undefined for a manual replacement so a multi-sheet workbook prompts for selection. Verify same-name and missing-name replacement cases.",
+        "first_evidence": "src/session/controller.ts:141:       const worksheet = options.worksheet ?? (options.template ? undefined : (options.workflow ?? this.workflow)?.source.worksheet);"
+      }
+    ],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "adversarial",
+    "findings": [],
+    "residual_risks": [],
+    "testing_gaps": []
+  },
+  {
+    "reviewer": "julik-frontend-races",
+    "findings": [
+      {
+        "title": "Worksheet choice leaks into the next workbook",
+        "severity": "P2",
+        "file": "src/ui/Workspace.tsx",
+        "line": 318,
+        "autofix_class": "gated_auto",
+        "owner": "downstream-resolver",
+        "requires_verification": true,
+        "confidence": 75,
+        "pre_existing": false,
+        "suggested_fix": "Clear the local worksheet choice whenever a new file is submitted or a new worksheet list is presented, including destination templates. Preserve automatic reuse only through the explicit saved-workflow worksheet sent to the session. Add a UI check that choosing a source sheet called Orders does not preselect Orders in a subsequent multi-sheet template.",
+        "first_evidence": "src/ui/Workspace.tsx:318: <select aria-label=\"Worksheet\" value={state.worksheets.includes(worksheet) ? worksheet : \"\"} onChange={(e) => setWorksheet(e.target.value)}>"
+      }
+    ],
+    "residual_risks": [],
+    "testing_gaps": []
+  }
+]

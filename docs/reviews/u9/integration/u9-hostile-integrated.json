@@ -1,0 +1,78 @@
+{
+  "alternate-worksheet-range": {
+    "selectionThroughDownloadMs": 142.75998199998867,
+    "rejectionAfterSelectionMs": 32.437108999991324
+  },
+  "alternate-binary-worksheet": {
+    "selectionThroughDownloadMs": 152.74815100000706,
+    "rejectionAfterSelectionMs": 14.025504999997793
+  },
+  "malformed": {
+    "selectionThroughDownloadMs": 151.58193699999538,
+    "rejectionAfterSelectionMs": 15.51746999999159
+  },
+  "encrypted": {
+    "selectionThroughDownloadMs": 153.61361600000237,
+    "rejectionAfterSelectionMs": 11.642542999994475
+  },
+  "huge-declared": {
+    "selectionThroughDownloadMs": 158.3714239999972,
+    "rejectionAfterSelectionMs": 16.859072999999626
+  },
+  "forged-small": {
+    "selectionThroughDownloadMs": 150.19240700000955,
+    "rejectionAfterSelectionMs": 21.408035000000382
+  },
+  "bomb": {
+    "selectionThroughDownloadMs": 147.44358300000022,
+    "rejectionAfterSelectionMs": 9.112068000002182
+  },
+  "crc-corrupt": {
+    "selectionThroughDownloadMs": 130.50491899999906,
+    "rejectionAfterSelectionMs": 9.647461999993538
+  },
+  "duplicate": {
+    "selectionThroughDownloadMs": 130.54772899999807,
+    "rejectionAfterSelectionMs": 15.950362999996287
+  },
+  "path-conflict": {
+    "selectionThroughDownloadMs": 133.78379400000267,
+    "rejectionAfterSelectionMs": 14.987314999991213
+  },
+  "local-name-conflict": {
+    "selectionThroughDownloadMs": 132.9819359999965,
+    "rejectionAfterSelectionMs": 10.939276999997674
+  },
+  "truncated": {
+    "selectionThroughDownloadMs": 131.64458999999624,
+    "rejectionAfterSelectionMs": 12.180004999987432
+  },
+  "zip64-sentinel": {
+    "selectionThroughDownloadMs": 131.91715599999588,
+    "rejectionAfterSelectionMs": 9.580246999990777
+  },
+  "dimensions": {
+    "selectionThroughDownloadMs": 134.79411000000255,
+    "rejectionAfterSelectionMs": 15.287918999994872
+  },
+  "far-cell": {
+    "selectionThroughDownloadMs": 128.51703600000474,
+    "rejectionAfterSelectionMs": 12.50184199999785
+  },
+  "hyperlink-range": {
+    "selectionThroughDownloadMs": 136.08483000000706,
+    "rejectionAfterSelectionMs": 11.366786999991746
+  },
+  "oversized": {
+    "selectionThroughDownloadMs": 4218.5756919999985,
+    "rejectionAfterSelectionMs": 24.19236900001124
+  },
+  "huge-format": {
+    "selectionThroughDownloadMs": 151.25658299999486,
+    "rejectionAfterSelectionMs": 14.1518619999988
+  },
+  "entities": {
+    "selectionThroughDownloadMs": 130.4743759999983,
+    "rejectionAfterSelectionMs": 13.727192000005743
+  }
+}

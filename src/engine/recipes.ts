@@ -1,3 +1,4 @@
+import Big from "big.js";
 import { parseDate } from "./dates";
 import { calculateDecimal, validateDecimal, NumericError } from "./decimal";
 import type { Workflow } from "./workflow";
@@ -13,6 +14,8 @@ export type ResultRow = {
   provenance: ({
     field: string;
     row: string;
+    excel?: SourceTable["rows"][number]["cells"][number]["excel"];
+    worksheet?: string;
     trim?: true;
     date?: NonNullable<Workflow["fields"][number]["date"]>;
     segment?: number;
@@ -37,6 +40,7 @@ export type Run = {
     excluded: number;
   };
   riskyHeaders: string[];
+  csvRisk: boolean;
 };
 export function evaluate(workflow: Workflow, source: SourceTable): Run {
   const workflowIssues = validateWorkflow(workflow, source);
@@ -55,6 +59,7 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
       corrected: 0,
       excluded: 0,
     },
+    csvRisk: false,
     riskyHeaders: workflow.fields
       .filter((f) => workflow.output.header && riskyText(f.header))
       .map((f) => f.header),
@@ -76,6 +81,7 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
         severity: "error" | "warning",
         reason: string,
         action: string,
+        source = sourceKey,
       ) =>
         issues.push({
           code,
@@ -85,22 +91,102 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
           record: row.record,
           line: row.line,
           field: f.id,
-          source: sourceKey,
+          source,
           reason,
           action,
         });
+      let unusableSource = false;
       const readSource = (source: string) => {
+        const cell = row.cells[positions.get(source)!];
+        const excel = cell?.excel;
         provenance.push({
           field: f.id,
           row: row.id,
           source,
+          ...(excel ? { excel: { ...excel } } : {}),
+          ...(row.worksheet ? { worksheet: row.worksheet } : {}),
           ...(f.trim ? { trim: true as const } : {}),
           ...(f.date ? { date: { ...f.date } } : {}),
           ...(recipe.kind === "split"
             ? { segment: recipe.index, segmentTrim: recipe.trim }
             : {}),
         });
-        return row.cells[positions.get(source)!]?.raw ?? "";
+        const issue = (
+          code: string,
+          severity: "error" | "warning",
+          reason: string,
+          action: string,
+        ) => {
+          add(code, severity, `${f.header}: ${reason}`, action, source);
+        };
+        if (excel) {
+          if (excel.type === "e") {
+            unusableSource = true;
+            issue(
+              "excel-cell-error",
+              "error",
+              "the referenced Excel cell contains an error.",
+              "Correct the source workbook and reupload.",
+            );
+            return "";
+          }
+          if (excel.formula !== undefined) {
+            if (
+              excel.value === undefined ||
+              !["n", "s", "str", "b"].includes(excel.type) ||
+              (typeof excel.value === "number" && !Number.isFinite(excel.value))
+            ) {
+              unusableSource = true;
+              issue(
+                "excel-cache-missing",
+                "error",
+                "the referenced formula has no usable cached result.",
+                "Recalculate and save the workbook in a trusted spreadsheet application, then reupload; formulas are never evaluated here.",
+              );
+              return "";
+            }
+            issue(
+              "excel-formula-cache",
+              "warning",
+              "a cached Excel formula result is used and may be stale.",
+              "Verify the result, or recalculate and save the workbook in a trusted spreadsheet application before reuploading.",
+            );
+          }
+          if (excel.unsupportedFormat)
+            issue(
+              "excel-format",
+              "warning",
+              "the Excel display format is unsupported; the raw value is retained.",
+              "Check the source formatting or supply the intended identifier as literal text.",
+            );
+          if (excel.type === "n" && f.type === "text") {
+            const significant = cell.raw
+              .replace(/^[+-]/u, "")
+              .split(/[eE]/u)[0]
+              .replace(".", "")
+              .replace(/^0+/u, "");
+            if (
+              Math.abs(Number(excel.value)) >= 1e15 ||
+              significant.length > 15
+            )
+              issue(
+                "excel-precision",
+                "warning",
+                "a numeric identifier may already have lost precision in Excel; lost digits cannot be recovered.",
+                "Verify the identifier against its original source and store it as literal text.",
+              );
+          }
+          if (excel.type === "n" && f.type === "number" && typeof excel.value === "number" && Number.isFinite(excel.value))
+            return new Big(String(excel.value)).toFixed();
+          if (excel.type === "b") return excel.value ? "TRUE" : "FALSE";
+          if (
+            excel.type === "n" &&
+            f.type === "text" &&
+            !excel.unsupportedFormat
+          )
+            return cell.display;
+        }
+        return cell?.raw ?? "";
       };
       const readConstant = (constant: Value) => {
         provenance.push({
@@ -189,6 +275,7 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
           break;
         }
       }
+      if (unusableSource) value = { kind: "blank" };
       if (f.trim && value.kind === "text")
         value = { kind: "text", text: value.text.trim() };
       if (
@@ -218,7 +305,16 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
         }
       }
       if (f.date && displayValue(value) !== "") {
-        const date = parseDate(displayValue(value), f.date.source);
+        const excel =
+          recipe.kind === "copy"
+            ? row.cells[positions.get(recipe.source)!]?.excel
+            : undefined;
+        const date =
+          f.date.source === "excel"
+            ? excel?.type === "n" && !excel.dateInvalid
+              ? excel.date
+              : undefined
+            : parseDate(displayValue(value), f.date.source);
         if (date) value = { kind: "date", ...date, format: f.date.target };
         else {
           add(
@@ -254,6 +350,7 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
         );
       return value.kind === "text" && text === "" ? { kind: "blank" } : value;
     });
+    if (issues.some((issue) => issue.code === "csv-risk")) run.csvRisk = true;
     const status = issues.some((i) => i.severity === "error")
       ? "invalid"
       : issues.length

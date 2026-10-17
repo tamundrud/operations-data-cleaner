@@ -1,0 +1,25 @@
+{
+  "reviewer": "testing",
+  "findings": [
+    {
+      "title": "Test failure after selecting a worksheet",
+      "severity": "P2",
+      "file": "tests/unit/session.test.ts",
+      "line": 189,
+      "why_it_matters": "The new worksheet chooser requires a second import. If that import fails because the selected sheet cannot be parsed or has invalid headers, the prior committed run must remain usable. The session test ends at chooser cancellation, and the browser rejection test fails during initial discovery, so neither detects a regression in the second import's failure transition.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 75,
+      "evidence": [
+        "tests/unit/session.test.ts:189:   s.cancelWorksheetSelection();",
+        "src/session/controller.ts:179:     void this.upload(selection.file, selection.delimiter, { ...selection.options, worksheet });",
+        "tests/e2e/excel-input.spec.ts:214:   for (const [name, bytes] of Object.entries(attacks)) {"
+      ],
+      "pre_existing": false,
+      "suggested_fix": "Extend the session test to call selectWorksheet, assert that the second import request carries the chosen worksheet, respond with a worker error, and verify the committed view and export remain available. Then select and complete a valid replacement to verify the commit transition."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

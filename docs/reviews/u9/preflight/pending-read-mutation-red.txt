@@ -1,0 +1,26 @@
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+ ❯ tests/unit/archive-budget.test.ts (31 tests | 1 failed | 30 skipped) 5014ms
+   × interrupts a pending stream read without waiting for another chunk 5011ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 30 skipped (31)
+   Start at  15:49:46
+   Duration  5.54s (tests 93%, import 6%, transform 1%)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/archive-budget.test.ts > interrupts a pending stream read without waiting for another chunk
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/unit/archive-budget.test.ts:74:1
+     72| });
+     73|
+     74| test("interrupts a pending stream read without waiting for another chu…
+       | ^
+     75|   const cancel = vi.fn();
+     76|   let reading!: () => void;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯

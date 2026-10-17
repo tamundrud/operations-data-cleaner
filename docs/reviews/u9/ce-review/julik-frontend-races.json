@@ -1,0 +1,27 @@
+{
+  "reviewer": "julik-frontend-races",
+  "findings": [
+    {
+      "title": "Worksheet choice leaks into the next workbook",
+      "severity": "P2",
+      "file": "src/ui/Workspace.tsx",
+      "line": 318,
+      "why_it_matters": "After choosing a source worksheet, a later multi-sheet destination template can open with that same sheet name already selected. If the user proceeds without making a fresh template choice, headers come from the coincidentally named sheet in the template. This defeats the template's independent worksheet choice and can replace the output mapping with unintended headers.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:318: <select aria-label=\"Worksheet\" value={state.worksheets.includes(worksheet) ? worksheet : \"\"} onChange={(e) => setWorksheet(e.target.value)}>",
+        "src/ui/Workspace.tsx:323: <button disabled={!state.worksheets.includes(worksheet)} onClick={() => session.selectWorksheet(worksheet)}>Import selected worksheet</button>",
+        "src/ui/Workspace.tsx:324: <button onClick={() => { session.cancelWorksheetSelection(); setWorksheet(\"\"); }}>Cancel worksheet selection</button>",
+        "src/ui/Workspace.tsx:425: void session.upload(file, delimiter, { template: true });",
+        "docs/decisions/excel-fidelity.md:70: Templates have independent sheet selection and import names/order only."
+      ],
+      "pre_existing": false,
+      "suggested_fix": "Clear the local worksheet choice whenever a new file is submitted or a new worksheet list is presented, including destination templates. Preserve automatic reuse only through the explicit saved-workflow worksheet sent to the session. Add a UI check that choosing a source sheet called Orders does not preselect Orders in a subsequent multi-sheet template."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

@@ -1,0 +1,214 @@
+{
+  "run_id": "20261017-153732-guard",
+  "findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 100,
+      "evidence": [
+        "src/formats/archive-budget.ts:334 --   return metrics;",
+        "src/formats/archive-budget.ts:332 --     await new Promise<void>((resolve) => setTimeout(resolve, 0));",
+        "src/formats/archive-budget.ts:317 --     cancelled();",
+        "Read-only Node 24 reproduction using workbook('') and an AbortController aborted in the eighth/final setTimeout callback returned {\"resolved\":true,\"aborted\":true,\"yields\":8,\"entries\":8}."
+      ],
+      "file": "src/formats/archive-budget.ts",
+      "first_evidence": "src/formats/archive-budget.ts:334 --   return metrics;",
+      "independent_reviewers": [
+        "reliability"
+      ],
+      "line": 334,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "reliability"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Call cancelled() after the per-member await (or immediately before return metrics), and add a regression that aborts during the last member's timer yield and expects rejection.",
+      "title": "Recheck cancellation after the final member yield",
+      "why_it_matters": "A caller can receive successful preflight metrics even though its AbortSignal was aborted before preflight completed. The last member yields to the event loop after its final cancellation check, then returns without checking again; a caller awaiting this guard can therefore start parser work after cancellation. Checking the signal after that yield closes this explicit asynchronous cancellation window."
+    },
+    {
+      "#": 2,
+      "autofix_class": "manual",
+      "confidence": 100,
+      "evidence": [
+        "src/formats/archive-budget.ts:47 --   for (const m of xml.matchAll(/\\bformatCode\\s*=\\s*[\"']([^\"']*)[\"']/g))",
+        "Constructed a workbook with xl/styles.xml containing formatCode=\"0' followed by 300 zero characters and a closing double quote. Production preflight accepted it and returned eight verified entries with matching declared/actual expansion.",
+        "The regex captures only 0, and line 48 therefore measures one character instead of the complete 302-character value. docs/decisions/excel-fidelity.md requires format-code length to be bounded before parsing."
+      ],
+      "file": "src/formats/archive-budget.ts",
+      "first_evidence": "src/formats/archive-budget.ts:47 --   for (const m of xml.matchAll(/\\bformatCode\\s*=\\s*[\"']([^\"']*)[\"']/g))",
+      "independent_reviewers": [
+        "adversarial"
+      ],
+      "line": 47,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Read complete attributes with a quote-aware XML start-tag tokenizer, or at minimum capture the opening quote and require the matching closing quote for formatCode. Enforce the cap on the complete decoded attribute value and add over-limit tests containing each opposite quote character.",
+      "title": "Opposite quote bypasses the number-format length guard",
+      "why_it_matters": "A number-format attribute longer than the mandatory 256-character cap passes the preflight when it contains an apostrophe inside double quotes. The regex ends the captured value at either quote character rather than its opening delimiter, so the unchanged archive can reach the future reader with an unbounded format that the guard claims to reject. Matching paired delimiters restores the established pre-parser limit."
+    },
+    {
+      "#": 3,
+      "autofix_class": "manual",
+      "confidence": 100,
+      "evidence": [
+        "src/formats/archive-budget.ts:82 --   for (const m of xml.matchAll(/\\b(?:ref|sqref)\\s*=\\s*[\"']([^\"']+)[\"']/g))",
+        "Constructed a workbook using the independent workbook() generator with A2 inline text <t>ref=\"ORDER-123\"</t> and valid dimension A1:A2. Directly executing production preflight under Node 24 returned Invalid worksheet address, despite no invalid structural address.",
+        "The matched cell text is passed to rangeCells at lines 83-84, whose coordinate regex rejects ORDER-123 before any import can proceed."
+      ],
+      "file": "src/formats/archive-budget.ts",
+      "first_evidence": "src/formats/archive-budget.ts:82 --   for (const m of xml.matchAll(/\\b(?:ref|sqref)\\s*=\\s*[\"']([^\"']+)[\"']/g))",
+      "independent_reviewers": [
+        "adversarial"
+      ],
+      "line": 82,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Tokenize actual XML start tags and inspect ref/sqref only in their attributes, excluding element text, comments, CDATA and processing instructions. Add a synthetic inline-string regression containing ref=\"ORDER-123\" that passes while the same value in an actual dimension attribute fails.",
+      "title": "Ordinary reference text makes an entire workbook fail",
+      "why_it_matters": "A valid worksheet containing literal text ref=\"ORDER-123\" is rejected as an invalid worksheet address. The guard scans all XML text for apparent attributes, so customer cell contents become structural range declarations and prevent import. Restricting range inspection to real XML start-tag attributes preserves the structural limit without interpreting source values as metadata."
+    },
+    {
+      "#": 4,
+      "autofix_class": "gated_auto",
+      "confidence": 100,
+      "evidence": [
+        "src/formats/archive-budget.ts:87 --     for (const m of xml.matchAll(/<(?:\\w+:)?(?:dimension|c|row)\\b[^>]*>/g)) {",
+        "src/formats/archive-budget.ts:51 --     /<(?:\\w+:)?(?:Override|Default|Relationship)\\b[^>]*>/g,",
+        "Read-only Node 24 reproduction: preflight(workbook('', {extra: {'xl/worksheets/sheet1.xml': '<worksheet>' + '<c '.repeat(n)}})) took 277.8 ms at n=10000, 983.0 ms at n=20000, and 3741.5 ms at n=40000; largest archive was 2410 bytes with 122777 total expanded bytes."
+      ],
+      "file": "src/formats/archive-budget.ts",
+      "first_evidence": "src/formats/archive-budget.ts:87 --     for (const m of xml.matchAll(/<(?:\\w+:)?(?:dimension|c|row)\\b[^>]*>/g)) {",
+      "independent_reviewers": [
+        "performance"
+      ],
+      "line": 87,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "performance"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Replace unbounded tag-tail matching in both package and worksheet tag scans with a forward-only scanner that rejects a new '<' before the current tag closes, or minimally use `[^<>]*>` instead of `[^>]*>` and explicitly reject malformed unterminated tags. Add a hostile fixture with repeated unterminated cell/package tag prefixes and verify processing stays bounded before parser dispatch.",
+      "title": "Bound XML tag scanning against quadratic malformed input",
+      "why_it_matters": "A roughly 2.4 KiB ZIP with a 120 KiB worksheet containing repeated unterminated `<c ` prefixes makes preflight spend several seconds synchronously scanning XML; larger inputs within the resource budget grow quadratically. The tag regex retries its unbounded tail at every prefix, so expansion and cell limits do not prevent this CPU exhaustion and AbortSignal cannot interrupt the scan. Direct calls to the new preflight measured approximately 278 ms, 983 ms and 3742 ms for 10,000, 20,000 and 40,000 prefixes respectively."
+    },
+    {
+      "#": 5,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "tests/unit/archive-budget.test.ts:34 --   setTimeout(() => during.abort(), 0);",
+        "tests/unit/archive-budget.test.ts:35 --   await expect(pending).rejects.toThrow(/cancel/i);",
+        "src/formats/archive-budget.ts:304 --       const abort = () => { void reader.cancel().catch(() => {}); };",
+        "src/formats/archive-budget.ts:308 --           const { value, done } = await reader.read();",
+        "src/formats/archive-budget.ts:274 --       cancelled();",
+        "src/formats/archive-budget.ts:313 --         signal?.removeEventListener(\"abort\", abort);",
+        "Read-only instrumentation of the native stream confirmed the timer can abort during an active first-member read, but the current assertion observes only the final error and does not distinguish cancellation of that read from its ordinary completion followed by cancelled()."
+      ],
+      "file": "tests/unit/archive-budget.test.ts",
+      "first_evidence": "tests/unit/archive-budget.test.ts:34 --   setTimeout(() => during.abort(), 0);",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 34,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Extend the cancellation tests with a temporarily stubbed global DecompressionStream whose readable keeps a read pending until cancelled. Abort after the read starts, assert that its cancel handler runs and preflight rejects without supplying another output chunk, and restore the global in finally. Verify the abort listener is removed on success and decompression failure using the supplied signal's addEventListener/removeEventListener methods; retain the real native-stream smoke test.",
+      "title": "Prove cancellation interrupts an outstanding stream read",
+      "why_it_matters": "Cancellation can regress to waiting for the next decompression output without this test failing: the assertion only checks the eventual cancellation error, which the existing cancelled() checks also produce. The new abort listener's purpose is to interrupt an outstanding reader.read(), and neither that interruption nor listener cleanup on success/error is asserted. A controlled stream that holds a read pending would distinguish prompt resource cancellation from eventual rejection after more output arrives."
+    }
+  ],
+  "pre_existing_findings": [],
+  "residual_risks": [],
+  "testing_gaps": [],
+  "triage_groups": [
+    {
+      "title": "Cancellation completion and regression coverage",
+      "findings": [
+        1,
+        5
+      ],
+      "type": "apply-queue",
+      "context": "The final yield can report success after abort, and existing tests do not prove pending reads are interrupted.",
+      "preferred_resolution": "Fix #1 and add its regression, then implement the controlled-stream and cleanup coverage in #5.",
+      "why": "The code fix and stream tests establish the guard cancellation contract at both asynchronous boundaries."
+    },
+    {
+      "title": "Bounded structural XML inspection",
+      "findings": [
+        2,
+        3,
+        4
+      ],
+      "type": "apply-queue",
+      "context": "Raw XML regexes misidentify text, truncate attribute values and scan malformed input quadratically.",
+      "preferred_resolution": "Implement a bounded quote-aware start-tag scanner for #4, then use its parsed attributes to resolve #2 and #3 with separate hostile and ordinary-text regressions.",
+      "why": "Shared tokenization can fix each distinct failure while preserving pre-parser safety limits."
+    }
+  ],
+  "peer": {
+    "selected": true,
+    "target": null,
+    "route": null,
+    "preference_source": "default",
+    "outcome": "in-process-fallback",
+    "artifact": null,
+    "coverage": "Cross-model pass not run: no attested-different provider CLI installed (Codex only). Local adversarial reviewer covered the lens."
+  },
+  "peer_fold_in_outcome": "in-process-fallback",
+  "coverage_notes": [
+    "Full review depth; 335 executable non-test changed lines, 380 changed lines.",
+    "Project standards used root AGENTS.md instruction-file fallback; no CODING_STANDARDS.md found.",
+    "Review is guard cluster only. XLSX reader/UI, integration, browser privacy and full U9 completeness remain outside scope.",
+    "Caller reports 22 guard tests, all 188 unit tests, typecheck, lint, build and zero audit vulnerabilities passed.",
+    "No urgent fast-pass candidates.",
+    "Cross-model pass not run: no attested-different provider CLI installed (Codex only). Local adversarial reviewer covered the lens.",
+    "Mechanics: zero malformed returns/findings, zero confidence suppressions, zero first_evidence backfills, zero quote-gate demotions, zero mode-aware demotions, and zero settled-decision suppressions.",
+    "Five primary actionable P2 findings retained; no semantic duplicates or pre-existing findings.",
+    "Validator shortcut: zero skipped; no attested cross-model corroboration. All five actionable findings selected in one deterministic batch.",
+    "The material cancellation coverage finding is the sole umbrella coverage finding for this guard subsystem."
+  ],
+  "suppressed_by_confidence": {},
+  "first_evidence_backfilled": 0,
+  "malformed_findings": 0,
+  "malformed_returns": 0,
+  "mode_aware_demotions": 0,
+  "quote_gate_demotions": 0,
+  "settled_decision_suppressions": 0,
+  "requirements_completeness": [
+    {
+      "id": "KTD-07",
+      "status": "partially addressed",
+      "detail": "Guard cluster implements unchanged-archive all-member streaming expansion, checksum verification and cancellation. Findings #1-4 identify gaps in the guard contract; complete U9 integration is intentionally outside this review."
+    }
+  ],
+  "unrequested_behavior_rules": [],
+  "learnings": {
+    "path": "/tmp/compound-engineering-1000/ce-code-review/20261017-153732-guard/learnings.md",
+    "summary": "Preserve actual expansion/CRC/all-member inspection and alternate relationship-routed worksheet regressions; integrated worker qualification remains required before enabling XLSX."
+  },
+  "admission_decisions": [
+    "All five claims have a specific response and directly verified changed code/test anchors. No preference-only or speculative claims retained.",
+    "XML findings #2, #3 and #4 share a potential scanner fix but have distinct failure modes and test cases, so remain separate.",
+    "Cancellation coverage is materially required for this hostile-input boundary and has a discriminating controlled-stream test proposal."
+  ]
+}
