@@ -1,0 +1,78 @@
+{
+  "branch": "feat/u9-metadata-aware-excel-input",
+  "completed_at": "2026-10-17T15:44:25.953305+00:00",
+  "cost": {
+    "host": "codex",
+    "scope": {
+      "changed_lines": 380,
+      "depth": "full",
+      "exec_nontest_lines": 335,
+      "size_band": "large",
+      "unclassified_lines": {
+        ".json": 9
+      }
+    },
+    "stages": [
+      {
+        "elapsed_seconds": 0.073,
+        "ended_at": "2026-10-17T15:37:33.036334+00:00",
+        "facts": {
+          "changed_lines": 380,
+          "depth": "full",
+          "exec_nontest_lines": 335,
+          "size_band": "large",
+          "unclassified_lines": {
+            ".json": 9
+          }
+        },
+        "stage": "scope",
+        "started_at": "2026-10-17T15:37:32.963001+00:00"
+      },
+      {
+        "elapsed_seconds": 42.336,
+        "ended_at": "2026-10-17T15:38:15.371875+00:00",
+        "reviewers": 9,
+        "stage": "select",
+        "started_at": "2026-10-17T15:37:33.036334+00:00"
+      },
+      {
+        "candidates": 5,
+        "elapsed_seconds": 135.871,
+        "ended_at": "2026-10-17T15:40:31.242847+00:00",
+        "stage": "dispatch",
+        "started_at": "2026-10-17T15:38:15.371875+00:00"
+      },
+      {
+        "candidates": 5,
+        "elapsed_seconds": 46.913,
+        "ended_at": "2026-10-17T15:41:57.894157+00:00",
+        "stage": "merge",
+        "started_at": "2026-10-17T15:41:10.980910+00:00"
+      },
+      {
+        "elapsed_seconds": 77.928,
+        "ended_at": "2026-10-17T15:43:33.126843+00:00",
+        "stage": "validate",
+        "started_at": "2026-10-17T15:42:15.198978+00:00"
+      },
+      {
+        "candidates": 5,
+        "elapsed_seconds": 23.237,
+        "ended_at": "2026-10-17T15:44:25.986544+00:00",
+        "stage": "report",
+        "started_at": "2026-10-17T15:44:02.749324+00:00"
+      }
+    ],
+    "status": "complete",
+    "totals": {
+      "artifact_bytes": 551586,
+      "candidates": 5,
+      "elapsed_seconds": 326.358,
+      "reviewers": 9
+    },
+    "truncated_events": 0
+  },
+  "head_sha": "64cbfcb9e881e698c8264962b6d9656c5bd7aafe",
+  "run_id": "20261017-153732-guard",
+  "verdict": "Ready with fixes"
+}
