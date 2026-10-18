@@ -1,0 +1,88 @@
+
+> operations-data-cleaner@0.2.0 test:e2e
+> playwright test --project=chromium tests/e2e/excel-input.spec.ts -g manual replacements|XLSX templates
+
+[WebServer] (node:12404) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:12416) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/excel-input.spec.ts:142:1 › U9 XLSX templates supply names and order only; saved and portable workflows reuse Excel input (6.1s)
+(node:12547) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [chromium] › tests/e2e/excel-input.spec.ts:287:1 › U9 manual replacements require a fresh worksheet choice and preserve the prior run after a selected-sheet failure (6.9s)
+
+
+  1) [chromium] › tests/e2e/excel-input.spec.ts:142:1 › U9 XLSX templates supply names and order only; saved and portable workflows reuse Excel input
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator:  getByLabel('Worksheet', { exact: true })
+    Expected: ""
+    Received: "Synthetic"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveValue" getByLabel('Worksheet', { exact: true }) with timeout 5000ms
+      - waiting for getByLabel('Worksheet', { exact: true })
+        14 × locator resolved to <select aria-label="Worksheet">…</select>
+           - unexpected value "Synthetic"
+
+
+      145 |   const template = workbook('<row r="1">' + stringCell("A1", "Reference") + stringCell("B1", "Delivery") + '</row><row r="2">' + stringCell("A2", "DO_NOT_IMPORT_TEMPLATE_VALUES") + '</row>', { dimension: "A1:B2" });
+      146 |   await page.getByLabel("Upload destination CSV template", { exact: true }).setInputFiles({ name: "template.xlsx", mimeType, buffer: Buffer.from(template) });
+    > 147 |   await expect(page.getByLabel("Worksheet", { exact: true })).toHaveValue("");
+          |                                                               ^
+      148 |   await expect(page.getByRole("button", { name: "Import selected worksheet", exact: true })).toBeDisabled();
+      149 |   await finishImport(page);
+      150 |   await expect(page.getByRole("button", { name: /^Select output / })).toHaveCount(2);
+        at /workspace/operations-data-cleaner/tests/e2e/excel-input.spec.ts:147:63
+
+    Error Context: test-results/excel-input-U9-XLSX-templa-7580d-workflows-reuse-Excel-input-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/excel-input-U9-XLSX-templa-7580d-workflows-reuse-Excel-input-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/excel-input-U9-XLSX-templa-7580d-workflows-reuse-Excel-input-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests/e2e/excel-input.spec.ts:287:1 › U9 manual replacements require a fresh worksheet choice and preserve the prior run after a selected-sheet failure
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator: getByLabel('Worksheet', { exact: true })
+    Expected: ""
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveValue" getByLabel('Worksheet', { exact: true }) with timeout 5000ms
+      - waiting for getByLabel('Worksheet', { exact: true })
+
+
+      297 |   // A matching old sheet name must not silently choose the replacement's table.
+      298 |   await picker.setInputFiles({ name: "same-name.xlsx", mimeType, buffer: Buffer.from(fidelityBook()) });
+    > 299 |   await expect(chooser).toHaveValue("");
+          |                         ^
+      300 |   await expect(page.getByRole("button", { name: "Import selected worksheet", exact: true })).toBeDisabled();
+      301 |   await page.getByRole("button", { name: "Cancel worksheet selection", exact: true }).click();
+      302 |   expect(await download(page)).toEqual(expected);
+        at /workspace/operations-data-cleaner/tests/e2e/excel-input.spec.ts:299:25
+
+    Error Context: test-results/excel-input-U9-manual-repl-97d84-er-a-selected-sheet-failure-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/excel-input-U9-manual-repl-97d84-er-a-selected-sheet-failure-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/excel-input-U9-manual-repl-97d84-er-a-selected-sheet-failure-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests/e2e/excel-input.spec.ts:142:1 › U9 XLSX templates supply names and order only; saved and portable workflows reuse Excel input
+    [chromium] › tests/e2e/excel-input.spec.ts:287:1 › U9 manual replacements require a fresh worksheet choice and preserve the prior run after a selected-sheet failure

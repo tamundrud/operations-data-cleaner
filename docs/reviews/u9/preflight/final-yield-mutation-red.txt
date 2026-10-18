@@ -1,0 +1,39 @@
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+ ❯ tests/unit/archive-budget.test.ts (31 tests | 1 failed | 30 skipped) 69ms
+   × rejects cancellation during the final member yield 67ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 30 skipped (31)
+   Start at  15:49:44
+   Duration  888ms (import 75%, transform 13%, tests 11%, worker 1%)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/archive-budget.test.ts > rejects cancellation during the final member yield
+AssertionError: promise resolved "{ entries: 8, …(4) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "actualBytes": 3042,
++   "cells": 2,
++   "declaredBytes": 3042,
++   "entries": 8,
++   "maxOutputChunk": 645,
+  }
+
+ ❯ tests/unit/archive-budget.test.ts:52:63
+     50|     }, delay),
+     51|   );
+     52|   await expect(preflight(bytes, undefined, controller.signal)).rejects…
+       |                                                               ^
+     53|   expect(yields).toBe(8);
+     54| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯

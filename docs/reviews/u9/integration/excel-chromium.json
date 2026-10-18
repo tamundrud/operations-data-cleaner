@@ -1,0 +1,555 @@
+{
+  "config": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/workspace/operations-data-cleaner/node_modules/.bin/playwright",
+      "test",
+      "--project=chromium",
+      "tests/e2e/excel-input.spec.ts",
+      "--reporter=json"
+    ],
+    "configFile": "/workspace/operations-data-cleaner/playwright.config.ts",
+    "rootDir": "/workspace/operations-data-cleaner/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/workspace/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/workspace/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/workspace/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/workspace/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "snapshotDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 30000,
+        "use": {
+          "baseURL": "http://127.0.0.1:4173",
+          "serviceWorkers": "block",
+          "trace": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium",
+          "launchOptions": {
+            "executablePath": "/usr/bin/chromium"
+          }
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run preview",
+      "url": "http://127.0.0.1:4173",
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "excel-input.spec.ts",
+      "file": "excel-input.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "U9 worksheet choice, Excel metadata and exact identifier, arithmetic, date and cached bytes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5771,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T21:56:40.150Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-f4a3ee6d77517800ab8a",
+          "file": "excel-input.spec.ts",
+          "line": 60,
+          "column": 1
+        },
+        {
+          "title": "U9 both date epochs, invalid dates and missing cached formulas remain inspectable errors",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4558,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T21:56:46.163Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-261956cd6952b2a7f7d2",
+          "file": "excel-input.spec.ts",
+          "line": 99,
+          "column": 1
+        },
+        {
+          "title": "U9 selected worksheet, first nonblank header, blank rows and footer retain original semantics",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2986,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T21:56:50.732Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-2b44458a56c3db7538e6",
+          "file": "excel-input.spec.ts",
+          "line": 122,
+          "column": 1
+        },
+        {
+          "title": "U9 XLSX templates supply names and order only; saved and portable workflows reuse Excel input",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3896,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T21:56:53.733Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-14004914fb4639d763e1",
+          "file": "excel-input.spec.ts",
+          "line": 141,
+          "column": 1
+        },
+        {
+          "title": "U9 long numeric identifiers and unsupported display formats warn without inventing digits",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2513,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T21:56:57.645Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-35ee0edceeeec6b7a292",
+          "file": "excel-input.spec.ts",
+          "line": 176,
+          "column": 1
+        },
+        {
+          "title": "U9 integrated worker rejects every U1 hostile fixture and preserves the prior run",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8690,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "alternate-worksheet-range",
+                      "duration": 153
+                    },
+                    {
+                      "title": "alternate-binary-worksheet",
+                      "duration": 160
+                    },
+                    {
+                      "title": "malformed",
+                      "duration": 145
+                    },
+                    {
+                      "title": "encrypted",
+                      "duration": 147
+                    },
+                    {
+                      "title": "huge-declared",
+                      "duration": 148
+                    },
+                    {
+                      "title": "forged-small",
+                      "duration": 196
+                    },
+                    {
+                      "title": "bomb",
+                      "duration": 183
+                    },
+                    {
+                      "title": "crc-corrupt",
+                      "duration": 187
+                    },
+                    {
+                      "title": "duplicate",
+                      "duration": 151
+                    },
+                    {
+                      "title": "path-conflict",
+                      "duration": 167
+                    },
+                    {
+                      "title": "local-name-conflict",
+                      "duration": 127
+                    },
+                    {
+                      "title": "truncated",
+                      "duration": 150
+                    },
+                    {
+                      "title": "zip64-sentinel",
+                      "duration": 152
+                    },
+                    {
+                      "title": "dimensions",
+                      "duration": 136
+                    },
+                    {
+                      "title": "far-cell",
+                      "duration": 163
+                    },
+                    {
+                      "title": "hyperlink-range",
+                      "duration": 197
+                    },
+                    {
+                      "title": "oversized",
+                      "duration": 3844
+                    },
+                    {
+                      "title": "huge-format",
+                      "duration": 157
+                    },
+                    {
+                      "title": "entities",
+                      "duration": 151
+                    }
+                  ],
+                  "startTime": "2026-10-17T21:57:00.169Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "u9-hostile-integrated.json",
+                      "contentType": "application/json",
+                      "body": "ewogICJhbHRlcm5hdGUtd29ya3NoZWV0LXJhbmdlIjogewogICAgInNlbGVjdGlvblRocm91Z2hEb3dubG9hZE1zIjogMTUyLjE1MTIxLAogICAgInJlamVjdGlvbkFmdGVyU2VsZWN0aW9uTXMiOiAzNC45ODE1OTUwMDAwMDExMQogIH0sCiAgImFsdGVybmF0ZS1iaW5hcnktd29ya3NoZWV0IjogewogICAgInNlbGVjdGlvblRocm91Z2hEb3dubG9hZE1zIjogMTU5LjU1NTE0NDk5OTk5ODQ1LAogICAgInJlamVjdGlvbkFmdGVyU2VsZWN0aW9uTXMiOiAxNy41MzkzNDk5OTk5OTkxMDQKICB9LAogICJtYWxmb3JtZWQiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiAxNDQuNjg3MTUwMDAwMDAxNTcsCiAgICAicmVqZWN0aW9uQWZ0ZXJTZWxlY3Rpb25NcyI6IDExLjU5Mzk3OTAwMDAwMTEyNwogIH0sCiAgImVuY3J5cHRlZCI6IHsKICAgICJzZWxlY3Rpb25UaHJvdWdoRG93bmxvYWRNcyI6IDE0Ni4wNjU2Mjk5OTk5OTczMywKICAgICJyZWplY3Rpb25BZnRlclNlbGVjdGlvbk1zIjogMTcuNDQxNDE4OTk5OTk4ODYKICB9LAogICJodWdlLWRlY2xhcmVkIjogewogICAgInNlbGVjdGlvblRocm91Z2hEb3dubG9hZE1zIjogMTQ3LjkwNjMxMjk5OTk5OTUsCiAgICAicmVqZWN0aW9uQWZ0ZXJTZWxlY3Rpb25NcyI6IDE3Ljk4OTU1NjAwMDAwMDQ0OAogIH0sCiAgImZvcmdlZC1zbWFsbCI6IHsKICAgICJzZWxlY3Rpb25UaHJvdWdoRG93bmxvYWRNcyI6IDE5Ni4zMDc1NDc5OTk5OTcwNCwKICAgICJyZWplY3Rpb25BZnRlclNlbGVjdGlvbk1zIjogNTQuMjg5MTY3OTk5OTk5MzM2CiAgfSwKICAiYm9tYiI6IHsKICAgICJzZWxlY3Rpb25UaHJvdWdoRG93bmxvYWRNcyI6IDE4Mi4yNjUzMzgwMDAwMDEwNywKICAgICJyZWplY3Rpb25BZnRlclNlbGVjdGlvbk1zIjogMTkuNjc1OTQzOTk5OTk4NzA4CiAgfSwKICAiY3JjLWNvcnJ1cHQiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiAxODYuNjQ4NzkwOTk5OTk5NjIsCiAgICAicmVqZWN0aW9uQWZ0ZXJTZWxlY3Rpb25NcyI6IDExLjAxODAzMDk5OTk5OTYxCiAgfSwKICAiZHVwbGljYXRlIjogewogICAgInNlbGVjdGlvblRocm91Z2hEb3dubG9hZE1zIjogMTQ5Ljc0OTM2NDk5OTk5OTY3LAogICAgInJlamVjdGlvbkFmdGVyU2VsZWN0aW9uTXMiOiA4Ljk0ODYyNjAwMDAwMTI0CiAgfSwKICAicGF0aC1jb25mbGljdCI6IHsKICAgICJzZWxlY3Rpb25UaHJvdWdoRG93bmxvYWRNcyI6IDE2Ni42Njc3MzMwMDAwMDIwNCwKICAgICJyZWplY3Rpb25BZnRlclNlbGVjdGlvbk1zIjogMTIuNDE0MDY0MDAwMDAwNTA4CiAgfSwKICAibG9jYWwtbmFtZS1jb25mbGljdCI6IHsKICAgICJzZWxlY3Rpb25UaHJvdWdoRG93bmxvYWRNcyI6IDEyNy4yMjQ5MTQ5OTk5OTg4NywKICAgICJyZWplY3Rpb25BZnRlclNlbGVjdGlvbk1zIjogMTEuMzcwNDM5MDAwMDAyMDgKICB9LAogICJ0cnVuY2F0ZWQiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiAxNDkuMjY5MjE5MDAwMDAxNiwKICAgICJyZWplY3Rpb25BZnRlclNlbGVjdGlvbk1zIjogMTYuOTk0MzM3MDAwMDAwMDg3CiAgfSwKICAiemlwNjQtc2VudGluZWwiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiAxNTEuOTIwMjc2MDAwMDAwNzQsCiAgICAicmVqZWN0aW9uQWZ0ZXJTZWxlY3Rpb25NcyI6IDE0LjAxNTA5Njk5OTk5OTUxNAogIH0sCiAgImRpbWVuc2lvbnMiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiAxMzIuMzI4MTIxOTk5OTk4OTgsCiAgICAicmVqZWN0aW9uQWZ0ZXJTZWxlY3Rpb25NcyI6IDcuNjM0OTIyOTk5OTk3Nzk4CiAgfSwKICAiZmFyLWNlbGwiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiAxNjMuMDU0NTQ1OTk5OTk5NCwKICAgICJyZWplY3Rpb25BZnRlclNlbGVjdGlvbk1zIjogMTAuNzkwOTg4OTk5OTk3MzUzCiAgfSwKICAiaHlwZXJsaW5rLXJhbmdlIjogewogICAgInNlbGVjdGlvblRocm91Z2hEb3dubG9hZE1zIjogMTk2LjgzNzMxNzk5OTk5ODA1LAogICAgInJlamVjdGlvbkFmdGVyU2VsZWN0aW9uTXMiOiAxMC4wNTQ0MjM5OTk5OTgxMDcKICB9LAogICJvdmVyc2l6ZWQiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiAzODQzLjc0MTkwNDAwMDAwMjMsCiAgICAicmVqZWN0aW9uQWZ0ZXJTZWxlY3Rpb25NcyI6IDkuMzM3NDg4MDAwMDAxMDMKICB9LAogICJodWdlLWZvcm1hdCI6IHsKICAgICJzZWxlY3Rpb25UaHJvdWdoRG93bmxvYWRNcyI6IDE1Ni4yNDg5MTA5OTk5OTg3NywKICAgICJyZWplY3Rpb25BZnRlclNlbGVjdGlvbk1zIjogMTMuMDM3NTUyMDAwMDAxNTk3CiAgfSwKICAiZW50aXRpZXMiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiAxNTAuNzgxNTgwOTk5OTk5MjgsCiAgICAicmVqZWN0aW9uQWZ0ZXJTZWxlY3Rpb25NcyI6IDE1LjU4ODQ3MjAwMDAwMzA5NAogIH0KfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-1f8f09e88450fc43a746",
+          "file": "excel-input.spec.ts",
+          "line": 188,
+          "column": 1
+        },
+        {
+          "title": "U9 browser privacy intercepts external links and WEBSERVICE without exposing source data",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1819,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T21:57:08.875Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-ccae1b553222b043d061",
+          "file": "excel-input.spec.ts",
+          "line": 217,
+          "column": 1
+        },
+        {
+          "title": "U9 cancellation stops workbook processing and retries the unchanged active source",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1862,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T21:57:10.705Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-bf334e9884025cd534bf",
+          "file": "excel-input.spec.ts",
+          "line": 242,
+          "column": 1
+        },
+        {
+          "title": "U9 10000-row integrated workbook remains responsive and exports every selected value",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7166,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T21:57:12.581Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "u9-10000-integrated.json",
+                      "contentType": "application/json",
+                      "body": "ewogICJyb3dzIjogMTAwMDAsCiAgImNvbHVtbnMiOiAyMCwKICAiYnJvd3NlciI6ICIxNTQuMC44MDM3LjU3IiwKICAicmVwZWF0SW1wb3J0VGhyb3VnaERvd25sb2FkTXMiOiAxMTIwLjE2MDAzOTAwMDAwMjEsCiAgImhlYXJ0YmVhdCI6IHsKICAgICJwcmV2aW91cyI6IDY0NjAuNjAwMDAwMDAxNDksCiAgICAibWF4R2FwIjogMTEzNC4zMDAwMDAwMDA3NDUsCiAgICAidGlja3MiOiAyMDgKICB9LAogICJlbnZpcm9ubWVudCI6ICJDbG91ZCBydW5uZXI7IHJlZmVyZW5jZSBsYXB0b3AgcXVhbGlmaWNhdGlvbiBwZW5kaW5nIgp9"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-26bd4830f9ee0b9d96a6",
+          "file": "excel-input.spec.ts",
+          "line": 257,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-17T21:56:39.089Z",
+    "duration": 40771.564,
+    "expected": 9,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

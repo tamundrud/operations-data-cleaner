@@ -1,0 +1,64 @@
+
+> operations-data-cleaner@0.2.0 test:e2e
+> playwright test --project=firefox --project=webkit tests/e2e/excel-input.spec.ts -g worksheet choice
+
+[WebServer] (node:11544) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:11565) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [firefox] › tests/e2e/excel-input.spec.ts:60:1 › U9 worksheet choice, Excel metadata and exact identifier, arithmetic, date and cached bytes (1ms)
+(node:11577) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [webkit] › tests/e2e/excel-input.spec.ts:60:1 › U9 worksheet choice, Excel metadata and exact identifier, arithmetic, date and cached bytes (2ms)
+
+
+  1) [firefox] › tests/e2e/excel-input.spec.ts:60:1 › U9 worksheet choice, Excel metadata and exact identifier, arithmetic, date and cached bytes
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/firefox-1555/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/excel-input-U9-worksheet-c-5e81f-metic-date-and-cached-bytes-firefox/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/excel-input-U9-worksheet-c-5e81f-metic-date-and-cached-bytes-firefox/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/excel-input-U9-worksheet-c-5e81f-metic-date-and-cached-bytes-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [webkit] › tests/e2e/excel-input.spec.ts:60:1 › U9 worksheet choice, Excel metadata and exact identifier, arithmetic, date and cached bytes
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/webkit-2370/pw_run.sh
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/excel-input-U9-worksheet-c-5e81f-metic-date-and-cached-bytes-webkit/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/excel-input-U9-worksheet-c-5e81f-metic-date-and-cached-bytes-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/excel-input-U9-worksheet-c-5e81f-metic-date-and-cached-bytes-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [firefox] › tests/e2e/excel-input.spec.ts:60:1 › U9 worksheet choice, Excel metadata and exact identifier, arithmetic, date and cached bytes
+    [webkit] › tests/e2e/excel-input.spec.ts:60:1 › U9 worksheet choice, Excel metadata and exact identifier, arithmetic, date and cached bytes

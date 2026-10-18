@@ -1,0 +1,26 @@
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+ ❯ tests/unit/excel-values.test.ts (11 tests | 1 failed) 50ms
+   × stale cache warnings remain visible without requiring unrelated CSV formula escaping 27ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/excel-values.test.ts > stale cache warnings remain visible without requiring unrelated CSV formula escaping
+Error: Choose escaped output or raw TMS text before downloading formula-like content.
+ ❯ serializeCsv src/formats/csv.ts:175:11
+    173|     );
+    174|   if ((run.summary.warningIssues || run.riskyHeaders.length) && !choic…
+    175|     throw new Error(
+       |           ^
+    176|       "Choose escaped output or raw TMS text before downloading formul…
+    177|     );
+ ❯ tests/unit/excel-values.test.ts:319:35
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 passed (11)
+   Start at  17:16:36
+   Duration  328ms (import 53%, tests 23%, transform 22%, worker 2%)

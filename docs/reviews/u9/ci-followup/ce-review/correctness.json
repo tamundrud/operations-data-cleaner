@@ -1,0 +1,36 @@
+{
+  "reviewer": "correctness",
+  "findings": [
+    {
+      "#": 1,
+      "title": "Ending an inspected session restores hidden eager rendering",
+      "severity": "P2",
+      "file": "src/ui/Workspace.tsx",
+      "line": 372,
+      "confidence": 75,
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "pre_existing": false,
+      "suggested_fix": "Reset inspectSource whenever session.onState receives no view, or move disclosure state to a component unmounted with view. Verify inspect\u2192End session\u2192upload and cancel\u2192retry leave a closed source disclosure unmounted, while opening still exposes cell metadata.",
+      "first_evidence": "src/ui/Workspace.tsx:372 -- {inspectSource && <section aria-labelledby=\"source-title\">",
+      "why_it_matters": "After opening source inspection, ending the session removes the native details element but leaves inspectSource true in Workspace. A new import therefore mounts a closed details element containing the full hidden source table, recreating the load that this change intends to remove. Cancellation and crash recovery also clear the view and can produce the same mismatch on retry. Resetting inspection state whenever the view disappears keeps deferred mounting aligned with the new native disclosure.",
+      "evidence": [
+        "src/ui/Workspace.tsx:372 -- {inspectSource && <section aria-labelledby=\"source-title\">",
+        "src/ui/Workspace.tsx:366 -- {view && (",
+        "src/ui/Workspace.tsx:39 -- const [inspectSource, setInspectSource] = useState(false);",
+        "src/session/controller.ts:243 -- view: undefined,",
+        "src/session/controller.ts:256-260 -- end() calls stop; stop clears the view but has no path resetting Workspace inspectSource."
+      ],
+      "reviewers": [
+        "correctness",
+        "adversarial"
+      ],
+      "independent_reviewers": [
+        "adversarial"
+      ]
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

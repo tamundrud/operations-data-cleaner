@@ -62,6 +62,7 @@ class Transport {
       workflowIssues: this.run!.workflowIssues,
       summary: this.run!.summary,
       riskyHeaders: this.run!.riskyHeaders,
+      csvRisk: this.run!.csvRisk,
       page: 0,
       totalPages: 1,
       exceptions: false,
@@ -172,4 +173,20 @@ test("activation releases the old run and installs configuration before a fresh 
   await session.upload(file(), "auto"); latest().flush();
   expect(session.state.view?.rows[0].values).toEqual([{ kind: "text", text: "001234" }]);
   session.end();
+});
+
+test("Excel worksheet discovery keeps the committed run until a selected sheet succeeds", async () => {
+  const s = new Session();
+  s.configure(workflow());
+  await s.upload(file(), ','); latest().flush();
+  const committed = s.state.view;
+  await s.upload(new File(['synthetic'], 'orders.xlsx'), ',');
+  const request = latest().requests.at(-1)!;
+  expect(request).toMatchObject({ kind: 'import', format: 'xlsx' });
+  latest().onmessage?.({ data: { request: request.request, dataset: request.dataset, revision: request.revision, kind: 'worksheets', sheets: ['Orders', 'Other'] } } as MessageEvent<Response>);
+  expect(s.state.view).toBe(committed);
+  expect(s.state.worksheets).toEqual(['Orders', 'Other']);
+  s.cancelWorksheetSelection();
+  expect(s.state.view).toBe(committed);
+  expect(s.state.worksheets).toBeUndefined();
 });

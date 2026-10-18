@@ -56,7 +56,7 @@ const field = z.strictObject({
   scale: z.int().min(0).max(100).optional(),
   recipe: recipe.optional(),
   trim: z.boolean().optional(),
-  date: z.strictObject({ source: pattern, target: pattern }).optional(),
+  date: z.strictObject({ source: z.enum([...DATE_PATTERNS, "excel"]), target: pattern }).optional(),
   rounding: z
     .strictObject({
       mode: z.enum(["half-up", "half-even", "truncate"]),
@@ -70,6 +70,7 @@ export const workflowSchema = z.strictObject({
   name: bounded.optional(),
   source: z.strictObject({
     format: z.enum(["csv", "xlsx"]),
+    worksheet: bounded.min(1).optional(),
     delimiter: z.enum(["auto", ",", ";", "\t"]),
     referencedHeaders: z.array(key).max(200),
   }),

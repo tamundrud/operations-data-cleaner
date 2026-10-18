@@ -1,0 +1,157 @@
+
+> operations-data-cleaner@0.2.0 test:unit
+> vitest run tests/unit/excel-values.test.ts
+
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+ ❯ tests/unit/excel-values.test.ts (7 tests | 7 failed) 25ms
+   × Excel numeric identifiers use supported display while numeric output and arithmetic use raw values 15ms
+   × combine and split preserve numeric identifier display and carry per-source metadata 3ms
+   × cached formulas warn for every dependent output including arithmetic and preserve formula evidence 2ms
+   × missing formula caches and errors invalidate optional referenced outputs, unreferenced cells do not 1ms
+   × unsupported numeric formats fall back to raw evidence and warn; suspicious numeric identifiers warn only for text 1ms
+   × Excel boolean cells are literal uppercase text 1ms
+   × explicit Excel dates use calendar metadata only and reject serials without valid date evidence 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/excel-values.test.ts > Excel numeric identifiers use supported display while numeric output and arithmetic use raw values
+AssertionError: expected [ '1234', '1234', '1235' ] to deeply equal [ '001234', '1234', '1235' ]
+
+- Expected
++ Received
+
+  [
+-   "001234",
++   "1234",
+    "1234",
+    "1235",
+  ]
+
+ ❯ tests/unit/excel-values.test.ts:26:83
+     24|     recipe: { kind: "calculate", operation: "add", left: { kind: "sour…
+     25|   }];
+     26|   expect(run(numeric, "1234", "001234", fields).rows[0].values.map(dis…
+       |                                                                                   ^
+     27|   expect(run({ type: "s", value: " 001234 ", date1904: false }, " 0012…
+     28| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  tests/unit/excel-values.test.ts > combine and split preserve numeric identifier display and carry per-source metadata
+AssertionError: expected [ '1234-x', '' ] to deeply equal [ '001234-x', '00' ]
+
+- Expected
++ Received
+
+  [
+-   "001234-x",
+-   "00",
++   "1234-x",
++   "",
+  ]
+
+ ❯ tests/unit/excel-values.test.ts:34:43
+     32|     { ...copy(), id: "split", header: "Split", recipe: { kind: "split"…
+     33|   const result = run(numeric, "1234", "001234", fields).rows[0];
+     34|   expect(result.values.map(displayValue)).toEqual(["001234-x", "00"]);
+       |                                           ^
+     35|   expect(result.provenance[0]).toMatchObject({ source: "reference", ex…
+     36| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  tests/unit/excel-values.test.ts > cached formulas warn for every dependent output including arithmetic and preserve formula evidence
+AssertionError: expected 'valid' to be 'warning' // Object.is equality
+
+Expected: "warning"
+Received: "valid"
+
+ ❯ tests/unit/excel-values.test.ts:41:25
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  tests/unit/excel-values.test.ts > missing formula caches and errors invalidate optional referenced outputs, unreferenced cells do not
+AssertionError: expected 'valid' to be 'invalid' // Object.is equality
+
+Expected: "invalid"
+Received: "valid"
+
+ ❯ tests/unit/excel-values.test.ts:49:27
+     47|   for (const excel of [{ type: "z", formula: "A1+1", date1904: false }…
+     48|     const result = run(excel, "", "").rows[0];
+     49|     expect(result.status).toBe("invalid");
+       |                           ^
+     50|     expect(result.values).toEqual([{ kind: "blank" }]);
+     51|     expect(run(excel, "", "", [{ ...copy(), recipe: { kind: "constant"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  tests/unit/excel-values.test.ts > unsupported numeric formats fall back to raw evidence and warn; suspicious numeric identifiers warn only for text
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/excel-values.test.ts:58:62
+     56|   const result = run({ ...numeric, unsupportedFormat: true }, "1234", …
+     57|   expect(result.values.map(displayValue)).toEqual(["1234"]);
+     58|   expect(result.issues.some(i => i.code === "excel-format")).toBe(true…
+       |                                                              ^
+     59|   const long = { ...numeric, value: 1234567890123456 };
+     60|   expect(run(long, "1234567890123456", "1234567890123456").rows[0].iss…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  tests/unit/excel-values.test.ts > Excel boolean cells are literal uppercase text
+AssertionError: expected [ 'true' ] to deeply equal [ 'TRUE' ]
+
+- Expected
++ Received
+
+  [
+-   "TRUE",
++   "true",
+  ]
+
+ ❯ tests/unit/excel-values.test.ts:65:109
+     63|
+     64| test("Excel boolean cells are literal uppercase text", () => {
+     65|   expect(run({ type: "b", value: true, date1904: false }, "true", "tru…
+       |                                                                                                             ^
+     66| });
+     67|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  tests/unit/excel-values.test.ts > explicit Excel dates use calendar metadata only and reject serials without valid date evidence
+AssertionError: expected [ '' ] to deeply equal [ '01/03/2024' ]
+
+- Expected
++ Received
+
+  [
+-   "01/03/2024",
++   "",
+  ]
+
+ ❯ tests/unit/excel-values.test.ts:71:82
+     69|   const fields: Field[] = [{ ...copy("date"), date: { source: "excel",…
+     70|   const excel: Excel = { type: "n", value: 45352, format: "yyyy-mm-dd"…
+     71|   expect(run(excel, "45352", "3/1/24", fields).rows[0].values.map(disp…
+       |                                                                                  ^
+     72|   for (const bad of [{ ...excel, date: undefined }, { ...excel, dateIn…
+     73|     expect(run(bad, "45352", "3/1/24", fields).rows[0].status).toBe("i…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed (7)
+   Start at  17:11:44
+   Duration  269ms (import 47%, transform 31%, tests 19%, worker 3%)

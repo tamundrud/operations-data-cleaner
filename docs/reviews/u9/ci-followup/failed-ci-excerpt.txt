@@ -1,0 +1,61 @@
+  1) [firefox] › tests/e2e/excel-input.spec.ts:260:1 › U9 10000-row integrated workbook remains responsive and exports every selected value
+2026-10-17T22:26:00.6614366Z
+2026-10-17T22:26:00.6614662Z     Test timeout of 120000ms exceeded.
+2026-10-17T22:26:00.6614993Z
+2026-10-17T22:26:00.6615572Z     Error: locator.click: Test timeout of 120000ms exceeded.
+2026-10-17T22:26:00.6616147Z     Call log:
+2026-10-17T22:26:00.6616682Z       - waiting for locator('details.bulk-columns').locator('summary')
+2026-10-17T22:26:00.6617125Z
+2026-10-17T22:26:00.6617134Z
+2026-10-17T22:26:00.6617287Z        at helpers.ts:16
+2026-10-17T22:26:00.6617513Z
+2026-10-17T22:26:00.6617831Z       14 |   const bulk = page.locator("details.bulk-columns");
+2026-10-17T22:26:00.6618568Z       15 |   if ((await bulk.getAttribute("open")) === null)
+2026-10-17T22:26:00.6619260Z     > 16 |     await bulk.locator("summary").click();
+2026-10-17T22:26:00.6619888Z          |                                   ^
+2026-10-17T22:26:00.6620677Z       17 |   await page.getByLabel("New column names").fill(headers.join("\n"));
+2026-10-17T22:26:00.6621698Z       18 |   await page.getByRole("button", { name: "Add columns", exact: true }).click();
+2026-10-17T22:26:00.6622463Z       19 | }
+2026-10-17T22:26:00.6623381Z         at add (/home/runner/work/operations-data-cleaner/operations-data-cleaner/tests/e2e/helpers.ts:16:35)
+2026-10-17T22:26:00.6624880Z         at /home/runner/work/operations-data-cleaner/operations-data-cleaner/tests/e2e/excel-input.spec.ts:270:3
+2026-10-17T22:26:00.6625971Z
+2026-10-17T22:26:00.6626793Z     Error Context: test-results/excel-input-U9-10000-row-i-9094f-xports-every-selected-value-firefox/error-context.md
+2026-10-17T22:26:00.6627632Z
+2026-10-17T22:26:00.6628502Z     attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-10-17T22:26:00.6629774Z     test-results/excel-input-U9-10000-row-i-9094f-xports-every-selected-value-firefox/trace.zip
+2026-10-17T22:26:00.6630721Z     Usage:
+2026-10-17T22:26:00.6630920Z
+2026-10-17T22:26:00.6632173Z         npx playwright show-trace test-results/excel-input-U9-10000-row-i-9094f-xports-every-selected-value-firefox/trace.zip
+2026-10-17T22:26:00.6633068Z
+2026-10-17T22:26:00.6633806Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-10-17T22:26:00.6634352Z
+2026-10-17T22:26:00.6635864Z   2) [webkit] › tests/e2e/excel-input.spec.ts:260:1 › U9 10000-row integrated workbook remains responsive and exports every selected value
+2026-10-17T22:26:00.6636818Z
+2026-10-17T22:26:00.6637169Z     Error: Timeout 5000ms exceeded while waiting on the predicate
+2026-10-17T22:26:00.6637600Z
+2026-10-17T22:26:00.6638032Z       34 |   const picker = page.getByLabel("Upload source CSV", { exact: true });
+2026-10-17T22:26:00.6639001Z       35 |   const chooser = page.getByLabel("Worksheet", { exact: true });
+2026-10-17T22:26:00.6640142Z     > 36 |   await expect.poll(async () => (await chooser.isVisible()) || (await picker.isEnabled())).toBe(true);
+2026-10-17T22:26:00.6641597Z          |                                                                                            ^
+2026-10-17T22:26:00.6642466Z       37 |   if (await chooser.isVisible()) await selectSheet(page);
+2026-10-17T22:26:00.6643200Z       38 |   await expect(picker).toBeEnabled();
+2026-10-17T22:26:00.6643728Z       39 | }
+2026-10-17T22:26:00.6644803Z         at finishImport (/home/runner/work/operations-data-cleaner/operations-data-cleaner/tests/e2e/excel-input.spec.ts:36:92)
+2026-10-17T22:26:00.6646843Z         at uploadBook (/home/runner/work/operations-data-cleaner/operations-data-cleaner/tests/e2e/excel-input.spec.ts:44:9)
+2026-10-17T22:26:00.6648436Z         at /home/runner/work/operations-data-cleaner/operations-data-cleaner/tests/e2e/excel-input.spec.ts:274:3
+2026-10-17T22:26:00.6649225Z
+2026-10-17T22:26:00.6650045Z     Error Context: test-results/excel-input-U9-10000-row-i-9094f-xports-every-selected-value-webkit/error-context.md
+2026-10-17T22:26:00.6650942Z
+2026-10-17T22:26:00.6651743Z     attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-10-17T22:26:00.6653022Z     test-results/excel-input-U9-10000-row-i-9094f-xports-every-selected-value-webkit/trace.zip
+2026-10-17T22:26:00.6653942Z     Usage:
+2026-10-17T22:26:00.6654129Z
+2026-10-17T22:26:00.6655019Z         npx playwright show-trace test-results/excel-input-U9-10000-row-i-9094f-xports-every-selected-value-webkit/trace.zip
+2026-10-17T22:26:00.6656237Z
+2026-10-17T22:26:00.6656960Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-10-17T22:26:00.6657471Z
+2026-10-17T22:26:00.6657623Z   2 failed
+2026-10-17T22:26:00.6658890Z     [firefox] › tests/e2e/excel-input.spec.ts:260:1 › U9 10000-row integrated workbook remains responsive and exports every selected value
+2026-10-17T22:26:00.6660833Z     [webkit] › tests/e2e/excel-input.spec.ts:260:1 › U9 10000-row integrated workbook remains responsive and exports every selected value
+2026-10-17T22:26:00.6661907Z   256 passed (15.7m)
+2026-10-17T22:26:00.9

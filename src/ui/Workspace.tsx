@@ -10,6 +10,7 @@ import {
 import { displayValue } from "../engine/values";
 import { exportText, type SafetyChoice } from "../formats/spreadsheet-safety";
 import MappingRows from "./MappingRows";
+import ExcelCellDetails from "./ExcelCellDetails";
 import SavedWorkflows from "./SavedWorkflows";
 import { snapshotWorkflow, encodeWorkflow } from "../workflows/codec";
 import type { StoredWorkflow } from "../workflows/indexeddb-store";
@@ -35,6 +36,8 @@ export default function Workspace() {
   const [delimiter, setDelimiter] = useState<"auto" | "," | ";" | "\t">("auto");
   const [choice, setChoice] = useState<SafetyChoice>();
   const [exceptions, setExceptions] = useState(false);
+  const [worksheet, setWorksheet] = useState("");
+  const [inspectSource, setInspectSource] = useState(false);
   const draftGeneration = useRef(0);
   const pendingGeneration = useRef<number | undefined>(undefined);
   const failedGeneration = useRef<number | undefined>(undefined);
@@ -52,6 +55,7 @@ export default function Workspace() {
   useEffect(() => {
     session.onState = (s) => {
       setState(s);
+      if (!s.view) setInspectSource(false);
       if (!s.busy) {
         setExceptions(s.view?.exceptions ?? false);
         const completed = pendingGeneration.current;
@@ -65,9 +69,9 @@ export default function Workspace() {
       if (s.error) { samplePending.current = false; statusRef.current?.focus(); }
     };
     session.onDownload = saveDownload;
-    session.onSourcePolicy = (policy) => {
+    session.onSourcePolicy = (policy, format = "csv", worksheet) => {
       activePolicy.current = policy;
-      setWorkflow((w) => ({ ...w, source: { ...w.source, delimiter: policy } }));
+      setWorkflow((w) => ({ ...w, source: { ...w.source, delimiter: policy, format, worksheet } }));
     };
     session.onWorkflow = (w) => {
       if (samplePending.current) {
@@ -91,7 +95,10 @@ export default function Workspace() {
     };
   }, [session]);
   const view = state.view;
-  const busy = Boolean(state.busy);
+  const sourceDetail = view?.worksheet
+    ? `worksheet ${view.worksheet}`
+    : `${view?.delimiter === "\t" ? "tab" : view?.delimiter === ";" ? "semicolon" : "comma"} delimiter detected`;
+  const busy = Boolean(state.busy || state.worksheets);
   const changeWorkflow = (patch: Partial<Workflow>) => {
     draftGeneration.current++;
     failedGeneration.current = undefined;
@@ -207,7 +214,7 @@ export default function Workspace() {
     !state.recoverable &&
     view.workflowIssues.length === 0;
   const risk = Boolean(
-    validPreview && (view.summary.warningIssues || view.riskyHeaders.length),
+    validPreview && (view.csvRisk || view.riskyHeaders.length),
   );
   const canExport = Boolean(
     validPreview &&
@@ -219,7 +226,7 @@ export default function Workspace() {
     <main>
       <header className="masthead">
         <div>
-          <p className="eyebrow">OPERATIONS DATA CLEANER · CSV PREVIEW</p>
+          <p className="eyebrow">OPERATIONS DATA CLEANER · EXCEL & CSV PREVIEW</p>
           <h1>Match your columns.</h1>
           <p>Map a source table to the columns your import needs.</p>
         </div>
@@ -229,7 +236,7 @@ export default function Workspace() {
         </div>
       </header>
       <nav aria-label="Conversion steps" className="steps">
-        <span>1 · Upload CSV</span>
+        <span>1 · Upload table</span>
         <span>2 · Map columns</span>
         <span>3 · Preview & download</span>
       </nav>
@@ -240,7 +247,7 @@ export default function Workspace() {
         snapshot={snapshot} activate={activate} saved={saved} saving={setSaving} reset={newConversion} />
       {repeat && <section className="panel repeat-summary" aria-label="Repeat workflow">
         <h2>{workflow.name || "Imported workflow"}</h2>
-        <p>{workflow.fields.length} output columns. Upload a compatible source CSV, review the current results, then download.</p>
+        <p>{workflow.fields.length} output columns. Upload a compatible source CSV or Excel file, review the current results, then download.</p>
         <p>CSV output: {workflow.output.delimiter === "\t" ? "tab" : workflow.output.delimiter === ";" ? "semicolon" : "comma"} · {workflow.output.bom ? "with BOM" : "no BOM"} · {workflow.output.header ? "with header" : "no header"}</p>
         <button onClick={() => setRepeat(false)}>Edit workflow</button>
       </section>}
@@ -248,12 +255,12 @@ export default function Workspace() {
         <div>
           <h2 id="upload-title">1. Choose your source</h2>
           <p>
-            UTF-8 CSV with a header row. Leading zeros and spaces are preserved.
+            UTF-8 CSV or .xlsx with a header row. Choose one worksheet. Leading zeros and spaces are preserved.
           </p>
         </div>
         <div className="upload-controls">
           <label>
-            Source delimiter
+            Source delimiter (CSV)
             <select
               value={delimiter}
               disabled={busy || saving || opening}
@@ -266,16 +273,18 @@ export default function Workspace() {
             </select>
           </label>
           <label className="file-label">
-            Upload source CSV
+            Upload source CSV or Excel
             <input
               type="file"
-              accept=".csv,text/csv"
+              aria-label="Upload source CSV"
+              accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
               disabled={busy || saving || opening}
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file && !opening) {
                   setChoice(undefined);
-                  void session.upload(file, delimiter);
+                  setWorksheet("");
+                  void session.upload(file, delimiter, { worksheet: repeat ? workflow.source.worksheet : undefined });
                 }
                 e.target.value = "";
               }}
@@ -309,6 +318,18 @@ export default function Workspace() {
           )}
         </div>
       </section>
+      {state.worksheets && <section className="panel" aria-label="Choose Excel worksheet">
+        <h2>Choose one worksheet</h2>
+        <p>Sheets are never merged. The current conversion stays available if you cancel.</p>
+        <label>Worksheet
+          <select aria-label="Worksheet" value={state.worksheets.includes(worksheet) ? worksheet : ""} onChange={(e) => setWorksheet(e.target.value)}>
+            <option value="">Choose a worksheet</option>
+            {state.worksheets.map((name) => <option key={name} value={name}>{name}</option>)}
+          </select>
+        </label>
+        <button disabled={!state.worksheets.includes(worksheet)} onClick={() => session.selectWorksheet(worksheet)}>Import selected worksheet</button>
+        <button onClick={() => { session.cancelWorksheetSelection(); setWorksheet(""); }}>Cancel worksheet selection</button>
+      </section>}
       <div className="status-bar">
         <p
           ref={statusRef}
@@ -318,10 +339,10 @@ export default function Workspace() {
           {state.error ||
             state.busy ||
             (view
-              ? `Source loaded · ${view.summary.candidates.toLocaleString()} candidate rows · ${view.delimiter === "\t" ? "tab" : view.delimiter === ";" ? "semicolon" : "comma"} delimiter detected. Verify the source columns below.`
-              : "Start with your CSV, or try the fictional example.")}
+              ? `Source loaded · ${view.summary.candidates.toLocaleString()} candidate rows · ${sourceDetail}. Verify the source columns below.`
+              : "Start with your CSV or Excel file, or try the fictional example.")}
         </p>
-        {busy && (
+        {state.busy && (
           <button
             onClick={() => {
               setChoice(undefined);
@@ -345,9 +366,11 @@ export default function Workspace() {
       </div>
       {view && (
         <div className="workspace">
-          <details className="panel source-inspection">
+          <details className="panel source-inspection" onToggle={(event) => {
+            if (event.target === event.currentTarget) setInspectSource(event.currentTarget.open);
+          }}>
             <summary>Inspect original source table</summary>
-            <section aria-labelledby="source-title">
+            {inspectSource && <section aria-labelledby="source-title">
               <h2 id="source-title">Source table</h2>
               <p>
                 Original values · first {view.sourceRows.length} rows · read
@@ -361,7 +384,7 @@ export default function Workspace() {
               >
                 <table>
                   <caption>
-                    Uploaded source columns and original record references
+                    {view.worksheet ? `Worksheet ${view.worksheet} · ` : ""}Uploaded source columns and original record references
                   </caption>
                   <thead>
                     <tr>
@@ -380,6 +403,7 @@ export default function Workspace() {
                         {view.columns.map((c) => (
                           <td key={c.key}>
                             {r.cells[c.position]?.display ?? ""}
+                            {r.cells[c.position]?.excel && <ExcelCellDetails cell={r.cells[c.position].excel!} />}
                           </td>
                         ))}
                       </tr>
@@ -387,7 +411,7 @@ export default function Workspace() {
                   </tbody>
                 </table>
               </div>
-            </section>
+            </section>}
           </details>
           {!repeat && <MappingRows key={activation}
             view={view}
@@ -398,6 +422,7 @@ export default function Workspace() {
             makeFields={makeFields}
             importTemplate={(file) => {
               setChoice(undefined);
+              setWorksheet("");
               void session.upload(file, delimiter, { template: true });
             }}
           />}
@@ -643,7 +668,7 @@ export default function Workspace() {
         </div>
       )}
       <footer>
-        U7 internal preview · Exact calculations, explicit numeric validation and reusable local workflows. Data is cleared on reload
+        U9 internal preview · One-sheet Excel input, CSV output and reusable local workflows. Data is cleared on reload
         or End session. Source data and file names are never saved. Static
         application assets are requested from the host; customer file processing
         stays local.

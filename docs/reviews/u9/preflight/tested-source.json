@@ -1,0 +1,18 @@
+{
+  "base": "64cbfcb9e881e698c8264962b6d9656c5bd7aafe",
+  "node": "24.19.0",
+  "source_sha256": {
+    "src/formats/archive-budget.ts": "3c1525ba2b8178a9e2bb8d100746e0ec8afb9918cfc7fbe0bd070116cc02e57d",
+    "tests/unit/archive-budget.test.ts": "b3ca5dae28617cadce33b7a885b2d7f173110ca2ce850c9149684cb2b6abd64e",
+    "package.json": "e3196d3c0565b4277674ef828236dc77d6d96343104e709f6a0d80f3726fea6e",
+    "package-lock.json": "68765c17b9dff518b4ce3c5cab9acd0f46349375677ab3d9d5991f4569ee3a7e"
+  },
+  "checks": {
+    "typecheck": "passed",
+    "lint": "passed",
+    "unit": "199 passed across 18 files; 33 preflight tests",
+    "build": "passed",
+    "diff_check": "passed"
+  },
+  "scope": "U9 preflight checkpoint only; XLSX not enabled; integrated qualification blocked"
+}

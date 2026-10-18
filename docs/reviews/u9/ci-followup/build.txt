@@ -1,0 +1,15 @@
+
+> operations-data-cleaner@0.2.0 build
+> vite build
+
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 136 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                              0.60 kB │ gzip:   0.38 kB
+dist/assets/processing.worker-BlzJ48Yj.js  512.26 kB
+dist/assets/index-zAvRkauv.css              12.63 kB │ gzip:   3.48 kB
+dist/assets/index-BXaHGeAc.js              407.20 kB │ gzip: 123.07 kB
+
+✓ built in 474ms

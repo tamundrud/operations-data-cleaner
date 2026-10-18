@@ -1,0 +1,186 @@
+{
+  "run_id": "20261017-153732-guard",
+  "run_dir": "/tmp/compound-engineering-1000/ce-code-review/20261017-153732-guard",
+  "selected_findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 100,
+      "evidence": [
+        "src/formats/archive-budget.ts:334 --   return metrics;",
+        "src/formats/archive-budget.ts:332 --     await new Promise<void>((resolve) => setTimeout(resolve, 0));",
+        "src/formats/archive-budget.ts:317 --     cancelled();",
+        "Read-only Node 24 reproduction using workbook('') and an AbortController aborted in the eighth/final setTimeout callback returned {\"resolved\":true,\"aborted\":true,\"yields\":8,\"entries\":8}."
+      ],
+      "file": "src/formats/archive-budget.ts",
+      "first_evidence": "src/formats/archive-budget.ts:334 --   return metrics;",
+      "independent_reviewers": [
+        "reliability"
+      ],
+      "line": 334,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "reliability"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Call cancelled() after the per-member await (or immediately before return metrics), and add a regression that aborts during the last member's timer yield and expects rejection.",
+      "title": "Recheck cancellation after the final member yield",
+      "why_it_matters": "A caller can receive successful preflight metrics even though its AbortSignal was aborted before preflight completed. The last member yields to the event loop after its final cancellation check, then returns without checking again; a caller awaiting this guard can therefore start parser work after cancellation. Checking the signal after that yield closes this explicit asynchronous cancellation window."
+    },
+    {
+      "#": 2,
+      "autofix_class": "manual",
+      "confidence": 100,
+      "evidence": [
+        "src/formats/archive-budget.ts:47 --   for (const m of xml.matchAll(/\\bformatCode\\s*=\\s*[\"']([^\"']*)[\"']/g))",
+        "Constructed a workbook with xl/styles.xml containing formatCode=\"0' followed by 300 zero characters and a closing double quote. Production preflight accepted it and returned eight verified entries with matching declared/actual expansion.",
+        "The regex captures only 0, and line 48 therefore measures one character instead of the complete 302-character value. docs/decisions/excel-fidelity.md requires format-code length to be bounded before parsing."
+      ],
+      "file": "src/formats/archive-budget.ts",
+      "first_evidence": "src/formats/archive-budget.ts:47 --   for (const m of xml.matchAll(/\\bformatCode\\s*=\\s*[\"']([^\"']*)[\"']/g))",
+      "independent_reviewers": [
+        "adversarial"
+      ],
+      "line": 47,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Read complete attributes with a quote-aware XML start-tag tokenizer, or at minimum capture the opening quote and require the matching closing quote for formatCode. Enforce the cap on the complete decoded attribute value and add over-limit tests containing each opposite quote character.",
+      "title": "Opposite quote bypasses the number-format length guard",
+      "why_it_matters": "A number-format attribute longer than the mandatory 256-character cap passes the preflight when it contains an apostrophe inside double quotes. The regex ends the captured value at either quote character rather than its opening delimiter, so the unchanged archive can reach the future reader with an unbounded format that the guard claims to reject. Matching paired delimiters restores the established pre-parser limit."
+    },
+    {
+      "#": 3,
+      "autofix_class": "manual",
+      "confidence": 100,
+      "evidence": [
+        "src/formats/archive-budget.ts:82 --   for (const m of xml.matchAll(/\\b(?:ref|sqref)\\s*=\\s*[\"']([^\"']+)[\"']/g))",
+        "Constructed a workbook using the independent workbook() generator with A2 inline text <t>ref=\"ORDER-123\"</t> and valid dimension A1:A2. Directly executing production preflight under Node 24 returned Invalid worksheet address, despite no invalid structural address.",
+        "The matched cell text is passed to rangeCells at lines 83-84, whose coordinate regex rejects ORDER-123 before any import can proceed."
+      ],
+      "file": "src/formats/archive-budget.ts",
+      "first_evidence": "src/formats/archive-budget.ts:82 --   for (const m of xml.matchAll(/\\b(?:ref|sqref)\\s*=\\s*[\"']([^\"']+)[\"']/g))",
+      "independent_reviewers": [
+        "adversarial"
+      ],
+      "line": 82,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Tokenize actual XML start tags and inspect ref/sqref only in their attributes, excluding element text, comments, CDATA and processing instructions. Add a synthetic inline-string regression containing ref=\"ORDER-123\" that passes while the same value in an actual dimension attribute fails.",
+      "title": "Ordinary reference text makes an entire workbook fail",
+      "why_it_matters": "A valid worksheet containing literal text ref=\"ORDER-123\" is rejected as an invalid worksheet address. The guard scans all XML text for apparent attributes, so customer cell contents become structural range declarations and prevent import. Restricting range inspection to real XML start-tag attributes preserves the structural limit without interpreting source values as metadata."
+    },
+    {
+      "#": 4,
+      "autofix_class": "gated_auto",
+      "confidence": 100,
+      "evidence": [
+        "src/formats/archive-budget.ts:87 --     for (const m of xml.matchAll(/<(?:\\w+:)?(?:dimension|c|row)\\b[^>]*>/g)) {",
+        "src/formats/archive-budget.ts:51 --     /<(?:\\w+:)?(?:Override|Default|Relationship)\\b[^>]*>/g,",
+        "Read-only Node 24 reproduction: preflight(workbook('', {extra: {'xl/worksheets/sheet1.xml': '<worksheet>' + '<c '.repeat(n)}})) took 277.8 ms at n=10000, 983.0 ms at n=20000, and 3741.5 ms at n=40000; largest archive was 2410 bytes with 122777 total expanded bytes."
+      ],
+      "file": "src/formats/archive-budget.ts",
+      "first_evidence": "src/formats/archive-budget.ts:87 --     for (const m of xml.matchAll(/<(?:\\w+:)?(?:dimension|c|row)\\b[^>]*>/g)) {",
+      "independent_reviewers": [
+        "performance"
+      ],
+      "line": 87,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "performance"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Replace unbounded tag-tail matching in both package and worksheet tag scans with a forward-only scanner that rejects a new '<' before the current tag closes, or minimally use `[^<>]*>` instead of `[^>]*>` and explicitly reject malformed unterminated tags. Add a hostile fixture with repeated unterminated cell/package tag prefixes and verify processing stays bounded before parser dispatch.",
+      "title": "Bound XML tag scanning against quadratic malformed input",
+      "why_it_matters": "A roughly 2.4 KiB ZIP with a 120 KiB worksheet containing repeated unterminated `<c ` prefixes makes preflight spend several seconds synchronously scanning XML; larger inputs within the resource budget grow quadratically. The tag regex retries its unbounded tail at every prefix, so expansion and cell limits do not prevent this CPU exhaustion and AbortSignal cannot interrupt the scan. Direct calls to the new preflight measured approximately 278 ms, 983 ms and 3742 ms for 10,000, 20,000 and 40,000 prefixes respectively."
+    },
+    {
+      "#": 5,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "tests/unit/archive-budget.test.ts:34 --   setTimeout(() => during.abort(), 0);",
+        "tests/unit/archive-budget.test.ts:35 --   await expect(pending).rejects.toThrow(/cancel/i);",
+        "src/formats/archive-budget.ts:304 --       const abort = () => { void reader.cancel().catch(() => {}); };",
+        "src/formats/archive-budget.ts:308 --           const { value, done } = await reader.read();",
+        "src/formats/archive-budget.ts:274 --       cancelled();",
+        "src/formats/archive-budget.ts:313 --         signal?.removeEventListener(\"abort\", abort);",
+        "Read-only instrumentation of the native stream confirmed the timer can abort during an active first-member read, but the current assertion observes only the final error and does not distinguish cancellation of that read from its ordinary completion followed by cancelled()."
+      ],
+      "file": "tests/unit/archive-budget.test.ts",
+      "first_evidence": "tests/unit/archive-budget.test.ts:34 --   setTimeout(() => during.abort(), 0);",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 34,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Extend the cancellation tests with a temporarily stubbed global DecompressionStream whose readable keeps a read pending until cancelled. Abort after the read starts, assert that its cancel handler runs and preflight rejects without supplying another output chunk, and restore the global in finally. Verify the abort listener is removed on success and decompression failure using the supplied signal's addEventListener/removeEventListener methods; retain the real native-stream smoke test.",
+      "title": "Prove cancellation interrupts an outstanding stream read",
+      "why_it_matters": "Cancellation can regress to waiting for the next decompression output without this test failing: the assertion only checks the eventual cancellation error, which the existing cancelled() checks also produce. The new abort listener's purpose is to interrupt an outstanding reader.read(), and neither that interruption nor listener cleanup on success/error is asserted. A controlled stream that holds a read pending would distinguish prompt resource cancellation from eventual rejection after more output arrives."
+    }
+  ],
+  "skip_count": 0,
+  "skip_evidence_basis": "No ordinary plus independence-verified adversarial-provider corroboration; every actionable finding requires validation.",
+  "scope": {
+    "mode": "standalone",
+    "base": "origin/main",
+    "diff_a": "origin/main",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u9-metadata-aware-excel-input",
+    "head_sha": "64cbfcb9e881e698c8264962b6d9656c5bd7aafe",
+    "files": "/tmp/compound-engineering-1000/ce-code-review/20261017-153732-guard/files.txt",
+    "diff": "/tmp/compound-engineering-1000/ce-code-review/20261017-153732-guard/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": []
+  },
+  "intent": {
+    "summary": "Adapt the U1 qualified native bounded ZIP preflight narrowly into production, preserving the unchanged archive, validating all members before any future parser call, and adding cancellation. This review covers only the staged guard cluster; XLSX reader/UI, integrated qualification, and U9 completion are explicitly not claimed.",
+    "confidence": "explicit"
+  },
+  "invocation_constraints": [
+    "Do not edit production code, switch branches, commit, publish, or open PR.",
+    "Current staged diff is U9 first guard cluster ONLY.",
+    "Intended outcome is narrow production adaptation of U1 native bounded ZIP preflight with cancellation and unchanged archive, not complete U9.",
+    "No full U9 completion claim."
+  ],
+  "diff": "/tmp/compound-engineering-1000/ce-code-review/20261017-153732-guard/full.diff",
+  "normal_cap": 8,
+  "selected_count": 5,
+  "batch_order": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ]
+}

@@ -95,6 +95,7 @@ export function snapshotWorkflow(workflow: Workflow): Workflow {
     ...(workflow.name !== undefined ? { name: workflow.name } : {}),
     source: {
       format: workflow.source.format,
+      ...(workflow.source.worksheet !== undefined ? { worksheet: workflow.source.worksheet } : {}),
       delimiter: workflow.source.delimiter,
       referencedHeaders: referencedHeaders(workflow.fields),
     },

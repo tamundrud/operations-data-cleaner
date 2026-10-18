@@ -7,6 +7,7 @@ export type SessionState = {
   view?: View;
   error: string;
   recoverable: boolean;
+  worksheets?: string[];
 };
 export class Session {
   private worker?: Worker;
@@ -17,15 +18,17 @@ export class Session {
     file: File;
     delimiter: "auto" | "," | ";" | "\t";
     dataset: string;
+    worksheet?: string;
   };
   private candidate?: NonNullable<Session["active"]> & { workflow?: Workflow };
+  private selection?: { file: File; delimiter: "auto" | "," | ";" | "\t"; options: { template?: boolean; workflow?: Workflow; worksheet?: string } };
   private workflow?: Workflow;
   private revision = 0;
   state: SessionState = { busy: "", error: "", recoverable: false };
   onState: (state: SessionState) => void = () => {};
   onTemplate: (headers: string[]) => void = () => {};
   onWorkflow: (workflow: Workflow) => void = () => {};
-  onSourcePolicy: (delimiter: "auto" | "," | ";" | "\t") => void = () => {};
+  onSourcePolicy: (delimiter: "auto" | "," | ";" | "\t", format?: "csv" | "xlsx", worksheet?: string) => void = () => {};
   onDownload: (bytes: Uint8Array) => void = () => {};
   private update(patch: Partial<SessionState>) {
     this.state = { ...this.state, ...patch };
@@ -40,7 +43,7 @@ export class Session {
     this.worker.onerror = (event) => {
       event.preventDefault();
       this.stop(
-        "Processing worker stopped. Retry the active file or upload another CSV.",
+        "Processing worker stopped. Retry the active file or upload another CSV or Excel file.",
       );
     };
     this.worker.onmessageerror = () =>
@@ -57,6 +60,12 @@ export class Session {
         return;
       clearTimeout(this.timer);
       this.pending = undefined;
+      if (m.kind === "worksheets") {
+        this.candidate = undefined;
+        this.update({ busy: "", worksheets: m.sheets });
+        return;
+      }
+      this.selection = undefined;
       if (m.kind === "error") {
         this.candidate = undefined;
         this.update({ busy: "", error: m.message });
@@ -65,12 +74,13 @@ export class Session {
       if (m.kind === "view") {
         if (this.candidate) {
           const { workflow: replacementWorkflow, ...active } = this.candidate;
-          this.active = active;
-          this.onSourcePolicy(active.delimiter);
+          const format = active.file.name.toLowerCase().endsWith(".xlsx") ? "xlsx" : "csv";
+          this.active = { ...active, worksheet: m.view.worksheet };
+          this.onSourcePolicy(active.delimiter, format, m.view.worksheet);
           this.candidate = undefined;
           if (replacementWorkflow) {
-            this.workflow = replacementWorkflow;
-            this.onWorkflow(replacementWorkflow);
+            this.workflow = { ...replacementWorkflow, source: { ...replacementWorkflow.source, format, worksheet: m.view.worksheet, delimiter: active.delimiter } };
+            this.onWorkflow(this.workflow);
           }
         }
         this.update({ busy: "", view: m.view, error: "", recoverable: false });
@@ -91,7 +101,7 @@ export class Session {
     this.timer = setTimeout(
       () =>
         this.stop(
-          "Processing exceeded 30 seconds. Split the CSV into smaller tables and retry.",
+          "Processing exceeded 30 seconds. Split the table into smaller files and retry.",
         ),
       30000,
     );
@@ -102,31 +112,34 @@ export class Session {
   async upload(
     file: File,
     delimiter: "auto" | "," | ";" | "\t",
-    options: { template?: boolean; workflow?: Workflow } = {},
+    options: { template?: boolean; workflow?: Workflow; worksheet?: string } = {},
   ) {
     if (this.state.busy) return;
-    if (!file.name.toLowerCase().endsWith(".csv")) {
+    const format: "csv" | "xlsx" = file.name.toLowerCase().endsWith(".xlsx") ? "xlsx" : "csv";
+    if (!/\.(csv|xlsx)$/iu.test(file.name)) {
       this.update({
         error:
-          "This build accepts .csv files only. Save the table as UTF-8 CSV and upload again.",
+          "Choose a .csv or .xlsx file. Save older Excel formats as .xlsx or UTF-8 CSV.",
       });
       return;
     }
     if (file.size > MAX_FILE_BYTES) {
       this.update({
-        error: "CSV exceeds 25 MiB. Split it into smaller files and reupload.",
+        error: "File exceeds 25 MiB. Split it into smaller files and reupload.",
       });
       return;
     }
     const request = ++this.sequence;
-    this.update({ busy: "Reading CSV…", error: "" });
+    this.selection = { file, delimiter, options };
+    this.update({ busy: format === "csv" ? "Reading CSV…" : "Reading Excel…", error: "", worksheets: undefined });
     try {
       const bytes = await file.arrayBuffer();
       if (request !== this.sequence) return;
       const dataset = options.template
         ? (this.active?.dataset ?? "template")
         : crypto.randomUUID();
-      const envelope = { request, dataset, revision: this.revision };
+      const worksheet = options.worksheet ?? (options.template ? undefined : (options.workflow ?? (!this.active ? this.workflow : undefined))?.source.worksheet);
+      const envelope = { request, dataset, revision: this.revision, format, worksheet };
       if (options.template)
         this.send(
           { ...envelope, kind: "template", bytes, delimiter },
@@ -137,6 +150,7 @@ export class Session {
           file,
           delimiter,
           dataset,
+          worksheet,
           workflow: options.workflow,
         };
         this.send(
@@ -147,7 +161,7 @@ export class Session {
             delimiter,
             workflow: options.workflow ?? this.workflow,
           },
-          "Importing and checking CSV…",
+          format === "csv" ? "Importing and checking CSV…" : "Importing and checking file…",
         );
       }
     } catch {
@@ -159,13 +173,22 @@ export class Session {
       });
     }
   }
+  selectWorksheet(worksheet: string) {
+    const selection = this.selection;
+    if (!selection || !this.state.worksheets?.includes(worksheet)) return;
+    void this.upload(selection.file, selection.delimiter, { ...selection.options, worksheet });
+  }
+  cancelWorksheetSelection() {
+    this.selection = undefined;
+    this.update({ worksheets: undefined, error: "" });
+  }
   activate(workflow: Workflow) {
     this.end();
     this.workflow = workflow;
     this.onWorkflow(workflow);
   }
   configure(workflow: Workflow) {
-    if (this.state.busy || !this.active) return;
+    if (this.state.busy || this.state.worksheets || !this.active) return;
     this.workflow = workflow;
     this.revision++;
     this.send(
@@ -180,7 +203,7 @@ export class Session {
     );
   }
   page(page: number, exceptions: boolean) {
-    if (!this.active || this.state.busy || this.state.recoverable) return;
+    if (!this.active || this.state.busy || this.state.worksheets || this.state.recoverable) return;
     this.send(
       {
         kind: "page",
@@ -194,7 +217,7 @@ export class Session {
     );
   }
   export(choice: SafetyChoice) {
-    if (!this.active || this.state.busy || this.state.recoverable) return;
+    if (!this.active || this.state.busy || this.state.worksheets || this.state.recoverable) return;
     this.send(
       {
         kind: "export",
@@ -212,9 +235,11 @@ export class Session {
     this.worker = undefined;
     this.pending = undefined;
     this.candidate = undefined;
+    this.selection = undefined;
     clearTimeout(this.timer);
     this.update({
       busy: "",
+      worksheets: undefined,
       view: undefined,
       error: message,
       recoverable: Boolean(this.active),
@@ -222,11 +247,11 @@ export class Session {
   }
   cancel() {
     this.stop(
-      "Processing cancelled. Retry the active file or upload another CSV.",
+      "Processing cancelled. Retry the active file or upload another CSV or Excel file.",
     );
   }
   async retry() {
-    if (this.active) await this.upload(this.active.file, this.active.delimiter);
+    if (this.active) await this.upload(this.active.file, this.active.delimiter, { worksheet: this.active.worksheet });
   }
   end() {
     this.stop("");

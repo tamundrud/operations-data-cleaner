@@ -1,0 +1,43 @@
+{
+  "reviewer": "adversarial",
+  "findings": [
+    {
+      "title": "Ordinary reference text makes an entire workbook fail",
+      "severity": "P2",
+      "file": "src/formats/archive-budget.ts",
+      "line": 82,
+      "why_it_matters": "A valid worksheet containing literal text ref=\"ORDER-123\" is rejected as an invalid worksheet address. The guard scans all XML text for apparent attributes, so customer cell contents become structural range declarations and prevent import. Restricting range inspection to real XML start-tag attributes preserves the structural limit without interpreting source values as metadata.",
+      "autofix_class": "manual",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "suggested_fix": "Tokenize actual XML start tags and inspect ref/sqref only in their attributes, excluding element text, comments, CDATA and processing instructions. Add a synthetic inline-string regression containing ref=\"ORDER-123\" that passes while the same value in an actual dimension attribute fails.",
+      "confidence": 100,
+      "evidence": [
+        "src/formats/archive-budget.ts:82 --   for (const m of xml.matchAll(/\\b(?:ref|sqref)\\s*=\\s*[\"']([^\"']+)[\"']/g))",
+        "Constructed a workbook using the independent workbook() generator with A2 inline text <t>ref=\"ORDER-123\"</t> and valid dimension A1:A2. Directly executing production preflight under Node 24 returned Invalid worksheet address, despite no invalid structural address.",
+        "The matched cell text is passed to rangeCells at lines 83-84, whose coordinate regex rejects ORDER-123 before any import can proceed."
+      ],
+      "pre_existing": false
+    },
+    {
+      "title": "Opposite quote bypasses the number-format length guard",
+      "severity": "P2",
+      "file": "src/formats/archive-budget.ts",
+      "line": 47,
+      "why_it_matters": "A number-format attribute longer than the mandatory 256-character cap passes the preflight when it contains an apostrophe inside double quotes. The regex ends the captured value at either quote character rather than its opening delimiter, so the unchanged archive can reach the future reader with an unbounded format that the guard claims to reject. Matching paired delimiters restores the established pre-parser limit.",
+      "autofix_class": "manual",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "suggested_fix": "Read complete attributes with a quote-aware XML start-tag tokenizer, or at minimum capture the opening quote and require the matching closing quote for formatCode. Enforce the cap on the complete decoded attribute value and add over-limit tests containing each opposite quote character.",
+      "confidence": 100,
+      "evidence": [
+        "src/formats/archive-budget.ts:47 --   for (const m of xml.matchAll(/\\bformatCode\\s*=\\s*[\"']([^\"']*)[\"']/g))",
+        "Constructed a workbook with xl/styles.xml containing formatCode=\"0' followed by 300 zero characters and a closing double quote. Production preflight accepted it and returned eight verified entries with matching declared/actual expansion.",
+        "The regex captures only 0, and line 48 therefore measures one character instead of the complete 302-character value. docs/decisions/excel-fidelity.md requires format-code length to be bounded before parsing."
+      ],
+      "pre_existing": false
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

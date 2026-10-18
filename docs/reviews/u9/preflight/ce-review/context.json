@@ -1,0 +1,5 @@
+{
+  "intent": "Adapt the U1 qualified native bounded ZIP preflight narrowly into production, preserving the unchanged archive, validating all members before any future parser call, and adding cancellation. This review covers only the staged guard cluster; XLSX reader/UI, integrated qualification, and U9 completion are explicitly not claimed.",
+  "peer": "not run: no attested-different provider CLI installed; codex only",
+  "standards": "AGENTS.md instruction fallback governs all changed paths"
+}

@@ -1,0 +1,28 @@
+{
+  "verdicts": [
+    {
+      "#": 1,
+      "status": "confirmed",
+      "protected_subject": null,
+      "reason": "After an Excel run is configured with its selected sheet, the ordinary source-upload caller at Workspace.tsx:280 supplies no options, so controller.ts:141 reuses this.workflow.source.worksheet and parseXlsx at xlsx.ts:56\u201358 bypasses discovery or rejects the replacement if that name is absent, contrary to excel-fidelity.md:70; incidence was not measured."
+    },
+    {
+      "#": 2,
+      "status": "confirmed",
+      "protected_subject": null,
+      "reason": "When a source and subsequent template share a sheet name, Workspace.tsx:38,318\u2013324 retains the selected name after successful import and its template caller at :423\u2013425 never clears it, enabling immediate import of the coincidentally named template sheet despite the independent-selection requirement at excel-fidelity.md:70; incidence was not measured."
+    },
+    {
+      "#": 3,
+      "status": "confirmed",
+      "protected_subject": null,
+      "reason": "For a second import that fails after worksheet selection, controller.ts:176\u2013179 creates a distinct transition required by the plan's U9 failed-replacement scenario, but session.test.ts:178\u2013192 exercises only discovery and cancellation and excel-input.spec.ts:199\u2013208 explicitly exercises failures before any chooser, leaving that reachable failure transition and retained export unverified."
+    },
+    {
+      "#": 4,
+      "status": "confirmed",
+      "protected_subject": null,
+      "reason": "Any successful Excel import supplies view.worksheet through processing.worker.ts:38, making Workspace.tsx:335 render 'worksheet <name> delimiter detected' because the delimiter suffix follows both branches; the existing Excel import callers reach this path."
+    }
+  ]
+}

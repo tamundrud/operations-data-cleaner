@@ -57,7 +57,7 @@ test("untrusted JSON rejects versions, budgets, nested injection and malformed r
 
 test("declared future capabilities decode structurally but fail the usable boundary", () => {
   const variants: Workflow[] = [];
-  variants.push({ ...golden(), source: { ...golden().source, format: 'xlsx' } }, { ...golden(), output: { ...golden().output, format: 'xlsx' } });
+  variants.push({ ...golden(), output: { ...golden().output, format: 'xlsx' } });
   for (const w of variants) expect(() => decodeUsableWorkflow(JSON.stringify(w))).toThrow(/unsupported/i);
 });
 
@@ -110,4 +110,12 @@ test("pretty-printed portable bytes also stay within the import budget", () => {
   expect(Buffer.byteLength(JSON.stringify(w))).toBeLessThanOrEqual(1024 * 1024);
   expect(Buffer.byteLength(JSON.stringify(w, null, 2))).toBeGreaterThan(1024 * 1024);
   expect(() => encodeWorkflow(w)).toThrow(/1 MiB/);
+});
+
+test("Excel worksheet and explicit date interpretation survive portable round trip", () => {
+  const w = golden();
+  w.source = { ...w.source, format: 'xlsx', worksheet: 'Orders' };
+  w.fields[0] = { ...w.fields[0], type: 'date', date: { source: 'excel', target: 'YYYY-MM-DD' } };
+  expect(reopen(w)).toEqual(w);
+  expect(encodeWorkflow(w)).not.toMatch(/filename|sampleRows/);
 });
