@@ -1,0 +1,20 @@
+{
+  "kind": "observed failure summary, not a raw terminal log",
+  "initial_writer": {
+    "command": "npm run test:unit -- tests/unit/xlsx-export.test.ts",
+    "observed": "Suite failed: src/formats/xlsx-export did not exist before implementation."
+  },
+  "literal_escape": {
+    "observed": "Literal _x0041_ reread as A before token protection and shared-string serialization.",
+    "resolution": "Protect every underscore beginning an OOXML escape, including overlapping tokens; use shared strings to avoid t=str double decoding. Independent XML decoding asserts original strings."
+  },
+  "source_format_isolation": {
+    "observed_at_utc": "2026-10-18T04:57:03Z",
+    "command": "npm run test:unit -- tests/unit/xlsx-export.test.ts",
+    "result": "1 failed, 49 passed",
+    "observed": "PRIVATE_U10_SOURCE_FORMAT appeared in generated styles.xml after reading an unrelated source custom format and then writing a fresh workbook.",
+    "resolution_commit": "91b32a6559c29e0baea333e7e1ae8cead21a1bf3",
+    "regression": "tests/unit/xlsx-export.test.ts: source custom number formats cannot leak through SheetJS global state into fresh exports"
+  },
+  "recovery": "Original temporary logs were erased on environment restart. This file explicitly summarizes witnessed outcomes; it does not reconstruct a terminal transcript. Current raw validation logs are retained beside this file."
+}

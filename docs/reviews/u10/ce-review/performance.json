@@ -1,0 +1,8 @@
+{
+  "reviewer": "performance",
+  "findings": [],
+  "residual_risks": [
+    "KTD-07 defers reference-device resource qualification to release. The writer bounds table positions and estimated serialized bytes, but that estimate does not cap peak heap while evaluated rows, worksheet objects, shared strings, XML and compressed output coexist. No measurements were executed in this read-only review."
+  ],
+  "testing_gaps": []
+}

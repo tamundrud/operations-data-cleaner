@@ -1,0 +1,183 @@
+{
+  "run_id": "u10-ce-review-resumed",
+  "run_dir": "/workspace/operations-data-cleaner/docs/reviews/u10/ce-review",
+  "skill_dir": "/home/agent/.agents/skills/ce-code-review",
+  "docs_root": "docs",
+  "mode": {
+    "agent": true,
+    "apply_local": false,
+    "grouping": "auto",
+    "depth": "auto"
+  },
+  "invocation": {
+    "arguments": "mode:agent base:origin/main plan:docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "constraints": [
+      "Implement only U10.",
+      "Preserve approved U2\u2013U9 interface and existing privacy, fidelity, saved-workflow and revision-safety guarantees.",
+      "Read-only: never alter production/tests/README/plan, no git mutations/push/PR.",
+      "No browser/test/server/install execution; parent owns verification.",
+      "Recovery after environment restart: recover actual terminal outcomes only; rerun missing scopes; durable artifacts docs/reviews/u10/ce-review."
+    ]
+  },
+  "scope": {
+    "mode": "standalone",
+    "base": "eb64ab2a8e065d5441f6246636cea8e14a3411df",
+    "diff_a": "origin/main",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u10-value-only-excel-export",
+    "head_sha": "91b32a6559c29e0baea333e7e1ae8cead21a1bf3",
+    "files": "/workspace/operations-data-cleaner/docs/reviews/u10/ce-review/files.txt",
+    "diff": "/workspace/operations-data-cleaner/docs/reviews/u10/ce-review/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": [
+      "docs/reviews/u10/"
+    ]
+  },
+  "intent": {
+    "summary": "Implement U10 CSV/XLSX to fresh value-only typed XLSX downloads, preserving literal identifiers/formula-like text, exact representable numbers, calendar dates, blanks and selected order. Preserve U2\u2013U9 validation, revision safety, privacy and workflow portability; reuse vendored SheetJS and U9 resource infrastructure.",
+    "confidence": "explicit"
+  },
+  "plan": {
+    "path": "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "source": "explicit",
+    "requirements": [
+      {
+        "id": "R6",
+        "description": "Preview, output bytes/types, explicit spreadsheet safety (FR-28,45,47)"
+      },
+      {
+        "id": "R7",
+        "description": "Local processing, ephemeral source data, hostile-content protection"
+      }
+    ],
+    "implementation_units": [
+      {
+        "id": "U10",
+        "description": "Value-only typed Excel export; CSV/XLSX\u2192XLSX, selected column order, correct text/number/date/blank types, numeric precision rejection, no source active content, workflow roundtrips, independent ZIP/XML plus library inspection, privacy/performance regressions; binding KTD-07"
+      }
+    ],
+    "settled_decisions": []
+  },
+  "roster": {
+    "selected": [
+      {
+        "reviewer": "correctness",
+        "tier": "session",
+        "reason": "always-on"
+      },
+      {
+        "reviewer": "project-standards",
+        "tier": "mid",
+        "reason": "AGENTS.md fallback governs changed files"
+      },
+      {
+        "reviewer": "testing",
+        "tier": "mid",
+        "reason": "new runtime branches and tests"
+      },
+      {
+        "reviewer": "maintainability",
+        "tier": "mid",
+        "reason": "structural writer adapter and 720 executable changed lines"
+      },
+      {
+        "reviewer": "security",
+        "tier": "session",
+        "reason": "untrusted text and workbook handling"
+      },
+      {
+        "reviewer": "performance",
+        "tier": "mid",
+        "reason": "bounded large table serialization"
+      },
+      {
+        "reviewer": "reliability",
+        "tier": "mid",
+        "reason": "worker export failure boundary"
+      },
+      {
+        "reviewer": "adversarial",
+        "tier": "session",
+        "reason": "169 executable non-test lines and cross-component export boundary"
+      },
+      {
+        "reviewer": "learnings-researcher",
+        "tier": "mid",
+        "reason": "matched docs/solutions/xlsx-qualification.md"
+      }
+    ],
+    "standards": {
+      "criteria": [
+        {
+          "path": "AGENTS.md",
+          "files": [
+            "README.md",
+            "docs/decisions/excel-fidelity.md",
+            "src/engine/recipes.ts",
+            "src/engine/validation.ts",
+            "src/formats/xlsx-export.ts",
+            "src/processing.worker.ts",
+            "src/session/controller.ts",
+            "src/session/worker-protocol.ts",
+            "src/ui/Workspace.tsx",
+            "tests/e2e/excel-output.spec.ts",
+            "tests/fixtures/xlsx/u10-output.json",
+            "tests/unit/session.test.ts",
+            "tests/unit/workflow-roundtrip.test.ts",
+            "tests/unit/xlsx-export.test.ts"
+          ]
+        }
+      ],
+      "fallback_named": true,
+      "not_run_reason": null
+    },
+    "packs": {
+      "roots": [],
+      "errors": [],
+      "warnings": []
+    }
+  },
+  "collection": {
+    "returns": "/workspace/operations-data-cleaner/docs/reviews/u10/ce-review/raw-returns.json",
+    "unstructured_returns": [
+      {
+        "reviewer": "learnings-researcher",
+        "path": "/workspace/operations-data-cleaner/docs/reviews/u10/ce-review/learnings-researcher.md"
+      }
+    ],
+    "failed_reviewers": [],
+    "bound_exceeded": [],
+    "fast_pass": {
+      "emitted_preliminary": false,
+      "candidates": []
+    }
+  },
+  "peer": {
+    "selected": true,
+    "target": null,
+    "route": null,
+    "preference_source": "default",
+    "outcome": "in-process-fallback",
+    "artifact": null,
+    "coverage": "Cross-model pass: not run; only Codex CLI installed, no attested different-family route. Local adversarial fallback reviewed the same scope. No reviewed content sent externally."
+  },
+  "coverage_notes": [
+    "Scope: standalone current branch against origin/main at91b32a6559c29e0baea333e7e1ae8cead21a1bf3.",
+    "Project standards: AGENTS.md instruction-file fallback governs all changed files.",
+    "Untracked docs/reviews/u10/ evidence excluded from reviewed implementation.",
+    "After environment restart, five actual terminal reviewer outcomes at the same HEAD were recovered from host messages; their lost original stage costs are not reconstructed. Missing/failed scopes rerun durably. See recovery.md.",
+    "U10 only: remaining U11\u2013U13 units in explicit plan are not claimed implemented and must not be treated as missing U10 requirements.",
+    "Final runtime validation is parent-owned; reviewers inspect source and existing evidence without executing tests."
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "outcome": "empty-batch",
+  "reason": "Merge leaf selected zero findings; no validator launch required.",
+  "verdicts": null
+}

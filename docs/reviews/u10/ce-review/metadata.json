@@ -1,0 +1,72 @@
+{
+  "branch": "feat/u10-value-only-excel-export",
+  "completed_at": "2026-10-18T15:18:09.200290+00:00",
+  "cost": {
+    "host": "codex",
+    "scope": {
+      "changed_lines": 760,
+      "depth": "full",
+      "exec_nontest_lines": 169,
+      "size_band": "small"
+    },
+    "stages": [
+      {
+        "elapsed_seconds": 0.119,
+        "ended_at": "2026-10-18T15:13:35.416084+00:00",
+        "facts": {
+          "changed_lines": 760,
+          "depth": "full",
+          "exec_nontest_lines": 169,
+          "size_band": "small"
+        },
+        "stage": "scope",
+        "started_at": "2026-10-18T15:13:35.296929+00:00"
+      },
+      {
+        "elapsed_seconds": 0.078,
+        "ended_at": "2026-10-18T15:13:35.493651+00:00",
+        "reviewers": 4,
+        "stage": "select",
+        "started_at": "2026-10-18T15:13:35.416084+00:00"
+      },
+      {
+        "candidates": 0,
+        "elapsed_seconds": 107.227,
+        "ended_at": "2026-10-18T15:15:22.720686+00:00",
+        "stage": "dispatch",
+        "started_at": "2026-10-18T15:13:35.493651+00:00"
+      },
+      {
+        "candidates": 0,
+        "elapsed_seconds": 31.013,
+        "ended_at": "2026-10-18T15:16:34.684122+00:00",
+        "stage": "merge",
+        "started_at": "2026-10-18T15:16:03.670687+00:00"
+      },
+      {
+        "elapsed_seconds": 0.087,
+        "ended_at": "2026-10-18T15:16:43.911470+00:00",
+        "stage": "validate",
+        "started_at": "2026-10-18T15:16:43.824323+00:00"
+      },
+      {
+        "candidates": 0,
+        "elapsed_seconds": 48.375,
+        "ended_at": "2026-10-18T15:18:09.292409+00:00",
+        "stage": "report",
+        "started_at": "2026-10-18T15:17:20.917616+00:00"
+      }
+    ],
+    "status": "complete",
+    "totals": {
+      "artifact_bytes": 406164,
+      "candidates": 0,
+      "elapsed_seconds": 186.899,
+      "reviewers": 4
+    },
+    "truncated_events": 0
+  },
+  "head_sha": "91b32a6559c29e0baea333e7e1ae8cead21a1bf3",
+  "run_id": "u10-ce-review-resumed",
+  "verdict": "Ready to merge"
+}

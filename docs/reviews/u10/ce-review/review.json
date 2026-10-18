@@ -1,0 +1,187 @@
+{
+  "status": "complete",
+  "verdict": "Ready to merge",
+  "scope": {
+    "base": "eb64ab2a8e065d5441f6246636cea8e14a3411df",
+    "branch": "feat/u10-value-only-excel-export",
+    "head_sha": "91b32a6559c29e0baea333e7e1ae8cead21a1bf3",
+    "pr_url": null,
+    "files_changed": 14
+  },
+  "intent": "Implement U10 CSV/XLSX to fresh value-only typed XLSX downloads, preserving literal identifiers/formula-like text, exact representable numbers, calendar dates, blanks and selected order. Preserve U2\u2013U9 validation, revision safety, privacy and workflow portability; reuse vendored SheetJS and U9 resource infrastructure.",
+  "intent_confidence": "explicit",
+  "reviewers": [
+    "correctness",
+    "project-standards",
+    "testing",
+    "maintainability",
+    "security",
+    "performance",
+    "reliability",
+    "adversarial",
+    "learnings-researcher"
+  ],
+  "findings": [],
+  "actionable_findings": [],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "requirements_completeness": {
+    "plan": "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "source": "explicit",
+    "scope": "U10 only; U11-U13 are intentionally outside this review.",
+    "requirements": [
+      {
+        "id": "R6",
+        "status": "met",
+        "evidence": "src/formats/xlsx-export.ts constructs explicit text/number/date cells and blank extent in configured order; src/processing.worker.ts selects the writer from the current workflow. tests/unit/xlsx-export.test.ts and tests/e2e/excel-output.spec.ts independently inspect ZIP/XML and library semantics."
+      },
+      {
+        "id": "R7",
+        "status": "met",
+        "evidence": "Fresh output accepts evaluated Value objects only, isolates SSF formats and copies no source workbook metadata. Existing U9 import preflight, worker watchdog, cancellation and revision envelopes remain. Integrated privacy, hostile archive and cancellation tests are present."
+      }
+    ],
+    "implementation_units": [
+      {
+        "id": "U10",
+        "status": "met",
+        "evidence": "CSV/XLSX downloads, output controls, exact numeric rejection, literal identifiers/formula-like text, both calendar epochs, selected order/blanks, version-1 saved/portable round trips, independent XML assertions and 10000 x 20 browser performance/privacy safeguards are implemented."
+      }
+    ],
+    "binding_decisions": [
+      {
+        "id": "KTD-07",
+        "status": "met",
+        "evidence": "Vendored SheetJS and existing archive qualification are reused. Fresh typed workbook serialization checks decimal equality/range before writing, uses integer calendar arithmetic and no active source objects. Integrated tests exercise hostile archive rejection and export cancellation; output cell/text/serialization limits fail without truncation."
+      }
+    ],
+    "unrequested_behavior_rules": [],
+    "verification_limit": "Met records corresponding implementation and test coverage found by source inspection, not runtime certification. Parent owns final execution, cross-browser CI evidence and hands-on UX acceptance. Reference-device release qualification remains U13."
+  },
+  "learnings": [
+    {
+      "type": "known_pattern",
+      "title": "Qualify Excel archives before flattening cells",
+      "citation": "docs/solutions/xlsx-qualification.md",
+      "note": "Preserve interpretation provenance, validate actual archive expansion and routing before SheetJS, and verify the integrated output XML. No violation was established."
+    }
+  ],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [
+    {
+      "title": "Reference-device resource qualification remains a release obligation",
+      "detail": "The output writer enforces table-position and estimated serialized-byte limits, but those estimates are not a peak-heap cap while evaluated rows, worksheet objects, shared strings, XML and compressed bytes coexist. The reviewed decision explicitly records this limit; reference-laptop qualification remains U13. No runtime measurements were executed in this review.",
+      "evidence": [
+        "src/formats/xlsx-export.ts:13-14,69-89: 2 million table-position and 100 MiB serialization-estimate guards.",
+        "docs/decisions/excel-fidelity.md: Limits and remaining obligations and U10 value-only writer sections explicitly distinguish serialized budgets from process/heap bounds."
+      ],
+      "reviewers": [
+        "performance",
+        "testing"
+      ]
+    }
+  ],
+  "testing_gaps": [],
+  "coverage": {
+    "depth": "full",
+    "mode": "agent report-only",
+    "reviewer_reasons": [
+      {
+        "reviewer": "correctness",
+        "tier": "session",
+        "reason": "always-on"
+      },
+      {
+        "reviewer": "project-standards",
+        "tier": "mid",
+        "reason": "AGENTS.md fallback governs changed files"
+      },
+      {
+        "reviewer": "testing",
+        "tier": "mid",
+        "reason": "new runtime branches and tests"
+      },
+      {
+        "reviewer": "maintainability",
+        "tier": "mid",
+        "reason": "structural writer adapter and 720 executable changed lines"
+      },
+      {
+        "reviewer": "security",
+        "tier": "session",
+        "reason": "untrusted text and workbook handling"
+      },
+      {
+        "reviewer": "performance",
+        "tier": "mid",
+        "reason": "bounded large table serialization"
+      },
+      {
+        "reviewer": "reliability",
+        "tier": "mid",
+        "reason": "worker export failure boundary"
+      },
+      {
+        "reviewer": "adversarial",
+        "tier": "session",
+        "reason": "169 executable non-test lines and cross-component export boundary"
+      },
+      {
+        "reviewer": "learnings-researcher",
+        "tier": "mid",
+        "reason": "matched docs/solutions/xlsx-qualification.md"
+      }
+    ],
+    "notes": [
+      "Scope: standalone current branch against origin/main at91b32a6559c29e0baea333e7e1ae8cead21a1bf3.",
+      "Project standards: AGENTS.md instruction-file fallback governs all changed files.",
+      "Untracked docs/reviews/u10/ evidence excluded from reviewed implementation.",
+      "After environment restart, five actual terminal reviewer outcomes at the same HEAD were recovered from host messages; their lost original stage costs are not reconstructed. Missing/failed scopes rerun durably. See recovery.md.",
+      "U10 only: remaining U11\u2013U13 units in explicit plan are not claimed implemented and must not be treated as missing U10 requirements.",
+      "Final runtime validation is parent-owned; reviewers inspect source and existing evidence without executing tests.",
+      "Cross-model pass: not run; only Codex CLI installed, no attested different-family route. Local adversarial fallback reviewed the same scope. No reviewed content sent externally.",
+      "All eight structured reviewer artifacts and the learnings-researcher return were read; no reviewer reported a candidate finding.",
+      "Suppressed findings: 0; malformed findings: 0; malformed returns: 0; first_evidence_backfilled: 0; quote-gate demotions: 0; mode-aware demotions: 0.",
+      "Validator shortcut-skipped: 0; no findings qualify for selection, so no validator batch is required.",
+      "Reviewer execution was read-only; integrated browser test execution, Firefox/WebKit CI results and final verification remain parent-owned."
+    ],
+    "requirements_check": "Independently inspected U10, KTD-07, PRD FR-28/45/47 and NFR-01-06 against writer, worker integration, UI and unit/browser test coverage. Reverse check found no unrequested behavior rule.",
+    "cross_model": "Cross-model pass: not run; only Codex CLI installed, no attested different-family route. Local adversarial fallback reviewed the same scope. No reviewed content sent externally.",
+    "validator": {
+      "outcome": "empty-batch",
+      "reason": "No surviving primary findings; no validator was launched.",
+      "confirmed": 0,
+      "rejected": 0,
+      "unresolved": 0,
+      "malformed": 0,
+      "failed": 0,
+      "shortcut_skipped": 0,
+      "protected_subject_reclassifications": 0,
+      "degraded_blockers": 0
+    },
+    "suppressed_by_confidence": {},
+    "suppressed_count": 0,
+    "malformed_findings": 0,
+    "malformed_returns": 0,
+    "first_evidence_backfilled": 0,
+    "quote_gate_demotions": 0,
+    "mode_aware_demotions": 0,
+    "failed_reviewers": [],
+    "timed_out_reviewers": [],
+    "apply": "Not authorized in this report-only run; no implementation files changed.",
+    "compound_packs": {
+      "roots": [],
+      "warnings": [],
+      "errors": []
+    },
+    "not_assessed": [
+      "Runtime test execution and GitHub CI verification are parent-owned.",
+      "Agent-native and deployment-verification personas were not selected."
+    ],
+    "recovery": "Five actual terminal reviewer outcomes at the same HEAD were recovered after environment restart; missing scopes were rerun. Original lost stage costs were not reconstructed; see recovery.md."
+  },
+  "artifact_path": "/workspace/operations-data-cleaner/docs/reviews/u10/ce-review",
+  "run_id": "u10-ce-review-resumed",
+  "verdict_reason": "No actionable defects or missing U10 implementation requirements were established. This code-review verdict does not authorize merge or deployment: final runtime/CI verification and the requested hands-on UX acceptance remain with the parent and user."
+}
