@@ -2,7 +2,9 @@ import type { Workflow } from "../engine/workflow";
 import type { SafetyChoice } from "../formats/spreadsheet-safety";
 import { MAX_FILE_BYTES } from "../formats/csv";
 import type { Request, Response, View } from "./worker-protocol";
+import type { Correction } from "./correction-overlay";
 export type SessionState = {
+  replacement?: boolean;
   busy: string;
   view?: View;
   error: string;
@@ -10,6 +12,8 @@ export type SessionState = {
   worksheets?: string[];
 };
 export class Session {
+  private corrections: Correction[] = [];
+  private replacement?: { file: File; delimiter: "auto" | "," | ";" | "\t"; options: { workflow?: Workflow; worksheet?: string } };
   private worker?: Worker;
   private sequence = 0;
   private pending?: Request;
@@ -75,6 +79,7 @@ export class Session {
         if (this.candidate) {
           const { workflow: replacementWorkflow, ...active } = this.candidate;
           const format = active.file.name.toLowerCase().endsWith(".xlsx") ? "xlsx" : "csv";
+          if (active.dataset !== this.active?.dataset) this.corrections = [];
           this.active = { ...active, worksheet: m.view.worksheet };
           this.onSourcePolicy(active.delimiter, format, m.view.worksheet);
           this.candidate = undefined;
@@ -109,12 +114,19 @@ export class Session {
       this.worker!.postMessage(m, [m.bytes]);
     else this.worker!.postMessage(m);
   }
-  async upload(
+  private async importFile(
     file: File,
     delimiter: "auto" | "," | ";" | "\t",
     options: { template?: boolean; workflow?: Workflow; worksheet?: string } = {},
+    recovery = false,
+    approved = false,
   ) {
-    if (this.state.busy) return;
+    if (this.state.busy || this.state.replacement) return;
+    if (!options.template && this.corrections.length && !recovery && !approved) {
+      this.replacement = { file, delimiter, options };
+      this.update({ replacement: true });
+      return;
+    }
     const format: "csv" | "xlsx" = file.name.toLowerCase().endsWith(".xlsx") ? "xlsx" : "csv";
     if (!/\.(csv|xlsx)$/iu.test(file.name)) {
       this.update({
@@ -135,7 +147,7 @@ export class Session {
     try {
       const bytes = await file.arrayBuffer();
       if (request !== this.sequence) return;
-      const dataset = options.template
+      const dataset = recovery ? this.active!.dataset : options.template
         ? (this.active?.dataset ?? "template")
         : crypto.randomUUID();
       const worksheet = options.worksheet ?? (options.template ? undefined : (options.workflow ?? (!this.active ? this.workflow : undefined))?.source.worksheet);
@@ -157,6 +169,7 @@ export class Session {
           {
             ...envelope,
             kind: "import",
+            corrections: recovery ? this.corrections : [],
             bytes,
             delimiter,
             workflow: options.workflow ?? this.workflow,
@@ -173,10 +186,30 @@ export class Session {
       });
     }
   }
+  async upload(file: File, delimiter: "auto" | "," | ";" | "\t", options: { template?: boolean; workflow?: Workflow; worksheet?: string } = {}) {
+    await this.importFile(file, delimiter, options);
+  }
+  async confirmReplacement() {
+    const replacement = this.replacement;
+    this.replacement = undefined;
+    this.update({ replacement: false });
+    if (!replacement) return;
+    await this.importFile(replacement.file, replacement.delimiter, replacement.options, false, true);
+  }
+  cancelReplacement() {
+    this.replacement = undefined;
+    this.update({ replacement: false });
+  }
+  correct(row: string, column: string, value: string, revert = false) {
+    if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable) return;
+    this.corrections = this.corrections.filter(e => e.row !== row || e.column !== column);
+    if (!revert) this.corrections.push({row, column, value});
+    this.send({kind: "correct", correction: {row, column, value}, revert, request: ++this.sequence, dataset: this.active.dataset, revision: ++this.revision}, "Rechecking corrected row…");
+  }
   selectWorksheet(worksheet: string) {
     const selection = this.selection;
     if (!selection || !this.state.worksheets?.includes(worksheet)) return;
-    void this.upload(selection.file, selection.delimiter, { ...selection.options, worksheet });
+    void this.importFile(selection.file, selection.delimiter, { ...selection.options, worksheet }, false, true);
   }
   cancelWorksheetSelection() {
     this.selection = undefined;
@@ -188,7 +221,7 @@ export class Session {
     this.onWorkflow(workflow);
   }
   configure(workflow: Workflow) {
-    if (this.state.busy || this.state.worksheets || !this.active) return;
+    if (this.state.busy || this.state.worksheets || this.state.replacement || !this.active) return;
     this.workflow = workflow;
     this.revision++;
     this.send(
@@ -203,7 +236,7 @@ export class Session {
     );
   }
   page(page: number, exceptions: boolean) {
-    if (!this.active || this.state.busy || this.state.worksheets || this.state.recoverable) return;
+    if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable) return;
     this.send(
       {
         kind: "page",
@@ -217,7 +250,7 @@ export class Session {
     );
   }
   export(choice: SafetyChoice) {
-    if (!this.active || this.state.busy || this.state.worksheets || this.state.recoverable) return;
+    if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable) return;
     this.send(
       {
         kind: "export",
@@ -251,11 +284,15 @@ export class Session {
     );
   }
   async retry() {
-    if (this.active) await this.upload(this.active.file, this.active.delimiter, { worksheet: this.active.worksheet });
+    if (this.active) {
+      await this.importFile(this.active.file, this.active.delimiter, { worksheet: this.active.worksheet }, true);
+    }
   }
   end() {
     this.stop("");
     this.active = undefined;
+    this.corrections = [];
+    this.cancelReplacement();
     this.workflow = undefined;
     this.update({ recoverable: false, error: "" });
   }

@@ -1,0 +1,26 @@
+{
+  "reviewer": "correctness",
+  "findings": [
+    {
+      "title": "Keep full candidate counts when workflow validation fails",
+      "severity": "P2",
+      "file": "src/session/correction-overlay.ts",
+      "line": 25,
+      "why_it_matters": "A user can have an unmapped output field or missing-header workflow issue, then correct a source cell in the visible source table. The incremental evaluation receives only that row; because workflow issues skip the merge, its summary reports one candidate instead of the full dataset. Both the source-loaded status and full dataset counts become false, violating U11's count invariant until a full workflow rerun.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 75,
+      "evidence": [
+        "src/session/correction-overlay.ts:25:   if (previous && changed && !next.workflowIssues.length) {",
+        "src/session/correction-overlay.ts:23 limits rows to source.rows.filter(r => r.id === changed); evaluate initializes candidates from that subset's rows.length and returns early on workflowIssues (src/engine/recipes.ts:62,79).",
+        "src/ui/Workspace.tsx:411 disables corrections only for busy, dirty, and recoverable state, so a completed validation with workflowIssues still permits this correction path.",
+        "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md:454 requires source identity/provenance/count invariants."
+      ],
+      "pre_existing": false,
+      "suggested_fix": "If incremental evaluation has workflowIssues, retain the original dataset's candidate/input/skipped counts (or perform a full correctedRun evaluation for that branch) instead of returning the one-row summary. Add a regression with multiple source rows and an unmapped field, correcting then reverting one cell and comparing summaries against full evaluation."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

@@ -1,0 +1,8 @@
+{
+  "reviewer": "reliability",
+  "findings": [],
+  "residual_risks": [],
+  "testing_gaps": [
+    "The U11 browser cancellation scenario delays File.arrayBuffer() for hold.csv, so cancellation occurs before the replacement reaches the worker, rather than during parsing as required by the U11 plan. Add a browser scenario that cancels after the replacement import has been posted to the real worker, then retries and verifies prior corrected bytes, original provenance, and full counts. The session unit scenario uses a fake worker and cannot independently verify termination/reparse behavior."
+  ]
+}

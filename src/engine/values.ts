@@ -6,6 +6,7 @@ export type Value =
   | ({ kind: "date"; format: DatePattern } & CalendarDate);
 export type SourceColumn = { position: number; header: string; key: string };
 export type SourceCell = {
+  original?: SourceCell;
   kind: "text"; raw: string; display: string;
   excel?: {
     type: string; value?: string | number | boolean; format?: string; formula?: string;

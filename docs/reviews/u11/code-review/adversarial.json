@@ -1,0 +1,44 @@
+{
+  "reviewer": "adversarial",
+  "findings": [
+    {
+      "title": "Short CSV rows cannot repair missing trailing cells",
+      "severity": "P2",
+      "file": "src/ui/Workspace.tsx",
+      "line": 411,
+      "why_it_matters": "A valid imported CSV can have absent trailing values. Those blanks can produce required or calculation errors, but U11 exposes no correction action for them, and its overlay also ignores edits targeting absent cells.",
+      "autofix_class": "manual",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 100,
+      "evidence": [
+        "src/ui/Workspace.tsx:411: {r.cells[c.position] && <SourceCorrection",
+        "parseCsv stores result.data.map(...) without padding accepted short records. For ID,Qty\\nA, row.cells contains only ID.",
+        "Map Qty to a required number or calculation. The missing source value is invalid, but the Qty preview cell has no correction control.",
+        "src/session/correction-overlay.ts:14 maps row.cells rather than source.columns, so even a controller-level correction for Qty cannot materialize the missing cell."
+      ],
+      "pre_existing": false,
+      "suggested_fix": "Represent absent trailing source values as blank cells when rendering and applying the overlay, iterating source columns so every accepted source position can be corrected and reverted while preserving original blank identity."
+    },
+    {
+      "title": "Correction during incomplete mapping shrinks candidate count",
+      "severity": "P2",
+      "file": "src/session/correction-overlay.ts",
+      "line": 25,
+      "why_it_matters": "Correcting one cell while workflow-level validation fails changes the full dataset candidate count to one, violating the required source/count invariant even though all input rows remain loaded.",
+      "autofix_class": "manual",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 100,
+      "evidence": [
+        "src/session/correction-overlay.ts:25: if (previous && changed && !next.workflowIssues.length) {",
+        "An N-row source with an unmapped destination produces workflowIssues and no evaluated output rows. Workspace marks completed configure requests clean and permits source corrections despite workflowIssues.",
+        "correctedRun filters the source to the changed row at line 23; evaluate sets candidates to source.rows.length (one); the conditional at line 25 skips restoring previous summary because workflowIssues is nonempty."
+      ],
+      "pre_existing": false,
+      "suggested_fix": "When workflow validation prevents row evaluation, preserve full source candidate counts rather than the filtered row count, or evaluate the full corrected source for this path. Add a regression for correcting a multirow source while an output is unmapped."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

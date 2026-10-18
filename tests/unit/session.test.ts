@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { correctedRun, type Correction } from "../../src/session/correction-overlay";
 import { Session } from "../../src/session/controller";
 import type {
   Request,
@@ -9,7 +10,7 @@ import { makeWorkflow, type Workflow } from "../../src/engine/workflow";
 import { parseCsv, serializeCsv } from "../../src/formats/csv";
 import { serializeXlsx } from "../../src/formats/xlsx-export";
 import { strFromU8, unzipSync } from "fflate";
-import { evaluate, type Run } from "../../src/engine/recipes";
+import { type Run } from "../../src/engine/recipes";
 import type { SourceTable } from "../../src/engine/values";
 // Controllable transport and clock; parsed rows, evaluation and download bytes remain real.
 class Transport {
@@ -19,6 +20,7 @@ class Transport {
   onmessage?: (event: MessageEvent<Response>) => void;
   onerror?: (event: { preventDefault: () => void }) => void;
   onmessageerror?: () => void;
+  corrections: Correction[] = [];
   source?: SourceTable;
   workflow?: Workflow;
   run?: Run;
@@ -41,11 +43,17 @@ class Transport {
     if (m.kind === "import") {
       this.source = parseCsv(new Uint8Array(m.bytes), m.delimiter, m.dataset);
       this.workflow = m.workflow ?? makeWorkflow([]);
-      this.run = evaluate(this.workflow, this.source);
+      this.corrections = m.corrections ?? [];
+      this.run = correctedRun(this.workflow, this.source, this.corrections);
     }
     if (m.kind === "run") {
       this.workflow = m.workflow;
-      this.run = evaluate(m.workflow, this.source!);
+      this.run = correctedRun(m.workflow, this.source!, this.corrections);
+    }
+    if (m.kind === "correct") {
+      this.corrections = this.corrections.filter(e => e.row !== m.correction.row || e.column !== m.correction.column);
+      if (!m.revert) this.corrections.push(m.correction);
+      this.run = correctedRun(this.workflow!, this.source!, this.corrections, this.run, m.correction.row);
     }
     if (m.kind === "export") {
       this.onmessage?.({
@@ -208,4 +216,66 @@ test("Excel worksheet discovery keeps the committed run until a selected sheet s
   s.cancelWorksheetSelection();
   expect(s.state.view).toBe(committed);
   expect(s.state.worksheets).toBeUndefined();
+});
+
+test("corrections survive cancelled replacements and reject stale worker replies during recovery", async () => {
+  const s = new Session(); s.activate(workflow()); await s.upload(file(), ","); latest().flush();
+  const row = s.state.view!.rows[0].id;
+  s.correct(row, "id", "009876"); latest().flush();
+  expect(s.state.view!.summary.corrected).toBe(1);
+  await s.upload(new File(["ID\nNEW"], "new.csv"), ",");
+  expect(s.state.replacement).toBe(true);
+  s.cancelReplacement();
+  expect(s.state.view!.rows[0].values).toEqual([{kind:"text",text:"009876"}]);
+  await s.upload(new File(["ID\nNEW"], "new.csv"), ",");
+  await s.confirmReplacement();
+  const old = latest(), pending = old.requests.at(-1)!;
+  s.cancel(); await s.retry();
+  expect(s.state.busy).not.toBe("");
+  s.export(undefined);
+  expect(latest().requests.at(-1)!.kind).toBe("import");
+  old.onmessage?.({ data: {...pending,kind:"view",view:{...s.state.view,summary:{corrected:0}}} } as unknown as MessageEvent<Response>);
+  expect(s.state.view).toBeUndefined();
+  latest().flush();
+  expect(s.state.view!.rows[0].id).toBe(row);
+  expect(s.state.view!.summary.corrected).toBe(1);
+  let result = ""; s.onDownload = bytes => {result = new TextDecoder().decode(bytes);};
+  s.export(undefined); latest().flush();
+  expect(result).toBe("Reference\r\n009876\r\n");
+  s.end();
+});
+
+test("cancelled delayed replacement cannot grant approval to a later upload", async () => {
+  const s = new Session(); s.activate(workflow()); await s.upload(file(), ","); latest().flush();
+  s.correct(s.state.view!.rows[0].id,"id","009876"); latest().flush();
+  const delayed = new File(["ID\nNEW"],"delayed.csv");
+  let release: (value: ArrayBuffer) => void = () => {};
+  vi.spyOn(delayed,"arrayBuffer").mockImplementation(() => new Promise(resolve => {release=resolve;}));
+  await s.upload(delayed,","); const reading = s.confirmReplacement();
+  s.cancel();
+  await s.upload(new File(["ID\nOTHER"],"other.csv"),",");
+  expect(s.state.replacement).toBe(true);
+  s.cancelReplacement();
+  await s.retry(); latest().flush();
+  expect(s.state.view!.rows[0].values).toEqual([{kind:"text",text:"009876"}]);
+  release(new TextEncoder().encode("ID\nNEW").buffer); await reading;
+  expect(s.state.view!.rows[0].values).toEqual([{kind:"text",text:"009876"}]);
+  s.end();
+});
+
+test("same-worker older correction reply cannot complete a newer rule evaluation", async () => {
+  const s = new Session(); s.activate(workflow()); await s.upload(file(), ","); latest().flush();
+  s.correct(s.state.view!.rows[0].id,"id","009876");
+  const transport = latest(), correction = transport.requests.at(-1)!;
+  transport.flush();
+  const prior = s.state.view!;
+  const nextWorkflow = workflow(); nextWorkflow.fields[0].trim = true;
+  s.configure(nextWorkflow);
+  transport.onmessage?.({data:{request:correction.request,dataset:correction.dataset,revision:correction.revision,kind:"view",view:{...prior, summary:{...prior.summary,corrected:0}}}} as MessageEvent<Response>);
+  expect(s.state.busy).toBe("Checking all rows…");
+  expect(s.state.view!.summary.corrected).toBe(1);
+  transport.flush();
+  expect(s.state.busy).toBe("");
+  expect(s.state.view!.rows[0].values).toEqual([{kind:"text",text:"009876"}]);
+  s.end();
 });

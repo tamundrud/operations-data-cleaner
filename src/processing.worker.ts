@@ -4,14 +4,17 @@ declare const self: DedicatedWorkerGlobalScope;
 import { parseXlsx } from "./formats/xlsx";
 import { serializeXlsx } from "./formats/xlsx-export";
 import { parseCsv, serializeCsv } from "./formats/csv";
-import { evaluate, type Run, type ResultRow } from "./engine/recipes";
+import { type Run, type ResultRow } from "./engine/recipes";
 import { makeWorkflow, type Workflow } from "./engine/workflow";
-import type { SourceTable } from "./engine/values";
+import type { SourceTable, SourceRow } from "./engine/values";
 import type { Request, Response, View } from "./session/worker-protocol";
+import { correctedRun, correctedRows, type Correction } from "./session/correction-overlay";
+let corrections: Correction[] = [];
 let source: SourceTable | undefined,
   workflow: Workflow | undefined,
   run: Run | undefined,
   revision = -1;
+let sourceRowsById = new Map<string, SourceRow>();
 const PAGE_SIZE = 50;
 let exceptionRows: ResultRow[] = [];
 function setRun(next: Run) {
@@ -26,7 +29,9 @@ function view(page = 0, exceptions = false): View {
   page = Math.max(0, Math.min(page, totalPages - 1));
   return {
     columns: source.columns,
-    sourceRows: source.rows.slice(0, PAGE_SIZE),
+    sourceRows: correctedRows(source, corrections, run.workflowIssues.length
+      ? source.rows.slice(0, PAGE_SIZE)
+      : selected.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map(r => sourceRowsById.get(r.id)!)),
     rows: selected.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE),
     workflowIssues: run.workflowIssues,
     summary: run.summary,
@@ -67,8 +72,10 @@ self.onmessage = async (event: MessageEvent<Request>) => {
       if (!candidate) throw new Error("No source table was imported.");
       const original = m.workflow ?? makeWorkflow([]);
       const candidateWorkflow = { ...original, source: { ...original.source, format: m.format ?? "csv", worksheet: candidate.worksheet, delimiter: m.delimiter } };
-      const candidateRun = evaluate(candidateWorkflow, candidate);
+      const candidateRun = correctedRun(candidateWorkflow, candidate, m.corrections ?? []);
+      corrections = m.corrections ?? [];
       source = candidate;
+      sourceRowsById = new Map(source.rows.map(r => [r.id, r]));
       workflow = candidateWorkflow;
       setRun(candidateRun);
       revision = m.revision;
@@ -77,9 +84,15 @@ self.onmessage = async (event: MessageEvent<Request>) => {
         throw new Error(
           "This result is out of date. Run the current mapping again.",
         );
-      if (m.kind === "run") {
+      if (m.kind === "correct") {
+        if (!workflow || !source.rows.some(r => r.id === m.correction.row) || !source.columns.some(c => c.key === m.correction.column)) throw new Error("Select a current source cell.");
+        corrections = corrections.filter(e => e.row !== m.correction.row || e.column !== m.correction.column);
+        if (!m.revert) corrections.push(m.correction);
+        setRun(correctedRun(workflow, source, corrections, run, m.correction.row));
+        revision = m.revision;
+      } else if (m.kind === "run") {
         workflow = m.workflow;
-        setRun(evaluate(workflow, source));
+        setRun(correctedRun(workflow, source, corrections));
         revision = m.revision;
       } else if (m.revision !== revision)
         throw new Error(

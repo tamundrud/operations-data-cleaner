@@ -1,0 +1,73 @@
+{
+  "branch": "feat/u11-session-source-correction",
+  "completed_at": "2026-10-18T21:01:49.140251+00:00",
+  "cost": {
+    "host": "codex",
+    "scope": {
+      "changed_lines": 354,
+      "depth": "full",
+      "exec_nontest_lines": 200,
+      "size_band": "large",
+      "unclassified_lines": {}
+    },
+    "stages": [
+      {
+        "elapsed_seconds": 0.034,
+        "ended_at": "2026-10-18T20:56:05.495961+00:00",
+        "facts": {
+          "changed_lines": 354,
+          "depth": "full",
+          "exec_nontest_lines": 200,
+          "size_band": "large",
+          "unclassified_lines": {}
+        },
+        "stage": "scope",
+        "started_at": "2026-10-18T20:56:05.462320+00:00"
+      },
+      {
+        "elapsed_seconds": 29.542,
+        "ended_at": "2026-10-18T20:56:35.037815+00:00",
+        "reviewers": 9,
+        "stage": "select",
+        "started_at": "2026-10-18T20:56:05.495961+00:00"
+      },
+      {
+        "candidates": 3,
+        "elapsed_seconds": 117.351,
+        "ended_at": "2026-10-18T20:58:32.389288+00:00",
+        "stage": "dispatch",
+        "started_at": "2026-10-18T20:56:35.037815+00:00"
+      },
+      {
+        "candidates": 2,
+        "elapsed_seconds": 44.849,
+        "ended_at": "2026-10-18T20:59:56.718603+00:00",
+        "stage": "merge",
+        "started_at": "2026-10-18T20:59:11.869360+00:00"
+      },
+      {
+        "elapsed_seconds": 39.404,
+        "ended_at": "2026-10-18T21:00:45.836616+00:00",
+        "stage": "validate",
+        "started_at": "2026-10-18T21:00:06.432533+00:00"
+      },
+      {
+        "elapsed_seconds": 32.799,
+        "ended_at": "2026-10-18T21:01:49.258439+00:00",
+        "stage": "report",
+        "started_at": "2026-10-18T21:01:16.459837+00:00"
+      }
+    ],
+    "status": "complete",
+    "totals": {
+      "artifact_bytes": 727632,
+      "candidates": 3,
+      "elapsed_seconds": 263.979,
+      "reviewers": 9
+    },
+    "truncated_events": 0
+  },
+  "head_sha": "7e418ac06876c73643ced6ad552e0f8addec714b",
+  "run_id": "20261018-205605-u11",
+  "verdict": "Ready with fixes"
+}
