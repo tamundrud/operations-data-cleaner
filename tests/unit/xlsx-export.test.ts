@@ -72,12 +72,23 @@ test("zero-padded numeric Excel identifiers become literal strings in the fresh 
   expect(XLSX.read(bytes, { type: "array" }).Sheets.Output.A2).toMatchObject({ t: "s", v: "001234" });
 });
 
+test("source custom number formats cannot leak through SheetJS global state into fresh exports", async () => {
+  const marker = "PRIVATE_U10_SOURCE_FORMAT";
+  const input = workbook('<row r="1"><c r="A1" t="inlineStr"><is><t>ID</t></is></c></row><row r="2"><c r="A2"><v>12</v></c></row>', {
+    dimension: "A1:A2", extra: { "xl/styles.xml": `<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="1"><numFmt numFmtId="164" formatCode="&quot;${marker}&quot;0"/></numFmts><fonts count="1"><font/></fonts><fills count="1"><fill/></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf/></cellStyleXfs><cellXfs count="1"><xf numFmtId="0"/></cellXfs></styleSheet>` },
+  });
+  await parseXlsx(input, "format-source", "Synthetic");
+  const parts = xml(write());
+  expect(Object.values(parts).join("\n")).not.toContain(marker);
+  expect(parts["xl/styles.xml"]).toContain('formatCode="dd/mm/yyyy"');
+});
+
 test.each(["0", "-0", "+0.3000", "12.50", "-999999999999999", "1000000000000000", "0." + "0".repeat(306) + "1"])("exports faithful Excel numeric value %s", (decimal) => {
   const w = config(); w.fields = [{ ...w.fields[1], recipe: { kind: "constant", value: { kind: "number", decimal } } }];
   expect(XLSX.read(write(w), { type: "array" }).Sheets.Output.A2.v).toBe(Number(decimal) || 0);
 });
 
-test.each(["1234567890123456", "0.10000000000000001", "9007199254740993", "1" + "0".repeat(308), "0." + "0".repeat(323) + "1", "0." + "0".repeat(400) + "1"])("rejects numeric precision/range loss %s with row/field and alternatives", (decimal) => {
+test.each(["1234567890123456", "0.10000000000000001", "9007199254740993", "1" + "0".repeat(308), "0." + "0".repeat(308) + "1", "0." + "0".repeat(323) + "1", "0." + "0".repeat(400) + "1"])("rejects numeric precision/range loss %s with row/field and alternatives", (decimal) => {
   const w = config(); w.fields = [{ ...w.fields[1], recipe: { kind: "constant", value: { kind: "number", decimal } } }];
   expect(() => write(w)).toThrow(/record 2.*Amount.*CSV.*text/iu);
 });

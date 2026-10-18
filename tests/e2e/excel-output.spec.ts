@@ -56,7 +56,7 @@ function inspect(bytes: Uint8Array) {
   const parts = Object.fromEntries(Object.entries(unzipSync(bytes)).map(([name, content]) => [name, strFromU8(content)]));
   for (const [name, content] of Object.entries(parts)) {
     expect(name).not.toMatch(/externalLinks|vbaProject|worksheets\/.*\.rels|synthetic-unused/iu);
-    expect(content).not.toMatch(/<f[\s>]|<hyperlink\b|TargetMode="External"|WEBSERVICE|PRIVATE_U10_UNUSED/u);
+    expect(content).not.toMatch(/<f[\s>]|<hyperlink\b|TargetMode="External"|WEBSERVICE|PRIVATE_U10_UNUSED|DBNum1/u);
   }
   return parts;
 }

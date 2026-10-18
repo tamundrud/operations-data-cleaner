@@ -95,7 +95,12 @@ export function serializeXlsx(workflow: Workflow, run: Run): Uint8Array {
   run.rows.forEach((row, r) => row.values.forEach((value, c) => put(value, r + offset, c, `Source record ${row.record}, line ${row.line}, ${workflow.fields[c].header}`)));
   // Explicit extent preserves trailing columns and entirely blank output rows.
   sheet["!ref"] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: rows - 1, c: columns - 1 } });
-  const workbook = XLSX.utils.book_new();
+  // SheetJS otherwise inherits its process-global SSF table, which source
+  // imports populate with arbitrary custom formats, even for unused cells.
+  const workbook = {
+    ...XLSX.utils.book_new(),
+    SSF: { 0: "General", ...Object.fromEntries(Object.values(DATE_FORMATS).map((format, index) => [164 + index, format])) },
+  };
   workbook.Workbook = { WBProps: { date1904: workflow.output.dateSystem === "1904" } };
   XLSX.utils.book_append_sheet(workbook, sheet, "Output");
   // Shared strings also avoid SheetJS's double escape-decoding of t="str" cells
