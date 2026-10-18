@@ -17,7 +17,7 @@ Environment: Codex Cloud, Node 24.19.0, Chromium 154.0.8037.57 from /usr/bin/chr
 | U2_CHROMIUM_PATH=/usr/bin/chromium npx playwright test --project=chromium | 103 passed, zero flaky/skipped/unexpected, 5.0 minutes |
 | U2_CHROMIUM_PATH=/usr/bin/chromium npx playwright test correction-reupload --project=chromium | 7 passed on the final production build, including added Excel integration |
 
-The full run covers U1–U10 browser regressions, accessibility, actual CSV/Excel bytes, persistence/portability, suggestions, hostile input, privacy, performance and the first six U11 scenarios. The final focused run follows minor copy changes and adds a seventh U11 scenario using real XLSX input/output. Together these runs exercise 104 distinct browser cases. [Full results](browser-suite.log), [full summary](browser-suite-summary.json), [final U11 results](correction-suite.log), [final U11 summary](correction-suite-summary.json), [unit results](unit-suite.log).
+The full run covers U1–U10 browser regressions, accessibility, actual CSV/Excel bytes, persistence/portability, suggestions, hostile input, privacy, performance and the first six U11 scenarios. The final focused run follows minor copy changes and adds a seventh U11 scenario using real XLSX input/output. Together these runs exercise 104 distinct browser cases. [Full results](browser-suite.txt), [full summary](browser-suite-summary.json), [final U11 results](correction-suite.txt), [final U11 summary](correction-suite-summary.json), [unit results](unit-suite.txt).
 
 ## U11 evidence
 
