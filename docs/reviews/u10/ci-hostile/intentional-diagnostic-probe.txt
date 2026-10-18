@@ -1,0 +1,75 @@
+[WebServer] (node:8217) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:8236) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+U10 failure in 154.0.8037.57:
+- main:
+  - paragraph: OPERATIONS DATA CLEANER · EXCEL & CSV PREVIEW
+  - heading "Match your columns." [level=1]
+  - paragraph: Map a source table to the columns your import needs.
+  - strong: Processed in your browser
+  - text: No account. Files stay in memory.
+  - navigation "Conversion steps": 1 · Upload table 2 · Map columns 3 · Preview & download
+  - region "Workflow configuration":
+    - heading "Save & repeat" [level=2]
+    - paragraph: Saved workflows belong to this browser and origin. Browser data can be cleared. Download a backup to recover or transfer your configuration.
+    - text: Saved workflows
+    - combobox "Saved workflows":
+      - option "Choose a workflow" [selected]
+    - button "Open workflow" [disabled]
+    - text: Import workflow
+    - button "Import workflow"
+    - button "New conversion"
+    - text: Workflow name
+    - textbox "Workflow name"
+    - button "Save workflow"
+    - button "Download workflow"
+    - text: Working configuration
+    - paragraph: Workflow files contain field names and configured constants, which may reveal business information. Share them carefully. Source records and filenames are excluded.
+    - status
+    - button "Retry workflow storage"
+  - region "1. Choose your source":
+    - heading "1. Choose your source" [level=2]
+    - paragraph: UTF-8 CSV or .xlsx with a header row. Choose one worksheet. Leading zeros and spaces are preserved.
+    - text: Source delimiter (CSV)
+    - combobox "Source delimiter (CSV)":
+      - option "Detect automatically" [selected]
+      - option "Comma"
+      - option "Semicolon"
+      - option "Tab"
+    - text: Upload source CSV or Excel
+    - button "Upload source CSV"
+    - button "Try sample data"
+    - button "Try fixed fields example"
+  - status: Start with your CSV or Excel file, or try the fictional example.
+  - text: U10 internal preview · CSV and one-sheet Excel conversion with reusable local workflows. Data is cleared on reload or End session. Source data and file names are never saved. Static application assets are requested from the host; customer file processing stays local.
+  ✘  1 [chromium] › tests/e2e/u10-diagnostic-probe.spec.ts:3:1 › U10 temporary failure diagnostic probe (2.2s)
+
+
+  1) [chromium] › tests/e2e/u10-diagnostic-probe.spec.ts:3:1 › U10 temporary failure diagnostic probe 
+
+    Error: Intentional diagnostic probe; never a product regression
+
+      3 | test("U10 temporary failure diagnostic probe", async ({ page }) => {
+      4 |   await page.goto("/");
+    > 5 |   throw new Error("Intentional diagnostic probe; never a product regression");
+        |         ^
+      6 | });
+      7 |
+        at /workspace/operations-data-cleaner/tests/e2e/u10-diagnostic-probe.spec.ts:5:9
+
+    Error Context: test-results/u10-diagnostic-probe-U10-temporary-failure-diagnostic-probe-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/u10-diagnostic-probe-U10-temporary-failure-diagnostic-probe-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/u10-diagnostic-probe-U10-temporary-failure-diagnostic-probe-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests/e2e/u10-diagnostic-probe.spec.ts:3:1 › U10 temporary failure diagnostic probe 

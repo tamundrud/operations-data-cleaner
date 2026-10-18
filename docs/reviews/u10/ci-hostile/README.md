@@ -1,0 +1,13 @@
+# Hostile-loop CI diagnosis
+
+The [second hosted run](https://github.com/tamundrud/operations-data-cleaner/actions/runs/39141744020) at `cfb13ab` passed all 97 Firefox and 97 WebKit cases. Chromium passed 96/97, including the repaired privacy journey and the U9 hostile loop; only the U10 hostile loop timed out waiting for a download. All static checks and 276 unit tests passed. No cause is assigned from that timeout alone.
+
+The original full local Chromium suite passed all 97 tests. Two affected-case repeat runs each passed all three U10 hostile loops; a further [three repeats](local-three-repeats.txt) passed at 14.8/12.1/13.3 seconds. These local passes do not explain the hosted failure.
+
+Read-only source investigation found no ordinary rejection-to-revision mismatch: `parseXlsx` and preflight complete before the worker assigns its source/workflow/run/revision; exceptions leave those values unchanged (`processing.worker.ts:54–74,108–116`). The controller consumes the matching import error while preserving active dataset, workflow, revision and view (`controller.ts:51–72`); export uses that preserved identity (`controller.ts:219–229`). Oversized files fail before a worker request. Export responses echo the matching request envelope. A browser download-handling or automation race remains plausible but unproven.
+
+The failure could be localized by the status after timeout: an explicit stale/serialization error indicates worker rejection; retained busy state indicates a missing/ignored response; ordinary idle preview without a download points to the later click/download boundary. Hosted traces exist in the workflow artifact, but the signed artifact download is blocked from this workspace by network policy (403).
+
+The scoped test change names each fixture in the runner log and trace, then emits browser version and the current ARIA snapshot only on an unexpected failure. The test file uses only synthetic fixtures and configuration; this introduces no production logging or network request. No assertion, input, timeout, performance budget or production source changes. A temporary intentional-failure test confirmed the snapshot reaches the logs ([probe](intentional-diagnostic-probe.txt)); that temporary test was removed. This is observability evidence, not reproduction of the product symptom.
+
+Typecheck and lint passed. The completed scoped CE review is retained in [ci-hostile-diagnostics-review](../ci-hostile-diagnostics-review/). The diagnostic commit is intended to obtain evidence, not to claim the hosted timeout fixed. Final CI outcome and any subsequent diagnosis belong in the PR handoff.

@@ -9,6 +9,10 @@ import { add, closeSettings, download as csvDownload, edit, fixed, map, move, re
 import { workbook, hostile, representative } from "../qualification/xlsx/fixtures.mjs";
 
 const mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+test.afterEach(async ({ page, browser }, info) => {
+  if (info.status !== info.expectedStatus && !page.isClosed())
+    console.error(`U10 failure in ${browser.version()}:\n${await page.locator("body").ariaSnapshot()}`);
+});
 const synthetic = "ID,Amount,Date,Unused\n001234,0.3,2024-02-29,PRIVATE_U10_UNUSED";
 const strCell = (ref: string, text: string) => `<c r="${ref}" t="inlineStr"><is><t>${text}</t></is></c>`;
 function book(epoch = false, sentinel = "PRIVATE_U10_SOURCE") {
@@ -224,11 +228,14 @@ test("U10 integrated safeguards reject hostile workbooks while preserving eligib
   attacks.bomb = workbook("", { extra: { "bomb.bin": new Uint8Array(101 * 1024 * 1024) } });
   const timings: Record<string, number> = {};
   for (const [name, bytes] of Object.entries(attacks)) {
-    await page.getByLabel("Upload source CSV", { exact: true }).setInputFiles({ name: `${name}.xlsx`, mimeType, buffer: Buffer.from(bytes) });
-    const selected = performance.now();
-    await expect(page.locator(".status-bar [role=alert]")).toBeVisible();
-    timings[name] = performance.now() - selected;
-    expect(timings[name]).toBeLessThan(5000); expectTyped(await download(page));
+    await test.step(name, async () => {
+      console.info(`U10 hostile fixture: ${name}`);
+      await page.getByLabel("Upload source CSV", { exact: true }).setInputFiles({ name: `${name}.xlsx`, mimeType, buffer: Buffer.from(bytes) });
+      const selected = performance.now();
+      await expect(page.locator(".status-bar [role=alert]")).toBeVisible();
+      timings[name] = performance.now() - selected;
+      expect(timings[name]).toBeLessThan(5000); expectTyped(await download(page));
+    });
   }
   await info.attach("u10-hostile-integrated.json", { body: JSON.stringify(timings, null, 2), contentType: "application/json" });
 });

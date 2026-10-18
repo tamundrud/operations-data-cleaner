@@ -1,0 +1,8 @@
+{
+  "pre_fix_head": "cfb13ab1f22dac201d94885a859ee83704e20785",
+  "source": "tests/e2e/excel-output.spec.ts",
+  "source_sha256": "c14de29eaaa3e3bb3580bb8c951393ee7eed11d8189d35c1eaad23cda020a7a4",
+  "reviewed_diff_sha256": "9c27d365e78ded4fe01f55ddf03c500fee292d6a2288278de193dbcd3d468d3b",
+  "validation": "typecheck/lint pass; three hostile repeats pass; final source single hostile case passes and logs all19 fixtures; intentional diagnostic probe prints snapshot and is removed",
+  "underlying_timeout": "not claimed fixed; new CI diagnosis required"
+}

@@ -1,0 +1,131 @@
+{
+  "run_id": "u10-ci-hostile-diagnostics-review",
+  "run_dir": "/workspace/operations-data-cleaner/docs/reviews/u10/ci-hostile-diagnostics-review",
+  "skill_dir": "/home/agent/.agents/skills/ce-code-review",
+  "docs_root": "docs",
+  "mode": {
+    "agent": true,
+    "apply_local": false,
+    "grouping": "auto",
+    "depth": "auto"
+  },
+  "invocation": {
+    "arguments": "mode:agent base:cfb13ab1f22dac201d94885a859ee83704e20785",
+    "constraints": [
+      "Review only test observability diff tests/e2e/excel-output.spec.ts versus cfb13ab1f22dac201d94885a859ee83704e20785; exclude earlier U10 implementation/evidence.",
+      "No implementation edits, tests/browser/server/install, push, merge, deploy or comments.",
+      "Include exact reviewed diff SHA256.",
+      "Diagnostics only; do not claim underlying download timeout fixed."
+    ]
+  },
+  "scope": {
+    "mode": "standalone",
+    "base": "cfb13ab1f22dac201d94885a859ee83704e20785",
+    "diff_a": "cfb13ab1f22dac201d94885a859ee83704e20785",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u10-value-only-excel-export",
+    "head_sha": "cfb13ab1f22dac201d94885a859ee83704e20785",
+    "files": "/workspace/operations-data-cleaner/docs/reviews/u10/ci-hostile-diagnostics-review/files.txt",
+    "diff": "/workspace/operations-data-cleaner/docs/reviews/u10/ci-hostile-diagnostics-review/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": [
+      "docs/reviews/u10/ci-hostile-diagnostics-review/"
+    ],
+    "diff_sha256": "9c27d365e78ded4fe01f55ddf03c500fee292d6a2288278de193dbcd3d468d3b"
+  },
+  "intent": {
+    "summary": "Expose unexpected synthetic U10 browser failure state in CI logs using browser version and body ARIA snapshot; label hostile fixture iterations with test.step. Keep assertions, timeouts and production behavior unchanged; underlying intermittent download timeout remains unresolved. Log synthetic hostile fixture name at named step entry so runner logs identify the failing iteration.",
+    "confidence": "explicit"
+  },
+  "plan": {
+    "path": null,
+    "source": "none",
+    "requirements": [],
+    "implementation_units": [],
+    "settled_decisions": []
+  },
+  "roster": {
+    "selected": [
+      {
+        "reviewer": "correctness",
+        "tier": "session",
+        "reason": "always-on"
+      },
+      {
+        "reviewer": "project-standards",
+        "tier": "mid",
+        "reason": "AGENTS.md fallback"
+      },
+      {
+        "reviewer": "testing",
+        "tier": "mid",
+        "reason": "changed browser test synchronization"
+      },
+      {
+        "reviewer": "adversarial",
+        "tier": "session",
+        "reason": "privacy silent-pass verification mechanism fidelity"
+      },
+      {
+        "reviewer": "security",
+        "tier": "session",
+        "reason": "new diagnostic log sink must remain synthetic test-only"
+      }
+    ],
+    "standards": {
+      "criteria": [
+        {
+          "path": "AGENTS.md",
+          "files": [
+            "tests/e2e/excel-output.spec.ts"
+          ]
+        }
+      ],
+      "fallback_named": true,
+      "not_run_reason": null
+    },
+    "packs": {
+      "roots": [],
+      "errors": [],
+      "warnings": []
+    }
+  },
+  "collection": {
+    "returns": "/workspace/operations-data-cleaner/docs/reviews/u10/ci-hostile-diagnostics-review/raw-returns.json",
+    "unstructured_returns": [],
+    "failed_reviewers": [],
+    "bound_exceeded": [],
+    "fast_pass": {
+      "emitted_preliminary": false,
+      "candidates": []
+    }
+  },
+  "peer": {
+    "selected": true,
+    "target": null,
+    "route": null,
+    "preference_source": "default",
+    "outcome": "in-process-fallback",
+    "artifact": null,
+    "coverage": "Cross-model pass not run: only Codex CLI installed, no attested different-family route. Independent local adversarial fallback selected; no external content transfer."
+  },
+  "coverage_notes": [
+    "Default full depth: diagnostic body snapshot crosses a logging/data boundary; review privacy and verification fidelity.",
+    "Only diagnostics/test.step additions reviewed; no U10 implementation re-review.",
+    "No applicable isolated plan; corpus XLSX qualification does not cover diagnostics.",
+    "All tests owned by parent. No runtime execution claimed.",
+    "Root-boundary independent investigation found no normal hostile rejection to revision-desynchronization chain: parsing precedes worker state commit; controller errors preserve prior active revision. Browser download handling remains unproven.",
+    "Exact diff SHA256 9c27d365e78ded4fe01f55ddf03c500fee292d6a2288278de193dbcd3d468d3b."
+  ]
+}
