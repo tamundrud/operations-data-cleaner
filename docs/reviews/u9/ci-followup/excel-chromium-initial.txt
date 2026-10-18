@@ -1,0 +1,24 @@
+
+> operations-data-cleaner@0.2.0 test:e2e
+> playwright test --project=chromium tests/e2e/excel-input.spec.ts
+
+[WebServer] (node:17713) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 1 worker
+
+(node:17725) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › tests/e2e/excel-input.spec.ts:61:1 › U9 worksheet choice, Excel metadata and exact identifier, arithmetic, date and cached bytes (5.9s)
+  ✓   2 [chromium] › tests/e2e/excel-input.spec.ts:100:1 › U9 both date epochs, invalid dates and missing cached formulas remain inspectable errors (4.8s)
+  ✓   3 [chromium] › tests/e2e/excel-input.spec.ts:123:1 › U9 selected worksheet, first nonblank header, blank rows and footer retain original semantics (3.0s)
+  ✓   4 [chromium] › tests/e2e/excel-input.spec.ts:142:1 › U9 XLSX templates supply names and order only; saved and portable workflows reuse Excel input (3.6s)
+  ✓   5 [chromium] › tests/e2e/excel-input.spec.ts:179:1 › U9 long numeric identifiers and unsupported display formats warn without inventing digits (2.2s)
+  ✓   6 [chromium] › tests/e2e/excel-input.spec.ts:191:1 › U9 integrated worker rejects every U1 hostile fixture and preserves the prior run (9.9s)
+  ✓   7 [chromium] › tests/e2e/excel-input.spec.ts:220:1 › U9 browser privacy intercepts external links and WEBSERVICE without exposing source data (1.8s)
+  ✓   8 [chromium] › tests/e2e/excel-input.spec.ts:245:1 › U9 cancellation stops workbook processing and retries the unchanged active source (2.7s)
+U9 initial render { nodes: 211 }
+  ✓   9 [chromium] › tests/e2e/excel-input.spec.ts:260:1 › U9 10000-row integrated workbook remains responsive and exports every selected value (5.9s)
+  ✓  10 [chromium] › tests/e2e/excel-input.spec.ts:288:1 › U9 manual replacements require a fresh worksheet choice and preserve the prior run after a selected-sheet failure (2.4s)
+
+  10 passed (43.9s)

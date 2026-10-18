@@ -10,6 +10,7 @@ import {
 import { displayValue } from "../engine/values";
 import { exportText, type SafetyChoice } from "../formats/spreadsheet-safety";
 import MappingRows from "./MappingRows";
+import ExcelCellDetails from "./ExcelCellDetails";
 import SavedWorkflows from "./SavedWorkflows";
 import { snapshotWorkflow, encodeWorkflow } from "../workflows/codec";
 import type { StoredWorkflow } from "../workflows/indexeddb-store";
@@ -36,6 +37,7 @@ export default function Workspace() {
   const [choice, setChoice] = useState<SafetyChoice>();
   const [exceptions, setExceptions] = useState(false);
   const [worksheet, setWorksheet] = useState("");
+  const [inspectSource, setInspectSource] = useState(false);
   const draftGeneration = useRef(0);
   const pendingGeneration = useRef<number | undefined>(undefined);
   const failedGeneration = useRef<number | undefined>(undefined);
@@ -53,6 +55,7 @@ export default function Workspace() {
   useEffect(() => {
     session.onState = (s) => {
       setState(s);
+      if (!s.view) setInspectSource(false);
       if (!s.busy) {
         setExceptions(s.view?.exceptions ?? false);
         const completed = pendingGeneration.current;
@@ -363,9 +366,11 @@ export default function Workspace() {
       </div>
       {view && (
         <div className="workspace">
-          <details className="panel source-inspection">
+          <details className="panel source-inspection" onToggle={(event) => {
+            if (event.target === event.currentTarget) setInspectSource(event.currentTarget.open);
+          }}>
             <summary>Inspect original source table</summary>
-            <section aria-labelledby="source-title">
+            {inspectSource && <section aria-labelledby="source-title">
               <h2 id="source-title">Source table</h2>
               <p>
                 Original values · first {view.sourceRows.length} rows · read
@@ -398,16 +403,7 @@ export default function Workspace() {
                         {view.columns.map((c) => (
                           <td key={c.key}>
                             {r.cells[c.position]?.display ?? ""}
-                            {r.cells[c.position]?.excel && <details>
-                              <summary>Excel cell details</summary>
-                              <dl>
-                                <dt>Type</dt><dd>{r.cells[c.position].excel!.type}</dd>
-                                <dt>Raw value</dt><dd>{String(r.cells[c.position].excel!.value ?? "(no cached value)")}</dd>
-                                <dt>Format</dt><dd>{r.cells[c.position].excel!.format}</dd>
-                                <dt>Workbook calendar</dt><dd>{r.cells[c.position].excel!.date1904 ? "1904" : "1900"}</dd>
-                                {r.cells[c.position].excel!.formula !== undefined && <><dt>Formula (never evaluated)</dt><dd>{r.cells[c.position].excel!.formula}</dd></>}
-                              </dl>
-                            </details>}
+                            {r.cells[c.position]?.excel && <ExcelCellDetails cell={r.cells[c.position].excel!} />}
                           </td>
                         ))}
                       </tr>
@@ -415,7 +411,7 @@ export default function Workspace() {
                   </tbody>
                 </table>
               </div>
-            </section>
+            </section>}
           </details>
           {!repeat && <MappingRows key={activation}
             view={view}

@@ -1,0 +1,24 @@
+
+> operations-data-cleaner@0.2.0 test:e2e
+> playwright test --project=chromium tests/e2e/excel-input.spec.ts
+
+[WebServer] (node:23289) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 11 tests using 1 worker
+
+(node:23301) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › tests/e2e/excel-input.spec.ts:61:1 › U9 worksheet choice, Excel metadata and exact identifier, arithmetic, date and cached bytes (6.2s)
+  ✓   2 [chromium] › tests/e2e/excel-input.spec.ts:100:1 › U9 both date epochs, invalid dates and missing cached formulas remain inspectable errors (4.7s)
+  ✓   3 [chromium] › tests/e2e/excel-input.spec.ts:123:1 › U9 selected worksheet, first nonblank header, blank rows and footer retain original semantics (3.1s)
+  ✓   4 [chromium] › tests/e2e/excel-input.spec.ts:142:1 › U9 XLSX templates supply names and order only; saved and portable workflows reuse Excel input (3.6s)
+  ✓   5 [chromium] › tests/e2e/excel-input.spec.ts:179:1 › U9 long numeric identifiers and unsupported display formats warn without inventing digits (2.1s)
+  ✓   6 [chromium] › tests/e2e/excel-input.spec.ts:191:1 › U9 integrated worker rejects every U1 hostile fixture and preserves the prior run (10.2s)
+  ✓   7 [chromium] › tests/e2e/excel-input.spec.ts:220:1 › U9 browser privacy intercepts external links and WEBSERVICE without exposing source data (1.7s)
+  ✓   8 [chromium] › tests/e2e/excel-input.spec.ts:245:1 › U9 cancellation stops workbook processing and retries the unchanged active source (2.0s)
+  ✓   9 [chromium] › tests/e2e/excel-input.spec.ts:263:1 › U9 10000-row integrated workbook remains responsive and exports every selected value (5.9s)
+  ✓  10 [chromium] › tests/e2e/excel-input.spec.ts:290:1 › U9 manual replacements require a fresh worksheet choice and preserve the prior run after a selected-sheet failure (2.3s)
+  ✓  11 [chromium] › tests/e2e/excel-input.spec.ts:324:1 › U9 source inspection stays deferred after ending an inspected session (1.4s)
+
+  11 passed (45.2s)

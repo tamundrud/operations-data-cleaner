@@ -1,0 +1,90 @@
+
+> operations-data-cleaner@0.2.0 test:e2e
+> playwright test --project=chromium tests/e2e/excel-input.spec.ts --grep cancellation stops|source inspection stays deferred
+
+[WebServer] (node:22641) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:22653) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/excel-input.spec.ts:245:1 › U9 cancellation stops workbook processing and retries the unchanged active source (8.6s)
+(node:22794) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [chromium] › tests/e2e/excel-input.spec.ts:324:1 › U9 source inspection stays deferred after ending an inspected session (6.7s)
+
+
+  1) [chromium] › tests/e2e/excel-input.spec.ts:245:1 › U9 cancellation stops workbook processing and retries the unchanged active source
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  locator('.source-inspection section')
+    Expected: 0
+    Received: 1
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" locator('.source-inspection section') with timeout 5000ms
+      - waiting for locator('.source-inspection section')
+        14 × locator resolved to 1 element
+           - unexpected value "1"
+
+
+      258 |   await page.getByRole("button", { name: "Retry active file", exact: true }).click();
+      259 |   expect(await download(page)).toEqual(Buffer.from("Reference\r\n001234\r\n"));
+    > 260 |   await expect(page.locator(".source-inspection section")).toHaveCount(0);
+          |                                                            ^
+      261 | });
+      262 |
+      263 | test("U9 10000-row integrated workbook remains responsive and exports every selected value", async ({ page, browser }, info) => {
+        at /workspace/operations-data-cleaner/tests/e2e/excel-input.spec.ts:260:60
+
+    Error Context: test-results/excel-input-U9-cancellatio-6ce08-the-unchanged-active-source-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/excel-input-U9-cancellatio-6ce08-the-unchanged-active-source-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/excel-input-U9-cancellatio-6ce08-the-unchanged-active-source-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests/e2e/excel-input.spec.ts:324:1 › U9 source inspection stays deferred after ending an inspected session
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  locator('.source-inspection section')
+    Expected: 0
+    Received: 1
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" locator('.source-inspection section') with timeout 5000ms
+      - waiting for locator('.source-inspection section')
+        14 × locator resolved to 1 element
+           - unexpected value "1"
+
+
+      329 |   await page.getByRole("button", { name: "End session", exact: true }).click();
+      330 |   await uploadBook(page, fidelityBook());
+    > 331 |   await expect(page.locator(".source-inspection section")).toHaveCount(0);
+          |                                                            ^
+      332 |   await page.locator(".source-inspection > summary").click();
+      333 |   await expect(page.locator(".source-inspection section")).toBeVisible();
+      334 |   const metadata = page.locator(".source-inspection details").first();
+        at /workspace/operations-data-cleaner/tests/e2e/excel-input.spec.ts:331:60
+
+    Error Context: test-results/excel-input-U9-source-insp-cb464-ending-an-inspected-session-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/excel-input-U9-source-insp-cb464-ending-an-inspected-session-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/excel-input-U9-source-insp-cb464-ending-an-inspected-session-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests/e2e/excel-input.spec.ts:245:1 › U9 cancellation stops workbook processing and retries the unchanged active source
+    [chromium] › tests/e2e/excel-input.spec.ts:324:1 › U9 source inspection stays deferred after ending an inspected session

@@ -6,7 +6,12 @@ on:
 permissions:
   contents: read
 jobs:
-  verify:
+  browser:
+    name: browser (${{ matrix.browser }})
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -20,13 +25,22 @@ jobs:
       - run: npm run lint
       - run: npm run test:unit
       - run: npm run build
-      - run: npx playwright install --with-deps chromium firefox webkit
-      - run: npm run test:e2e
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: npm run test:e2e -- --project=${{ matrix.browser }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: csv-browser-evidence
+          name: csv-browser-evidence-${{ matrix.browser }}
           path: |
             playwright-report/
             test-results/
           retention-days: 14
+
+  verify:
+    name: verify
+    needs: browser
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every browser job to pass
+        run: test "${{ needs.browser.result }}" = success

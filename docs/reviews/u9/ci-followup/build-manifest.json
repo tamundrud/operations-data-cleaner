@@ -1,0 +1,22 @@
+{
+  "dist/SheetJS-LICENSE.txt": {
+    "bytes": 11355,
+    "sha256": "4d2a38ac35cda06a555c84074a819d413339cd3691b822cae50f8f322fe01f64"
+  },
+  "dist/assets/index-BXaHGeAc.js": {
+    "bytes": 407203,
+    "sha256": "d90bd5b390789967f72d23087834b1a241d22adf564751d55b0b04b22ff5da64"
+  },
+  "dist/assets/index-zAvRkauv.css": {
+    "bytes": 12633,
+    "sha256": "eadf6e880299c41aa82b1950f37cfe11dd3cb64b0e001426ef17211452e7e618"
+  },
+  "dist/assets/processing.worker-BlzJ48Yj.js": {
+    "bytes": 512267,
+    "sha256": "bb9d4c7f04a07987dd4f8aea9524e34827ed0a3835736a8cfa2e68ce14cf0517"
+  },
+  "dist/index.html": {
+    "bytes": 609,
+    "sha256": "7a42c5cffe70c7dccc4f426f7962fd206abe4f90c3f6c810926421b4fb7af0d7"
+  }
+}

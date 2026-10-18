@@ -1,0 +1,27 @@
+{
+  "reviewer": "adversarial",
+  "findings": [
+    {
+      "title": "Ending an inspected session restores hidden eager rendering",
+      "severity": "P2",
+      "file": "src/ui/Workspace.tsx",
+      "line": 372,
+      "why_it_matters": "After a user opens source inspection, ends the session, and uploads another workbook, the new disclosure starts closed but the full source table mounts immediately. The inspection boolean lives in Workspace and survives removal of the old disclosure, so this ordinary sequence reintroduces thousands of hidden DOM nodes and the main-thread work this follow-up removes. Resetting inspection state when the view disappears keeps a new session's closed panel lazy, including cancellation and retry.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "suggested_fix": "Reset inspectSource whenever the source view is removed (for example, in the existing session.onState callback when s.view is absent), or move its state into a source-inspection component that unmounts with view. Verify open inspection -> End session -> new workbook and open inspection -> cancel processing -> retry both leave the newly closed disclosure's source section unmounted until opened.",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:372 -- {inspectSource && <section aria-labelledby=\"source-title\">",
+        "src/ui/Workspace.tsx:40 -- const [inspectSource, setInspectSource] = useState(false);",
+        "src/ui/Workspace.tsx:366-370 -- {view && ( ... <details className=\"panel source-inspection\" onToggle={(event) => { if (event.target === event.currentTarget) setInspectSource(event.currentTarget.open); }}>",
+        "Scenario: opening inspection sets the Workspace boolean true; resetWorking calls session.end without resetting that boolean, removing the view and disclosure; the next uploaded view mounts a fresh details element without an open attribute while inspectSource remains true, so its hidden source section is constructed immediately.",
+        "src/session/controller.ts:243 -- view: undefined, (stop clears the view for cancellation and end as well); Workspace itself stays mounted through these transitions."
+      ],
+      "pre_existing": false
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

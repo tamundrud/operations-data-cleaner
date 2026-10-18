@@ -247,6 +247,8 @@ test("U9 cancellation stops workbook processing and retries the unchanged active
   await upload(page, "ID\n001234");
   await add(page, ["Reference"]);
   await map(page, "Reference", "id");
+  await page.locator(".source-inspection > summary").click();
+  await expect(page.locator(".source-inspection section")).toBeVisible();
   await page.getByLabel("Upload source CSV", { exact: true }).setInputFiles({ name: "large-replacement.xlsx", mimeType, buffer: Buffer.from(representative()) });
   await expect(page.locator(".status-bar [role=status]")).toContainText("Importing and checking file");
   const start = performance.now();
@@ -255,6 +257,7 @@ test("U9 cancellation stops workbook processing and retries the unchanged active
   expect(performance.now() - start).toBeLessThan(1000);
   await page.getByRole("button", { name: "Retry active file", exact: true }).click();
   expect(await download(page)).toEqual(Buffer.from("Reference\r\n001234\r\n"));
+  await expect(page.locator(".source-inspection section")).toHaveCount(0);
 });
 
 test("U9 10000-row integrated workbook remains responsive and exports every selected value", async ({ page, browser }, info) => {
@@ -316,4 +319,20 @@ test("U9 manual replacements require a fresh worksheet choice and preserve the p
   expect(await download(page)).toEqual(expected);
   await expect(page.locator(".status-bar")).toContainText("worksheet Incoming");
   await expect(page.locator(".status-bar")).not.toContainText("delimiter detected");
+});
+
+test("U9 source inspection stays deferred after ending an inspected session", async ({ page }) => {
+  await page.goto("/");
+  await uploadBook(page, fidelityBook());
+  await page.locator(".source-inspection > summary").click();
+  await expect(page.locator(".source-inspection section")).toBeVisible();
+  await page.getByRole("button", { name: "End session", exact: true }).click();
+  await uploadBook(page, fidelityBook());
+  await expect(page.locator(".source-inspection section")).toHaveCount(0);
+  await page.locator(".source-inspection > summary").click();
+  await expect(page.locator(".source-inspection section")).toBeVisible();
+  const metadata = page.locator(".source-inspection details").first();
+  await expect(metadata.locator("dl")).toHaveCount(0);
+  await metadata.locator("summary").click();
+  await expect(metadata.locator("dl")).toContainText("Raw value");
 });

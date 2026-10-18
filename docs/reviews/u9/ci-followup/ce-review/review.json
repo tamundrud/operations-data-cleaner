@@ -1,0 +1,130 @@
+{
+  "status": "complete",
+  "verdict": "Ready with fixes",
+  "scope": {
+    "base": "1197a156c1370cf42505e2411cff985bd2d6829f",
+    "branch": "feat/u9-metadata-aware-excel-input",
+    "head_sha": "1197a156c1370cf42505e2411cff985bd2d6829f",
+    "pr_url": null,
+    "files_changed": 6
+  },
+  "intent": "Fix real Firefox/WebKit 10k Excel import timeouts by mounting source inspection and Excel metadata only when opened. Run the same three production browser suites on separate matrix runners and retain the original required verify aggregate, without changing data, limits, privacy, or the completed ZIP guard.",
+  "intent_confidence": "explicit",
+  "reviewers": [
+    "correctness",
+    "adversarial"
+  ],
+  "findings": [
+    {
+      "#": 1,
+      "title": "Ending an inspected session restores hidden eager rendering",
+      "severity": "P2",
+      "file": "src/ui/Workspace.tsx",
+      "line": 372,
+      "confidence": 75,
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "pre_existing": false,
+      "suggested_fix": "Reset inspectSource whenever session.onState receives no view, or move disclosure state to a component unmounted with view. Verify inspect\u2192End session\u2192upload and cancel\u2192retry leave a closed source disclosure unmounted, while opening still exposes cell metadata.",
+      "first_evidence": "src/ui/Workspace.tsx:372 -- {inspectSource && <section aria-labelledby=\"source-title\">",
+      "why_it_matters": "After opening source inspection, ending the session removes the native details element but leaves inspectSource true in Workspace. A new import therefore mounts a closed details element containing the full hidden source table, recreating the load that this change intends to remove. Cancellation and crash recovery also clear the view and can produce the same mismatch on retry. Resetting inspection state whenever the view disappears keeps deferred mounting aligned with the new native disclosure.",
+      "evidence": [
+        "src/ui/Workspace.tsx:372 -- {inspectSource && <section aria-labelledby=\"source-title\">",
+        "src/ui/Workspace.tsx:366 -- {view && (",
+        "src/ui/Workspace.tsx:39 -- const [inspectSource, setInspectSource] = useState(false);",
+        "src/session/controller.ts:243 -- view: undefined,",
+        "src/session/controller.ts:256-260 -- end() calls stop; stop clears the view but has no path resetting Workspace inspectSource."
+      ],
+      "reviewers": [
+        "correctness",
+        "adversarial"
+      ],
+      "independent_reviewers": [
+        "adversarial"
+      ]
+    }
+  ],
+  "actionable_findings": [
+    {
+      "#": 1,
+      "title": "Ending an inspected session restores hidden eager rendering",
+      "severity": "P2",
+      "file": "src/ui/Workspace.tsx",
+      "line": 372,
+      "confidence": 75,
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "pre_existing": false,
+      "suggested_fix": "Reset inspectSource whenever session.onState receives no view, or move disclosure state to a component unmounted with view. Verify inspect\u2192End session\u2192upload and cancel\u2192retry leave a closed source disclosure unmounted, while opening still exposes cell metadata.",
+      "first_evidence": "src/ui/Workspace.tsx:372 -- {inspectSource && <section aria-labelledby=\"source-title\">",
+      "why_it_matters": "After opening source inspection, ending the session removes the native details element but leaves inspectSource true in Workspace. A new import therefore mounts a closed details element containing the full hidden source table, recreating the load that this change intends to remove. Cancellation and crash recovery also clear the view and can produce the same mismatch on retry. Resetting inspection state whenever the view disappears keeps deferred mounting aligned with the new native disclosure.",
+      "evidence": [
+        "src/ui/Workspace.tsx:372 -- {inspectSource && <section aria-labelledby=\"source-title\">",
+        "src/ui/Workspace.tsx:366 -- {view && (",
+        "src/ui/Workspace.tsx:39 -- const [inspectSource, setInspectSource] = useState(false);",
+        "src/session/controller.ts:243 -- view: undefined,",
+        "src/session/controller.ts:256-260 -- end() calls stop; stop clears the view but has no path resetting Workspace inspectSource."
+      ],
+      "reviewers": [
+        "correctness",
+        "adversarial"
+      ],
+      "independent_reviewers": [
+        "adversarial"
+      ]
+    }
+  ],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "requirements_completeness": {
+    "plan": "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "plan_source": "explicit",
+    "reviewed_units": [
+      "U9"
+    ],
+    "requirements": [
+      "R1",
+      "R6",
+      "R7",
+      "R8",
+      "R9"
+    ],
+    "result": "Follow-up preserves U9 input/metadata/export intent and tests all three browser projects against production builds. Deferred mounting has one lifecycle defect requiring correction. Other units, complete U9 requalification and hands-on acceptance are outside this incremental diff.",
+    "unrequested_behavior_rules": []
+  },
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [],
+  "testing_gaps": [],
+  "coverage": {
+    "depth": "focused",
+    "depth_reason": "Small56 executable non-test changed lines; CI is a silent-pass guard requiring an independent adversarial read. No full-depth floor or changed auth/money/public-contract boundary.",
+    "scope_mode": "base local working tree; staged and unstaged tracked changes included; new ExcelCellDetails component staged and included",
+    "criteria": {
+      "AGENTS.md": [
+        ".github/workflows/u2.yml",
+        "src/ui/Workspace.tsx",
+        "src/ui/ExcelCellDetails.tsx",
+        "docs/reviews/u9/ci-followup/failed-ci-excerpt.txt",
+        "docs/reviews/u9/ci-followup/measure.mjs",
+        "docs/reviews/u9/ci-followup/simplification/receipt.md"
+      ]
+    },
+    "criteria_search": "complete; AGENTS.md instruction-file fallback; no CODING_STANDARDS.md or CLAUDE.md governs reviewed paths",
+    "independent_read": "local same-serving-family adversarial fallback; no cross-model agreement promotion",
+    "cross_model_pass": "not run: only codex installed; no attested different-family CLI route; no content sent externally; no peer job started",
+    "reviewers_collected": [
+      "adversarial terminal compact return plus full artifact"
+    ],
+    "validator": "none on focused path",
+    "other_reviewers": "No other reviewer agents dispatched. Learnings, agent-native gaps, deployment notes and Compound Packs not assessed.",
+    "checks": "Read-only source/config/evidence inspection; no tests, build, browser, index, branch, commit or PR mutation performed. CI matrix retains all3 named Playwright projects, per-runner build/checks, fail-fast false, distinct artifacts, contents:read and always-running verify shell failure for any non-success dependency result.",
+    "untracked_excluded": []
+  },
+  "artifact_path": "docs/reviews/u9/ci-followup/ce-review",
+  "scratch_artifact_path": "/tmp/compound-engineering-1000/ce-code-review/20261017-ci-followup-7a68c038",
+  "run_id": "20261017-ci-followup-7a68c038"
+}
