@@ -1,0 +1,54 @@
+{
+  "run_id": "u10-ce-review-resumed",
+  "run_dir": "/workspace/operations-data-cleaner/docs/reviews/u10/ce-review",
+  "findings": [],
+  "selected_findings": [],
+  "skip_count": 0,
+  "skip_evidence_basis": [],
+  "selection_reason": "No surviving primary findings; empty validator batch.",
+  "scope": {
+    "mode": "standalone",
+    "base": "eb64ab2a8e065d5441f6246636cea8e14a3411df",
+    "diff_a": "origin/main",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u10-value-only-excel-export",
+    "head_sha": "91b32a6559c29e0baea333e7e1ae8cead21a1bf3",
+    "files": "/workspace/operations-data-cleaner/docs/reviews/u10/ce-review/files.txt",
+    "diff": "/workspace/operations-data-cleaner/docs/reviews/u10/ce-review/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": [
+      "docs/reviews/u10/"
+    ]
+  },
+  "scope_context": {
+    "mode": "standalone",
+    "tree_is_reviewed_head": true,
+    "base": "eb64ab2a8e065d5441f6246636cea8e14a3411df",
+    "reviewed_head": "91b32a6559c29e0baea333e7e1ae8cead21a1bf3",
+    "diff_path": "/workspace/operations-data-cleaner/docs/reviews/u10/ce-review/full.diff",
+    "files_path": "/workspace/operations-data-cleaner/docs/reviews/u10/ce-review/files.txt"
+  },
+  "invocation_constraints": [
+    "Implement only U10.",
+    "Preserve approved U2\u2013U9 interface and existing privacy, fidelity, saved-workflow and revision-safety guarantees.",
+    "Read-only: never alter production/tests/README/plan, no git mutations/push/PR.",
+    "No browser/test/server/install execution; parent owns verification.",
+    "Recovery after environment restart: recover actual terminal outcomes only; rerun missing scopes; durable artifacts docs/reviews/u10/ce-review."
+  ],
+  "intent": {
+    "summary": "Implement U10 CSV/XLSX to fresh value-only typed XLSX downloads, preserving literal identifiers/formula-like text, exact representable numbers, calendar dates, blanks and selected order. Preserve U2\u2013U9 validation, revision safety, privacy and workflow portability; reuse vendored SheetJS and U9 resource infrastructure.",
+    "confidence": "explicit"
+  },
+  "normal_cap": 8
+}

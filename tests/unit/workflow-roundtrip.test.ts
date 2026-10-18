@@ -55,10 +55,9 @@ test("untrusted JSON rejects versions, budgets, nested injection and malformed r
   ]) expect(() => decodeUsableWorkflow(JSON.stringify(injected))).toThrow(/structure/);
 });
 
-test("declared future capabilities decode structurally but fail the usable boundary", () => {
-  const variants: Workflow[] = [];
-  variants.push({ ...golden(), output: { ...golden().output, format: 'xlsx' } });
-  for (const w of variants) expect(() => decodeUsableWorkflow(JSON.stringify(w))).toThrow(/unsupported/i);
+test("version-1 reserved XLSX output now passes the usable boundary without migration", () => {
+  const w = golden(); w.output.format = 'xlsx';
+  expect(decodeUsableWorkflow(JSON.stringify(w))).toEqual(w);
 });
 
 test("usable configuration rejects unfinished, conflicting and inconsistent declarations", () => {

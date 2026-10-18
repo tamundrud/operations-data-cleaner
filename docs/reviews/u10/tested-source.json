@@ -1,0 +1,37 @@
+{
+  "implementation_head": "91b32a6559c29e0baea333e7e1ae8cead21a1bf3",
+  "base": "eb64ab2a8e065d5441f6246636cea8e14a3411df",
+  "note": "The following evidence-only commit does not change these reviewed and tested implementation files.",
+  "sha256": {
+    "README.md": "f7b9812863a26ab2fdaf28934bdbb9959e961772206811c7f5cb341c9a0ca832",
+    "docs/decisions/excel-fidelity.md": "d056d0f00f2efc422f1b7591513e91ac001f8b1c54927cf99e69e03c448630e0",
+    "src/engine/recipes.ts": "1d5a84ea0be4c7d5b26e6a1ba6185a8919e647c6df7447aa63ebaf8dbefead59",
+    "src/engine/validation.ts": "3ae0eba38f09f60165708be84a8f9d3f0296da3b0d67109d2bdaf3eebcd44894",
+    "src/formats/xlsx-export.ts": "a6b19ad9f81528abe3c7991e23582164a3a758a615e0c438af21b6f9195d80d8",
+    "src/processing.worker.ts": "cf3c00acccb2f538523b8fc38e1e46c8c9c519f9a7e4f1005041cc7036863a47",
+    "src/session/controller.ts": "72d7746f63cc6bb5228a6e74609a5c623ff91667b59667cecd98cb6ae339dcde",
+    "src/session/worker-protocol.ts": "dcefd2861454da4bcab0a46e4b52f287bca2a11e18b285a6ca73537b4908a17e",
+    "src/ui/Workspace.tsx": "4cee9d7bb4471bac3aa3f82153180930e6f48a1a6193e271c6194bef7a3a48fb",
+    "tests/e2e/excel-output.spec.ts": "2c7ccbb2612e8cabb4381e5180473cdb8a5cddb9af8de96c2e2b5b727e4aa586",
+    "tests/fixtures/xlsx/u10-output.json": "baf87d6bde441275a9bf299dbcffc7447d1bc10324f4682d614d2854281cc792",
+    "tests/unit/session.test.ts": "25635d89e35b9bc4d221fa5ed924857c9ad4685bc4b91a94ed405533dcefc399",
+    "tests/unit/workflow-roundtrip.test.ts": "991cfab9c8a808d981e6d083069e3ada0d9663a8beda928c0344b4bc1cd66c8e",
+    "tests/unit/xlsx-export.test.ts": "bfbde852b9307c06668212b27567cfdbb585f9579218c9a040adcfa2bc80612c"
+  },
+  "validation": {
+    "unit": {
+      "command": "npm run test:unit",
+      "passed": 276
+    },
+    "typecheck": "passed",
+    "lint": "passed",
+    "build": "passed",
+    "chromium": {
+      "command": "U2_CHROMIUM_PATH=/usr/bin/chromium npx playwright test --project=chromium",
+      "passed": 97
+    },
+    "independent_reader": "openpyxl 3.1.5 and ElementTree: passed"
+  },
+  "ce_review": "ce-review/review.json",
+  "scope": "U10 only; draft PR, no merge or deploy; user UX acceptance pending"
+}

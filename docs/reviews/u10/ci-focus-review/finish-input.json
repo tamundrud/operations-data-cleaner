@@ -1,0 +1,124 @@
+{
+  "run_id": "u10-ci-focus-review",
+  "run_dir": "/workspace/operations-data-cleaner/docs/reviews/u10/ci-focus-review",
+  "skill_dir": "/home/agent/.agents/skills/ce-code-review",
+  "docs_root": "docs",
+  "mode": {
+    "agent": true,
+    "apply_local": false,
+    "grouping": "auto",
+    "depth": "auto"
+  },
+  "invocation": {
+    "arguments": "mode:agent base:aec3cd7a15eaa124d3f10530248023766894f61c",
+    "constraints": [
+      "Review only the two-line test synchronization fix in tests/e2e/privacy.spec.ts versus aec3cd7a15eaa124d3f10530248023766894f61c; exclude earlier U10 implementation/evidence.",
+      "No implementation edits, tests, browser/server/install, push, merge, deploy or comments.",
+      "Include reviewed diff SHA256 in final receipt."
+    ]
+  },
+  "scope": {
+    "mode": "standalone",
+    "base": "aec3cd7a15eaa124d3f10530248023766894f61c",
+    "diff_a": "aec3cd7a15eaa124d3f10530248023766894f61c",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u10-value-only-excel-export",
+    "head_sha": "aec3cd7a15eaa124d3f10530248023766894f61c",
+    "files": "/workspace/operations-data-cleaner/docs/reviews/u10/ci-focus-review/files.txt",
+    "diff": "/workspace/operations-data-cleaner/docs/reviews/u10/ci-focus-review/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": [
+      "docs/reviews/u10/ci-focus-review/"
+    ],
+    "diff_sha256": "786e437f38fc90ee127f4ba370a6931056bbaf32fab97c089046ee62342140db"
+  },
+  "intent": {
+    "summary": "Stabilize the privacy browser journey by waiting for the scheduled mapped-output focus before clearing source search, then asserting the search is empty. Preserve all existing privacy assertions, test timeout and production behavior; review only these two test lines versus aec3cd7a15eaa124d3f10530248023766894f61c.",
+    "confidence": "explicit"
+  },
+  "plan": {
+    "path": null,
+    "source": "none",
+    "requirements": [],
+    "implementation_units": [],
+    "settled_decisions": []
+  },
+  "roster": {
+    "selected": [
+      {
+        "reviewer": "correctness",
+        "tier": "session",
+        "reason": "always-on"
+      },
+      {
+        "reviewer": "project-standards",
+        "tier": "mid",
+        "reason": "AGENTS.md fallback"
+      },
+      {
+        "reviewer": "testing",
+        "tier": "mid",
+        "reason": "changed browser test synchronization"
+      },
+      {
+        "reviewer": "adversarial",
+        "tier": "session",
+        "reason": "privacy silent-pass verification mechanism fidelity"
+      }
+    ],
+    "standards": {
+      "criteria": [
+        {
+          "path": "AGENTS.md",
+          "files": [
+            "tests/e2e/privacy.spec.ts"
+          ]
+        }
+      ],
+      "fallback_named": true,
+      "not_run_reason": null
+    },
+    "packs": {
+      "roots": [],
+      "errors": [],
+      "warnings": []
+    }
+  },
+  "collection": {
+    "returns": "/workspace/operations-data-cleaner/docs/reviews/u10/ci-focus-review/raw-returns.json",
+    "unstructured_returns": [],
+    "failed_reviewers": [],
+    "bound_exceeded": [],
+    "fast_pass": {
+      "emitted_preliminary": false,
+      "candidates": []
+    }
+  },
+  "peer": {
+    "selected": true,
+    "target": null,
+    "route": null,
+    "preference_source": "default",
+    "outcome": "in-process-fallback",
+    "artifact": null,
+    "coverage": "Cross-model pass not run: only Codex CLI installed, no attested different-family route. Independent local adversarial fallback selected; no external content transfer."
+  },
+  "coverage_notes": [
+    "Default depth full: this synchronization changes a privacy verification gate; silent-pass concerns sit on a data/privacy boundary.",
+    "Review only two test additions. HEAD excludes those uncommitted additions; exact reviewed diff recorded by SHA256 786e437f38fc90ee127f4ba370a6931056bbaf32fab97c089046ee62342140db.",
+    "No auto-discovered plan applies to this isolated test synchronization correction; earlier U10 requirements excluded.",
+    "AGENTS.md fallback criteria. Learning corpus cheap path/title search only XLSX qualification, no focus/synchronization match.",
+    "Tests and runtime verification parent-owned; no execution claimed."
+  ]
+}

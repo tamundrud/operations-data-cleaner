@@ -1,0 +1,63 @@
+diff --git a/tests/e2e/excel-output.spec.ts b/tests/e2e/excel-output.spec.ts
+index 791f510..67cc6ec 100644
+--- a/tests/e2e/excel-output.spec.ts
++++ b/tests/e2e/excel-output.spec.ts
+@@ -2,20 +2,24 @@ import { expect, test, type Page } from "@playwright/test";
+ import AxeBuilder from "@axe-core/playwright";
+ import { mkdir, readFile, readdir } from "node:fs/promises";
+ import { createHash } from "node:crypto";
+ import { strFromU8, unzipSync } from "fflate";
+ import { makeWorkflow, referencedHeaders, type Workflow } from "../../src/engine/workflow";
+ import { add, closeSettings, download as csvDownload, edit, fixed, map, move, remove, upload } from "./helpers";
+ // @ts-expect-error Independently authored synthetic OOXML, not a SheetJS writer fixture.
+ import { workbook, hostile, representative } from "../qualification/xlsx/fixtures.mjs";
+ 
+ const mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
++test.afterEach(async ({ page, browser }, info) => {
++  if (info.status !== info.expectedStatus && !page.isClosed())
++    console.error(`U10 failure in ${browser.version()}:\n${await page.locator("body").ariaSnapshot()}`);
++});
+ const synthetic = "ID,Amount,Date,Unused\n001234,0.3,2024-02-29,PRIVATE_U10_UNUSED";
+ const strCell = (ref: string, text: string) => `<c r="${ref}" t="inlineStr"><is><t>${text}</t></is></c>`;
+ function book(epoch = false, sentinel = "PRIVATE_U10_SOURCE") {
+   return workbook(`<row r="1">${["ID", "Amount", "Date", "Cached", "Note"].map((h, i) => strCell(`${String.fromCharCode(65 + i)}1`, h)).join("")}</row>` +
+     `<row r="2">${strCell("A2", "001234")}<c r="B2"><v>0.3</v></c><c r="C2" s="2"><v>${epoch ? 43889 : 45351}</v></c><c r="D2"><f>WEBSERVICE("https://example.invalid/U1_PRIVATE_SENTINEL")</f><v>7</v></c>${strCell("E2", sentinel)}</row>`, { epoch, dimension: "A1:E2", extra: { "synthetic-unused.bin": new Uint8Array([1, 2, 3]), "xl/vbaProject.bin": new Uint8Array([0, 1, 2]) } }) as Uint8Array;
+ }
+ function config(excel = false): Workflow {
+   const w = makeWorkflow(["Reference", "Amount", "Delivery", "Blank", "Literal"]);
+   w.id = "synthetic-u10"; w.name = "Synthetic Excel output";
+   w.output.format = "xlsx";
+@@ -217,25 +221,28 @@ test("U10 privacy covers both source formats, cached formulas, Excel settings, s
+   expect(unexpected).toEqual([]); expect(diagnostics.join("\n")).not.toMatch(/PRIVATE_U10|U1_PRIVATE_SENTINEL/u);
+ });
+ 
+ test("U10 integrated safeguards reject hostile workbooks while preserving eligible Excel download", async ({ page }, info) => {
+   test.setTimeout(120000);
+   await page.goto("/"); await importConfig(page, config()); await upload(page, synthetic);
+   const attacks = hostile() as Record<string, Uint8Array>;
+   attacks.bomb = workbook("", { extra: { "bomb.bin": new Uint8Array(101 * 1024 * 1024) } });
+   const timings: Record<string, number> = {};
+   for (const [name, bytes] of Object.entries(attacks)) {
+-    await page.getByLabel("Upload source CSV", { exact: true }).setInputFiles({ name: `${name}.xlsx`, mimeType, buffer: Buffer.from(bytes) });
+-    const selected = performance.now();
+-    await expect(page.locator(".status-bar [role=alert]")).toBeVisible();
+-    timings[name] = performance.now() - selected;
+-    expect(timings[name]).toBeLessThan(5000); expectTyped(await download(page));
++    await test.step(name, async () => {
++      console.info(`U10 hostile fixture: ${name}`);
++      await page.getByLabel("Upload source CSV", { exact: true }).setInputFiles({ name: `${name}.xlsx`, mimeType, buffer: Buffer.from(bytes) });
++      const selected = performance.now();
++      await expect(page.locator(".status-bar [role=alert]")).toBeVisible();
++      timings[name] = performance.now() - selected;
++      expect(timings[name]).toBeLessThan(5000); expectTyped(await download(page));
++    });
+   }
+   await info.attach("u10-hostile-integrated.json", { body: JSON.stringify(timings, null, 2), contentType: "application/json" });
+ });
+ 
+ test("U10 performance exports every 10000 by 20 value from CSV and XLSX without blocking the interface", async ({ page, browser }, info) => {
+   test.setTimeout(120000);
+   const w = makeWorkflow(Array.from({ length: 20 }, (_, c) => `Field ${c}`));
+   w.id = "synthetic-u10-performance"; w.output.format = "xlsx";
+   w.fields.forEach((f, c) => { f.type = c % 3 ? "number" : "text"; f.recipe = { kind: "copy", source: `field ${c}` }; });
+   w.source.referencedHeaders = referencedHeaders(w.fields);

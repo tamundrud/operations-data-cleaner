@@ -1,0 +1,29 @@
+[WebServer] (node:8443) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:8456) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+U10 hostile fixture: alternate-worksheet-range
+U10 hostile fixture: alternate-binary-worksheet
+U10 hostile fixture: malformed
+U10 hostile fixture: encrypted
+U10 hostile fixture: huge-declared
+U10 hostile fixture: forged-small
+U10 hostile fixture: bomb
+U10 hostile fixture: crc-corrupt
+U10 hostile fixture: duplicate
+U10 hostile fixture: path-conflict
+U10 hostile fixture: local-name-conflict
+U10 hostile fixture: truncated
+U10 hostile fixture: zip64-sentinel
+U10 hostile fixture: dimensions
+U10 hostile fixture: far-cell
+U10 hostile fixture: hyperlink-range
+U10 hostile fixture: oversized
+U10 hostile fixture: huge-format
+U10 hostile fixture: entities
+  ✓  1 [chromium] › tests/e2e/excel-output.spec.ts:224:1 › U10 integrated safeguards reject hostile workbooks while preserving eligible Excel download (11.5s)
+
+  1 passed (13.8s)

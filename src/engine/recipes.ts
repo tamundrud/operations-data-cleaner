@@ -61,7 +61,7 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
     },
     csvRisk: false,
     riskyHeaders: workflow.fields
-      .filter((f) => workflow.output.header && riskyText(f.header))
+      .filter((f) => workflow.output.format === "csv" && workflow.output.header && riskyText(f.header))
       .map((f) => f.header),
   };
   if (workflowIssues.length) return run;
@@ -341,7 +341,7 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
           `${f.header} exceeds ${f.maxLength} characters.`,
           "Correct the source file or increase the maximum length.",
         );
-      if (value.kind === "text" && riskyText(text))
+      if (workflow.output.format === "csv" && value.kind === "text" && riskyText(text))
         add(
           "csv-risk",
           "warning",

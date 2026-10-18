@@ -1,0 +1,10 @@
+{
+  "independent_reader": "openpyxl",
+  "version": "3.1.5",
+  "status": "passed",
+  "rows": 2,
+  "columns": 5,
+  "date": "2024-02-29T00:00:00",
+  "xml_parser": "Python ElementTree",
+  "xlsx_bytes": 9163
+}

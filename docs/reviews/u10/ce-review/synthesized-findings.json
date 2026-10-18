@@ -1,0 +1,70 @@
+{
+  "status": "complete",
+  "findings": [],
+  "pre_existing_findings": [],
+  "suppressed_findings": [],
+  "suppressed_by_confidence": {},
+  "malformed_findings": 0,
+  "malformed_returns": 0,
+  "first_evidence_backfilled": 0,
+  "quote_gate_demotions": 0,
+  "mode_aware_demotions": 0,
+  "triage_groups": [],
+  "residual_risks": [
+    {
+      "title": "Reference-device resource qualification remains a release obligation",
+      "detail": "The output writer enforces table-position and estimated serialized-byte limits, but those estimates are not a peak-heap cap while evaluated rows, worksheet objects, shared strings, XML and compressed bytes coexist. The reviewed decision explicitly records this limit; reference-laptop qualification remains U13. No runtime measurements were executed in this review.",
+      "evidence": [
+        "src/formats/xlsx-export.ts:13-14,69-89: 2 million table-position and 100 MiB serialization-estimate guards.",
+        "docs/decisions/excel-fidelity.md: Limits and remaining obligations and U10 value-only writer sections explicitly distinguish serialized budgets from process/heap bounds."
+      ],
+      "reviewers": [
+        "performance",
+        "testing"
+      ]
+    }
+  ],
+  "testing_gaps": [],
+  "learnings": [
+    {
+      "title": "Qualify Excel archives before flattening cells",
+      "path": "docs/solutions/xlsx-qualification.md",
+      "note": "Known Pattern: preserve interpretation provenance, preflight actual archive expansion and package routing before SheetJS, and qualify the integrated worker/output XML. The reviewed implementation follows these boundaries; no violating rule or concrete missing test was established."
+    }
+  ],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "peer": {
+    "selected": true,
+    "target": null,
+    "route": null,
+    "preference_source": "default",
+    "outcome": "in-process-fallback",
+    "artifact": null,
+    "coverage": "Cross-model pass: not run; only Codex CLI installed, no attested different-family route. Local adversarial fallback reviewed the same scope. No reviewed content sent externally."
+  },
+  "coverage_notes": [
+    "Scope: standalone current branch against origin/main at91b32a6559c29e0baea333e7e1ae8cead21a1bf3.",
+    "Project standards: AGENTS.md instruction-file fallback governs all changed files.",
+    "Untracked docs/reviews/u10/ evidence excluded from reviewed implementation.",
+    "After environment restart, five actual terminal reviewer outcomes at the same HEAD were recovered from host messages; their lost original stage costs are not reconstructed. Missing/failed scopes rerun durably. See recovery.md.",
+    "U10 only: remaining U11\u2013U13 units in explicit plan are not claimed implemented and must not be treated as missing U10 requirements.",
+    "Final runtime validation is parent-owned; reviewers inspect source and existing evidence without executing tests.",
+    "Cross-model pass: not run; only Codex CLI installed, no attested different-family route. Local adversarial fallback reviewed the same scope. No reviewed content sent externally.",
+    "All eight structured reviewer artifacts and the learnings-researcher return were read; no reviewer reported a candidate finding.",
+    "Suppressed findings: 0; malformed findings: 0; malformed returns: 0; first_evidence_backfilled: 0; quote-gate demotions: 0; mode-aware demotions: 0.",
+    "Validator shortcut-skipped: 0; no findings qualify for selection, so no validator batch is required.",
+    "Reviewer execution was read-only; integrated browser test execution, Firefox/WebKit CI results and final verification remain parent-owned."
+  ],
+  "synthesis_decisions": [
+    "No semantic reconciliation, settlement conflict or direct-dependency reclassification exists because every reviewer candidate set is empty.",
+    "Retained the documented serialization-versus-peak-heap limitation as a release qualification risk; no new defect is inferred.",
+    "Recorded Firefox/WebKit verification as parent-owned coverage context rather than a missing-test finding: integrated tests exist and this review did not execute them."
+  ],
+  "source_detail_map": {},
+  "validator_selection": {
+    "selected": [],
+    "shortcut_skipped": 0,
+    "skip_evidence_basis": []
+  }
+}

@@ -1,0 +1,1298 @@
+diff --git a/README.md b/README.md
+index 0dca941..2ff48b9 100644
+--- a/README.md
++++ b/README.md
+@@ -1,13 +1,13 @@
+ # Operations Data Cleaner
+ 
+-U9 internal preview: convert a CSV or one selected Excel worksheet into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations, exact decimal calculations and explicit date conversions. Trim text only when you choose to. Select CSV delimiter, BOM and header settings, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
++U10 internal preview: convert a CSV or one selected Excel worksheet into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations, exact decimal calculations and explicit date conversions. Trim text only when you choose to. Choose CSV or value-only Excel output, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
+ 
+ ## Run locally
+ 
+ Use Node 24 LTS (U6 cloud verification: Node 24.19.0).
+ 
+ ```sh
+ npm ci
+ npm run build
+ npm run preview
+ ```
+@@ -53,42 +53,54 @@ Inputs are limited to 1000 characters each before numeric parsing; results are l
+ In an output column's settings choose **Output type → Date** (or **Fixed value type → Date**). Choose both **Source date format** and **Output date format**: `YYYY-MM-DD`, `MM/DD/YYYY`, or `DD/MM/YYYY`. Neither is inferred. With source `MM/DD/YYYY`, `10/08/2026` becomes `2026-10-08`, and `03/04/2026` means March 4; choose `DD/MM/YYYY` to interpret it as April 3.
+ 
+ Only zero-padded calendar dates with years `0001`–`9999` are accepted. Impossible dates, invalid leap days, timestamps and mismatched patterns fail visibly. Dates use calendar arithmetic without browser timezone conversion. Empty optional dates remain blank; required blanks fail. Whitespace changes only with explicit trimming. Date interpretation follows the independent primary recipe (copy, fixed text, split or combine), and keeps original source values intact. Numeric calculations cannot become dates. Formats, trimming and required rules save and transfer in workflow version 1; changing rules renews export safety decisions. For date-formatted numeric Excel cells, choose **Excel date cell (workbook calendar)** as the source format. Both workbook calendars are honored; invalid serials and time components fail visibly.
+ 
+ ## Excel input (U9)
+ 
+ Upload an ordinary `.xlsx` table and choose one worksheet when the workbook has several. Sheets are never merged. The first nonblank row supplies unique headers; blank rows are counted separately and footer rows remain data. XLSX destination templates supply names and order only.
+ 
+ Inspect **Excel cell details** for original type, raw value, displayed text, format, workbook calendar and formula. Supported zero padding preserves `001234`; arithmetic uses the raw numeric value. Unsupported formats and suspicious numeric identifiers carry warnings; digits already lost in Excel cannot be recovered. Referenced cached formula values may be stale; missing/error caches block the dependent rows. No formula, hyperlink, HTML or external relationship is executed or fetched. Use **Show only rows with exceptions** to read warning reasons.
+ 
+-Workbooks are checked before parsing: 25 MiB source, 100 MiB actual expanded data, 4,096 archive entries, 2 million cells, at most 200 table columns and 256 characters per number format. Unsupported ZIP64/encrypted/unsafe archives fail with remediation rather than truncation. A 30-second watchdog and cancellation terminate worker processing; these budgets are not a heap-memory cap. Browsers need native `DecompressionStream("deflate-raw")`; update an unsupported browser or save UTF-8 CSV. Failed imports retain the previous run. Selected worksheet and import settings travel with saved workflows, without source records or filenames. Excel output is not included.
++Workbooks are checked before parsing: 25 MiB source, 100 MiB actual expanded data, 4,096 archive entries, 2 million cells, at most 200 table columns and 256 characters per number format. Unsupported ZIP64/encrypted/unsafe archives fail with remediation rather than truncation. A 30-second watchdog and cancellation terminate worker processing; these budgets are not a heap-memory cap. Browsers need native `DecompressionStream("deflate-raw")`; update an unsupported browser or save UTF-8 CSV. Failed imports retain the previous run. Selected worksheet and import settings travel with saved workflows, without source records or filenames.
++
++## Value-only Excel output (U10)
++
++Beside the preview, choose **Output format → Excel workbook (.xlsx)**. The download is a new workbook with one `Output` worksheet containing only the configured columns, in their export order. Choose whether to include headers and the **Excel date system** (1900 by default, or 1904). Dates use the field's selected display format and calendar components, without timezone conversion. Dates before the chosen epoch fail with an actionable CSV/text alternative. CSV delimiter/BOM settings remain saved when switching formats.
++
++Text, including leading-zero identifiers, formula-like values and headers, stays literal. Source formulas, hyperlinks, macros, external relationships and other workbook parts are never copied. Usable cached source formula values retain their stale-cache warnings. Excel output requires no CSV escaping acknowledgement; returning to CSV restores its explicit formula-handling choice.
++
++Excel numbers must have at most 15 significant decimal digits, fall within Excel's normal numeric range, and serialize back to the exact intended decimal value. `0.1 + 0.2` writes numeric `0.3`. Precision/range loss blocks the download with the source record and output field; choose CSV or deliberately change the field to text. No automatic rounding or text fallback occurs. Numeric spellings such as `+0012.500` become the number `12.5`; use a text field when that spelling is an identifier or must remain literal. Internal calculations and CSV retain their existing exact decimal behavior.
++
++Output is limited to 2 million table positions (including headers), Excel's 1,048,576 rows and 32,767 UTF-16 units per text cell, plus a conservative 100 MiB serialization budget that bounds XML escaping and package overhead before writing. Literal OOXML escape tokens such as `_x0041_` are protected; their additional encoding must also fit the writer's text limit. Invalid Unicode or over-budget output fails explicitly without truncation. Cancellation and the existing worker watchdog cover serialization. These are resource safeguards, not a heap cap or final reference-laptop qualification.
++
++Excel settings and every delivered destination type reuse workflow version 1, including browser saves and portable JSON. Existing CSV definitions require no migration. Download still requires the current preview and all rows to pass configured validation; source correction and partial export remain later work.
+ 
+ SheetJS CE 0.20.3 is vendored from the verified official distribution; its [Apache-2.0 license](public/SheetJS-LICENSE.txt) ships with the application. See [qualification and limits](docs/decisions/excel-fidelity.md).
+ 
+ ## Save, repeat and recover
+ 
+ Name the current configuration and choose **Save workflow**. Save is explicit: changing rules, uploading a source, or importing a workflow does not automatically update saved definitions. **Save changes** updates the opened saved definition; **Save a copy** needs a distinct name. Identity/name conflicts require an explicit replacement or copy. Changes from another tab are detected before replacement.
+ 
+ Choose a definition under **Saved workflows**, then **Open workflow**, upload a compatible new CSV or Excel workbook, review and download. Source columns may be reordered or have extra unused columns; missing/duplicate/changed required headers block the run without guessing. **Edit workflow** reveals the existing matching board. Opening another definition clears the old source only after validation and any replacement confirmation.
+ 
+ **Download workflow** produces `workflow.json` without needing a source or working browser storage. Use **Import workflow** in another browser or local instance, then upload its compatible source. Import validates supported configuration before replacing anything and opens a draft; Save separately if you want it in that browser. Future versions and currently undelivered recipes/settings are rejected clearly.
+ 
+ Browser storage belongs to this browser and site origin, can be cleared, and is not shared automatically. Keep the prompted portable backup and store it somewhere durable. Workflow files contain field names and configured constants that may reveal business information; review them before sharing. Source records and filenames are excluded. Reload and **End session** clear source data; saved definitions remain available. **New conversion** starts an ad hoc draft after confirming replacement when needed. If storage fails, continue ad hoc or download a backup; **Retry workflow storage** retries the local library without discarding your conversion.
+ 
+ ## Delivered limits and privacy
+ 
+ - UTF-8 CSV with optional input BOM; comma, semicolon or tab input. First nonblank record is the header; normalized empty/duplicate headers and malformed quotes/extra cells fail explicitly.
+ - Every output must have a source copy, fixed text/number/blank, split, combination or calculation recipe. Text supports optional required/max-length validation and explicit boundary trim. Numeric constants use a strict decimal string grammar: optional sign, digits and decimal point; no currency, thousands separators or exponents. `12.50`, `+0012.500` and long decimals retain their exact representation without floating-point conversion or rounding. Fixed text is limited to 4096 characters and decimal literals to 1000 characters. Number outputs support strict source conversion, whole-number checks, maximum decimal places and explicit rounding. Optional blanks succeed; required blank/whitespace-only values block the whole download.
+ - Default output: UTF-8, no BOM, comma, headers, standard quoting, CRLF. Choose comma, semicolon or tab, BOM on/off and header on/off. Preview retains column labels for identification even when the exported header is omitted. Formula-like text (including constants) and included headers require an explicit escaped/raw choice; preview shows the selected representation. Typed numeric constants are not formula text. Escaping changes text and cannot promise protection in every spreadsheet/importer. Raw text may be unsafe to open in spreadsheets.
+ - Full dataset counts with paginated output and exception rows (50 per page). Nonblank totals are ordinary candidates. No silent record truncation. Limits: 25 MiB source, 200 columns, 2 million inspected cells, 30-second cancellable worker watchdog.
+ - Files and parsed data stay in browser memory and are cleared by reload or End session. Only explicitly saved workflow configurations use IndexedDB; no source data or filename is persisted. No localStorage, service worker, analytics, remote fonts, or upload endpoint. Static application code/assets still use ordinary host requests and metadata. Processing runs in a local Web Worker.
+-- Typed Excel output, source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
++- Source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
+ 
+ ## Verify
+ 
+ ```sh
+ npm run typecheck
+ npm run lint
+ npm run test:unit
+ npm run build
+ npx playwright install --with-deps chromium firefox webkit
+ npm run test:e2e
+diff --git a/docs/decisions/excel-fidelity.md b/docs/decisions/excel-fidelity.md
+index 23a6589..0f7d3c4 100644
+--- a/docs/decisions/excel-fidelity.md
++++ b/docs/decisions/excel-fidelity.md
+@@ -63,10 +63,22 @@ U2 must implement its own first-slice production privacy and responsiveness test
+ 
+ ## U9 dependency introduction (2026-10-17)
+ 
+ The official tarball is now accessible (HTTP 200, 2,409,319 bytes). Its SHA-512 exactly matches U1's committed qualification lockfile: `sha512-oLDq3jw7AcLqKWH2AhCpVTZl8mf6X2YReP+Neh0SJUzV/BdZYjth94tG5toiMB1PPrYtxOCfaoUCkvtuH+3AJA==`. The unchanged archive is vendored at `vendor/xlsx-0.20.3.tgz`, installed through a local file reference with the same lockfile integrity, and bundled in the processing worker. Apache-2.0 is retained in the tarball, `vendor/SheetJS-LICENSE.txt`, and the distributed static `SheetJS-LICENSE.txt` asset.
+ 
+ Manual advisory recheck retrieved GHSA-4r6h-8v6p-xvw6 and GHSA-5pgg-2g8v-p4x9 on 2026-10-17; their affected ranges remain before 0.19.3 and before 0.20.2 respectively. The pages' public-npm patched-version field says “None”; this does not identify the current official CDN release as affected. `npm audit` reports zero known vulnerabilities for the introduced tree; this is supplemental evidence, not a safety guarantee.
+ 
+ U9 uses the preflight implementation and review evidence preserved at commit `81f74a2` unchanged. Every discovery/import first validates the complete original archive. Multiple sheets require selection; saved workflows reuse the explicit worksheet name and reject a missing sheet. Templates have independent sheet selection and import names/order only. The explicit “Excel date cell” setting interprets date-formatted numeric cells with their workbook calendar, rejecting serial 60/zero in 1900, fractions, negative and out-of-calendar values. Raw metadata remains inspectable; formulas are never evaluated and referenced usable caches carry stale warnings. Missing/error caches invalidate dependent output, including optional fields. Only actual formula-like output text requires the CSV escape/raw decision.
+ 
+ See `docs/reviews/u9/verification.md` for integrated-worker verification, screenshots, exact environment and remaining acceptance limits. XLSX output remains U10; reference-laptop and final release qualification remain U13.
++
++## U10 value-only writer (2026-10-18)
++
++The application now constructs a fresh SheetJS workbook from evaluated `Value` objects only, with one `Output` worksheet and explicit shared-string or numeric cells. No source workbook/cell objects enter the writer. Column order, header choice and blank table extent are explicit. Dates use integer Gregorian calendar arithmetic, a deliberate 1900/1904 epoch and one of the three approved number formats; dates before that epoch fail with CSV/text alternatives. No JavaScript `Date` or timezone conversion participates.
++
++Numeric output is conservatively qualified at no more than 15 significant decimal digits, within Excel's normal range, with exact Big.js equality against the serialized JavaScript number's decimal representation. Overflow, underflow, subnormal values and precision changes block export with row/field/action context. Numeric lexical formatting is not an identifier contract; explicit text output preserves such spellings.
++
++Integrated tests identified a SheetJS string boundary: its writer does not protect literal `_xHHHH_` tokens, and its `t="str"` reader decodes escapes twice. The adapter protects each initial underscore using OOXML `_x005F_` encoding (including overlapping tokens) and writes shared strings, which the reader decodes once. Independent ZIP/XML checks verify the actual representation; rereading alone would hide CRLF normalization performed by the library. Text length and invalid Unicode are checked before writing, including the writer's length limit after token protection. The vendored dependency remains unchanged.
++
++An additional scratch probe and failing regression demonstrated that `book_new()` alone is not an isolation boundary: SheetJS's global SSF table retains imported custom number formats, and its default writer copies them into a fresh workbook. The adapter explicitly supplies an independent SSF table containing only General and the three approved date formats at custom IDs 164–166. A source-only private format marker is absent from every generated ZIP member; browser inspection also rejects the source fixture's unused `[DBNum1]` format. No source format metadata or library-global custom format survives this boundary.
++
++Output amplification is bounded at 2 million table positions, Excel's row/text limits and a conservative 100 MiB serialization estimate (128 bytes per position, seven times UTF-8 text bytes and 64 KiB package reserve). This can reject a highly repetitive/escape-heavy workbook below 100 MiB actual expansion; it is intentionally an allocation safeguard, with fewer-column/smaller-file remediation and no truncation. The original 25 MiB input, actual-expansion/CRC/archive checks, worker cancellation and 30-second watchdog remain in place. U10 repeats hostile archives through the integrated worker and measures 10,000 × 20 CSV/XLSX import-through-Excel-download completeness and responsiveness. Exact test results, browser availability and release qualification limits are recorded in `docs/reviews/u10/verification.md`; full reference-device qualification remains U13.
+diff --git a/src/engine/recipes.ts b/src/engine/recipes.ts
+index ec9263b..9d7f671 100644
+--- a/src/engine/recipes.ts
++++ b/src/engine/recipes.ts
+@@ -54,21 +54,21 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+       valid: 0,
+       warningOnly: 0,
+       invalid: 0,
+       warningIssues: 0,
+       errorIssues: 0,
+       corrected: 0,
+       excluded: 0,
+     },
+     csvRisk: false,
+     riskyHeaders: workflow.fields
+-      .filter((f) => workflow.output.header && riskyText(f.header))
++      .filter((f) => workflow.output.format === "csv" && workflow.output.header && riskyText(f.header))
+       .map((f) => f.header),
+   };
+   if (workflowIssues.length) return run;
+   const positions = new Map(source.columns.map((c) => [c.key, c.position]));
+   for (const row of source.rows) {
+     const issues: Issue[] = [],
+       provenance: ResultRow["provenance"] = [];
+     const values: Value[] = workflow.fields.map((f) => {
+       const recipe = f.recipe;
+       if (!recipe) throw new Error("Unvalidated recipe");
+@@ -334,21 +334,21 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+           `${f.header} is required but blank.`,
+           "Correct the source file and reupload, or change the field rule.",
+         );
+       if (f.maxLength && [...text].length > f.maxLength)
+         add(
+           "max-length",
+           "error",
+           `${f.header} exceeds ${f.maxLength} characters.`,
+           "Correct the source file or increase the maximum length.",
+         );
+-      if (value.kind === "text" && riskyText(text))
++      if (workflow.output.format === "csv" && value.kind === "text" && riskyText(text))
+         add(
+           "csv-risk",
+           "warning",
+           `${f.header} may be interpreted as a spreadsheet formula.`,
+           "Choose escaped output or raw TMS text before download.",
+         );
+       return value.kind === "text" && text === "" ? { kind: "blank" } : value;
+     });
+     if (issues.some((issue) => issue.code === "csv-risk")) run.csvRisk = true;
+     const status = issues.some((i) => i.severity === "error")
+diff --git a/src/engine/validation.ts b/src/engine/validation.ts
+index eb79fb5..60070b8 100644
+--- a/src/engine/validation.ts
++++ b/src/engine/validation.ts
+@@ -18,26 +18,20 @@ export function validateWorkflowConfiguration(workflow: Workflow): Issue[] {
+       action,
+     });
+   if (!workflowSchema.safeParse(workflow).success) {
+     add(
+       "schema",
+       "Workflow structure is invalid.",
+       "Use version 1 with valid field settings.",
+     );
+     return errors;
+   }
+-  if (workflow.output.format !== "csv")
+-    add(
+-      "unsupported-format",
+-      "This build supports CSV and XLSX input with CSV output.",
+-      "Use UTF-8 CSV with comma, semicolon or tab and CRLF output.",
+-    );
+   const ids = new Set<string>(),
+     headers = new Set<string>();
+   for (const f of workflow.fields) {
+     const header = normalizeHeader(f.header);
+     if (!header || headers.has(header) || ids.has(f.id))
+       add(
+         "destination-header",
+         "Output names and field IDs must be unique and nonblank.",
+         "Rename the output column.",
+         f.id,
+diff --git a/src/formats/xlsx-export.ts b/src/formats/xlsx-export.ts
+new file mode 100644
+index 0000000..e1418e1
+--- /dev/null
++++ b/src/formats/xlsx-export.ts
+@@ -0,0 +1,109 @@
++import Big from "big.js";
++import * as XLSX from "xlsx";
++import type { Run } from "../engine/recipes";
++import type { Workflow } from "../engine/workflow";
++import type { Value } from "../engine/values";
++import type { CalendarDate, DatePattern } from "../engine/dates";
++
++const DATE_FORMATS: Record<DatePattern, string> = {
++  "YYYY-MM-DD": "yyyy-mm-dd",
++  "MM/DD/YYYY": "mm/dd/yyyy",
++  "DD/MM/YYYY": "dd/mm/yyyy",
++};
++const MAX_OUTPUT_CELLS = 2_000_000;
++const MAX_SERIALIZATION_BYTES = 100 * 1024 * 1024;
++
++function numericValue(decimal: string): number {
++  const exact = new Big(decimal.startsWith("+") ? decimal.slice(1) : decimal);
++  const number = Number(decimal);
++  // Excel supports 15 significant decimal digits and normal IEEE-754 values.
++  // Compare the decimal value that will actually be written, not a rounded preview.
++  if (exact.c.length > 15 || !Number.isFinite(number) ||
++    (!exact.eq(0) && (Math.abs(number) < 2.2250738585072014e-308 || exact.abs().gt("9.99999999999999e307"))) ||
++    !exact.eq(String(number)))
++    throw new Error("Number cannot be represented faithfully in Excel (15 significant digits and supported numeric range). Use CSV or explicitly change the output to text.");
++  return number === 0 ? 0 : number;
++}
++
++function ordinal({ year, month, day }: CalendarDate): number {
++  const prior = year - 1;
++  let days = prior * 365 + Math.floor(prior / 4) - Math.floor(prior / 100) + Math.floor(prior / 400) + day;
++  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
++  const months = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
++  for (let m = 1; m < month; m++) days += months[m - 1];
++  return days;
++}
++
++function dateSerial(date: CalendarDate, system: Workflow["output"]["dateSystem"]): number {
++  const serial = ordinal(date) - ordinal(system === "1904" ? { year: 1904, month: 1, day: 1 } : { year: 1899, month: 12, day: 31 });
++  if (serial < (system === "1904" ? 0 : 1))
++    throw new Error(`Date predates the ${system} Excel calendar. Use CSV, text output, or an earlier Excel date system.`);
++  // Excel's 1900 calendar includes a fictitious leap day at serial 60.
++  return system === "1900" && serial >= 60 ? serial + 1 : serial;
++}
++
++function cell(value: Value, workflow: Workflow): XLSX.CellObject | undefined {
++  switch (value.kind) {
++    case "blank": return undefined;
++    case "text":
++      if (value.text.length > 32767)
++        throw new Error("Text exceeds Excel's 32767-character cell limit. Use CSV or shorten the configured output; no text was truncated.");
++      if (/[\uD800-\uDFFF]/u.test(value.text))
++        throw new Error("Text contains an unpaired Unicode surrogate. Correct the text in the source or fixed value before exporting.");
++      // SheetJS escapes XML/control characters but leaves literal OOXML escape
++      // tokens unprotected. Encode their initial underscore exactly once.
++      {
++        const text = value.text.replace(/_(?=x[0-9a-f]{4}_)/giu, "_x005F_");
++        if (text.length > 32767)
++          throw new Error("Escaped text exceeds the Excel writer's 32767-character limit. Use CSV or shorten the configured output; no text was truncated.");
++        return { t: "s", v: text };
++      }
++    case "number": return { t: "n", v: numericValue(value.decimal) };
++    case "date": return { t: "n", v: dateSerial(value, workflow.output.dateSystem), z: DATE_FORMATS[value.format] };
++  }
++}
++
++/** Fresh, value-only OOXML. Source cells and their active metadata never enter this adapter. */
++export function serializeXlsx(workflow: Workflow, run: Run): Uint8Array {
++  if (run.workflowIssues.length || run.summary.invalid || !run.rows.length)
++    throw new Error("Export blocked. Map every field, resolve invalid rows and include at least one data row.");
++  const offset = workflow.output.header ? 1 : 0;
++  const rows = run.rows.length + offset, columns = workflow.fields.length;
++  if (rows > 1048576)
++    throw new Error("Excel output exceeds 1048576 rows including its header. Split the source into smaller tables or use CSV. No rows were truncated.");
++  if (rows * columns > MAX_OUTPUT_CELLS)
++    throw new Error("Excel output exceeds 2 million table cells. Select fewer output columns or split the source into smaller files. No data was truncated.");
++
++  // Bound amplification before allocating the worksheet. 128 bytes per position
++  // covers cell/row tags, addresses and styles; UTF-8 text can expand at most 7x
++  // through XML/control escaping. Reserve 64 KiB for fixed package metadata.
++  let budget = 65536 + rows * columns * 128;
++  const encoder = new TextEncoder();
++  const sheet: XLSX.WorkSheet = {};
++  function put(value: Value, row: number, col: number, context: string) {
++    try {
++      const output = cell(value, workflow);
++      if (value.kind === "text") budget += encoder.encode(value.text).length * 7;
++      if (budget > MAX_SERIALIZATION_BYTES)
++        throw new Error("Excel output exceeds the 100 MiB serialization budget. Select fewer columns or split into smaller files. No data was truncated.");
++      if (output) sheet[XLSX.utils.encode_cell({ r: row, c: col })] = output;
++    } catch (error) {
++      throw new Error(`${context}: ${error instanceof Error ? error.message : "Excel serialization failed."}`, { cause: error });
++    }
++  }
++  if (workflow.output.header) workflow.fields.forEach((field, c) => put({ kind: "text", text: field.header }, 0, c, `Header ${field.header}`));
++  run.rows.forEach((row, r) => row.values.forEach((value, c) => put(value, r + offset, c, `Source record ${row.record}, line ${row.line}, ${workflow.fields[c].header}`)));
++  // Explicit extent preserves trailing columns and entirely blank output rows.
++  sheet["!ref"] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: rows - 1, c: columns - 1 } });
++  // SheetJS otherwise inherits its process-global SSF table, which source
++  // imports populate with arbitrary custom formats, even for unused cells.
++  const workbook = {
++    ...XLSX.utils.book_new(),
++    SSF: { 0: "General", ...Object.fromEntries(Object.values(DATE_FORMATS).map((format, index) => [164 + index, format])) },
++  };
++  workbook.Workbook = { WBProps: { date1904: workflow.output.dateSystem === "1904" } };
++  XLSX.utils.book_append_sheet(workbook, sheet, "Output");
++  // Shared strings also avoid SheetJS's double escape-decoding of t="str" cells
++  // when this fresh workbook is used as the next run's source.
++  return new Uint8Array(XLSX.write(workbook, { type: "array", bookType: "xlsx", compression: true, bookSST: true }));
++}
+diff --git a/src/processing.worker.ts b/src/processing.worker.ts
+index 68b4027..afaf68f 100644
+--- a/src/processing.worker.ts
++++ b/src/processing.worker.ts
+@@ -1,14 +1,15 @@
+ /// <reference lib="webworker" />
+ import "./schema-runtime";
+ declare const self: DedicatedWorkerGlobalScope;
+ import { parseXlsx } from "./formats/xlsx";
++import { serializeXlsx } from "./formats/xlsx-export";
+ import { parseCsv, serializeCsv } from "./formats/csv";
+ import { evaluate, type Run, type ResultRow } from "./engine/recipes";
+ import { makeWorkflow, type Workflow } from "./engine/workflow";
+ import type { SourceTable } from "./engine/values";
+ import type { Request, Response, View } from "./session/worker-protocol";
+ let source: SourceTable | undefined,
+   workflow: Workflow | undefined,
+   run: Run | undefined,
+   revision = -1;
+ const PAGE_SIZE = 50;
+@@ -80,23 +81,24 @@ self.onmessage = async (event: MessageEvent<Request>) => {
+         workflow = m.workflow;
+         setRun(evaluate(workflow, source));
+         revision = m.revision;
+       } else if (m.revision !== revision)
+         throw new Error(
+           "Preview and export must use the current revision. Run the mapping again.",
+         );
+       if (m.kind === "export") {
+         if (!workflow || !run)
+           throw new Error("Preview the current mapping before download.");
+-        const bytes = serializeCsv(workflow, run, m.choice);
++        const format = workflow.output.format;
++        const bytes = format === "xlsx" ? serializeXlsx(workflow, run) : serializeCsv(workflow, run, m.choice);
+         self.postMessage(
+-          { ...envelope, kind: "download", bytes } satisfies Response,
++          { ...envelope, kind: "download", bytes, format } satisfies Response,
+           [bytes.buffer as ArrayBuffer],
+         );
+         return;
+       }
+     }
+     send({
+       ...envelope,
+       kind: "view",
+       view: view(
+         m.kind === "page" ? m.page : 0,
+diff --git a/src/session/controller.ts b/src/session/controller.ts
+index a9d5e0b..0f435c4 100644
+--- a/src/session/controller.ts
++++ b/src/session/controller.ts
+@@ -22,21 +22,21 @@ export class Session {
+   };
+   private candidate?: NonNullable<Session["active"]> & { workflow?: Workflow };
+   private selection?: { file: File; delimiter: "auto" | "," | ";" | "\t"; options: { template?: boolean; workflow?: Workflow; worksheet?: string } };
+   private workflow?: Workflow;
+   private revision = 0;
+   state: SessionState = { busy: "", error: "", recoverable: false };
+   onState: (state: SessionState) => void = () => {};
+   onTemplate: (headers: string[]) => void = () => {};
+   onWorkflow: (workflow: Workflow) => void = () => {};
+   onSourcePolicy: (delimiter: "auto" | "," | ";" | "\t", format?: "csv" | "xlsx", worksheet?: string) => void = () => {};
+-  onDownload: (bytes: Uint8Array) => void = () => {};
++  onDownload: (bytes: Uint8Array, format: Workflow["output"]["format"]) => void = () => {};
+   private update(patch: Partial<SessionState>) {
+     this.state = { ...this.state, ...patch };
+     this.onState(this.state);
+   }
+   private startWorker() {
+     if (this.worker) return;
+     this.worker = new Worker(
+       new URL("../processing.worker.ts", import.meta.url),
+       { type: "module" },
+     );
+@@ -82,21 +82,21 @@ export class Session {
+             this.workflow = { ...replacementWorkflow, source: { ...replacementWorkflow.source, format, worksheet: m.view.worksheet, delimiter: active.delimiter } };
+             this.onWorkflow(this.workflow);
+           }
+         }
+         this.update({ busy: "", view: m.view, error: "", recoverable: false });
+       } else if (m.kind === "template") {
+         this.update({ busy: "", error: "" });
+         this.onTemplate(m.headers);
+       } else {
+         this.update({ busy: "", error: "" });
+-        this.onDownload(m.bytes);
++        this.onDownload(m.bytes, m.format);
+       }
+     };
+   }
+   private send(m: Request, busy: string) {
+     this.startWorker();
+     this.pending = m;
+     this.update({ busy, error: "", recoverable: false });
+     clearTimeout(this.timer);
+     this.timer = setTimeout(
+       () =>
+diff --git a/src/session/worker-protocol.ts b/src/session/worker-protocol.ts
+index 7c6a834..e342d6a 100644
+--- a/src/session/worker-protocol.ts
++++ b/src/session/worker-protocol.ts
+@@ -38,13 +38,13 @@ export type View = {
+   worksheet?: string;
+ };
+ export type Response = {
+   request: number;
+   dataset: string;
+   revision: number;
+ } & (
+   | { kind: "view"; view: View }
+   | { kind: "worksheets"; sheets: string[] }
+   | { kind: "template"; headers: string[] }
+-  | { kind: "download"; bytes: Uint8Array }
++  | { kind: "download"; bytes: Uint8Array; format: Workflow["output"]["format"] }
+   | { kind: "error"; message: string }
+ );
+diff --git a/src/ui/Workspace.tsx b/src/ui/Workspace.tsx
+index b129652..cfe767a 100644
+--- a/src/ui/Workspace.tsx
++++ b/src/ui/Workspace.tsx
+@@ -11,27 +11,27 @@ import { displayValue } from "../engine/values";
+ import { exportText, type SafetyChoice } from "../formats/spreadsheet-safety";
+ import MappingRows from "./MappingRows";
+ import ExcelCellDetails from "./ExcelCellDetails";
+ import SavedWorkflows from "./SavedWorkflows";
+ import { snapshotWorkflow, encodeWorkflow } from "../workflows/codec";
+ import type { StoredWorkflow } from "../workflows/indexeddb-store";
+ import sampleSource from "../../examples/u2/source.csv?raw";
+ import sampleConfig from "../../examples/u2/workflow.json?raw";
+ import fixedSource from "../../examples/u3-source.csv?raw";
+ import fixedConfig from "../../examples/u3-workflow.json?raw";
+-function saveDownload(bytes: Uint8Array) {
++function saveDownload(bytes: Uint8Array, format: Workflow["output"]["format"]) {
+   const url = URL.createObjectURL(
+-    new Blob([new Uint8Array(bytes)], { type: "text/csv;charset=utf-8" }),
++    new Blob([new Uint8Array(bytes)], { type: format === "xlsx" ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : "text/csv;charset=utf-8" }),
+   );
+   const link = document.createElement("a");
+   link.href = url;
+-  link.download = "converted.csv";
++  link.download = `converted.${format}`;
+   link.click();
+   setTimeout(() => URL.revokeObjectURL(url), 1000);
+ }
+ export default function Workspace() {
+   const [session] = useState(() => new Session());
+   const [state, setState] = useState<SessionState>(session.state);
+   const [workflow, setWorkflow] = useState<Workflow>(() => makeWorkflow([]));
+   const [dirty, setDirty] = useState(true);
+   const [delimiter, setDelimiter] = useState<"auto" | "," | ";" | "\t">("auto");
+   const [choice, setChoice] = useState<SafetyChoice>();
+@@ -207,28 +207,29 @@ export default function Workspace() {
+     );
+   };
+   const validPreview =
+     view &&
+     !dirty &&
+     !busy &&
+     !opening &&
+     !state.recoverable &&
+     view.workflowIssues.length === 0;
+   const risk = Boolean(
+-    validPreview && (view.csvRisk || view.riskyHeaders.length),
++    validPreview && workflow.output.format === "csv" && (view.csvRisk || view.riskyHeaders.length),
+   );
+   const canExport = Boolean(
+     validPreview &&
+       view.summary.candidates > 0 &&
+       !view.summary.invalid &&
+       (!risk || choice),
+   );
++  const outputDelimiterLabel = { ",": "comma", ";": "semicolon", "\t": "tab" }[workflow.output.delimiter];
+   return (
+     <main>
+       <header className="masthead">
+         <div>
+           <p className="eyebrow">OPERATIONS DATA CLEANER · EXCEL & CSV PREVIEW</p>
+           <h1>Match your columns.</h1>
+           <p>Map a source table to the columns your import needs.</p>
+         </div>
+         <div className="privacy">
+           <strong>Processed in your browser</strong>
+@@ -241,21 +242,21 @@ export default function Workspace() {
+         <span>3 · Preview & download</span>
+       </nav>
+       <SavedWorkflows workflow={workflow} baseline={baseline} disabled={busy || saving} writePending={saving || opening}
+         openPending={opening} opening={setOpening}
+         generation={activation} unsaved={unsaved}
+         name={(name) => setWorkflow((w) => ({ ...w, name }))}
+         snapshot={snapshot} activate={activate} saved={saved} saving={setSaving} reset={newConversion} />
+       {repeat && <section className="panel repeat-summary" aria-label="Repeat workflow">
+         <h2>{workflow.name || "Imported workflow"}</h2>
+         <p>{workflow.fields.length} output columns. Upload a compatible source CSV or Excel file, review the current results, then download.</p>
+-        <p>CSV output: {workflow.output.delimiter === "\t" ? "tab" : workflow.output.delimiter === ";" ? "semicolon" : "comma"} · {workflow.output.bom ? "with BOM" : "no BOM"} · {workflow.output.header ? "with header" : "no header"}</p>
++        <p>{workflow.output.format === "xlsx" ? `Excel output · ${workflow.output.dateSystem} date system` : `CSV output: ${outputDelimiterLabel} · ${workflow.output.bom ? "with BOM" : "no BOM"}`} · {workflow.output.header ? "with header" : "no header"}</p>
+         <button onClick={() => setRepeat(false)}>Edit workflow</button>
+       </section>}
+       <section aria-labelledby="upload-title" className="panel upload">
+         <div>
+           <h2 id="upload-title">1. Choose your source</h2>
+           <p>
+             UTF-8 CSV or .xlsx with a header row. Choose one worksheet. Leading zeros and spaces are preserved.
+           </p>
+         </div>
+         <div className="upload-controls">
+@@ -422,39 +423,50 @@ export default function Workspace() {
+             makeFields={makeFields}
+             importTemplate={(file) => {
+               setChoice(undefined);
+               setWorksheet("");
+               void session.upload(file, delimiter, { template: true });
+             }}
+           />}
+           <section className="panel review" aria-labelledby="preview-title">
+             <h2 id="preview-title">3. Preview & download</h2>
+             {!repeat && <fieldset className="csv-options" disabled={opening || (busy && state.busy !== "Checking all rows…")}>
+-              <legend>CSV export settings</legend>
++              <legend>Output settings</legend>
+               <div className="csv-controls">
+-                <label>CSV delimiter
++                <label>Output format
++                  <select aria-label="Output format" value={workflow.output.format} onChange={(e) => changeWorkflow({ output: { ...workflow.output, format: e.target.value as Workflow["output"]["format"] } })}>
++                    <option value="csv">CSV (.csv)</option>
++                    <option value="xlsx">Excel workbook (.xlsx)</option>
++                  </select>
++                </label>
++                {workflow.output.format === "csv" ? <><label>CSV delimiter
+                   <select aria-label="CSV delimiter" value={workflow.output.delimiter} onChange={(e) => changeWorkflow({ output: { ...workflow.output, delimiter: e.target.value as Workflow["output"]["delimiter"] } })}>
+                     <option value=",">Comma</option>
+                     <option value=";">Semicolon</option>
+                     <option value={"\t"}>Tab</option>
+                   </select>
+                 </label>
+                 <label className="check">
+                   <input type="checkbox" checked={workflow.output.bom} onChange={(e) => changeWorkflow({ output: { ...workflow.output, bom: e.target.checked } })} />
+                   Include UTF-8 BOM
+-                </label>
++                </label></> : <label>Excel date system
++                  <select aria-label="Excel date system" value={workflow.output.dateSystem} onChange={(e) => changeWorkflow({ output: { ...workflow.output, dateSystem: e.target.value as Workflow["output"]["dateSystem"] } })}>
++                    <option value="1900">1900 (standard)</option>
++                    <option value="1904">1904</option>
++                  </select>
++                </label>}
+                 <label className="check">
+                   <input type="checkbox" checked={workflow.output.header} onChange={(e) => changeWorkflow({ output: { ...workflow.output, header: e.target.checked } })} />
+                   Include header row
+                 </label>
+               </div>
+-              <p className="helper">UTF-8 encoding · CRLF line endings. Settings update preview automatically.</p>
++              <p className="helper">{workflow.output.format === "csv" ? "UTF-8 encoding · CRLF line endings." : "Fresh value-only workbook. Text stays literal, including leading zeros and formula-like text. Numbers must fit Excel precision; dates keep their calendar meaning and chosen display format."} Settings update preview automatically.</p>
+               {!workflow.output.header && <p className="helper">Column labels identify fields in preview only. The downloaded file has no header row.</p>}
+             </fieldset>}
+             {!workflow.fields.length ? (
+               <p className="notice">
+                 Add an output column or import a template to start matching.
+               </p>
+             ) : dirty || busy ? (
+               <p className="notice">
+                 {busy
+                   ? "Preparing the current preview… Download is blocked until processing finishes."
+@@ -584,35 +596,35 @@ export default function Workspace() {
+                           {view.totalPages} ·{" "}
+                           {risk && !choice
+                             ? "choose formula handling for final representation"
+                             : "download representation"}
+                         </caption>
+                         <thead>
+                           <tr>
+                             <th>Source record / line</th>
+                             <th>Status</th>
+                             {workflow.fields.map((f) => (
+-                              <th key={f.id}>{exportText(f.header, choice)}</th>
++                              <th key={f.id}>{exportText(f.header, workflow.output.format === "csv" ? choice : undefined)}</th>
+                             ))}
+                           </tr>
+                         </thead>
+                         <tbody>
+                           {view.rows.map((r) => (
+                             <tr key={r.id}>
+                               <th>
+                                 {r.record} / {r.line}
+                               </th>
+                               <td>{r.status}</td>
+                               {r.values.map((v, i) => (
+                                 <td key={workflow.fields[i].id}>
+                                   {v.kind === "text"
+-                                    ? exportText(v.text, choice)
++                                    ? exportText(v.text, workflow.output.format === "csv" ? choice : undefined)
+                                     : displayValue(v)}
+                                 </td>
+                               ))}
+                             </tr>
+                           ))}
+                         </tbody>
+                       </table>
+                     </div>
+                     <div className="pagination">
+                       <button
+@@ -651,28 +663,28 @@ export default function Workspace() {
+                     )}
+                   </>
+                 )}
+               </>
+             )}
+             <button
+               className="primary download"
+               disabled={!canExport}
+               onClick={() => session.export(choice)}
+             >
+-              Download converted CSV
++              Download converted {workflow.output.format === "xlsx" ? "Excel" : "CSV"}
+             </button>
+             <p className="small">
+               Validation checks your chosen rules. Acceptance by your
+               destination system depends on its import requirements.
+             </p>
+           </section>
+         </div>
+       )}
+       <footer>
+-        U9 internal preview · One-sheet Excel input, CSV output and reusable local workflows. Data is cleared on reload
++        U10 internal preview · CSV and one-sheet Excel conversion with reusable local workflows. Data is cleared on reload
+         or End session. Source data and file names are never saved. Static
+         application assets are requested from the host; customer file processing
+         stays local.
+       </footer>
+     </main>
+   );
+ }
+diff --git a/tests/e2e/excel-output.spec.ts b/tests/e2e/excel-output.spec.ts
+new file mode 100644
+index 0000000..791f510
+--- /dev/null
++++ b/tests/e2e/excel-output.spec.ts
+@@ -0,0 +1,313 @@
++import { expect, test, type Page } from "@playwright/test";
++import AxeBuilder from "@axe-core/playwright";
++import { mkdir, readFile, readdir } from "node:fs/promises";
++import { createHash } from "node:crypto";
++import { strFromU8, unzipSync } from "fflate";
++import { makeWorkflow, referencedHeaders, type Workflow } from "../../src/engine/workflow";
++import { add, closeSettings, download as csvDownload, edit, fixed, map, move, remove, upload } from "./helpers";
++// @ts-expect-error Independently authored synthetic OOXML, not a SheetJS writer fixture.
++import { workbook, hostile, representative } from "../qualification/xlsx/fixtures.mjs";
++
++const mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
++const synthetic = "ID,Amount,Date,Unused\n001234,0.3,2024-02-29,PRIVATE_U10_UNUSED";
++const strCell = (ref: string, text: string) => `<c r="${ref}" t="inlineStr"><is><t>${text}</t></is></c>`;
++function book(epoch = false, sentinel = "PRIVATE_U10_SOURCE") {
++  return workbook(`<row r="1">${["ID", "Amount", "Date", "Cached", "Note"].map((h, i) => strCell(`${String.fromCharCode(65 + i)}1`, h)).join("")}</row>` +
++    `<row r="2">${strCell("A2", "001234")}<c r="B2"><v>0.3</v></c><c r="C2" s="2"><v>${epoch ? 43889 : 45351}</v></c><c r="D2"><f>WEBSERVICE("https://example.invalid/U1_PRIVATE_SENTINEL")</f><v>7</v></c>${strCell("E2", sentinel)}</row>`, { epoch, dimension: "A1:E2", extra: { "synthetic-unused.bin": new Uint8Array([1, 2, 3]), "xl/vbaProject.bin": new Uint8Array([0, 1, 2]) } }) as Uint8Array;
++}
++function config(excel = false): Workflow {
++  const w = makeWorkflow(["Reference", "Amount", "Delivery", "Blank", "Literal"]);
++  w.id = "synthetic-u10"; w.name = "Synthetic Excel output";
++  w.output.format = "xlsx";
++  w.source = { ...w.source, format: excel ? "xlsx" : "csv", ...(excel ? { worksheet: "Synthetic" } : {}) };
++  w.fields[0].recipe = { kind: "copy", source: "id" };
++  w.fields[1] = { ...w.fields[1], type: "number", recipe: { kind: "copy", source: "amount" } };
++  w.fields[2] = { ...w.fields[2], type: "date", recipe: { kind: "copy", source: "date" }, date: { source: excel ? "excel" : "YYYY-MM-DD", target: "MM/DD/YYYY" } };
++  w.fields[3].recipe = { kind: "constant", value: { kind: "blank" } };
++  w.fields[4].recipe = { kind: "constant", value: { kind: "text", text: '=HYPERLINK("literal")' } };
++  w.source.referencedHeaders = referencedHeaders(w.fields);
++  return w;
++}
++async function importConfig(page: Page, w: Workflow | string) {
++  await page.getByLabel("Import workflow", { exact: true }).setInputFiles({ name: "synthetic-u10.json", mimeType: "application/json", buffer: Buffer.from(typeof w === "string" ? w : JSON.stringify(w)) });
++  await expect(page.getByRole("region", { name: "Repeat workflow", exact: true })).toBeVisible();
++}
++async function uploadBook(page: Page, bytes = book(), name = "synthetic-u10.xlsx") {
++  const picker = page.getByLabel("Upload source CSV", { exact: true });
++  await expect(picker).toBeEnabled();
++  await picker.setInputFiles({ name, mimeType, buffer: Buffer.from(bytes) });
++  const chooser = page.getByLabel("Worksheet", { exact: true });
++  await expect.poll(async () => (await chooser.isVisible()) || (await picker.isEnabled())).toBe(true);
++  if (await chooser.isVisible()) {
++    await chooser.selectOption("Synthetic");
++    await page.getByRole("button", { name: "Import selected worksheet", exact: true }).click();
++  }
++  await expect(picker).toBeEnabled();
++  await expect(page.getByLabel("Full dataset counts")).toBeVisible();
++}
++async function download(page: Page) {
++  const event = page.waitForEvent("download");
++  await page.getByRole("button", { name: "Download converted Excel", exact: true }).click();
++  const file = await event;
++  expect(file.suggestedFilename()).toBe("converted.xlsx");
++  return readFile((await file.path())!);
++}
++function inspect(bytes: Uint8Array) {
++  const parts = Object.fromEntries(Object.entries(unzipSync(bytes)).map(([name, content]) => [name, strFromU8(content)]));
++  for (const [name, content] of Object.entries(parts)) {
++    expect(name).not.toMatch(/externalLinks|vbaProject|worksheets\/.*\.rels|synthetic-unused/iu);
++    expect(content).not.toMatch(/<f[\s>]|<hyperlink\b|TargetMode="External"|WEBSERVICE|PRIVATE_U10_UNUSED|DBNum1/u);
++  }
++  return parts;
++}
++function cell(sheet: string, ref: string) {
++  return new RegExp(`<c\\b[^>]*\\br="${ref}"[^>]*>[\\s\\S]*?</c>`, "u").exec(sheet)?.[0];
++}
++function textCell(parts: Record<string, string>, ref: string): string {
++  const node = cell(parts["xl/worksheets/sheet1.xml"], ref);
++  expect(node).toMatch(/\bt="s"/u);
++  const index = Number(/<v>(\d+)<\/v>/u.exec(node!)![1]);
++  const strings = [...parts["xl/sharedStrings.xml"].matchAll(/<si><t[^>]*>([\s\S]*?)<\/t><\/si>/gu)];
++  expect(index).toBeLessThan(strings.length);
++  return strings[index][1];
++}
++function expectTyped(bytes: Uint8Array, epoch: "1900" | "1904" = "1900", header = true) {
++  const parts = inspect(bytes), sheet = parts["xl/worksheets/sheet1.xml"], row = header ? 2 : 1;
++  expect(sheet).toContain(`ref="A1:E${row}"`);
++  expect(textCell(parts, `A${row}`)).toBe("001234");
++  expect(cell(sheet, `B${row}`)).toContain("<v>0.3</v>");
++  expect(cell(sheet, `B${row}`)).not.toContain('t="str"');
++  expect(cell(sheet, `C${row}`)).toContain(`<v>${epoch === "1900" ? 45351 : 43889}</v>`);
++  expect(cell(sheet, `D${row}`)).toBeUndefined();
++  expect(textCell(parts, `E${row}`)).toBe('=HYPERLINK(&quot;literal&quot;)');
++  expect(parts["xl/styles.xml"]).toContain('formatCode="mm/dd/yyyy"');
++  expect(parts["xl/workbook.xml"].includes('date1904="true"')).toBe(epoch === "1904");
++}
++
++test("U10 CSV to typed Excel controls, selected columns/order, blanks and literal strings", async ({ page }, info) => {
++  await page.setViewportSize({ width: 1440, height: 1000 });
++  await page.goto("/"); await upload(page, synthetic);
++  await add(page, ["Reference", "Amount", "Delivery", "Blank", "Literal", "Remove me"]);
++  await map(page, "Reference", "id"); await map(page, "Amount", "amount");
++  await edit(page, "Amount"); await page.getByLabel("Output type", { exact: true }).selectOption("number"); await closeSettings(page);
++  await map(page, "Delivery", "date");
++  await edit(page, "Delivery"); await page.getByLabel("Output type", { exact: true }).selectOption("date");
++  await page.getByLabel("Source date format", { exact: true }).selectOption("YYYY-MM-DD");
++  await page.getByLabel("Output date format", { exact: true }).selectOption("MM/DD/YYYY"); await closeSettings(page);
++  await fixed(page, "Blank", "blank"); await fixed(page, "Literal", "text", '=HYPERLINK("literal")');
++  await remove(page, "Remove me");
++  await expect(page.getByRole("button", { name: "Download converted CSV", exact: true })).toBeDisabled();
++  await page.getByLabel("Output format", { exact: true }).selectOption("xlsx");
++  await expect(page.getByLabel("CSV delimiter", { exact: true })).not.toBeVisible();
++  await expect(page.getByLabel("Excel date system", { exact: true })).toHaveValue("1900");
++  await expect(page.getByText("Spreadsheet formula warning — choose before download")).not.toBeVisible();
++  const generated = await download(page);
++  expectTyped(generated);
++  await info.attach("u10-synthetic-output.xlsx", { body: generated, contentType: mimeType });
++  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
++  if (info.project.name === "chromium") {
++    await mkdir("docs/reviews/u10", { recursive: true });
++    await page.screenshot({ path: "docs/reviews/u10/excel-output-desktop.png", fullPage: true });
++    await page.setViewportSize({ width: 390, height: 844 });
++    await page.screenshot({ path: "docs/reviews/u10/excel-output-mobile.png", fullPage: true });
++    expect(await page.locator("html").evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
++  }
++  await move(page, "Amount", "up");
++  const parts = inspect(await download(page));
++  expect(cell(parts["xl/worksheets/sheet1.xml"], "A2")).toContain("<v>0.3</v>"); expect(textCell(parts, "B2")).toBe("001234");
++  await page.getByLabel("Output format", { exact: true }).selectOption("csv");
++  await expect(page.getByRole("button", { name: "Download converted CSV", exact: true })).toBeDisabled();
++  await page.getByLabel("Escape risky text with an apostrophe", { exact: true }).check();
++  expect((await csvDownload(page)).toString()).toContain("0.3,001234,02/29/2024,,");
++});
++
++test("U10 XLSX to XLSX copies cached values without source formulas, links or package members", async ({ page }) => {
++  const w = config(true); w.fields.push({ id: "cached", header: "Cached", type: "number", required: false, recipe: { kind: "copy", source: "cached" } });
++  w.source.referencedHeaders = referencedHeaders(w.fields);
++  await page.goto("/"); await importConfig(page, w); await uploadBook(page, book(true));
++  await page.getByLabel("Show only rows with exceptions").check();
++  await expect(page.locator(".review")).toContainText(/cached|stale/iu);
++  const parts = inspect(await download(page)), sheet = parts["xl/worksheets/sheet1.xml"];
++  expect(cell(sheet, "F2")).toContain("<v>7</v>");
++  expect(textCell(parts, "A2")).toBe("001234"); expect(cell(sheet, "C2")).toContain("<v>45351</v>");
++});
++
++test("U10 precision errors block download and offer exact CSV or explicit text alternatives", async ({ page }) => {
++  const w = config(); w.fields = [w.fields[1]]; w.source.referencedHeaders = ["amount"];
++  await page.goto("/"); await importConfig(page, w);
++  await upload(page, "Amount\n1234567890123456");
++  const downloads: string[] = []; page.on("download", (d) => downloads.push(d.suggestedFilename()));
++  await page.getByRole("button", { name: "Download converted Excel", exact: true }).click();
++  await expect(page.getByRole("alert")).toContainText(/record 2.*Amount.*CSV.*text/iu);
++  expect(downloads).toEqual([]);
++  await page.getByRole("button", { name: "Edit workflow", exact: true }).click();
++  await page.getByLabel("Output format", { exact: true }).selectOption("csv");
++  expect((await csvDownload(page)).toString()).toBe("Amount\r\n1234567890123456\r\n");
++  await edit(page, "Amount"); await page.getByLabel("Output type", { exact: true }).selectOption("text"); await closeSettings(page);
++  await page.getByLabel("Output format", { exact: true }).selectOption("xlsx");
++  expect(textCell(inspect(await download(page)), "A2")).toBe("1234567890123456");
++});
++
++test("U10 saved and portable workflows preserve Excel settings and all types across browser timezones", async ({ page, browser }) => {
++  const w = config(); w.output = { ...w.output, dateSystem: "1904", header: false, delimiter: ";", bom: true };
++  await page.goto("/"); await importConfig(page, w); await upload(page, synthetic, "PRIVATE_U10_FILENAME.csv");
++  expectTyped(await download(page), "1904", false);
++  await page.getByRole("button", { name: "Save workflow", exact: true }).click();
++  await expect(page.getByText("Saved in this browser.", { exact: true })).toBeVisible();
++  const id = await page.getByLabel("Saved workflows", { exact: true }).inputValue();
++  const event = page.waitForEvent("download"); await page.getByRole("button", { name: "Download workflow", exact: true }).click();
++  const json = await readFile((await (await event).path())!, "utf8");
++  expect(JSON.parse(json).output).toEqual(w.output);
++  expect(json).not.toMatch(/001234|PRIVATE_U10_FILENAME|PRIVATE_U10_UNUSED/u);
++  await page.reload(); await page.getByLabel("Saved workflows", { exact: true }).selectOption(id);
++  await page.getByRole("button", { name: "Open workflow", exact: true }).click(); await upload(page, synthetic);
++  expectTyped(await download(page), "1904", false);
++  for (const timezoneId of ["America/Los_Angeles", "Pacific/Kiritimati"]) {
++    const context = await browser.newContext({ baseURL: "http://127.0.0.1:4173", serviceWorkers: "block", timezoneId });
++    try {
++      const next = await context.newPage(); await next.goto("/"); await importConfig(next, json); await upload(next, synthetic);
++      expectTyped(await download(next), "1904", false);
++    } finally { await context.close(); }
++  }
++});
++
++test("U10 invalid rows and stale configuration continue to block Excel export", async ({ page }) => {
++  const w = config(); w.fields[0].required = true;
++  await page.goto("/"); await importConfig(page, w); await upload(page, "ID,Amount,Date\n,0.3,2024-02-29");
++  await expect(page.getByRole("button", { name: "Download converted Excel", exact: true })).toBeDisabled();
++  await expect(page.locator(".review")).toContainText("1 invalid rows");
++  await upload(page, synthetic); expectTyped(await download(page));
++  await page.getByRole("button", { name: "Edit workflow", exact: true }).click();
++  // A draft edit disables the previous finalized revision immediately.
++  await page.getByLabel("Include header row").uncheck();
++  await expect(page.getByRole("button", { name: "Download converted Excel", exact: true })).toBeDisabled();
++  expectTyped(await download(page), "1900", false);
++});
++
++test("U10 privacy covers both source formats, cached formulas, Excel settings, saved work and downloads", async ({ page, context }) => {
++  const sentinel = "PRIVATE_U10_SOURCE", unexpected: string[] = [], diagnostics: string[] = [];
++  const assets = new Set(["/", "/index.html", ...(await readdir("dist/assets")).map((name) => `/assets/${name}`)]);
++  await context.route("**/*", async (route) => {
++    const r = route.request(), url = new URL(r.url()), payload = JSON.stringify([r.url(), r.headers(), r.postData()]);
++    if (/PRIVATE_U10|U1_PRIVATE_SENTINEL/u.test(payload) || url.origin !== "http://127.0.0.1:4173" || r.method() !== "GET" || !assets.has(url.pathname) || url.search) {
++      unexpected.push(payload); await route.abort();
++    } else await route.continue();
++  });
++  await context.routeWebSocket(/.*/, (ws) => { unexpected.push(ws.url()); ws.close(); });
++  page.on("console", (m) => diagnostics.push(m.text())); page.on("pageerror", (e) => diagnostics.push(e.message));
++  const response = await page.goto("/"); expect(response!.headers()["content-security-policy"]).toContain("connect-src 'none'");
++  await importConfig(page, config()); await upload(page, synthetic, `${sentinel}.csv`); expectTyped(await download(page));
++  await page.getByRole("button", { name: "End session", exact: true }).click();
++  const w = config(true); w.fields.push({ id: "note", header: "Note", type: "text", required: false, recipe: { kind: "copy", source: "note" } }, { id: "cached", header: "Cached", type: "number", required: false, recipe: { kind: "copy", source: "cached" } });
++  w.source.referencedHeaders = referencedHeaders(w.fields);
++  await importConfig(page, w); await uploadBook(page, book(false, sentinel), `${sentinel}.xlsx`);
++  expect(textCell(inspect(await download(page)), "F2")).toBe(sentinel);
++  await page.getByRole("button", { name: "Save workflow", exact: true }).click(); await expect(page.getByText("Saved in this browser.", { exact: true })).toBeVisible();
++  const stored = await page.evaluate(async () => {
++    const rows: unknown[] = [];
++    for (const item of await indexedDB.databases()) {
++      const db = await new Promise<IDBDatabase>((resolve, reject) => { const request = indexedDB.open(item.name!); request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error); });
++      for (const name of db.objectStoreNames) rows.push(await new Promise((resolve, reject) => { const request = db.transaction(name).objectStore(name).getAll(); request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error); }));
++      db.close();
++    }
++    return JSON.stringify(rows);
++  });
++  expect(stored).not.toMatch(/PRIVATE_U10_SOURCE|001234|WEBSERVICE|U1_PRIVATE_SENTINEL/u);
++  await page.getByRole("button", { name: "End session", exact: true }).click();
++  expect(unexpected).toEqual([]); expect(diagnostics.join("\n")).not.toMatch(/PRIVATE_U10|U1_PRIVATE_SENTINEL/u);
++});
++
++test("U10 integrated safeguards reject hostile workbooks while preserving eligible Excel download", async ({ page }, info) => {
++  test.setTimeout(120000);
++  await page.goto("/"); await importConfig(page, config()); await upload(page, synthetic);
++  const attacks = hostile() as Record<string, Uint8Array>;
++  attacks.bomb = workbook("", { extra: { "bomb.bin": new Uint8Array(101 * 1024 * 1024) } });
++  const timings: Record<string, number> = {};
++  for (const [name, bytes] of Object.entries(attacks)) {
++    await page.getByLabel("Upload source CSV", { exact: true }).setInputFiles({ name: `${name}.xlsx`, mimeType, buffer: Buffer.from(bytes) });
++    const selected = performance.now();
++    await expect(page.locator(".status-bar [role=alert]")).toBeVisible();
++    timings[name] = performance.now() - selected;
++    expect(timings[name]).toBeLessThan(5000); expectTyped(await download(page));
++  }
++  await info.attach("u10-hostile-integrated.json", { body: JSON.stringify(timings, null, 2), contentType: "application/json" });
++});
++
++test("U10 performance exports every 10000 by 20 value from CSV and XLSX without blocking the interface", async ({ page, browser }, info) => {
++  test.setTimeout(120000);
++  const w = makeWorkflow(Array.from({ length: 20 }, (_, c) => `Field ${c}`));
++  w.id = "synthetic-u10-performance"; w.output.format = "xlsx";
++  w.fields.forEach((f, c) => { f.type = c % 3 ? "number" : "text"; f.recipe = { kind: "copy", source: `field ${c}` }; });
++  w.source.referencedHeaders = referencedHeaders(w.fields);
++  await page.goto("/"); await importConfig(page, w);
++  await page.evaluate(() => {
++    const state = { previous: performance.now(), maxGap: 0, ticks: 0 }; Reflect.set(window, "u10Heartbeat", state);
++    setInterval(() => { const now = performance.now(); state.maxGap = Math.max(state.maxGap, now - state.previous); state.previous = now; state.ticks++; }, 20);
++  });
++  const times: Record<string, number[]> = {}, sizes: Record<string, { downloadBytes: number; expandedBytes: number }> = {};
++  const csv = Array.from({ length: 10001 }, (_, r) => r === 0 ? w.fields.map((f) => f.header).join(",") : Array.from({ length: 20 }, (_, c) => c % 3 ? r + 1 + c : `SYN-${String(r + 1).padStart(6, "0")}-${c}`).join(",")).join("\n");
++  const xlsx = representative() as Uint8Array;
++  for (const format of ["csv", "xlsx"] as const) {
++    times[format] = [];
++    for (let trial = 0; trial < 6; trial++) {
++    const start = performance.now();
++    if (format === "xlsx") await uploadBook(page, xlsx);
++    else await upload(page, csv);
++    const bytes = await download(page);
++    times[format].push(performance.now() - start);
++    const parts = inspect(bytes), sheet = parts["xl/worksheets/sheet1.xml"];
++    sizes[format] = { downloadBytes: bytes.length, expandedBytes: Object.values(parts).reduce((sum, content) => sum + Buffer.byteLength(content), 0) };
++    expect(sheet.match(/<row\b/gu)).toHaveLength(10001);
++    expect(sheet.match(/<c\b/gu)).toHaveLength(200020);
++    const strings = [...parts["xl/sharedStrings.xml"].matchAll(/<si><t[^>]*>([\s\S]*?)<\/t><\/si>/gu)].map((match) => match[1]);
++    const digest = createHash("sha256");
++    for (const match of sheet.matchAll(/<c\b([^>]*)><v>([^<]*)<\/v><\/c>/gu)) {
++      const ref = /\br="([A-Z]+\d+)"/u.exec(match[1])![1], type = /\bt="s"/u.test(match[1]) ? "s" : "n";
++      digest.update(`${ref}|${type}|${type === "s" ? strings[Number(match[2])] : match[2]}\n`);
++    }
++    // Independently generated with Python hashlib from every expected position,
++    // type and value of the synthetic 10000 x 20 table, including its headers.
++    expect(digest.digest("hex")).toBe("e730b0c71200213e83d16cd5b53ee0fd39a2e4ca94e70686f3b04456987eccff");
++    expect(textCell(parts, "A2")).toBe("SYN-000002-0"); expect(cell(sheet, "T10001")).toContain("<v>10020</v>");
++    await expect(page.getByLabel("Full dataset counts")).toContainText("10000");
++    // KTD-10 gives the full XLSX pipeline 15 seconds; earlier CSV-export
++    // performance tests retain their own 5-second budget.
++    expect(times[format].at(-1)).toBeLessThan(15000);
++    }
++  }
++  const heartbeat = await page.evaluate(() => Reflect.get(window, "u10Heartbeat") as { maxGap: number; ticks: number });
++  expect(heartbeat.ticks).toBeGreaterThan(0); expect(heartbeat.maxGap).toBeLessThan(1500);
++  const measurements = Object.fromEntries(Object.entries(times).map(([format, samples]) => {
++    const warm = samples.slice(1).sort((a, b) => a - b);
++    return [format, { firstMs: samples[0], warmMedianMs: warm[2], warmWorstMs: warm[4], samplesMs: samples }];
++  }));
++  await info.attach("u10-10000-integrated.json", { body: JSON.stringify({ rows: 10000, columns: 20, browser: browser.version(), importThroughDownload: measurements, sizes, heartbeat, environment: "Codex Cloud; same worker reused across trials, including file-picker transport; reference laptop qualification remains U13" }, null, 2), contentType: "application/json" });
++});
++
++test("U10 amplified output fails boundedly rather than silently truncating rows or columns", async ({ page }) => {
++  test.setTimeout(60000);
++  const w = makeWorkflow(Array.from({ length: 200 }, (_, i) => `Field ${i}`));
++  w.id = "synthetic-u10-amplification"; w.output.format = "xlsx";
++  w.fields.forEach((f) => { f.recipe = { kind: "copy", source: "id" }; }); w.source.referencedHeaders = ["id"];
++  await page.goto("/"); await importConfig(page, w); await upload(page, "ID\n" + Array(10000).fill("001234").join("\n"));
++  const start = performance.now(); await page.getByRole("button", { name: "Download converted Excel", exact: true }).click();
++  await expect(page.locator(".status-bar [role=alert]")).toContainText(/2 million.*smaller/iu);
++  expect(performance.now() - start).toBeLessThan(5000);
++});
++
++test("U10 cancelling Excel serialization discards the download and retries the same workflow", async ({ page }) => {
++  test.setTimeout(60000);
++  const w = makeWorkflow(Array.from({ length: 20 }, (_, i) => `Field ${i}`));
++  w.id = "synthetic-u10-cancel"; w.output.format = "xlsx";
++  w.fields.forEach((f, i) => { f.recipe = { kind: "copy", source: `field ${i}` }; }); w.source.referencedHeaders = referencedHeaders(w.fields);
++  await page.goto("/"); await importConfig(page, w); await uploadBook(page, representative());
++  const downloads: string[] = []; page.on("download", (d) => downloads.push(d.suggestedFilename()));
++  await page.getByRole("button", { name: "Download converted Excel", exact: true }).click();
++  await expect(page.locator(".status-bar [role=status]")).toContainText("Preparing download");
++  await page.getByRole("button", { name: "Cancel processing", exact: true }).click();
++  await expect(page.getByRole("alert")).toContainText("cancelled"); expect(downloads).toEqual([]);
++  await page.getByRole("button", { name: "Retry active file", exact: true }).click();
++  const parts = inspect(await download(page));
++  expect(parts["xl/worksheets/sheet1.xml"].match(/<row\b/gu)).toHaveLength(10001);
++  expect(textCell(parts, "A2")).toBe("SYN-000002-0");
++});
+diff --git a/tests/fixtures/xlsx/u10-output.json b/tests/fixtures/xlsx/u10-output.json
+new file mode 100644
+index 0000000..7c70c45
+--- /dev/null
++++ b/tests/fixtures/xlsx/u10-output.json
+@@ -0,0 +1,10 @@
++{
++  "cells": {
++    "A1": { "type": "text", "value": "=Reference" },
++    "A2": { "type": "text", "value": "001234" },
++    "B2": { "type": "number", "value": "0.3" },
++    "C2": { "type": "number", "value": "45351" },
++    "E2": { "type": "text", "value": "=HYPERLINK(&quot;https://example.invalid&quot;,&quot;literal&quot;)" }
++  },
++  "absent": ["D2"]
++}
+diff --git a/tests/unit/session.test.ts b/tests/unit/session.test.ts
+index dd793d8..4652894 100644
+--- a/tests/unit/session.test.ts
++++ b/tests/unit/session.test.ts
+@@ -1,19 +1,21 @@
+ import { afterEach, beforeEach, expect, test, vi } from "vitest";
+ import { Session } from "../../src/session/controller";
+ import type {
+   Request,
+   Response,
+   View,
+ } from "../../src/session/worker-protocol";
+ import { makeWorkflow, type Workflow } from "../../src/engine/workflow";
+ import { parseCsv, serializeCsv } from "../../src/formats/csv";
++import { serializeXlsx } from "../../src/formats/xlsx-export";
++import { strFromU8, unzipSync } from "fflate";
+ import { evaluate, type Run } from "../../src/engine/recipes";
+ import type { SourceTable } from "../../src/engine/values";
+ // Controllable transport and clock; parsed rows, evaluation and download bytes remain real.
+ class Transport {
+   static instances: Transport[] = [];
+   requests: Request[] = [];
+   terminated = false;
+   onmessage?: (event: MessageEvent<Response>) => void;
+   onerror?: (event: { preventDefault: () => void }) => void;
+   onmessageerror?: () => void;
+@@ -43,21 +45,22 @@ class Transport {
+     }
+     if (m.kind === "run") {
+       this.workflow = m.workflow;
+       this.run = evaluate(m.workflow, this.source!);
+     }
+     if (m.kind === "export") {
+       this.onmessage?.({
+         data: {
+           ...envelope,
+           kind: "download",
+-          bytes: serializeCsv(this.workflow!, this.run!, m.choice),
++          format: this.workflow!.output.format,
++          bytes: this.workflow!.output.format === "xlsx" ? serializeXlsx(this.workflow!, this.run!) : serializeCsv(this.workflow!, this.run!, m.choice),
+         },
+       } as MessageEvent<Response>);
+       return;
+     }
+     const view: View = {
+       columns: this.source!.columns,
+       sourceRows: this.source!.rows,
+       rows: this.run!.rows,
+       workflowIssues: this.run!.workflowIssues,
+       summary: this.run!.summary,
+@@ -82,20 +85,36 @@ const workflow = () => {
+ };
+ beforeEach(() => {
+   Transport.instances = [];
+   vi.stubGlobal("Worker", Transport);
+   vi.useFakeTimers();
+ });
+ afterEach(() => {
+   vi.useRealTimers();
+   vi.unstubAllGlobals();
+ });
++test("Excel download carries worker format; cancellation rejects old bytes and retry preserves XLSX settings", async () => {
++  const s = new Session(), w = workflow(); w.output.format = "xlsx";
++  s.activate(w); await s.upload(file(), ","); latest().flush();
++  const downloads: { bytes: Uint8Array; format: string }[] = [];
++  s.onDownload = (bytes, format) => downloads.push({ bytes, format });
++  s.export(undefined);
++  const old = latest(), pending = old.requests.at(-1)!;
++  s.cancel();
++  old.onmessage?.({ data: { request: pending.request, dataset: pending.dataset, revision: pending.revision, kind: "download", format: "xlsx", bytes: new Uint8Array([1]) } } as MessageEvent<Response>);
++  expect(downloads).toEqual([]);
++  await s.retry(); latest().flush(); s.export(undefined); latest().flush();
++  expect(downloads).toHaveLength(1); expect(downloads[0].format).toBe("xlsx");
++  const parts = unzipSync(downloads[0].bytes);
++  expect(strFromU8(parts["xl/sharedStrings.xml"])).toContain("001234");
++  s.end();
++});
+ test.each(["error", "messageerror", "watchdog"])(
+   "CE #3: %s recovery reparses active File and exports identical real bytes",
+   async (failure) => {
+     const session = new Session();
+     await session.upload(file(), ",");
+     latest().flush();
+     session.configure(workflow());
+     latest().flush();
+     const expected = session.state.view;
+     const old = latest();
+diff --git a/tests/unit/workflow-roundtrip.test.ts b/tests/unit/workflow-roundtrip.test.ts
+index 12ff545..3480f88 100644
+--- a/tests/unit/workflow-roundtrip.test.ts
++++ b/tests/unit/workflow-roundtrip.test.ts
+@@ -48,24 +48,23 @@ test("untrusted JSON rejects versions, budgets, nested injection and malformed r
+   for (const injected of [
+     { ...golden(), session: { rows: ['private'] } },
+     { ...golden(), source: { ...golden().source, filename: 'private.csv' } },
+     { ...golden(), output: { ...golden().output, safetyChoice: 'raw' } },
+     { ...golden(), fields: [{ ...golden().fields[0], sample: 'private' }] },
+     { ...golden(), fields: [{ ...golden().fields[0], recipe: { kind: 'script', code: '1' } }] },
+     { ...golden(), fields: [{ ...golden().fields[0], recipe: { kind: 'constant', value: { kind: 'number', decimal: 'NaN' } } }] },
+   ]) expect(() => decodeUsableWorkflow(JSON.stringify(injected))).toThrow(/structure/);
+ });
+ 
+-test("declared future capabilities decode structurally but fail the usable boundary", () => {
+-  const variants: Workflow[] = [];
+-  variants.push({ ...golden(), output: { ...golden().output, format: 'xlsx' } });
+-  for (const w of variants) expect(() => decodeUsableWorkflow(JSON.stringify(w))).toThrow(/unsupported/i);
++test("version-1 reserved XLSX output now passes the usable boundary without migration", () => {
++  const w = golden(); w.output.format = 'xlsx';
++  expect(decodeUsableWorkflow(JSON.stringify(w))).toEqual(w);
+ });
+ 
+ test("usable configuration rejects unfinished, conflicting and inconsistent declarations", () => {
+   const bad: Workflow[] = [];
+   const unmapped = golden(); delete unmapped.fields[0].recipe; bad.push(unmapped);
+   const duplicate = golden(); duplicate.fields[1].id = duplicate.fields[0].id; bad.push(duplicate);
+   const names = golden(); names.fields[1].header = ' reference '; bad.push(names);
+   const blank = golden(); blank.fields[0].header = '  '; bad.push(blank);
+   for (const change of [{ type: 'text' as const }, { trim: true }, { maxLength: 3 }]) {
+     const w = golden(); Object.assign(w.fields[3], change); bad.push(w);
+diff --git a/tests/unit/xlsx-export.test.ts b/tests/unit/xlsx-export.test.ts
+new file mode 100644
+index 0000000..9a86804
+--- /dev/null
++++ b/tests/unit/xlsx-export.test.ts
+@@ -0,0 +1,210 @@
++import { readFileSync } from "node:fs";
++import { expect, test } from "vitest";
++import * as XLSX from "xlsx";
++import { strFromU8, unzipSync } from "fflate";
++import { serializeXlsx } from "../../src/formats/xlsx-export";
++import { parseCsv } from "../../src/formats/csv";
++import { parseXlsx } from "../../src/formats/xlsx";
++import { evaluate } from "../../src/engine/recipes";
++import { makeWorkflow, referencedHeaders, type Workflow } from "../../src/engine/workflow";
++import { decodeUsableWorkflow, encodeWorkflow } from "../../src/workflows/codec";
++// @ts-expect-error Independently authored U1 OOXML fixture builder.
++import { workbook } from "../qualification/xlsx/fixtures.mjs";
++
++const source = () => parseCsv(new TextEncoder().encode("ID,Amount,Date,Unused\n001234,0.3,2024-02-29,PRIVATE_UNUSED"), ",", "synthetic");
++function config() {
++  const w = makeWorkflow(["=Reference", "Amount", "Delivery", "Blank", "Literal"]);
++  w.output.format = "xlsx";
++  w.fields[0].recipe = { kind: "copy", source: "id" };
++  w.fields[1] = { ...w.fields[1], type: "number", recipe: { kind: "copy", source: "amount" } };
++  w.fields[2] = { ...w.fields[2], type: "date", date: { source: "YYYY-MM-DD", target: "DD/MM/YYYY" }, recipe: { kind: "copy", source: "date" } };
++  w.fields[3].recipe = { kind: "constant", value: { kind: "blank" } };
++  w.fields[4].recipe = { kind: "constant", value: { kind: "text", text: '=HYPERLINK("https://example.invalid","literal")' } };
++  return w;
++}
++function write(w = config()) { return serializeXlsx(w, evaluate(w, source())); }
++function xml(bytes: Uint8Array) {
++  return Object.fromEntries(Object.entries(unzipSync(bytes)).map(([name, data]) => [name, strFromU8(data)]));
++}
++function sharedStrings(parts: Record<string, string>): string[] {
++  return [...(parts["xl/sharedStrings.xml"] ?? "").matchAll(/<si><t[^>]*>([\s\S]*?)<\/t><\/si>/gu)].map((match) => match[1]);
++}
++
++test("fresh workbook ZIP/XML matches independent semantic golden, with no active content", () => {
++  const bytes = write(), parts = xml(bytes), sheet = parts["xl/worksheets/sheet1.xml"];
++  const golden = JSON.parse(readFileSync("tests/fixtures/xlsx/u10-output.json", "utf8")) as { cells: Record<string, { type: string; value: string }>; absent: string[] };
++  for (const [ref, cell] of Object.entries(golden.cells)) {
++    const node = new RegExp(`<c\\b[^>]*\\br="${ref}"[^>]*>[\\s\\S]*?</c>`, "u").exec(sheet)?.[0];
++    expect(node, ref).toBeDefined();
++    if (cell.type === "text") {
++      expect(node).toMatch(/\bt="s"/u);
++      const index = Number(/<v>(\d+)<\/v>/u.exec(node!)![1]);
++      expect(sharedStrings(parts)[index]).toBe(cell.value);
++    } else {
++      expect(node).not.toMatch(/\bt="(?:str|inlineStr|s)"/u);
++      expect(node).toContain(`<v>${cell.value}</v>`);
++    }
++  }
++  for (const ref of golden.absent) expect(sheet).not.toMatch(new RegExp(`<c\\b[^>]*\\br="${ref}"`, "u"));
++  expect(sheet).toContain('ref="A1:E2"');
++  expect(parts["xl/styles.xml"]).toContain("dd/mm/yyyy");
++  // OOXML defaults to the 1900 calendar when date1904 is omitted.
++  expect(parts["xl/workbook.xml"]).not.toMatch(/date1904="(?:true|1)"/u);
++  for (const [name, content] of Object.entries(parts)) {
++    expect(name).not.toMatch(/vba|externalLinks|hyperlinks|comments|sheet.*\.rels/iu);
++    expect(content).not.toMatch(/<f[\s>]|<hyperlink\b|TargetMode="External"|PRIVATE_UNUSED/u);
++  }
++  const book = XLSX.read(bytes, { type: "array", cellNF: true, cellDates: false });
++  expect(book.Sheets.Output.A2).toMatchObject({ t: "s", v: "001234" });
++  expect(book.Sheets.Output.B2).toMatchObject({ t: "n", v: 0.3 });
++  expect(book.Sheets.Output.C2).toMatchObject({ t: "n", v: 45351, z: "dd/mm/yyyy" });
++  expect(book.Sheets.Output.E2.f).toBeUndefined();
++});
++
++test("zero-padded numeric Excel identifiers become literal strings in the fresh workbook", async () => {
++  const input = workbook('<row r="1"><c r="A1" t="inlineStr"><is><t>ID</t></is></c></row><row r="2"><c r="A2" s="1"><v>1234</v></c></row>', { dimension: "A1:A2" });
++  const { table } = await parseXlsx(input, "padded", "Synthetic");
++  const w = config(); w.fields = [w.fields[0]];
++  const bytes = serializeXlsx(w, evaluate(w, table!));
++  const parts = xml(bytes);
++  expect(parts["xl/worksheets/sheet1.xml"]).toMatch(/r="A2" t="s"/u);
++  expect(sharedStrings(parts)).toContain("001234");
++  expect(XLSX.read(bytes, { type: "array" }).Sheets.Output.A2).toMatchObject({ t: "s", v: "001234" });
++});
++
++test("source custom number formats cannot leak through SheetJS global state into fresh exports", async () => {
++  const marker = "PRIVATE_U10_SOURCE_FORMAT";
++  const input = workbook('<row r="1"><c r="A1" t="inlineStr"><is><t>ID</t></is></c></row><row r="2"><c r="A2"><v>12</v></c></row>', {
++    dimension: "A1:A2", extra: { "xl/styles.xml": `<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="1"><numFmt numFmtId="164" formatCode="&quot;${marker}&quot;0"/></numFmts><fonts count="1"><font/></fonts><fills count="1"><fill/></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf/></cellStyleXfs><cellXfs count="1"><xf numFmtId="0"/></cellXfs></styleSheet>` },
++  });
++  await parseXlsx(input, "format-source", "Synthetic");
++  const parts = xml(write());
++  expect(Object.values(parts).join("\n")).not.toContain(marker);
++  expect(parts["xl/styles.xml"]).toContain('formatCode="dd/mm/yyyy"');
++});
++
++test.each(["0", "-0", "+0.3000", "12.50", "-999999999999999", "1000000000000000", "0." + "0".repeat(306) + "1"])("exports faithful Excel numeric value %s", (decimal) => {
++  const w = config(); w.fields = [{ ...w.fields[1], recipe: { kind: "constant", value: { kind: "number", decimal } } }];
++  expect(XLSX.read(write(w), { type: "array" }).Sheets.Output.A2.v).toBe(Number(decimal) || 0);
++});
++
++test.each(["1234567890123456", "0.10000000000000001", "9007199254740993", "1" + "0".repeat(308), "0." + "0".repeat(308) + "1", "0." + "0".repeat(323) + "1", "0." + "0".repeat(400) + "1"])("rejects numeric precision/range loss %s with row/field and alternatives", (decimal) => {
++  const w = config(); w.fields = [{ ...w.fields[1], recipe: { kind: "constant", value: { kind: "number", decimal } } }];
++  expect(() => write(w)).toThrow(/record 2.*Amount.*CSV.*text/iu);
++});
++
++test.each(["1900", "1904"] as const)("calendar dates and number formats use deliberate %s epoch", async (dateSystem) => {
++  const w = config(); w.output.dateSystem = dateSystem;
++  const bytes = write(w), parts = xml(bytes);
++  expect(parts["xl/worksheets/sheet1.xml"]).toContain(`<v>${dateSystem === "1900" ? 45351 : 43889}</v>`);
++  if (dateSystem === "1904") expect(parts["xl/workbook.xml"]).toContain('date1904="true"');
++  else expect(parts["xl/workbook.xml"]).not.toMatch(/date1904="(?:true|1)"/u);
++  const { table } = await parseXlsx(bytes, "again");
++  expect(table!.rows[0].cells[2].excel?.date).toEqual({ year: 2024, month: 2, day: 29 });
++});
++
++test.each([["1900", "1900-01-01", 1], ["1900", "1900-02-28", 59], ["1900", "1900-03-01", 61], ["1904", "1904-01-01", 0], ["1900", "9999-12-31", 2958465]] as const)("date boundary %s %s writes %s", (dateSystem, date, serial) => {
++  const w = config(); w.output.dateSystem = dateSystem;
++  w.fields = [{ ...w.fields[2], recipe: { kind: "constant", value: { kind: "text", text: date } } }];
++  expect(xml(write(w))["xl/worksheets/sheet1.xml"]).toContain(`<v>${serial}</v>`);
++});
++
++test.each([["YYYY-MM-DD", "yyyy-mm-dd"], ["MM/DD/YYYY", "mm/dd/yyyy"], ["DD/MM/YYYY", "dd/mm/yyyy"]] as const)("date display %s writes explicit %s format without changing its serial", (target, format) => {
++  const w = config(); w.fields = [{ ...w.fields[2], date: { source: "YYYY-MM-DD", target } }];
++  const parts = xml(write(w));
++  expect(parts["xl/styles.xml"]).toContain(`formatCode="${format}"`);
++  expect(parts["xl/worksheets/sheet1.xml"]).toContain("<v>45351</v>");
++});
++
++test("Excel row limit includes the optional header and rejects before worksheet allocation", () => {
++  const w = config(); w.fields = [w.fields[0]];
++  const run = evaluate(w, source()); run.rows = Array(1048576).fill(run.rows[0]);
++  expect(() => serializeXlsx(w, run)).toThrow(/1048576 rows.*CSV/u);
++});
++
++test.each(["0001-01-01", "1899-12-31"])("pre-epoch dates %s fail without changing calendar meaning", (date) => {
++  const w = config(); w.fields = [{ ...w.fields[2], recipe: { kind: "constant", value: { kind: "text", text: date } } }];
++  expect(() => write(w)).toThrow(/Delivery.*CSV.*text/u);
++});
++
++test("selected field order and header-free export retain trailing and all-blank rows", () => {
++  const w = config(); w.output.header = false; w.fields = [w.fields[4], w.fields[0], w.fields[3]];
++  let parts = xml(write(w));
++  expect(parts["xl/worksheets/sheet1.xml"]).toContain('ref="A1:C1"');
++  expect(parts["xl/worksheets/sheet1.xml"]).toMatch(/r="B1" t="s"><v>\d+<\/v>/u);
++  expect(sharedStrings(parts)).toContain("001234");
++  w.fields = [config().fields[2], config().fields[3]];
++  w.fields[0].recipe = { kind: "constant", value: { kind: "blank" } };
++  parts = xml(write(w));
++  expect(parts["xl/worksheets/sheet1.xml"]).toContain('ref="A1:B1"');
++  expect(parts["xl/worksheets/sheet1.xml"]).not.toMatch(/<v>/u);
++});
++
++test("XLSX format and every destination type survive version-1 saved/portable codec", () => {
++  for (const dateSystem of ["1900", "1904"] as const) for (const header of [false, true]) {
++    const w = config(); w.output = { ...w.output, dateSystem, header, bom: true, delimiter: ";" };
++    w.source.referencedHeaders = referencedHeaders(w.fields);
++    const restored = decodeUsableWorkflow(encodeWorkflow(w));
++    expect(restored).toEqual(w);
++    expect(xml(write(restored))).toEqual(xml(write(w)));
++  }
++});
++
++test("existing invalid, workflow-error and zero-row eligibility remains blocking", () => {
++  const w = config(); w.fields[0].required = true; w.fields[0].recipe = { kind: "constant", value: { kind: "blank" } };
++  expect(() => write(w)).toThrow(/blocked/iu);
++  w.fields[0].recipe = undefined;
++  expect(() => write(w)).toThrow(/blocked/iu);
++  const good = config();
++  expect(() => serializeXlsx(good, evaluate(good, { ...source(), rows: [] }))).toThrow(/blocked/iu);
++});
++
++test("amplified output is rejected before exceeding 2 million table cells", () => {
++  const w = config(), run = evaluate(w, source());
++  run.rows = Array(400001).fill(run.rows[0]);
++  expect(() => serializeXlsx(w, run)).toThrow(/2 million.*smaller/iu);
++});
++
++test("oversized text never silently truncates to Excel's cell limit", () => {
++  const w: Workflow = config();
++  const text = "x".repeat(32768);
++  const table = parseCsv(new TextEncoder().encode(`ID\n${text}`), ",", "long");
++  w.fields = [w.fields[0]];
++  expect(() => serializeXlsx(w, evaluate(w, table))).toThrow(/32767.*CSV/iu);
++});
++
++test.each(["001234", "=1+1", "+SUM(A1)", "-2", "@SUM(A1)", " \t=1+1", "\r=1+1", "_x0041_", "_x005F_x0041_", "_X000a_", "a\r\nb", "<tag>&\"café\""])("literal text %j remains string data without formulas", (text) => {
++  const w = config(); w.fields = [{ ...w.fields[0], recipe: { kind: "constant", value: { kind: "text", text } } }];
++  const bytes = write(w), parts = xml(bytes), sheet = parts["xl/worksheets/sheet1.xml"];
++  expect(sheet).not.toMatch(/<f[\s>]/u);
++  const index = Number(/<c r="A2"[^>]*><v>(\d+)<\/v><\/c>/u.exec(sheet)![1]);
++  const encoded = sharedStrings(parts)[index];
++  const entities: Record<string, string> = { "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&apos;": "'" };
++  const decoded = encoded.replace(/&(?:amp|lt|gt|quot|apos);/gu, (token) => entities[token]).replace(/_x([0-9a-f]{4})_/giu, (_, hex: string) => String.fromCharCode(parseInt(hex, 16)));
++  expect(decoded).toBe(text);
++  // The reader intentionally normalizes CRLF after decoding. Raw XML above is
++  // the fidelity authority; this supplemental check does not hide that behavior.
++  expect(XLSX.read(bytes, { type: "array" }).Sheets.Output.A2).toMatchObject({ t: "s", v: text.replace(/\r\n/gu, "\n") });
++});
++
++test("unpaired Unicode is rejected rather than silently replaced during UTF-8 writing", () => {
++  const w = config(); w.fields = [{ ...w.fields[0], recipe: { kind: "constant", value: { kind: "text", text: "\ud800" } } }];
++  expect(() => write(w)).toThrow(/Unicode surrogate/u);
++});
++
++test("OOXML token protection cannot silently exceed the writer's own cell length limit", () => {
++  const w = config(); w.fields = [w.fields[0]];
++  const table = parseCsv(new TextEncoder().encode("ID\n" + "_x0041_".repeat(4000)), ",", "escaped");
++  expect(() => serializeXlsx(w, evaluate(w, table))).toThrow(/Escaped text.*32767.*CSV/u);
++});
++
++test("exact decimal arithmetic serializes 0.1 + 0.2 as numeric 0.3", () => {
++  const w = config(); w.fields = [{ ...w.fields[1], recipe: { kind: "calculate", operation: "add", left: { kind: "number", decimal: "0.1" }, right: { kind: "number", decimal: "0.2" } } }];
++  expect(xml(write(w))["xl/worksheets/sheet1.xml"]).toContain("<v>0.3</v>");
++});
++
++test("output text amplification fails within the serialization budget without allocating a whole workbook", () => {
++  const w = config(); w.fields = Array.from({ length: 200 }, (_, i) => ({ ...w.fields[0], id: `f-${i}`, header: `F${i}` }));
++  const table = parseCsv(new TextEncoder().encode("ID\n" + Array(100).fill("x".repeat(4096)).join("\n")), ",", "large");
++  expect(() => serializeXlsx(w, evaluate(w, table))).toThrow(/100 MiB.*smaller/iu);
++});

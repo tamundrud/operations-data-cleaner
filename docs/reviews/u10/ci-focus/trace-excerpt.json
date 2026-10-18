@@ -1,0 +1,96 @@
+{
+  "trace_sha256": "ca2b80f05b38ae0708440f2d036d1299d9ee31f717c90056187a00a2cfbea858",
+  "source": "Local affected-test repeat1 failure on published commit aec3cd7. Selected actual test.trace events; no reconstructed events.",
+  "events": [
+    {
+      "type": "before",
+      "callId": "wxan@1719",
+      "startTime": 64049.104,
+      "class": "Test",
+      "method": "pw:api",
+      "title": "Drag and drop",
+      "params": {
+        "source": "getByRole('button', { name: 'Select source Note', exact: true })",
+        "target": "getByRole('button', { name: 'Select output Note', exact: true })"
+      },
+      "stack": [
+        {
+          "file": "/workspace/operations-data-cleaner/tests/e2e/privacy.spec.ts",
+          "line": 61,
+          "column": 6
+        }
+      ]
+    },
+    {
+      "type": "before",
+      "callId": "wxan@1721",
+      "startTime": 64455.85,
+      "class": "Test",
+      "method": "pw:api",
+      "title": "Fill \"\"",
+      "subtitle": "getByLabel('Search source columns')",
+      "params": {
+        "locator": "getByLabel('Search source columns')",
+        "value": ""
+      },
+      "stack": [
+        {
+          "file": "/workspace/operations-data-cleaner/tests/e2e/privacy.spec.ts",
+          "line": 64,
+          "column": 50
+        }
+      ]
+    },
+    {
+      "type": "before",
+      "callId": "wxan@1930",
+      "startTime": 70634.346,
+      "class": "Test",
+      "method": "pw:api",
+      "title": "Fill \"Delivery date\"",
+      "subtitle": "getByLabel('New column names')",
+      "params": {
+        "locator": "getByLabel('New column names')",
+        "value": "Delivery date"
+      },
+      "stack": [
+        {
+          "file": "/workspace/operations-data-cleaner/tests/e2e/helpers.ts",
+          "line": 17,
+          "column": 45,
+          "function": "add"
+        },
+        {
+          "file": "/workspace/operations-data-cleaner/tests/e2e/privacy.spec.ts",
+          "line": 105,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "type": "before",
+      "callId": "wxan@1934",
+      "startTime": 70815.878,
+      "class": "Test",
+      "method": "pw:api",
+      "title": "Click",
+      "subtitle": "locator('.source-grid [data-source-key=\"date\"]')",
+      "params": {
+        "locator": "locator('.source-grid [data-source-key=\"date\"]')"
+      },
+      "stack": [
+        {
+          "file": "/workspace/operations-data-cleaner/tests/e2e/helpers.ts",
+          "line": 72,
+          "column": 6,
+          "function": "map"
+        },
+        {
+          "file": "/workspace/operations-data-cleaner/tests/e2e/privacy.spec.ts",
+          "line": 106,
+          "column": 9
+        }
+      ]
+    }
+  ]
+}

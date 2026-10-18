@@ -1,0 +1,74 @@
+{
+  "branch": "feat/u10-value-only-excel-export",
+  "completed_at": "2026-10-18T15:41:46.592119+00:00",
+  "cost": {
+    "host": "codex",
+    "scope": {
+      "changed_lines": 2,
+      "depth": "full",
+      "exec_nontest_lines": 0,
+      "size_band": "small",
+      "unclassified_lines": {}
+    },
+    "stages": [
+      {
+        "elapsed_seconds": 0.044,
+        "ended_at": "2026-10-18T15:38:52.995635+00:00",
+        "facts": {
+          "changed_lines": 2,
+          "depth": "full",
+          "exec_nontest_lines": 0,
+          "size_band": "small",
+          "unclassified_lines": {}
+        },
+        "stage": "scope",
+        "started_at": "2026-10-18T15:38:52.951976+00:00"
+      },
+      {
+        "elapsed_seconds": 0.049,
+        "ended_at": "2026-10-18T15:38:53.044266+00:00",
+        "reviewers": 4,
+        "stage": "select",
+        "started_at": "2026-10-18T15:38:52.995635+00:00"
+      },
+      {
+        "candidates": 0,
+        "elapsed_seconds": 58.209,
+        "ended_at": "2026-10-18T15:39:51.253733+00:00",
+        "stage": "dispatch",
+        "started_at": "2026-10-18T15:38:53.044266+00:00"
+      },
+      {
+        "candidates": 0,
+        "elapsed_seconds": 20.458,
+        "ended_at": "2026-10-18T15:40:40.942184+00:00",
+        "stage": "merge",
+        "started_at": "2026-10-18T15:40:20.483855+00:00"
+      },
+      {
+        "elapsed_seconds": 0.297,
+        "ended_at": "2026-10-18T15:40:49.488405+00:00",
+        "stage": "validate",
+        "started_at": "2026-10-18T15:40:49.191453+00:00"
+      },
+      {
+        "elapsed_seconds": 18.025,
+        "ended_at": "2026-10-18T15:41:46.642295+00:00",
+        "stage": "report",
+        "started_at": "2026-10-18T15:41:28.617762+00:00"
+      }
+    ],
+    "status": "complete",
+    "totals": {
+      "artifact_bytes": 291143,
+      "candidates": 0,
+      "elapsed_seconds": 97.082,
+      "reviewers": 4
+    },
+    "truncated_events": 0
+  },
+  "diff_sha256": "786e437f38fc90ee127f4ba370a6931056bbaf32fab97c089046ee62342140db",
+  "head_sha": "aec3cd7a15eaa124d3f10530248023766894f61c",
+  "run_id": "u10-ci-focus-review",
+  "verdict": "Ready to merge"
+}

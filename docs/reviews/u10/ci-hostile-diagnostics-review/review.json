@@ -1,0 +1,117 @@
+{
+  "status": "complete",
+  "verdict": "Ready to merge",
+  "scope": {
+    "base": "cfb13ab1f22dac201d94885a859ee83704e20785",
+    "branch": "feat/u10-value-only-excel-export",
+    "head_sha": "cfb13ab1f22dac201d94885a859ee83704e20785",
+    "pr_url": null,
+    "files_changed": 1,
+    "diff_sha256": "9c27d365e78ded4fe01f55ddf03c500fee292d6a2288278de193dbcd3d468d3b",
+    "current_scoped_diff_verified": true,
+    "reviewed_paths": [
+      "tests/e2e/excel-output.spec.ts"
+    ],
+    "excludes": "Earlier U10 implementation and evidence; this verdict covers diagnostic safety only."
+  },
+  "intent": "Expose unexpected synthetic U10 browser failure state in CI logs using browser version and body ARIA snapshot; label hostile fixture iterations with test.step. Keep assertions, timeouts and production behavior unchanged; underlying intermittent download timeout remains unresolved. Log synthetic hostile fixture name at named step entry so runner logs identify the failing iteration.",
+  "intent_confidence": "explicit",
+  "reviewers": [
+    "correctness",
+    "project-standards",
+    "testing",
+    "adversarial",
+    "security"
+  ],
+  "findings": [],
+  "actionable_findings": [],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "requirements_completeness": null,
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [],
+  "testing_gaps": [],
+  "coverage": {
+    "depth": "full",
+    "mode": "agent report-only",
+    "reviewer_reasons": [
+      {
+        "reviewer": "correctness",
+        "tier": "session",
+        "reason": "always-on"
+      },
+      {
+        "reviewer": "project-standards",
+        "tier": "mid",
+        "reason": "AGENTS.md fallback"
+      },
+      {
+        "reviewer": "testing",
+        "tier": "mid",
+        "reason": "changed browser test synchronization"
+      },
+      {
+        "reviewer": "adversarial",
+        "tier": "session",
+        "reason": "privacy silent-pass verification mechanism fidelity"
+      },
+      {
+        "reviewer": "security",
+        "tier": "session",
+        "reason": "new diagnostic log sink must remain synthetic test-only"
+      }
+    ],
+    "notes": [
+      "Default full depth: diagnostic body snapshot crosses a logging/data boundary; review privacy and verification fidelity.",
+      "Only diagnostics/test.step additions reviewed; no U10 implementation re-review.",
+      "No applicable isolated plan; corpus XLSX qualification does not cover diagnostics.",
+      "All tests owned by parent. No runtime execution claimed.",
+      "Root-boundary independent investigation found no normal hostile rejection to revision-desynchronization chain: parsing precedes worker state commit; controller errors preserve prior active revision. Browser download handling remains unproven.",
+      "Exact diff SHA256 9c27d365e78ded4fe01f55ddf03c500fee292d6a2288278de193dbcd3d468d3b.",
+      "Cross-model pass not run: only Codex CLI installed, no attested different-family route. Independent local adversarial fallback selected; no external content transfer.",
+      "All five structured reviewer artifacts and compact returns were read; no candidate finding, residual risk or testing gap was reported.",
+      "Settlement suppression not evaluated: no isolated plan applies.",
+      "Suppressed findings: 0; malformed findings: 0; malformed returns: 0; first_evidence_backfilled: 0; quote-gate demotions: 0; mode-aware demotions: 0.",
+      "Validator shortcut-skipped: 0; no surviving primary findings, so selected batch is empty."
+    ],
+    "cross_model": "Cross-model pass not run: only Codex CLI installed, no attested different-family route. Independent local adversarial fallback selected; no external content transfer.",
+    "validator": {
+      "outcome": "empty-batch",
+      "reason": "No surviving primary findings; validator not launched.",
+      "confirmed": 0,
+      "rejected": 0,
+      "unresolved": 0,
+      "malformed": 0,
+      "failed": 0,
+      "shortcut_skipped": 0,
+      "protected_subject_reclassifications": 0,
+      "degraded_blockers": 0
+    },
+    "suppressed_by_confidence": {},
+    "suppressed_count": 0,
+    "malformed_findings": 0,
+    "malformed_returns": 0,
+    "first_evidence_backfilled": 0,
+    "quote_gate_demotions": 0,
+    "mode_aware_demotions": 0,
+    "failed_reviewers": [],
+    "timed_out_reviewers": [],
+    "compound_packs": {
+      "roots": [],
+      "errors": [],
+      "warnings": []
+    },
+    "apply": "Not authorized; no implementation or test files changed by reviewers.",
+    "not_assessed": [
+      "Earlier U10 implementation, requirements and evidence.",
+      "Runtime execution and new-head GitHub CI verification.",
+      "Underlying intermittent download timeout remains unresolved; diagnostics do not establish a fix.",
+      "Agent-native and deployment-verification personas were not selected."
+    ]
+  },
+  "artifact_path": "/workspace/operations-data-cleaner/docs/reviews/u10/ci-hostile-diagnostics-review",
+  "run_id": "u10-ci-hostile-diagnostics-review",
+  "verdict_reason": "No actionable defect was established in the test-only diagnostics. Ready to merge applies solely to diagnostic safety; the underlying intermittent download timeout remains unresolved. This review does not authorize merge or deployment. Runtime/CI verification and user UX acceptance remain with the parent and user."
+}

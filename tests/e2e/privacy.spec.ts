@@ -61,7 +61,9 @@ test("production journey sends no customer values, file names or IDs and stores 
     .dragTo(
       page.getByRole("button", { name: "Select output Note", exact: true }),
     );
+  await expect(page.getByRole("button", { name: "Select output Note", exact: true })).toBeFocused();
   await page.getByLabel("Search source columns").fill("");
+  await expect(page.getByLabel("Search source columns")).toHaveValue("");
   await page.getByRole("button", { name: "Unlink Note", exact: true }).click();
   await map(page, "Note", "note");
   await move(page, "Note", "up");

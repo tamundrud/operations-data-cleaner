@@ -1,0 +1,49 @@
+{
+  "rows": 10000,
+  "columns": 20,
+  "browser": "154.0.8037.57",
+  "importThroughDownload": {
+    "csv": {
+      "firstMs": 3251.450978000008,
+      "warmMedianMs": 2112.7754580000183,
+      "warmWorstMs": 3363.421850999992,
+      "samplesMs": [
+        3251.450978000008,
+        2366.8822749999817,
+        2006.617435000022,
+        2112.7754580000183,
+        3363.421850999992,
+        1867.5868839999894
+      ]
+    },
+    "xlsx": {
+      "firstMs": 9035.19425,
+      "warmMedianMs": 3771.992790999997,
+      "warmWorstMs": 6314.600055000046,
+      "samplesMs": [
+        9035.19425,
+        6314.600055000046,
+        4000.833861000021,
+        3771.992790999997,
+        3526.314248999988,
+        3614.4168499999796
+      ]
+    }
+  },
+  "sizes": {
+    "csv": {
+      "downloadBytes": 2866847,
+      "expandedBytes": 8248149
+    },
+    "xlsx": {
+      "downloadBytes": 2866847,
+      "expandedBytes": 8248149
+    }
+  },
+  "heartbeat": {
+    "previous": 51750.5,
+    "maxGap": 468.80000000004657,
+    "ticks": 2340
+  },
+  "environment": "Codex Cloud; same worker reused across trials, including file-picker transport; reference laptop qualification remains U13"
+}

@@ -1,0 +1,16 @@
+[WebServer] (node:7516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:7528) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/excel-output.spec.ts:224:1 › U10 integrated safeguards reject hostile workbooks while preserving eligible Excel download (14.8s)
+(node:7691) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [chromium] › tests/e2e/excel-output.spec.ts:224:1 › U10 integrated safeguards reject hostile workbooks while preserving eligible Excel download (12.1s)
+(node:7883) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [chromium] › tests/e2e/excel-output.spec.ts:224:1 › U10 integrated safeguards reject hostile workbooks while preserving eligible Excel download (13.3s)
+
+  3 passed (51.8s)

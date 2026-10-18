@@ -1,0 +1,14 @@
+README.md
+docs/decisions/excel-fidelity.md
+src/engine/recipes.ts
+src/engine/validation.ts
+src/formats/xlsx-export.ts
+src/processing.worker.ts
+src/session/controller.ts
+src/session/worker-protocol.ts
+src/ui/Workspace.tsx
+tests/e2e/excel-output.spec.ts
+tests/fixtures/xlsx/u10-output.json
+tests/unit/session.test.ts
+tests/unit/workflow-roundtrip.test.ts
+tests/unit/xlsx-export.test.ts

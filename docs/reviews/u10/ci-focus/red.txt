@@ -1,0 +1,56 @@
+[WebServer] (node:5518) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 9 tests using 1 worker
+
+(node:5530) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/excel-input.spec.ts:191:1 › U9 integrated worker rejects every U1 hostile fixture and preserves the prior run (13.0s)
+  ✓  2 [chromium] › tests/e2e/excel-output.spec.ts:220:1 › U10 integrated safeguards reject hostile workbooks while preserving eligible Excel download (11.4s)
+  ✓  3 [chromium] › tests/e2e/privacy.spec.ts:4:1 › production journey sends no customer values, file names or IDs and stores no source data (9.2s)
+(node:5748) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  4 [chromium] › tests/e2e/excel-input.spec.ts:191:1 › U9 integrated worker rejects every U1 hostile fixture and preserves the prior run (12.3s)
+  ✓  5 [chromium] › tests/e2e/excel-output.spec.ts:220:1 › U10 integrated safeguards reject hostile workbooks while preserving eligible Excel download (11.5s)
+  ✘  6 [chromium] › tests/e2e/privacy.spec.ts:4:1 › production journey sends no customer values, file names or IDs and stores no source data (30.7s)
+(node:6011) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  7 [chromium] › tests/e2e/excel-input.spec.ts:191:1 › U9 integrated worker rejects every U1 hostile fixture and preserves the prior run (15.6s)
+  ✓  8 [chromium] › tests/e2e/excel-output.spec.ts:220:1 › U10 integrated safeguards reject hostile workbooks while preserving eligible Excel download (11.4s)
+  ✓  9 [chromium] › tests/e2e/privacy.spec.ts:4:1 › production journey sends no customer values, file names or IDs and stores no source data (16.1s)
+
+
+  1) [chromium] › tests/e2e/privacy.spec.ts:4:1 › production journey sends no customer values, file names or IDs and stores no source data 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('.source-grid [data-source-key="date"]')
+
+
+       at helpers.ts:72
+
+      70 |   await page
+      71 |     .locator(`.source-grid [data-source-key=${JSON.stringify(source)}]`)
+    > 72 |     .click();
+         |      ^
+      73 |   await page
+      74 |     .getByRole("button", { name: `Select output ${header}`, exact: true })
+      75 |     .click();
+        at map (/workspace/operations-data-cleaner/tests/e2e/helpers.ts:72:6)
+        at /workspace/operations-data-cleaner/tests/e2e/privacy.spec.ts:106:9
+
+    Error Context: test-results/privacy-production-journey-180ce-s-and-stores-no-source-data-chromium-repeat1/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/privacy-production-journey-180ce-s-and-stores-no-source-data-chromium-repeat1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/privacy-production-journey-180ce-s-and-stores-no-source-data-chromium-repeat1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests/e2e/privacy.spec.ts:4:1 › production journey sends no customer values, file names or IDs and stores no source data 
+  8 passed (2.3m)

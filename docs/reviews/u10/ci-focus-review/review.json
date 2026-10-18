@@ -1,0 +1,115 @@
+{
+  "status": "complete",
+  "verdict": "Ready to merge",
+  "scope": {
+    "base": "aec3cd7a15eaa124d3f10530248023766894f61c",
+    "branch": "feat/u10-value-only-excel-export",
+    "head_sha": "aec3cd7a15eaa124d3f10530248023766894f61c",
+    "pr_url": null,
+    "files_changed": 1,
+    "diff_sha256": "786e437f38fc90ee127f4ba370a6931056bbaf32fab97c089046ee62342140db",
+    "current_scoped_diff_verified": true,
+    "reviewed_paths": [
+      "tests/e2e/privacy.spec.ts"
+    ],
+    "excludes": "Earlier U10 implementation and evidence; other documentation changes are outside this review."
+  },
+  "intent": "Stabilize the privacy browser journey by waiting for the scheduled mapped-output focus before clearing source search, then asserting the search is empty. Preserve all existing privacy assertions, test timeout and production behavior; review only these two test lines versus aec3cd7a15eaa124d3f10530248023766894f61c.",
+  "intent_confidence": "explicit",
+  "reviewers": [
+    "correctness",
+    "project-standards",
+    "testing",
+    "adversarial"
+  ],
+  "findings": [],
+  "actionable_findings": [],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "requirements_completeness": null,
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [],
+  "testing_gaps": [],
+  "coverage": {
+    "depth": "full",
+    "mode": "agent report-only",
+    "reviewer_reasons": [
+      {
+        "reviewer": "correctness",
+        "tier": "session",
+        "reason": "always-on"
+      },
+      {
+        "reviewer": "project-standards",
+        "tier": "mid",
+        "reason": "AGENTS.md fallback"
+      },
+      {
+        "reviewer": "testing",
+        "tier": "mid",
+        "reason": "changed browser test synchronization"
+      },
+      {
+        "reviewer": "adversarial",
+        "tier": "session",
+        "reason": "privacy silent-pass verification mechanism fidelity"
+      }
+    ],
+    "notes": [
+      "Default depth full: this synchronization changes a privacy verification gate; silent-pass concerns sit on a data/privacy boundary.",
+      "Review only two test additions. HEAD excludes those uncommitted additions; exact reviewed diff recorded by SHA256 786e437f38fc90ee127f4ba370a6931056bbaf32fab97c089046ee62342140db.",
+      "No auto-discovered plan applies to this isolated test synchronization correction; earlier U10 requirements excluded.",
+      "AGENTS.md fallback criteria. Learning corpus cheap path/title search only XLSX qualification, no focus/synchronization match.",
+      "Tests and runtime verification parent-owned; no execution claimed.",
+      "Cross-model pass not run: only Codex CLI installed, no attested different-family route. Independent local adversarial fallback selected; no external content transfer.",
+      "All four structured reviewer artifacts and compact returns read; no candidate finding, residual risk or testing gap was reported.",
+      "Settlement suppression not evaluated: no plan applies to the isolated test synchronization correction.",
+      "Suppressed findings: 0; malformed findings: 0; malformed returns: 0; first_evidence_backfilled: 0; quote-gate demotions: 0; mode-aware demotions: 0.",
+      "Validator shortcut-skipped: 0; no surviving primary findings, so selected batch is empty."
+    ],
+    "cross_model": "Cross-model pass not run: only Codex CLI installed, no attested different-family route. Independent local adversarial fallback selected; no external content transfer.",
+    "validator": {
+      "outcome": "empty-batch",
+      "reason": "No surviving primary findings; no validator launch.",
+      "confirmed": 0,
+      "rejected": 0,
+      "unresolved": 0,
+      "malformed": 0,
+      "failed": 0,
+      "shortcut_skipped": 0,
+      "protected_subject_reclassifications": 0,
+      "degraded_blockers": 0
+    },
+    "suppressed_by_confidence": {},
+    "suppressed_count": 0,
+    "malformed_findings": 0,
+    "malformed_returns": 0,
+    "first_evidence_backfilled": 0,
+    "quote_gate_demotions": 0,
+    "mode_aware_demotions": 0,
+    "failed_reviewers": [],
+    "timed_out_reviewers": [],
+    "compound_packs": {
+      "roots": [],
+      "errors": [],
+      "warnings": []
+    },
+    "apply": "Not authorized; no implementation or test files changed by reviewers.",
+    "runtime_evidence": {
+      "owner": "Parent; reviewers did not execute tests.",
+      "artifact": "docs/reviews/u10/ci-focus/README.md",
+      "reported_results": "Three affected Chromium tests repeated three times: 9/9 pass; typecheck and lint pass.",
+      "limits": "The hosted hostile-download timeouts have no established root cause. Complete new-head GitHub CI remains parent-owned verification."
+    },
+    "not_assessed": [
+      "Earlier U10 implementation, requirements and evidence.",
+      "Runtime execution and new-head GitHub CI verification.",
+      "Agent-native and deployment-verification personas were not selected."
+    ]
+  },
+  "artifact_path": "/workspace/operations-data-cleaner/docs/reviews/u10/ci-focus-review",
+  "run_id": "u10-ci-focus-review",
+  "verdict_reason": "No actionable defect was established in the two-line privacy test synchronization fix. This scoped code-review verdict does not authorize merge or deployment; complete CI verification and user UX acceptance remain pending with the parent."
+}

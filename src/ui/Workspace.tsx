@@ -18,13 +18,13 @@ import sampleSource from "../../examples/u2/source.csv?raw";
 import sampleConfig from "../../examples/u2/workflow.json?raw";
 import fixedSource from "../../examples/u3-source.csv?raw";
 import fixedConfig from "../../examples/u3-workflow.json?raw";
-function saveDownload(bytes: Uint8Array) {
+function saveDownload(bytes: Uint8Array, format: Workflow["output"]["format"]) {
   const url = URL.createObjectURL(
-    new Blob([new Uint8Array(bytes)], { type: "text/csv;charset=utf-8" }),
+    new Blob([new Uint8Array(bytes)], { type: format === "xlsx" ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : "text/csv;charset=utf-8" }),
   );
   const link = document.createElement("a");
   link.href = url;
-  link.download = "converted.csv";
+  link.download = `converted.${format}`;
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
@@ -214,7 +214,7 @@ export default function Workspace() {
     !state.recoverable &&
     view.workflowIssues.length === 0;
   const risk = Boolean(
-    validPreview && (view.csvRisk || view.riskyHeaders.length),
+    validPreview && workflow.output.format === "csv" && (view.csvRisk || view.riskyHeaders.length),
   );
   const canExport = Boolean(
     validPreview &&
@@ -222,6 +222,7 @@ export default function Workspace() {
       !view.summary.invalid &&
       (!risk || choice),
   );
+  const outputDelimiterLabel = { ",": "comma", ";": "semicolon", "\t": "tab" }[workflow.output.delimiter];
   return (
     <main>
       <header className="masthead">
@@ -248,7 +249,7 @@ export default function Workspace() {
       {repeat && <section className="panel repeat-summary" aria-label="Repeat workflow">
         <h2>{workflow.name || "Imported workflow"}</h2>
         <p>{workflow.fields.length} output columns. Upload a compatible source CSV or Excel file, review the current results, then download.</p>
-        <p>CSV output: {workflow.output.delimiter === "\t" ? "tab" : workflow.output.delimiter === ";" ? "semicolon" : "comma"} · {workflow.output.bom ? "with BOM" : "no BOM"} · {workflow.output.header ? "with header" : "no header"}</p>
+        <p>{workflow.output.format === "xlsx" ? `Excel output · ${workflow.output.dateSystem} date system` : `CSV output: ${outputDelimiterLabel} · ${workflow.output.bom ? "with BOM" : "no BOM"}`} · {workflow.output.header ? "with header" : "no header"}</p>
         <button onClick={() => setRepeat(false)}>Edit workflow</button>
       </section>}
       <section aria-labelledby="upload-title" className="panel upload">
@@ -429,9 +430,15 @@ export default function Workspace() {
           <section className="panel review" aria-labelledby="preview-title">
             <h2 id="preview-title">3. Preview & download</h2>
             {!repeat && <fieldset className="csv-options" disabled={opening || (busy && state.busy !== "Checking all rows…")}>
-              <legend>CSV export settings</legend>
+              <legend>Output settings</legend>
               <div className="csv-controls">
-                <label>CSV delimiter
+                <label>Output format
+                  <select aria-label="Output format" value={workflow.output.format} onChange={(e) => changeWorkflow({ output: { ...workflow.output, format: e.target.value as Workflow["output"]["format"] } })}>
+                    <option value="csv">CSV (.csv)</option>
+                    <option value="xlsx">Excel workbook (.xlsx)</option>
+                  </select>
+                </label>
+                {workflow.output.format === "csv" ? <><label>CSV delimiter
                   <select aria-label="CSV delimiter" value={workflow.output.delimiter} onChange={(e) => changeWorkflow({ output: { ...workflow.output, delimiter: e.target.value as Workflow["output"]["delimiter"] } })}>
                     <option value=",">Comma</option>
                     <option value=";">Semicolon</option>
@@ -441,13 +448,18 @@ export default function Workspace() {
                 <label className="check">
                   <input type="checkbox" checked={workflow.output.bom} onChange={(e) => changeWorkflow({ output: { ...workflow.output, bom: e.target.checked } })} />
                   Include UTF-8 BOM
-                </label>
+                </label></> : <label>Excel date system
+                  <select aria-label="Excel date system" value={workflow.output.dateSystem} onChange={(e) => changeWorkflow({ output: { ...workflow.output, dateSystem: e.target.value as Workflow["output"]["dateSystem"] } })}>
+                    <option value="1900">1900 (standard)</option>
+                    <option value="1904">1904</option>
+                  </select>
+                </label>}
                 <label className="check">
                   <input type="checkbox" checked={workflow.output.header} onChange={(e) => changeWorkflow({ output: { ...workflow.output, header: e.target.checked } })} />
                   Include header row
                 </label>
               </div>
-              <p className="helper">UTF-8 encoding · CRLF line endings. Settings update preview automatically.</p>
+              <p className="helper">{workflow.output.format === "csv" ? "UTF-8 encoding · CRLF line endings." : "Fresh value-only workbook. Text stays literal, including leading zeros and formula-like text. Numbers must fit Excel precision; dates keep their calendar meaning and chosen display format."} Settings update preview automatically.</p>
               {!workflow.output.header && <p className="helper">Column labels identify fields in preview only. The downloaded file has no header row.</p>}
             </fieldset>}
             {!workflow.fields.length ? (
@@ -591,7 +603,7 @@ export default function Workspace() {
                             <th>Source record / line</th>
                             <th>Status</th>
                             {workflow.fields.map((f) => (
-                              <th key={f.id}>{exportText(f.header, choice)}</th>
+                              <th key={f.id}>{exportText(f.header, workflow.output.format === "csv" ? choice : undefined)}</th>
                             ))}
                           </tr>
                         </thead>
@@ -605,7 +617,7 @@ export default function Workspace() {
                               {r.values.map((v, i) => (
                                 <td key={workflow.fields[i].id}>
                                   {v.kind === "text"
-                                    ? exportText(v.text, choice)
+                                    ? exportText(v.text, workflow.output.format === "csv" ? choice : undefined)
                                     : displayValue(v)}
                                 </td>
                               ))}
@@ -658,7 +670,7 @@ export default function Workspace() {
               disabled={!canExport}
               onClick={() => session.export(choice)}
             >
-              Download converted CSV
+              Download converted {workflow.output.format === "xlsx" ? "Excel" : "CSV"}
             </button>
             <p className="small">
               Validation checks your chosen rules. Acceptance by your
@@ -668,7 +680,7 @@ export default function Workspace() {
         </div>
       )}
       <footer>
-        U9 internal preview · One-sheet Excel input, CSV output and reusable local workflows. Data is cleared on reload
+        U10 internal preview · CSV and one-sheet Excel conversion with reusable local workflows. Data is cleared on reload
         or End session. Source data and file names are never saved. Static
         application assets are requested from the host; customer file processing
         stays local.
