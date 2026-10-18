@@ -29,7 +29,7 @@ export class Session {
   onTemplate: (headers: string[]) => void = () => {};
   onWorkflow: (workflow: Workflow) => void = () => {};
   onSourcePolicy: (delimiter: "auto" | "," | ";" | "\t", format?: "csv" | "xlsx", worksheet?: string) => void = () => {};
-  onDownload: (bytes: Uint8Array) => void = () => {};
+  onDownload: (bytes: Uint8Array, format: Workflow["output"]["format"]) => void = () => {};
   private update(patch: Partial<SessionState>) {
     this.state = { ...this.state, ...patch };
     this.onState(this.state);
@@ -89,7 +89,7 @@ export class Session {
         this.onTemplate(m.headers);
       } else {
         this.update({ busy: "", error: "" });
-        this.onDownload(m.bytes);
+        this.onDownload(m.bytes, m.format);
       }
     };
   }

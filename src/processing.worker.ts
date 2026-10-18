@@ -2,6 +2,7 @@
 import "./schema-runtime";
 declare const self: DedicatedWorkerGlobalScope;
 import { parseXlsx } from "./formats/xlsx";
+import { serializeXlsx } from "./formats/xlsx-export";
 import { parseCsv, serializeCsv } from "./formats/csv";
 import { evaluate, type Run, type ResultRow } from "./engine/recipes";
 import { makeWorkflow, type Workflow } from "./engine/workflow";
@@ -87,9 +88,10 @@ self.onmessage = async (event: MessageEvent<Request>) => {
       if (m.kind === "export") {
         if (!workflow || !run)
           throw new Error("Preview the current mapping before download.");
-        const bytes = serializeCsv(workflow, run, m.choice);
+        const format = workflow.output.format;
+        const bytes = format === "xlsx" ? serializeXlsx(workflow, run) : serializeCsv(workflow, run, m.choice);
         self.postMessage(
-          { ...envelope, kind: "download", bytes } satisfies Response,
+          { ...envelope, kind: "download", bytes, format } satisfies Response,
           [bytes.buffer as ArrayBuffer],
         );
         return;

@@ -1,6 +1,6 @@
 # Operations Data Cleaner
 
-U9 internal preview: convert a CSV or one selected Excel worksheet into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations, exact decimal calculations and explicit date conversions. Trim text only when you choose to. Select CSV delimiter, BOM and header settings, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
+U10 internal preview: convert a CSV or one selected Excel worksheet into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations, exact decimal calculations and explicit date conversions. Trim text only when you choose to. Choose CSV or value-only Excel output, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
 
 ## Run locally
 
@@ -60,7 +60,19 @@ Upload an ordinary `.xlsx` table and choose one worksheet when the workbook has 
 
 Inspect **Excel cell details** for original type, raw value, displayed text, format, workbook calendar and formula. Supported zero padding preserves `001234`; arithmetic uses the raw numeric value. Unsupported formats and suspicious numeric identifiers carry warnings; digits already lost in Excel cannot be recovered. Referenced cached formula values may be stale; missing/error caches block the dependent rows. No formula, hyperlink, HTML or external relationship is executed or fetched. Use **Show only rows with exceptions** to read warning reasons.
 
-Workbooks are checked before parsing: 25 MiB source, 100 MiB actual expanded data, 4,096 archive entries, 2 million cells, at most 200 table columns and 256 characters per number format. Unsupported ZIP64/encrypted/unsafe archives fail with remediation rather than truncation. A 30-second watchdog and cancellation terminate worker processing; these budgets are not a heap-memory cap. Browsers need native `DecompressionStream("deflate-raw")`; update an unsupported browser or save UTF-8 CSV. Failed imports retain the previous run. Selected worksheet and import settings travel with saved workflows, without source records or filenames. Excel output is not included.
+Workbooks are checked before parsing: 25 MiB source, 100 MiB actual expanded data, 4,096 archive entries, 2 million cells, at most 200 table columns and 256 characters per number format. Unsupported ZIP64/encrypted/unsafe archives fail with remediation rather than truncation. A 30-second watchdog and cancellation terminate worker processing; these budgets are not a heap-memory cap. Browsers need native `DecompressionStream("deflate-raw")`; update an unsupported browser or save UTF-8 CSV. Failed imports retain the previous run. Selected worksheet and import settings travel with saved workflows, without source records or filenames.
+
+## Value-only Excel output (U10)
+
+Beside the preview, choose **Output format → Excel workbook (.xlsx)**. The download is a new workbook with one `Output` worksheet containing only the configured columns, in their export order. Choose whether to include headers and the **Excel date system** (1900 by default, or 1904). Dates use the field's selected display format and calendar components, without timezone conversion. Dates before the chosen epoch fail with an actionable CSV/text alternative. CSV delimiter/BOM settings remain saved when switching formats.
+
+Text, including leading-zero identifiers, formula-like values and headers, stays literal. Source formulas, hyperlinks, macros, external relationships and other workbook parts are never copied. Usable cached source formula values retain their stale-cache warnings. Excel output requires no CSV escaping acknowledgement; returning to CSV restores its explicit formula-handling choice.
+
+Excel numbers must have at most 15 significant decimal digits, fall within Excel's normal numeric range, and serialize back to the exact intended decimal value. `0.1 + 0.2` writes numeric `0.3`. Precision/range loss blocks the download with the source record and output field; choose CSV or deliberately change the field to text. No automatic rounding or text fallback occurs. Numeric spellings such as `+0012.500` become the number `12.5`; use a text field when that spelling is an identifier or must remain literal. Internal calculations and CSV retain their existing exact decimal behavior.
+
+Output is limited to 2 million table positions (including headers), Excel's 1,048,576 rows and 32,767 UTF-16 units per text cell, plus a conservative 100 MiB serialization budget that bounds XML escaping and package overhead before writing. Literal OOXML escape tokens such as `_x0041_` are protected; their additional encoding must also fit the writer's text limit. Invalid Unicode or over-budget output fails explicitly without truncation. Cancellation and the existing worker watchdog cover serialization. These are resource safeguards, not a heap cap or final reference-laptop qualification.
+
+Excel settings and every delivered destination type reuse workflow version 1, including browser saves and portable JSON. Existing CSV definitions require no migration. Download still requires the current preview and all rows to pass configured validation; source correction and partial export remain later work.
 
 SheetJS CE 0.20.3 is vendored from the verified official distribution; its [Apache-2.0 license](public/SheetJS-LICENSE.txt) ships with the application. See [qualification and limits](docs/decisions/excel-fidelity.md).
 
@@ -81,7 +93,7 @@ Browser storage belongs to this browser and site origin, can be cleared, and is 
 - Default output: UTF-8, no BOM, comma, headers, standard quoting, CRLF. Choose comma, semicolon or tab, BOM on/off and header on/off. Preview retains column labels for identification even when the exported header is omitted. Formula-like text (including constants) and included headers require an explicit escaped/raw choice; preview shows the selected representation. Typed numeric constants are not formula text. Escaping changes text and cannot promise protection in every spreadsheet/importer. Raw text may be unsafe to open in spreadsheets.
 - Full dataset counts with paginated output and exception rows (50 per page). Nonblank totals are ordinary candidates. No silent record truncation. Limits: 25 MiB source, 200 columns, 2 million inspected cells, 30-second cancellable worker watchdog.
 - Files and parsed data stay in browser memory and are cleared by reload or End session. Only explicitly saved workflow configurations use IndexedDB; no source data or filename is persisted. No localStorage, service worker, analytics, remote fonts, or upload endpoint. Static application code/assets still use ordinary host requests and metadata. Processing runs in a local Web Worker.
-- Typed Excel output, source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
+- Source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
 
 ## Verify
 

@@ -7,6 +7,8 @@ import type {
 } from "../../src/session/worker-protocol";
 import { makeWorkflow, type Workflow } from "../../src/engine/workflow";
 import { parseCsv, serializeCsv } from "../../src/formats/csv";
+import { serializeXlsx } from "../../src/formats/xlsx-export";
+import { strFromU8, unzipSync } from "fflate";
 import { evaluate, type Run } from "../../src/engine/recipes";
 import type { SourceTable } from "../../src/engine/values";
 // Controllable transport and clock; parsed rows, evaluation and download bytes remain real.
@@ -50,7 +52,8 @@ class Transport {
         data: {
           ...envelope,
           kind: "download",
-          bytes: serializeCsv(this.workflow!, this.run!, m.choice),
+          format: this.workflow!.output.format,
+          bytes: this.workflow!.output.format === "xlsx" ? serializeXlsx(this.workflow!, this.run!) : serializeCsv(this.workflow!, this.run!, m.choice),
         },
       } as MessageEvent<Response>);
       return;
@@ -88,6 +91,22 @@ beforeEach(() => {
 afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllGlobals();
+});
+test("Excel download carries worker format; cancellation rejects old bytes and retry preserves XLSX settings", async () => {
+  const s = new Session(), w = workflow(); w.output.format = "xlsx";
+  s.activate(w); await s.upload(file(), ","); latest().flush();
+  const downloads: { bytes: Uint8Array; format: string }[] = [];
+  s.onDownload = (bytes, format) => downloads.push({ bytes, format });
+  s.export(undefined);
+  const old = latest(), pending = old.requests.at(-1)!;
+  s.cancel();
+  old.onmessage?.({ data: { request: pending.request, dataset: pending.dataset, revision: pending.revision, kind: "download", format: "xlsx", bytes: new Uint8Array([1]) } } as MessageEvent<Response>);
+  expect(downloads).toEqual([]);
+  await s.retry(); latest().flush(); s.export(undefined); latest().flush();
+  expect(downloads).toHaveLength(1); expect(downloads[0].format).toBe("xlsx");
+  const parts = unzipSync(downloads[0].bytes);
+  expect(strFromU8(parts["xl/sharedStrings.xml"])).toContain("001234");
+  s.end();
 });
 test.each(["error", "messageerror", "watchdog"])(
   "CE #3: %s recovery reparses active File and exports identical real bytes",

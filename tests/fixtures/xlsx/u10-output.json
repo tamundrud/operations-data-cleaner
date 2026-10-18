@@ -1,0 +1,10 @@
+{
+  "cells": {
+    "A1": { "type": "text", "value": "=Reference" },
+    "A2": { "type": "text", "value": "001234" },
+    "B2": { "type": "number", "value": "0.3" },
+    "C2": { "type": "number", "value": "45351" },
+    "E2": { "type": "text", "value": "=HYPERLINK(&quot;https://example.invalid&quot;,&quot;literal&quot;)" }
+  },
+  "absent": ["D2"]
+}

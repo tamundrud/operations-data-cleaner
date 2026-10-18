@@ -45,6 +45,6 @@ export type Response = {
   | { kind: "view"; view: View }
   | { kind: "worksheets"; sheets: string[] }
   | { kind: "template"; headers: string[] }
-  | { kind: "download"; bytes: Uint8Array }
+  | { kind: "download"; bytes: Uint8Array; format: Workflow["output"]["format"] }
   | { kind: "error"; message: string }
 );
