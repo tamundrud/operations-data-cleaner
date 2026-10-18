@@ -1,0 +1,41 @@
+{
+  "run_id": "u10-ci-focus-review",
+  "selected_findings": [],
+  "findings": [],
+  "selected_count": 0,
+  "shortcut_skipped": 0,
+  "shortcut_evidence_basis": [],
+  "scope": {
+    "mode": "standalone",
+    "base": "aec3cd7a15eaa124d3f10530248023766894f61c",
+    "diff_a": "aec3cd7a15eaa124d3f10530248023766894f61c",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "feat/u10-value-only-excel-export",
+    "head_sha": "aec3cd7a15eaa124d3f10530248023766894f61c",
+    "files": "/workspace/operations-data-cleaner/docs/reviews/u10/ci-focus-review/files.txt",
+    "diff": "/workspace/operations-data-cleaner/docs/reviews/u10/ci-focus-review/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": [
+      "docs/reviews/u10/ci-focus-review/"
+    ],
+    "diff_sha256": "786e437f38fc90ee127f4ba370a6931056bbaf32fab97c089046ee62342140db"
+  },
+  "scope_context": {
+    "mode": "standalone",
+    "tree_is_reviewed_head": true,
+    "diff": "/workspace/operations-data-cleaner/docs/reviews/u10/ci-focus-review/full.diff",
+    "diff_sha256": "786e437f38fc90ee127f4ba370a6931056bbaf32fab97c089046ee62342140db"
+  },
+  "reason": "No surviving primary findings; validator batch is empty."
+}

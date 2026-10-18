@@ -1,0 +1,28 @@
+diff --git a/tests/e2e/privacy.spec.ts b/tests/e2e/privacy.spec.ts
+index e3f70bf..6121a73 100644
+--- a/tests/e2e/privacy.spec.ts
++++ b/tests/e2e/privacy.spec.ts
+@@ -54,21 +54,23 @@ test("production journey sends no customer values, file names or IDs and stores
+     `${sentinel}.csv`,
+   );
+   await add(page, ["Reference", "Note"]);
+   await map(page, "Reference", "id");
+   await page.getByLabel("Search source columns").fill("note");
+   await page
+     .getByRole("button", { name: "Select source Note", exact: true })
+     .dragTo(
+       page.getByRole("button", { name: "Select output Note", exact: true }),
+     );
++  await expect(page.getByRole("button", { name: "Select output Note", exact: true })).toBeFocused();
+   await page.getByLabel("Search source columns").fill("");
++  await expect(page.getByLabel("Search source columns")).toHaveValue("");
+   await page.getByRole("button", { name: "Unlink Note", exact: true }).click();
+   await map(page, "Note", "note");
+   await move(page, "Note", "up");
+   await move(page, "Note", "down");
+   await preview(page);
+   expect((await download(page)).toString()).toContain(sentinel);
+   await rename(page, "Note", headerSentinel);
+   await preview(page);
+   expect((await download(page)).toString()).toContain(headerSentinel);
+   await add(page, ["CustomerCode"]);

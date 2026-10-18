@@ -1,0 +1,12 @@
+{
+  "base": "aec3cd7a15eaa124d3f10530248023766894f61c",
+  "fix_file": "tests/e2e/privacy.spec.ts",
+  "sha256": "5d7f665c7a9119de40eb95fdead69318d8a80978cca84c46d7ecad96426a82e2",
+  "verification": {
+    "red": "8 passed, 1 privacy failure on unchanged source",
+    "green": "9 passed (2.0m), three repeats of each affected case",
+    "typecheck": "passed",
+    "lint": "passed"
+  },
+  "unchanged_implementation": "All original 14 source hashes match ../tested-source.json; only the previously unchanged privacy test was amended."
+}
