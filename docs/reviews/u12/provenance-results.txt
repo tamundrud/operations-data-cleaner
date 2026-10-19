@@ -1,0 +1,15 @@
+[WebServer] (node:13557) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 6 tests using 1 worker
+
+(node:13573) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/partial-export.spec.ts:15:1 › 500 candidates export exactly 490 acknowledged eligible records with visible warnings and all 10 exclusions privately (3.7s)
+  ✓  2 [chromium] › tests/e2e/partial-export.spec.ts:71:1 › every excluded row and issue is accessible across pages; acknowledgement survives navigation only (6.2s)
+  ✓  3 [chromium] › tests/e2e/partial-export.spec.ts:102:1 › formula handling changes reset partial acknowledgement and zero eligible rows remain blocked (2.5s)
+  ✓  4 [chromium] › tests/e2e/partial-export.spec.ts:119:1 › production worker enforces permission and current revision independently of UI controls (694ms)
+  ✓  5 [chromium] › tests/e2e/partial-export.spec.ts:147:1 › 10000 candidate rows retain every eligible record and exact hidden-page exclusions (2.0s)
+  ✓  6 [chromium] › tests/e2e/partial-export.spec.ts:160:1 › Excel partial export keeps worksheet row provenance after offset headers, skipped blanks and exception pagination (3.3s)
+
+  6 passed (19.9s)

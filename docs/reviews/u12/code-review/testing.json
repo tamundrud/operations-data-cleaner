@@ -1,0 +1,8 @@
+{
+  "reviewer": "testing",
+  "findings": [],
+  "residual_risks": [],
+  "testing_gaps": [
+    "U12's new worksheet-qualified excluded-row references in src/ui/Workspace.tsx are not exercised by an Excel-source partial-export journey: tests/e2e/partial-export.spec.ts imports CSV throughout, while excel-input.spec.ts checks original worksheet metadata without acknowledging a mixed valid/invalid dataset. Add a workbook with a non-first-row header, skipped blank rows and exclusions on a later page, then assert worksheet/original-row references and the exact eligible download set. Inspection only; no tests were run by this reviewer."
+  ]
+}

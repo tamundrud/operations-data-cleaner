@@ -1,3 +1,4 @@
+import { exportRows } from "../engine/export-eligibility";
 import Papa from "papaparse";
 import { normalizeHeader, type Workflow } from "../engine/workflow";
 import type { SourceTable } from "../engine/values";
@@ -166,11 +167,9 @@ export function serializeCsv(
   workflow: Workflow,
   run: Run,
   choice: SafetyChoice,
+  partialAcknowledged = false,
 ): Uint8Array {
-  if (run.workflowIssues.length || run.summary.invalid || !run.rows.length)
-    throw new Error(
-      "Export blocked. Map every field, resolve invalid rows and include at least one data row.",
-    );
+  const rows = exportRows(run, partialAcknowledged);
   if ((run.csvRisk || run.riskyHeaders.length) && !choice)
     throw new Error(
       "Choose escaped output or raw TMS text before downloading formula-like content.",
@@ -179,7 +178,7 @@ export function serializeCsv(
     ...(workflow.output.header
       ? [workflow.fields.map((f) => exportText(f.header, choice))]
       : []),
-    ...run.rows.map((r) =>
+    ...rows.map((r) =>
       r.values.map((v) =>
         v.kind === "text" ? exportText(v.text, choice) : displayValue(v),
       ),

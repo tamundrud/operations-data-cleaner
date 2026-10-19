@@ -279,3 +279,40 @@ test("same-worker older correction reply cannot complete a newer rule evaluation
   expect(s.state.view!.rows[0].values).toEqual([{kind:"text",text:"009876"}]);
   s.end();
 });
+
+test('partial permission survives pagination, but resets on changes and pending work cannot export', async () => {
+  const s = new Session(), w = workflow(); w.fields[0].required = true;
+  s.activate(w); await s.upload(new File(['ID,Other\n001,x\n,x'], 'partial.csv'), ','); latest().flush();
+  const transport = latest(), initial = transport.requests.length;
+  s.export('raw');
+  expect(transport.requests).toHaveLength(initial);
+  s.acknowledgePartial(true);
+  expect(s.state.partialAcknowledged).toBe(true);
+  s.page(0, true); s.export('raw');
+  expect(transport.requests.at(-1)?.kind).toBe('page'); transport.flush();
+  s.export('raw');
+  expect(transport.requests.at(-1)).toMatchObject({kind:'export',partialAcknowledged:true});
+  // Finish transport without simulating a download; real serializer tests cover bytes.
+  const request = transport.requests.at(-1)!;
+  transport.onmessage?.({data:{request:request.request,dataset:request.dataset,revision:request.revision,kind:'error',message:'test completion'}} as MessageEvent<Response>);
+  s.configure(w); transport.flush();
+  expect(s.state.partialAcknowledged).toBe(false);
+  s.acknowledgePartial(true);
+  s.correct(s.state.view!.rows[0].id,'id','002'); transport.flush();
+  expect(s.state.partialAcknowledged).toBe(false);
+  s.acknowledgePartial(true);
+  await s.upload(new File(['ID,Other\n003,x\n,x'], 'new.csv'), ',');
+  expect(s.state.partialAcknowledged).toBe(false);
+  s.cancelReplacement(); s.end();
+});
+
+test('starting evaluation after an export error never emits an intermediate idle error state', async () => {
+  const s = new Session(); s.activate(workflow()); await s.upload(file(), ','); latest().flush();
+  s.export(undefined); const request=latest().requests.at(-1)!;
+  latest().onmessage?.({data:{request:request.request,dataset:request.dataset,revision:request.revision,kind:'error',message:'Use CSV or text.'}} as MessageEvent<Response>);
+  const states: typeof s.state[]=[]; s.onState=state=>states.push(state);
+  s.configure(workflow());
+  expect(states).not.toContainEqual(expect.objectContaining({busy:''}));
+  expect(states.at(-1)).toMatchObject({busy:'Checking all rows…',error:'',partialAcknowledged:false});
+  latest().flush(); s.end();
+});

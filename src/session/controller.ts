@@ -4,6 +4,7 @@ import { MAX_FILE_BYTES } from "../formats/csv";
 import type { Request, Response, View } from "./worker-protocol";
 import type { Correction } from "./correction-overlay";
 export type SessionState = {
+  partialAcknowledged: boolean;
   replacement?: boolean;
   busy: string;
   view?: View;
@@ -28,7 +29,7 @@ export class Session {
   private selection?: { file: File; delimiter: "auto" | "," | ";" | "\t"; options: { template?: boolean; workflow?: Workflow; worksheet?: string } };
   private workflow?: Workflow;
   private revision = 0;
-  state: SessionState = { busy: "", error: "", recoverable: false };
+  state: SessionState = { partialAcknowledged: false, busy: "", error: "", recoverable: false };
   onState: (state: SessionState) => void = () => {};
   onTemplate: (headers: string[]) => void = () => {};
   onWorkflow: (workflow: Workflow) => void = () => {};
@@ -101,7 +102,11 @@ export class Session {
   private send(m: Request, busy: string) {
     this.startWorker();
     this.pending = m;
-    this.update({ busy, error: "", recoverable: false });
+    this.update({
+      busy, error: "", recoverable: false,
+      partialAcknowledged: m.kind === "page" || m.kind === "export"
+        ? this.state.partialAcknowledged : false,
+    });
     clearTimeout(this.timer);
     this.timer = setTimeout(
       () =>
@@ -122,6 +127,7 @@ export class Session {
     approved = false,
   ) {
     if (this.state.busy || this.state.replacement) return;
+    this.acknowledgePartial(false);
     if (!options.template && this.corrections.length && !recovery && !approved) {
       this.replacement = { file, delimiter, options };
       this.update({ replacement: true });
@@ -235,7 +241,7 @@ export class Session {
       "Checking all rows…",
     );
   }
-  page(page: number, exceptions: boolean) {
+  page(page: number, exceptions: boolean, invalidOnly = false) {
     if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable) return;
     this.send(
       {
@@ -245,12 +251,23 @@ export class Session {
         revision: this.revision,
         page,
         exceptions,
+        invalidOnly,
       },
       "Loading preview…",
     );
   }
+  acknowledgePartial(acknowledged: boolean) {
+    const view = this.state.view;
+    this.update({ partialAcknowledged: Boolean(acknowledged && view && !this.state.busy &&
+      !this.state.worksheets && !this.state.replacement && !this.state.recoverable &&
+      !view.workflowIssues.length && view.summary.invalid &&
+      view.summary.valid + view.summary.warningOnly > 0) });
+  }
   export(choice: SafetyChoice) {
     if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable) return;
+    const view = this.state.view;
+    if (!view || view.workflowIssues.length || !(view.summary.valid + view.summary.warningOnly) ||
+      (view.summary.invalid && !this.state.partialAcknowledged)) return;
     this.send(
       {
         kind: "export",
@@ -258,6 +275,7 @@ export class Session {
         dataset: this.active.dataset,
         revision: this.revision,
         choice,
+        partialAcknowledged: this.state.partialAcknowledged,
       },
       "Preparing download…",
     );
@@ -271,6 +289,7 @@ export class Session {
     this.selection = undefined;
     clearTimeout(this.timer);
     this.update({
+      partialAcknowledged: false,
       busy: "",
       worksheets: undefined,
       view: undefined,

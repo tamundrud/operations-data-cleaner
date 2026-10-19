@@ -1,3 +1,4 @@
+import { exportRows } from "../engine/export-eligibility";
 import Big from "big.js";
 import * as XLSX from "xlsx";
 import type { Run } from "../engine/recipes";
@@ -64,11 +65,10 @@ function cell(value: Value, workflow: Workflow): XLSX.CellObject | undefined {
 }
 
 /** Fresh, value-only OOXML. Source cells and their active metadata never enter this adapter. */
-export function serializeXlsx(workflow: Workflow, run: Run): Uint8Array {
-  if (run.workflowIssues.length || run.summary.invalid || !run.rows.length)
-    throw new Error("Export blocked. Map every field, resolve invalid rows and include at least one data row.");
+export function serializeXlsx(workflow: Workflow, run: Run, partialAcknowledged = false): Uint8Array {
+  const eligible = exportRows(run, partialAcknowledged);
   const offset = workflow.output.header ? 1 : 0;
-  const rows = run.rows.length + offset, columns = workflow.fields.length;
+  const rows = eligible.length + offset, columns = workflow.fields.length;
   if (rows > 1048576)
     throw new Error("Excel output exceeds 1048576 rows including its header. Split the source into smaller tables or use CSV. No rows were truncated.");
   if (rows * columns > MAX_OUTPUT_CELLS)
@@ -92,7 +92,7 @@ export function serializeXlsx(workflow: Workflow, run: Run): Uint8Array {
     }
   }
   if (workflow.output.header) workflow.fields.forEach((field, c) => put({ kind: "text", text: field.header }, 0, c, `Header ${field.header}`));
-  run.rows.forEach((row, r) => row.values.forEach((value, c) => put(value, r + offset, c, `Source record ${row.record}, line ${row.line}, ${workflow.fields[c].header}`)));
+  eligible.forEach((row, r) => row.values.forEach((value, c) => put(value, r + offset, c, `Source record ${row.record}, line ${row.line}, ${workflow.fields[c].header}`)));
   // Explicit extent preserves trailing columns and entirely blank output rows.
   sheet["!ref"] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: rows - 1, c: columns - 1 } });
   // SheetJS otherwise inherits its process-global SSF table, which source

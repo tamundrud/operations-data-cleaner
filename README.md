@@ -1,6 +1,6 @@
 # Operations Data Cleaner
 
-U11 internal preview: convert a CSV or one selected Excel worksheet into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations, exact decimal calculations and explicit date conversions. Trim text only when you choose to. Choose CSV or value-only Excel output, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
+U12 internal preview: convert a CSV or one selected Excel worksheet into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations, exact decimal calculations and explicit date conversions. Trim text only when you choose to. Choose CSV or value-only Excel output, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
 
 ## Run locally
 
@@ -72,7 +72,7 @@ Excel numbers must have at most 15 significant decimal digits, fall within Excel
 
 Output is limited to 2 million table positions (including headers), Excel's 1,048,576 rows and 32,767 UTF-16 units per text cell, plus a conservative 100 MiB serialization budget that bounds XML escaping and package overhead before writing. Literal OOXML escape tokens such as `_x0041_` are protected; their additional encoding must also fit the writer's text limit. Invalid Unicode or over-budget output fails explicitly without truncation. Cancellation and the existing worker watchdog cover serialization. These are resource safeguards, not a heap cap or final reference-laptop qualification.
 
-Excel settings and every delivered destination type reuse workflow version 1, including browser saves and portable JSON. Existing CSV definitions require no migration. Download still requires the current preview and all rows to pass configured validation; partial export remains later work.
+Excel settings and every delivered destination type reuse workflow version 1, including browser saves and portable JSON. Existing CSV definitions require no migration. Download requires the current preview. Invalid rows require the explicit partial-export review described below.
 
 SheetJS CE 0.20.3 is vendored from the verified official distribution; its [Apache-2.0 license](public/SheetJS-LICENSE.txt) ships with the application. See [qualification and limits](docs/decisions/excel-fidelity.md).
 
@@ -85,6 +85,14 @@ Corrections remain in memory and never change the uploaded file or enter saved/p
 
 Uploading another source retains workflow rules and asks before discarding corrections. Cancelling the confirmation or failing to import keeps the prior source and edits. If processing is cancelled or the worker stops, **Retry active file** restores the prior source, corrections and provenance; download stays blocked until recovery finishes. Reload or **End session** discards source data and corrections.
 
+
+## Exception review and partial export (U12)
+
+Full-dataset counts stay independent of the 50-row preview. **Show only rows with exceptions** includes warnings and invalid records; **Show only excluded (invalid) rows** narrows the review to the records omitted by a partial export. Page through every source reference, field, reason and suggested action. Original CSV record/physical line or Excel worksheet/row references stay intact.
+
+When invalid rows remain, review the exact eligible and excluded counts and deliberately check **I acknowledge…** before downloading. The export includes every valid and warning-only row in source order, and excludes every invalid row. Warning counts and details remain available. Before acknowledgement the Excluded count is zero; after acknowledgement it shows the exact count for that download. CSV formula handling is a separate explicit choice.
+
+Source corrections, replacement files, rule edits and output-option changes clear partial-export permission. Paging does not. Permission stays in the current session and is never saved in a workflow. Workflow errors, pending processing and zero eligible rows always block export. Correct source cells, upload a fixed file or change the configured rules to recover.
 
 ## Save, repeat and recover
 
@@ -99,11 +107,11 @@ Browser storage belongs to this browser and site origin, can be cleared, and is 
 ## Delivered limits and privacy
 
 - UTF-8 CSV with optional input BOM; comma, semicolon or tab input. First nonblank record is the header; normalized empty/duplicate headers and malformed quotes/extra cells fail explicitly.
-- Every output must have a source copy, fixed text/number/blank, split, combination or calculation recipe. Text supports optional required/max-length validation and explicit boundary trim. Numeric constants use a strict decimal string grammar: optional sign, digits and decimal point; no currency, thousands separators or exponents. `12.50`, `+0012.500` and long decimals retain their exact representation without floating-point conversion or rounding. Fixed text is limited to 4096 characters and decimal literals to 1000 characters. Number outputs support strict source conversion, whole-number checks, maximum decimal places and explicit rounding. Optional blanks succeed; required blank/whitespace-only values block the whole download.
+- Every output must have a source copy, fixed text/number/blank, split, combination or calculation recipe. Text supports optional required/max-length validation and explicit boundary trim. Numeric constants use a strict decimal string grammar: optional sign, digits and decimal point; no currency, thousands separators or exponents. `12.50`, `+0012.500` and long decimals retain their exact representation without floating-point conversion or rounding. Fixed text is limited to 4096 characters and decimal literals to 1000 characters. Number outputs support strict source conversion, whole-number checks, maximum decimal places and explicit rounding. Optional blanks succeed; required blank/whitespace-only values invalidate their records and block download until corrected or explicitly excluded.
 - Default output: UTF-8, no BOM, comma, headers, standard quoting, CRLF. Choose comma, semicolon or tab, BOM on/off and header on/off. Preview retains column labels for identification even when the exported header is omitted. Formula-like text (including constants) and included headers require an explicit escaped/raw choice; preview shows the selected representation. Typed numeric constants are not formula text. Escaping changes text and cannot promise protection in every spreadsheet/importer. Raw text may be unsafe to open in spreadsheets.
 - Full dataset counts with paginated output and exception rows (50 per page). Nonblank totals are ordinary candidates. No silent record truncation. Limits: 25 MiB source, 200 columns, 2 million inspected cells, 30-second cancellable worker watchdog.
 - Files and parsed data stay in browser memory and are cleared by reload or End session. Only explicitly saved workflow configurations use IndexedDB; no source data or filename is persisted. No localStorage, service worker, analytics, remote fonts, or upload endpoint. Static application code/assets still use ordinary host requests and metadata. Processing runs in a local Web Worker.
-- Source correction and partial export belong to later units. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
+- Downloadable exception reports remain deferred. Other encodings and export formats are unsupported. This is not the full MVP or certified TMS interoperability.
 
 ## Verify
 

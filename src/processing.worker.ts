@@ -21,10 +21,10 @@ function setRun(next: Run) {
   run = next;
   exceptionRows = next.rows.filter((r) => r.issues.length);
 }
-function view(page = 0, exceptions = false): View {
+function view(page = 0, exceptions = false, invalidOnly = false): View {
   if (!source || !run)
     throw new Error("Upload a CSV and configure output fields.");
-  const selected = exceptions ? exceptionRows : run.rows;
+  const selected = invalidOnly ? exceptionRows.filter(row => row.status === "invalid") : exceptions ? exceptionRows : run.rows;
   const totalPages = Math.max(1, Math.ceil(selected.length / PAGE_SIZE));
   page = Math.max(0, Math.min(page, totalPages - 1));
   return {
@@ -40,6 +40,7 @@ function view(page = 0, exceptions = false): View {
     page,
     totalPages,
     exceptions,
+    invalidOnly,
     delimiter: source.delimiter,
     worksheet: source.worksheet,
   };
@@ -102,7 +103,7 @@ self.onmessage = async (event: MessageEvent<Request>) => {
         if (!workflow || !run)
           throw new Error("Preview the current mapping before download.");
         const format = workflow.output.format;
-        const bytes = format === "xlsx" ? serializeXlsx(workflow, run) : serializeCsv(workflow, run, m.choice);
+        const bytes = format === "xlsx" ? serializeXlsx(workflow, run, m.partialAcknowledged) : serializeCsv(workflow, run, m.choice, m.partialAcknowledged);
         self.postMessage(
           { ...envelope, kind: "download", bytes, format } satisfies Response,
           [bytes.buffer as ArrayBuffer],
@@ -116,6 +117,7 @@ self.onmessage = async (event: MessageEvent<Request>) => {
       view: view(
         m.kind === "page" ? m.page : 0,
         m.kind === "page" ? m.exceptions : false,
+        m.kind === "page" ? m.invalidOnly : false,
       ),
     });
   } catch (error) {
