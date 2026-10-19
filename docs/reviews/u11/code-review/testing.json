@@ -1,0 +1,9 @@
+{
+  "reviewer": "testing",
+  "findings": [],
+  "residual_risks": [],
+  "testing_gaps": [
+    "U11 explicitly requires fast corrections/rule changes to reject stale output. tests/unit/session.test.ts:237 exercises a terminated worker reply during recovery, while its Transport.flush implementation does not execute processing.worker.ts revision guards. Add a same-worker out-of-order correction/run reply case and a real-worker stale correction request case, asserting both the final values and revision remain current.",
+    "processing.worker.ts:32 now derives correction source rows from the selected result page, including filtered exceptions. The new browser test verifies a later unfiltered page but never edits from the exception filter. Add a case where correcting one exception removes it from that filter and verify the remaining source controls retain the matching record identity and full counts."
+  ]
+}

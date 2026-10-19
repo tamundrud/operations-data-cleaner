@@ -86,7 +86,7 @@ test("fixed fields complete without sources, trim validates resulting text and r
   await preview(page);
   await expect(page.getByRole("cell", { name: "A B", exact: true })).toHaveText("A  B");
   await page.locator(".source-inspection summary").click();
-  expect(await page.getByRole("region", { name: "Source table, scroll horizontally" }).getByRole("cell").nth(1).textContent()).toBe("  A  B  ");
+  expect(await page.getByRole("region", { name: "Source table, scroll horizontally" }).getByRole("cell").nth(1).locator("span").first().textContent()).toBe("  A  B  ");
   await page.getByRole("button", { name: "Reorder pair Weight", exact: true }).press("Alt+ArrowUp");
   await preview(page);
   expect((await download(page)).toString()).toBe("Weight,CustomerCode,Blank,Name\r\n12.50,0012,,A  B\r\n12.50,0012,,C  D\r\n");

@@ -199,7 +199,11 @@ test("U9 integrated worker rejects every U1 hostile fixture and preserves the pr
   // U1 uses its 8 MiB compression probe with a custom 1 MiB budget.
   // Exercise the actual production 100 MiB budget here.
   attacks.bomb = workbook("", { extra: { "bomb.bin": new Uint8Array(101 * 1024 * 1024) } });
+  let downloads = 0;
   for (const [name, bytes] of Object.entries(attacks)) {
+    // Chromium rate-limits the eleventh rapid download, including CSV. Pace this
+    // synthetic burst outside the measured rejection interval.
+    if (downloads > 0 && downloads % 10 === 0) await page.waitForTimeout(1100);
     await test.step(name, async () => {
       const start = performance.now();
       await page.getByLabel("Upload source CSV", { exact: true }).setInputFiles({ name: `${name}.xlsx`, mimeType, buffer: Buffer.from(bytes) });
@@ -212,6 +216,7 @@ test("U9 integrated worker rejects every U1 hostile fixture and preserves the pr
       timings[name] = { selectionThroughDownloadMs: performance.now() - start, rejectionAfterSelectionMs: rejected - selectionFinished };
       // File-picker automation transport (not app processing) moves the 25 MiB size probe.
       expect(timings[name].rejectionAfterSelectionMs).toBeLessThan(5000);
+      downloads++;
     });
   }
   await info.attach("u9-hostile-integrated.json", { body: JSON.stringify(timings, null, 2), contentType: "application/json" });

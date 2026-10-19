@@ -1,0 +1,16 @@
+{
+  "verdicts": [
+    {
+      "#": 1,
+      "status": "confirmed",
+      "protected_subject": null,
+      "reason": "The U11 diff adds correctedRun's one-row evaluation and skips aggregate merging when workflowIssues exist (correction-overlay.ts:23-25), while Workspace.tsx:411 and controller.ts:204 permit this completed-but-unmapped state; on reviewed HEAD 7e418ac with the U11 working diff, Node 24.19.0 and Vitest 5.0.4, the targeted two-row unfinished-mapping regression fails with candidates 1 versus full evaluation's 2."
+    },
+    {
+      "#": 2,
+      "status": "confirmed",
+      "protected_subject": null,
+      "reason": "parseCsv accepts short records and preserves their short cells array (csv.ts:142-156), and U11 newly adds a correction UI gated on an existing cell (Workspace.tsx:411) plus an overlay iterating only existing cells (correction-overlay.ts:14); on reviewed HEAD 7e418ac with the U11 working diff, Node 24.19.0 and Vitest 5.0.4, the targeted ID,Qty short-record regression receives blank after correcting Qty to 24, establishing the reachable missing-trailing-cell failure."
+    }
+  ]
+}

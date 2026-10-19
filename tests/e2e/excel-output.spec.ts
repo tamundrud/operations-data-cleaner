@@ -227,7 +227,11 @@ test("U10 integrated safeguards reject hostile workbooks while preserving eligib
   const attacks = hostile() as Record<string, Uint8Array>;
   attacks.bomb = workbook("", { extra: { "bomb.bin": new Uint8Array(101 * 1024 * 1024) } });
   const timings: Record<string, number> = {};
+  let downloads = 0;
   for (const [name, bytes] of Object.entries(attacks)) {
+    // Chromium rate-limits the eleventh rapid XLSX download. Pace this synthetic
+    // burst outside measured parsing time; application readiness is still asserted.
+    if (downloads > 0 && downloads % 10 === 0) await page.waitForTimeout(1100);
     await test.step(name, async () => {
       console.info(`U10 hostile fixture: ${name}`);
       await page.getByLabel("Upload source CSV", { exact: true }).setInputFiles({ name: `${name}.xlsx`, mimeType, buffer: Buffer.from(bytes) });
@@ -235,6 +239,7 @@ test("U10 integrated safeguards reject hostile workbooks while preserving eligib
       await expect(page.locator(".status-bar [role=alert]")).toBeVisible();
       timings[name] = performance.now() - selected;
       expect(timings[name]).toBeLessThan(5000); expectTyped(await download(page));
+      downloads++;
     });
   }
   await info.attach("u10-hostile-integrated.json", { body: JSON.stringify(timings, null, 2), contentType: "application/json" });

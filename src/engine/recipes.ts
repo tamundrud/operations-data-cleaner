@@ -12,6 +12,7 @@ export type ResultRow = {
   line: number;
   values: Value[];
   provenance: ({
+    corrected?: true;
     field: string;
     row: string;
     excel?: SourceTable["rows"][number]["cells"][number]["excel"];
@@ -103,6 +104,7 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
           field: f.id,
           row: row.id,
           source,
+          ...(cell?.original ? { corrected: true as const } : {}),
           ...(excel ? { excel: { ...excel } } : {}),
           ...(row.worksheet ? { worksheet: row.worksheet } : {}),
           ...(f.trim ? { trim: true as const } : {}),
@@ -305,16 +307,12 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
         }
       }
       if (f.date && displayValue(value) !== "") {
-        const excel =
-          recipe.kind === "copy"
-            ? row.cells[positions.get(recipe.source)!]?.excel
-            : undefined;
-        const date =
-          f.date.source === "excel"
-            ? excel?.type === "n" && !excel.dateInvalid
-              ? excel.date
-              : undefined
-            : parseDate(displayValue(value), f.date.source);
+        const sourceCell = recipe.kind === "copy" ? row.cells[positions.get(recipe.source)!] : undefined;
+        const excel = sourceCell?.excel;
+        let date;
+        if (f.date.source !== "excel") date = parseDate(displayValue(value), f.date.source);
+        else if (sourceCell?.original) date = parseDate(displayValue(value), "YYYY-MM-DD");
+        else if (excel?.type === "n" && !excel.dateInvalid) date = excel.date;
         if (date) value = { kind: "date", ...date, format: f.date.target };
         else {
           add(
@@ -350,19 +348,10 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
         );
       return value.kind === "text" && text === "" ? { kind: "blank" } : value;
     });
-    if (issues.some((issue) => issue.code === "csv-risk")) run.csvRisk = true;
     const status = issues.some((i) => i.severity === "error")
       ? "invalid"
-      : issues.length
-        ? "warning"
-        : "valid";
-    run.summary[status === "warning" ? "warningOnly" : status]++;
-    run.summary.warningIssues += issues.filter(
-      (i) => i.severity === "warning",
-    ).length;
-    run.summary.errorIssues += issues.filter(
-      (i) => i.severity === "error",
-    ).length;
+      : issues.length ? "warning" : "valid";
+    countResult(run, { status, issues });
     run.rows.push({
       id: row.id,
       record: row.record,
@@ -374,4 +363,11 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
     });
   }
   return run;
+}
+
+export function countResult(run: Run, row: Pick<ResultRow, "status" | "issues">) {
+  run.summary[row.status === "warning" ? "warningOnly" : row.status]++;
+  run.summary.warningIssues += row.issues.filter(i => i.severity === "warning").length;
+  run.summary.errorIssues += row.issues.filter(i => i.severity === "error").length;
+  if (row.issues.some(i => i.code === "csv-risk")) run.csvRisk = true;
 }

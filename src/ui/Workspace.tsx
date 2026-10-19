@@ -10,7 +10,7 @@ import {
 import { displayValue } from "../engine/values";
 import { exportText, type SafetyChoice } from "../formats/spreadsheet-safety";
 import MappingRows from "./MappingRows";
-import ExcelCellDetails from "./ExcelCellDetails";
+import SourceCorrection from "./SourceCorrection";
 import SavedWorkflows from "./SavedWorkflows";
 import { snapshotWorkflow, encodeWorkflow } from "../workflows/codec";
 import type { StoredWorkflow } from "../workflows/indexeddb-store";
@@ -98,7 +98,7 @@ export default function Workspace() {
   const sourceDetail = view?.worksheet
     ? `worksheet ${view.worksheet}`
     : `${view?.delimiter === "\t" ? "tab" : view?.delimiter === ";" ? "semicolon" : "comma"} delimiter detected`;
-  const busy = Boolean(state.busy || state.worksheets);
+  const busy = Boolean(state.busy || state.worksheets || state.replacement);
   const changeWorkflow = (patch: Partial<Workflow>) => {
     draftGeneration.current++;
     failedGeneration.current = undefined;
@@ -252,6 +252,12 @@ export default function Workspace() {
         <p>{workflow.output.format === "xlsx" ? `Excel output · ${workflow.output.dateSystem} date system` : `CSV output: ${outputDelimiterLabel} · ${workflow.output.bom ? "with BOM" : "no BOM"}`} · {workflow.output.header ? "with header" : "no header"}</p>
         <button onClick={() => setRepeat(false)}>Edit workflow</button>
       </section>}
+      {state.replacement && <section className="panel" role="alertdialog" aria-label="Replace source file" aria-describedby="replacement-warning">
+        <h2>Discard session corrections?</h2>
+        <p id="replacement-warning">Replacing the source discards your session corrections after the new file loads successfully. Cancel keeps the current source and corrections.</p>
+        <button onClick={() => void session.confirmReplacement()}>Replace source and discard corrections</button>
+        <button onClick={() => session.cancelReplacement()}>Keep current source</button>
+      </section>}
       <section aria-labelledby="upload-title" className="panel upload">
         <div>
           <h2 id="upload-title">1. Choose your source</h2>
@@ -374,8 +380,7 @@ export default function Workspace() {
             {inspectSource && <section aria-labelledby="source-title">
               <h2 id="source-title">Source table</h2>
               <p>
-                Original values · first {view.sourceRows.length} rows · read
-                only
+                Current source values · {view.sourceRows.length} rows on this preview page. Corrections stay in this session; originals remain inspectable.
               </p>
               <div
                 className="table-scroll"
@@ -403,8 +408,15 @@ export default function Workspace() {
                         </th>
                         {view.columns.map((c) => (
                           <td key={c.key}>
-                            {r.cells[c.position]?.display ?? ""}
-                            {r.cells[c.position]?.excel && <ExcelCellDetails cell={r.cells[c.position].excel!} />}
+                            <SourceCorrection
+                              key={r.id + c.key}
+                              cell={r.cells[c.position] ?? {kind:"text",raw:"",display:""}}
+                              header={c.header}
+                              record={r.record}
+                              disabled={busy || dirty || state.recoverable}
+                              onSave={value => { setChoice(undefined); session.correct(r.id, c.key, value); }}
+                              onRevert={() => { setChoice(undefined); session.correct(r.id, c.key, "", true); }}
+                            />
                           </td>
                         ))}
                       </tr>
@@ -500,7 +512,7 @@ export default function Workspace() {
                     Error issues <strong>{view.summary.errorIssues}</strong>
                   </span>
                   <span>
-                    Corrected <strong>0</strong>
+                    Corrected <strong>{view.summary.corrected}</strong>
                   </span>
                   <span>
                     Excluded <strong>0</strong>
@@ -521,7 +533,7 @@ export default function Workspace() {
                 {view.summary.invalid > 0 && (
                   <p className="notice" role="alert">
                     Download blocked: {view.summary.invalid} invalid rows.
-                    Review exceptions, fix the source file and upload it again,
+                    Review exceptions, correct cells in the source table or upload a fixed file,
                     or update validation. This preview does not exclude rows.
                   </p>
                 )}
@@ -680,7 +692,7 @@ export default function Workspace() {
         </div>
       )}
       <footer>
-        U10 internal preview · CSV and one-sheet Excel conversion with reusable local workflows. Data is cleared on reload
+        U11 internal preview · CSV and one-sheet Excel conversion with reusable local workflows. Data is cleared on reload
         or End session. Source data and file names are never saved. Static
         application assets are requested from the host; customer file processing
         stays local.

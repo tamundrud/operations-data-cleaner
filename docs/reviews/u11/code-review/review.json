@@ -1,0 +1,266 @@
+{
+  "status": "complete",
+  "verdict": "Ready with fixes",
+  "scope": {
+    "base": "origin/main",
+    "branch": "feat/u11-session-source-correction",
+    "head_sha": "7e418ac06876c73643ced6ad552e0f8addec714b",
+    "pr_url": null,
+    "files_changed": 14,
+    "reviewed_snapshot": "HEAD 7e418ac plus the U11 working diff preserved in full.diff; caller follow-up fixes are outside this review receipt."
+  },
+  "intent": "Implement U11 browser-local source corrections and safe replacement: recompute dependent whole rows while retaining immutable originals, provenance and full counts; keep corrections outside workflows. Confirm replacement before discarding corrections, retain prior run on failure/cancel, replay corrections during recovery, and reject stale revisions. Preserve U1-U10; U12/U13 are out of scope.",
+  "intent_confidence": "explicit",
+  "reviewers": [
+    "correctness",
+    "project-standards",
+    "testing",
+    "maintainability",
+    "security",
+    "performance",
+    "reliability",
+    "adversarial",
+    "julik-frontend-races"
+  ],
+  "findings": [
+    {
+      "#": 1,
+      "autofix_class": "manual",
+      "confidence": 100,
+      "evidence": [
+        "src/session/correction-overlay.ts:23: const rows = changed ? source.rows.filter(r => r.id === changed) : source.rows;",
+        "src/session/correction-overlay.ts:25: if (previous && changed && !next.workflowIssues.length) {",
+        "src/engine/recipes.ts:54 initializes candidates from source.rows.length; line 68 returns immediately when workflowIssues exist.",
+        "src/ui/Workspace.tsx:411 permits corrections when completed mapping has workflowIssues, since only busy, dirty and recoverable states disable them.",
+        "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md:454 requires source identity/provenance/count invariants."
+      ],
+      "file": "src/session/correction-overlay.ts",
+      "first_evidence": "src/session/correction-overlay.ts:25: if (previous && changed && !next.workflowIssues.length) {",
+      "independent_reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "line": 25,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "If incremental evaluation has workflowIssues, retain the original dataset's candidate/input/skipped counts (or perform a full correctedRun evaluation for that branch) instead of returning the one-row summary. Add a regression with multiple source rows and an unmapped field, correcting then reverting one cell and comparing summaries against full evaluation.",
+      "title": "Correction during incomplete mapping shrinks candidate count",
+      "why_it_matters": "A completed mapping with an unmapped output field still exposes source correction controls. Correcting a single row then reports one candidate for the entire loaded dataset because workflow issues bypass the incremental-summary merge; all source rows remain loaded, so the full dataset count becomes false until a full rerun.",
+      "validation_status": "confirmed",
+      "validation_reason": "The U11 diff adds correctedRun's one-row evaluation and skips aggregate merging when workflowIssues exist (correction-overlay.ts:23-25), while Workspace.tsx:411 and controller.ts:204 permit this completed-but-unmapped state; on reviewed HEAD 7e418ac with the U11 working diff, Node 24.19.0 and Vitest 5.0.4, the targeted two-row unfinished-mapping regression fails with candidates 1 versus full evaluation's 2.",
+      "protected_subject": null
+    },
+    {
+      "#": 2,
+      "autofix_class": "manual",
+      "confidence": 100,
+      "evidence": [
+        "src/ui/Workspace.tsx:411: {r.cells[c.position] && <SourceCorrection",
+        "src/formats/csv.ts:142 rejects only extra cells; lines 147-156 retain exactly the parsed cell count. CSV text \"ID,Qty\\nA\" therefore produces a row with only its ID cell.",
+        "src/session/correction-overlay.ts:14: return { ...row, cells: row.cells.map((cell, position) => {",
+        "With Qty mapped to a required number/calculation, missing Qty yields invalid output, but the source table cell lacks a correction control and a controller-level Qty edit cannot add it."
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:411: {r.cells[c.position] && <SourceCorrection",
+      "independent_reviewers": [
+        "adversarial"
+      ],
+      "line": 411,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Represent absent trailing source values as blank cells when rendering and applying the overlay, iterating source columns so every accepted source position can be corrected and reverted while preserving original blank identity.",
+      "title": "Short CSV rows cannot repair missing trailing cells",
+      "why_it_matters": "Accepted short CSV records can lack a trailing required value, but their missing cells have no correction action and the overlay cannot materialize an absent cell. Users cannot repair those invalid rows through the U11 correction flow.",
+      "validation_status": "confirmed",
+      "validation_reason": "parseCsv accepts short records and preserves their short cells array (csv.ts:142-156), and U11 newly adds a correction UI gated on an existing cell (Workspace.tsx:411) plus an overlay iterating only existing cells (correction-overlay.ts:14); on reviewed HEAD 7e418ac with the U11 working diff, Node 24.19.0 and Vitest 5.0.4, the targeted ID,Qty short-record regression receives blank after correcting Qty to 24, establishing the reachable missing-trailing-cell failure.",
+      "protected_subject": null
+    }
+  ],
+  "actionable_findings": [
+    {
+      "#": 1,
+      "autofix_class": "manual",
+      "confidence": 100,
+      "evidence": [
+        "src/session/correction-overlay.ts:23: const rows = changed ? source.rows.filter(r => r.id === changed) : source.rows;",
+        "src/session/correction-overlay.ts:25: if (previous && changed && !next.workflowIssues.length) {",
+        "src/engine/recipes.ts:54 initializes candidates from source.rows.length; line 68 returns immediately when workflowIssues exist.",
+        "src/ui/Workspace.tsx:411 permits corrections when completed mapping has workflowIssues, since only busy, dirty and recoverable states disable them.",
+        "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md:454 requires source identity/provenance/count invariants."
+      ],
+      "file": "src/session/correction-overlay.ts",
+      "first_evidence": "src/session/correction-overlay.ts:25: if (previous && changed && !next.workflowIssues.length) {",
+      "independent_reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "line": 25,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial",
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "If incremental evaluation has workflowIssues, retain the original dataset's candidate/input/skipped counts (or perform a full correctedRun evaluation for that branch) instead of returning the one-row summary. Add a regression with multiple source rows and an unmapped field, correcting then reverting one cell and comparing summaries against full evaluation.",
+      "title": "Correction during incomplete mapping shrinks candidate count",
+      "why_it_matters": "A completed mapping with an unmapped output field still exposes source correction controls. Correcting a single row then reports one candidate for the entire loaded dataset because workflow issues bypass the incremental-summary merge; all source rows remain loaded, so the full dataset count becomes false until a full rerun.",
+      "validation_status": "confirmed",
+      "validation_reason": "The U11 diff adds correctedRun's one-row evaluation and skips aggregate merging when workflowIssues exist (correction-overlay.ts:23-25), while Workspace.tsx:411 and controller.ts:204 permit this completed-but-unmapped state; on reviewed HEAD 7e418ac with the U11 working diff, Node 24.19.0 and Vitest 5.0.4, the targeted two-row unfinished-mapping regression fails with candidates 1 versus full evaluation's 2.",
+      "protected_subject": null
+    },
+    {
+      "#": 2,
+      "autofix_class": "manual",
+      "confidence": 100,
+      "evidence": [
+        "src/ui/Workspace.tsx:411: {r.cells[c.position] && <SourceCorrection",
+        "src/formats/csv.ts:142 rejects only extra cells; lines 147-156 retain exactly the parsed cell count. CSV text \"ID,Qty\\nA\" therefore produces a row with only its ID cell.",
+        "src/session/correction-overlay.ts:14: return { ...row, cells: row.cells.map((cell, position) => {",
+        "With Qty mapped to a required number/calculation, missing Qty yields invalid output, but the source table cell lacks a correction control and a controller-level Qty edit cannot add it."
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:411: {r.cells[c.position] && <SourceCorrection",
+      "independent_reviewers": [
+        "adversarial"
+      ],
+      "line": 411,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "adversarial"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Represent absent trailing source values as blank cells when rendering and applying the overlay, iterating source columns so every accepted source position can be corrected and reverted while preserving original blank identity.",
+      "title": "Short CSV rows cannot repair missing trailing cells",
+      "why_it_matters": "Accepted short CSV records can lack a trailing required value, but their missing cells have no correction action and the overlay cannot materialize an absent cell. Users cannot repair those invalid rows through the U11 correction flow.",
+      "validation_status": "confirmed",
+      "validation_reason": "parseCsv accepts short records and preserves their short cells array (csv.ts:142-156), and U11 newly adds a correction UI gated on an existing cell (Workspace.tsx:411) plus an overlay iterating only existing cells (correction-overlay.ts:14); on reviewed HEAD 7e418ac with the U11 working diff, Node 24.19.0 and Vitest 5.0.4, the targeted ID,Qty short-record regression receives blank after correcting Qty to 24, establishing the reachable missing-trailing-cell failure.",
+      "protected_subject": null
+    }
+  ],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "requirements_completeness": {
+    "plan": "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md",
+    "plan_source": "explicit",
+    "requirements": [
+      {
+        "requirement": "R3/R4; FR-17,23-24,27; AC-13-14 scoped to U11",
+        "status": "partially addressed",
+        "evidence": "Correction and revert, immutable originals, dependent-row recalculation, workflow isolation, replacement confirmation and recovery are implemented. Findings #1 and #2 identify edge-case defects in full counts and accepted short-row correction."
+      }
+    ],
+    "implementation_units": [
+      {
+        "unit": "U11",
+        "status": "partially addressed",
+        "evidence": "All scoped implementation areas appear in the reviewed diff: source correction, provenance/counts, replacement confirmation, recovery replay, stale-revision guards, privacy interception and 10,000-row measurement. Resolve #1 and #2; production-worker parsing cancellation remains a browser verification gap."
+      }
+    ],
+    "unaddressed_implementation_units": [],
+    "unrequested_behavior_rules": [],
+    "reverse_check": "Compared the preserved reviewed diff with the master plan U11 and KTD-05/08; no additional user-observable behavior rule or U12/U13 implementation was identified."
+  },
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [],
+  "testing_gaps": [
+    "The U11 browser cancellation scenario delays File.arrayBuffer() for hold.csv, so cancellation occurs before the replacement reaches the worker, rather than during parsing as required by the U11 plan. Add a browser scenario that cancels after the replacement import has been posted to the real worker, then retries and verifies prior corrected bytes, original provenance, and full counts. The session unit scenario uses a fake worker and cannot independently verify termination/reparse behavior."
+  ],
+  "coverage": {
+    "depth": "full",
+    "notes": [
+      "Full depth from helper hard_block_full: 200 executable non-test changed lines.",
+      "AGENTS.md instruction-file fallback governs all changed files; no CODING_STANDARDS.md exists.",
+      "Excluded untracked docs/reviews/u11 evidence artifacts.",
+      "Learnings not selected: existing XLSX qualification solution does not plausibly govern U11 correction/reupload logic.",
+      "Current worktree includes browser-test fixes applied during review; final diff refreshed after reviewer collection.",
+      "Cross-model pass not run: no different-provider CLI installed (claude, grok, cursor-agent, opencode absent); adversarial lens covered by in-process reviewer.",
+      "Semantic reconciliation merged two reports of the same incomplete-mapping count defect into #1; same-model agreement did not promote confidence.",
+      "Quote-the-line gate: first_evidence_backfilled=0; no missing-first_evidence demotions; mode-aware demotions=0; malformed findings=0; malformed returns=0.",
+      "Two reviewer testing-gap claims were resolved by final-diff tests: same-worker stale replies and production-worker stale correction requests; filtered exception source identity.",
+      "One consequential testing gap remains: cancellation after posting a replacement to the production worker is not exercised by the browser test, which pauses before arrayBuffer resolves.",
+      "Validator shortcut-skipped=0: no independent serving-family peer corroboration. Both actionable P2 findings selected for one deterministic batch."
+    ],
+    "suppressed_by_confidence": {},
+    "mode_aware_demotions": 0,
+    "first_evidence_backfilled": 0,
+    "missing_first_evidence_demotions": 0,
+    "malformed_findings": 0,
+    "malformed_returns": 0,
+    "semantic_duplicates_merged": 1,
+    "validator": {
+      "outcome": "verdicts",
+      "batch_count": 1,
+      "selected": 2,
+      "confirmed": 2,
+      "rejected": 0,
+      "unresolved": 0,
+      "malformed": 0,
+      "failed": 0,
+      "shortcut_skipped": 0,
+      "bound_exceeded": false,
+      "protected_subject_reclassifications": 0,
+      "degraded_p0_p1": [],
+      "per_finding": [
+        {
+          "#": 1,
+          "status": "confirmed",
+          "protected_subject": null,
+          "reason": "The U11 diff adds correctedRun's one-row evaluation and skips aggregate merging when workflowIssues exist (correction-overlay.ts:23-25), while Workspace.tsx:411 and controller.ts:204 permit this completed-but-unmapped state; on reviewed HEAD 7e418ac with the U11 working diff, Node 24.19.0 and Vitest 5.0.4, the targeted two-row unfinished-mapping regression fails with candidates 1 versus full evaluation's 2."
+        },
+        {
+          "#": 2,
+          "status": "confirmed",
+          "protected_subject": null,
+          "reason": "parseCsv accepts short records and preserves their short cells array (csv.ts:142-156), and U11 newly adds a correction UI gated on an existing cell (Workspace.tsx:411) plus an overlay iterating only existing cells (correction-overlay.ts:14); on reviewed HEAD 7e418ac with the U11 working diff, Node 24.19.0 and Vitest 5.0.4, the targeted ID,Qty short-record regression receives blank after correcting Qty to 24, establishing the reachable missing-trailing-cell failure."
+        }
+      ],
+      "reason": "One deterministic batch returned both matched verdicts within its bound; targeted regressions reproduced both reachable failures. Same-model corroboration granted no shortcut."
+    },
+    "cross_model": {
+      "selected": true,
+      "target": null,
+      "route": null,
+      "preference_source": "default",
+      "outcome": "in-process-fallback",
+      "artifact": null,
+      "coverage": "Cross-model pass not run: no different-provider CLI installed (claude, grok, cursor-agent, opencode absent); adversarial lens covered by in-process reviewer."
+    },
+    "failed_reviewers": [],
+    "bound_exceeded": [],
+    "compound_packs": {
+      "roots": [],
+      "warnings": [],
+      "errors": []
+    },
+    "not_assessed": [
+      "Learnings researcher: existing XLSX solution does not govern this change.",
+      "Agent-native and deployment reviewers were not selected."
+    ],
+    "settlement_suppression": {
+      "plan_source": "explicit",
+      "suppressed": 0
+    },
+    "local_apply": false,
+    "follow_up_resolution": "This report preserves the confirmed findings against the reviewed snapshot. Any concurrent caller fixes require separate follow-up verification evidence."
+  },
+  "verdict_reason": "Resolve the two confirmed P2 correction defects, then verify recovery after cancelling a replacement already posted to the production worker. No open P0/P1 finding or wholly unaddressed U11 implementation area was identified. This receipt does not include caller follow-up fixes and does not grant merge or deploy approval.",
+  "artifact_path": "/tmp/compound-engineering-1000/ce-code-review/20261018-205605-u11",
+  "run_id": "20261018-205605-u11"
+}

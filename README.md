@@ -1,6 +1,6 @@
 # Operations Data Cleaner
 
-U10 internal preview: convert a CSV or one selected Excel worksheet into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations, exact decimal calculations and explicit date conversions. Trim text only when you choose to. Choose CSV or value-only Excel output, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
+U11 internal preview: convert a CSV or one selected Excel worksheet into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations, exact decimal calculations and explicit date conversions. Trim text only when you choose to. Choose CSV or value-only Excel output, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
 
 ## Run locally
 
@@ -72,9 +72,19 @@ Excel numbers must have at most 15 significant decimal digits, fall within Excel
 
 Output is limited to 2 million table positions (including headers), Excel's 1,048,576 rows and 32,767 UTF-16 units per text cell, plus a conservative 100 MiB serialization budget that bounds XML escaping and package overhead before writing. Literal OOXML escape tokens such as `_x0041_` are protected; their additional encoding must also fit the writer's text limit. Invalid Unicode or over-budget output fails explicitly without truncation. Cancellation and the existing worker watchdog cover serialization. These are resource safeguards, not a heap cap or final reference-laptop qualification.
 
-Excel settings and every delivered destination type reuse workflow version 1, including browser saves and portable JSON. Existing CSV definitions require no migration. Download still requires the current preview and all rows to pass configured validation; source correction and partial export remain later work.
+Excel settings and every delivered destination type reuse workflow version 1, including browser saves and portable JSON. Existing CSV definitions require no migration. Download still requires the current preview and all rows to pass configured validation; partial export remains later work.
 
 SheetJS CE 0.20.3 is vendored from the verified official distribution; its [Apache-2.0 license](public/SheetJS-LICENSE.txt) ships with the application. See [qualification and limits](docs/decisions/excel-fidelity.md).
+
+
+## Session source corrections (U11)
+
+Open **Inspect original source table** to correct cells on the current preview page, including rows selected by the exception filter. Choose **Correct**, enter a literal replacement, then **Apply correction**. Every dependent output and validation for that record recalculates. Corrected cells show their original value; **Revert** restores it. Original Excel type, raw value and formatting remain inspectable. Numeric rules still apply to replacements; Excel date rules accept an explicit YYYY-MM-DD replacement.
+
+Corrections remain in memory and never change the uploaded file or enter saved/portable workflows. Clearing a cell does not remove its original candidate row. Use preview pagination to reach later source records; counts always cover the full dataset.
+
+Uploading another source retains workflow rules and asks before discarding corrections. Cancelling the confirmation or failing to import keeps the prior source and edits. If processing is cancelled or the worker stops, **Retry active file** restores the prior source, corrections and provenance; download stays blocked until recovery finishes. Reload or **End session** discards source data and corrections.
+
 
 ## Save, repeat and recover
 

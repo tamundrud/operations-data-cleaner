@@ -1,3 +1,4 @@
+import type { Correction } from "./correction-overlay";
 import type { Workflow } from "../engine/workflow";
 import type { SourceColumn, SourceRow } from "../engine/values";
 import type { Run, ResultRow } from "../engine/recipes";
@@ -6,6 +7,7 @@ import type { SafetyChoice } from "../formats/spreadsheet-safety";
 export type Request = { request: number; dataset: string; revision: number } & (
   | {
       kind: "import";
+      corrections?: Correction[];
       bytes: ArrayBuffer;
       format?: "csv" | "xlsx";
       worksheet?: string;
@@ -19,6 +21,7 @@ export type Request = { request: number; dataset: string; revision: number } & (
       worksheet?: string;
       delimiter: "auto" | "," | ";" | "\t";
     }
+  | { kind: "correct"; correction: Correction; revert?: boolean }
   | { kind: "run"; workflow: Workflow }
   | { kind: "page"; page: number; exceptions: boolean }
   | { kind: "export"; choice: SafetyChoice }
