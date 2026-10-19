@@ -1,0 +1,1 @@
+Qualify U13 against the approved master plan through integrated acceptance journeys, synthetic logistics assets and requirements/evidence release documentation. Preserve current product behavior and safeguards. Reference-laptop qualification and final release acceptance are expressly deferred; do not deploy, publish, merge or release.

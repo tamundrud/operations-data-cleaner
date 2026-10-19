@@ -1,0 +1,58 @@
+{
+  "branch": "feat/u13-release-qualification",
+  "completed_at": "2026-10-19T05:44:00.067424+00:00",
+  "cost": {
+    "host": "codex",
+    "scope": {
+      "changed_lines": 6,
+      "depth": "focused",
+      "exec_nontest_lines": 0,
+      "size_band": "small",
+      "unclassified_lines": {
+        ".md": 6
+      }
+    },
+    "stages": [
+      {
+        "elapsed_seconds": 0.034,
+        "ended_at": "2026-10-19T05:42:02.078440+00:00",
+        "facts": {
+          "changed_lines": 6,
+          "depth": "focused",
+          "exec_nontest_lines": 0,
+          "size_band": "small",
+          "unclassified_lines": {
+            ".md": 6
+          }
+        },
+        "stage": "scope",
+        "started_at": "2026-10-19T05:42:02.044511+00:00"
+      },
+      {
+        "candidates": 0,
+        "elapsed_seconds": 118.034,
+        "ended_at": "2026-10-19T05:44:00.112907+00:00",
+        "reviewers": 2,
+        "stage": "review",
+        "started_at": "2026-10-19T05:42:02.078440+00:00"
+      },
+      {
+        "elapsed_seconds": 0.031,
+        "ended_at": "2026-10-19T05:44:00.143445+00:00",
+        "stage": "receipt",
+        "started_at": "2026-10-19T05:44:00.112907+00:00"
+      }
+    ],
+    "status": "complete",
+    "totals": {
+      "artifact_bytes": 17444,
+      "candidates": 0,
+      "elapsed_seconds": 118.099,
+      "reviewers": 2
+    },
+    "truncated_events": 0
+  },
+  "head_sha": "6dfdd5971001aaa9bcc05dd503c230e035498f3c",
+  "run_id": "20261019-054201-4306240e",
+  "verdict": "Ready to merge"
+}

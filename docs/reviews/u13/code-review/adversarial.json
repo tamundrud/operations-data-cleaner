@@ -1,0 +1,8 @@
+{
+  "reviewer": "adversarial",
+  "findings": [],
+  "residual_risks": [],
+  "testing_gaps": [
+    "The new integrated logistics journey imports examples/release/workflow.json directly into its fresh browser context (tests/e2e/sample-journey.spec.ts:13-17), then verifies IndexedDB save/reopen. It never downloads that integrated recipe's workflow backup and imports the downloaded bytes into a second context. Therefore the named integrated 'backup run' can pass despite an export-path defect affecting the combined split/combine/calculation/date recipe. Existing workflow-portability, address-recipes, calculations and dates suites cover individual recipe backups, so this is a narrow remaining U13 integrated-scenario gap rather than a demonstrated product defect. Extend the new journey to download the configured workflow and import those actual bytes in the fresh context before checking the exact output, as required by the U13 another-browser backup scenario."
+  ]
+}

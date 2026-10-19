@@ -1,0 +1,818 @@
+{
+  "stats": {
+    "startTime": "2026-10-19T05:40:30.995Z",
+    "duration": 363123.717,
+    "expected": 113,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "file": "accessibility.spec.ts",
+      "title": "labelled keyboard controls, laptop/mobile layouts and automated accessibility",
+      "status": "passed",
+      "durationMs": 7341,
+      "project": "chromium"
+    },
+    {
+      "file": "accessibility.spec.ts",
+      "title": "U3 fixed fields, CSV options and contextual trim controls remain accessible",
+      "status": "passed",
+      "durationMs": 5736,
+      "project": "chromium"
+    },
+    {
+      "file": "accessibility.spec.ts",
+      "title": "workflow metadata stays literal and keyboard collision cancellation restores focus",
+      "status": "passed",
+      "durationMs": 2813,
+      "project": "chromium"
+    },
+    {
+      "file": "address-recipes.spec.ts",
+      "title": "AC-03/04 contextual split/combine, saved reuse and fresh-context JSON preserve exact output",
+      "status": "passed",
+      "durationMs": 6447,
+      "project": "chromium"
+    },
+    {
+      "file": "address-recipes.spec.ts",
+      "title": "strict count and optional empty slots show row/field errors and block invalid download",
+      "status": "passed",
+      "durationMs": 3060,
+      "project": "chromium"
+    },
+    {
+      "file": "address-recipes.spec.ts",
+      "title": "keyboard recipe controls retain paired-card ordering, literal-only combinations and mobile accessibility",
+      "status": "passed",
+      "durationMs": 3151,
+      "project": "chromium"
+    },
+    {
+      "file": "address-recipes.spec.ts",
+      "title": "reducing split count removes obsolete optional positions visibly and keeps the recipe usable",
+      "status": "passed",
+      "durationMs": 2870,
+      "project": "chromium"
+    },
+    {
+      "file": "calculations.spec.ts",
+      "title": "AC-05/06/10 contextual calculations export exact bytes, save/reopen and portable reuse",
+      "status": "passed",
+      "durationMs": 4837,
+      "project": "chromium"
+    },
+    {
+      "file": "calculations.spec.ts",
+      "title": "errors stay visible, rounding is explicit, and fractional cases fail before rounding",
+      "status": "passed",
+      "durationMs": 3374,
+      "project": "chromium"
+    },
+    {
+      "file": "calculations.spec.ts",
+      "title": "mobile calculation settings, output type switches and keyboard focus preserve paired cards",
+      "status": "passed",
+      "durationMs": 2469,
+      "project": "chromium"
+    },
+    {
+      "file": "calculations.spec.ts",
+      "title": "numeric copy validation and precision edits renew CSV safety decisions",
+      "status": "passed",
+      "durationMs": 3885,
+      "project": "chromium"
+    },
+    {
+      "file": "calculations.spec.ts",
+      "title": "numeric copy source retains rules when first choosing a source",
+      "status": "passed",
+      "durationMs": 2418,
+      "project": "chromium"
+    },
+    {
+      "file": "calculations.spec.ts",
+      "title": "numeric copy source retains rules when replacing a source",
+      "status": "passed",
+      "durationMs": 3017,
+      "project": "chromium"
+    },
+    {
+      "file": "constants.spec.ts",
+      "title": "switching trimmed max-length fixed text to number clears text-only settings",
+      "status": "passed",
+      "durationMs": 2046,
+      "project": "chromium"
+    },
+    {
+      "file": "constants.spec.ts",
+      "title": "numeric constant clear and copy radio restore unmatched and faithful text states",
+      "status": "passed",
+      "durationMs": 2378,
+      "project": "chromium"
+    },
+    {
+      "file": "constants.spec.ts",
+      "title": "U3 sample demonstrates constants, trim and nondefault CSV settings",
+      "status": "passed",
+      "durationMs": 1347,
+      "project": "chromium"
+    },
+    {
+      "file": "constants.spec.ts",
+      "title": "fixed fields complete without sources, trim validates resulting text and reorder preserves values",
+      "status": "passed",
+      "durationMs": 4881,
+      "project": "chromium"
+    },
+    {
+      "file": "constants.spec.ts",
+      "title": "constant reorder permutes configured slots while unmatched outputs stay fixed",
+      "status": "passed",
+      "durationMs": 1983,
+      "project": "chromium"
+    },
+    {
+      "file": "constants.spec.ts",
+      "title": "intentional required blanks and invalid numeric literals block export with actionable errors",
+      "status": "passed",
+      "durationMs": 2797,
+      "project": "chromium"
+    },
+    {
+      "file": "constants.spec.ts",
+      "title": "all twelve CSV setting combinations download independent exact UTF-8 byte goldens",
+      "status": "passed",
+      "durationMs": 6999,
+      "project": "chromium"
+    },
+    {
+      "file": "constants.spec.ts",
+      "title": "formula constants require renewed choice after constant, trim and every export setting edit",
+      "status": "passed",
+      "durationMs": 2531,
+      "project": "chromium"
+    },
+    {
+      "file": "constants.spec.ts",
+      "title": "constant and CSV edits during an older evaluation cannot export stale settings",
+      "status": "passed",
+      "durationMs": 1445,
+      "project": "chromium"
+    },
+    {
+      "file": "conversion.spec.ts",
+      "title": "upload template, keyboard map, rename, reorder, preview and verify actual bytes",
+      "status": "passed",
+      "durationMs": 2205,
+      "project": "chromium"
+    },
+    {
+      "file": "conversion.spec.ts",
+      "title": "sample produces golden bytes without any customer file",
+      "status": "passed",
+      "durationMs": 1012,
+      "project": "chromium"
+    },
+    {
+      "file": "conversion.spec.ts",
+      "title": "unmapped and unacknowledged invalid rows block download, all exceptions are reachable",
+      "status": "passed",
+      "durationMs": 2143,
+      "project": "chromium"
+    },
+    {
+      "file": "conversion.spec.ts",
+      "title": "formula headers and text block export until explicit choice, representation matches bytes",
+      "status": "passed",
+      "durationMs": 1960,
+      "project": "chromium"
+    },
+    {
+      "file": "conversion.spec.ts",
+      "title": "failed replacement retains active file and valid mapping; ending session clears it",
+      "status": "passed",
+      "durationMs": 1400,
+      "project": "chromium"
+    },
+    {
+      "file": "correction-reupload.spec.ts",
+      "title": "source corrections repair dependents, revert, preserve replacement failures and recover cancelled parsing privately",
+      "status": "passed",
+      "durationMs": 4022,
+      "project": "chromium"
+    },
+    {
+      "file": "correction-reupload.spec.ts",
+      "title": "10000 rows retain identity after clearing and correcting a later preview page",
+      "status": "passed",
+      "durationMs": 1717,
+      "project": "chromium"
+    },
+    {
+      "file": "correction-reupload.spec.ts",
+      "title": "filtered exception correction targets the matching source identity",
+      "status": "passed",
+      "durationMs": 2990,
+      "project": "chromium"
+    },
+    {
+      "file": "correction-reupload.spec.ts",
+      "title": "production worker rejects stale correction requests after a newer rule revision",
+      "status": "passed",
+      "durationMs": 638,
+      "project": "chromium"
+    },
+    {
+      "file": "correction-reupload.spec.ts",
+      "title": "cancelling replacement in the parsing worker restores corrected provenance and exports",
+      "status": "passed",
+      "durationMs": 4141,
+      "project": "chromium"
+    },
+    {
+      "file": "correction-reupload.spec.ts",
+      "title": "missing trailing source cells can be corrected and reverted",
+      "status": "passed",
+      "durationMs": 1579,
+      "project": "chromium"
+    },
+    {
+      "file": "correction-reupload.spec.ts",
+      "title": "Excel source corrections retain original typed details and export literal IDs and calendar dates",
+      "status": "passed",
+      "durationMs": 2603,
+      "project": "chromium"
+    },
+    {
+      "file": "dates.spec.ts",
+      "title": "AC-09 contextual dates, exact downloads, local reopen and portable timezone reuse",
+      "status": "passed",
+      "durationMs": 5127,
+      "project": "chromium"
+    },
+    {
+      "file": "dates.spec.ts",
+      "title": "strict dates, optional/required blanks, explicit ambiguity and source replacement",
+      "status": "passed",
+      "durationMs": 4150,
+      "project": "chromium"
+    },
+    {
+      "file": "dates.spec.ts",
+      "title": "mobile date settings preserve layout and type changes clear incompatible rules and CSV acknowledgement",
+      "status": "passed",
+      "durationMs": 3753,
+      "project": "chromium"
+    },
+    {
+      "file": "dates.spec.ts",
+      "title": "date rules survive first source choice; fixed dates and trimming remain explicit",
+      "status": "passed",
+      "durationMs": 2187,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-input.spec.ts",
+      "title": "U9 worksheet choice, Excel metadata and exact identifier, arithmetic, date and cached bytes",
+      "status": "passed",
+      "durationMs": 5185,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-input.spec.ts",
+      "title": "U9 both date epochs, invalid dates and missing cached formulas remain inspectable errors",
+      "status": "passed",
+      "durationMs": 4584,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-input.spec.ts",
+      "title": "U9 selected worksheet, first nonblank header, blank rows and footer retain original semantics",
+      "status": "passed",
+      "durationMs": 2781,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-input.spec.ts",
+      "title": "U9 XLSX templates supply names and order only; saved and portable workflows reuse Excel input",
+      "status": "passed",
+      "durationMs": 3922,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-input.spec.ts",
+      "title": "U9 long numeric identifiers and unsupported display formats warn without inventing digits",
+      "status": "passed",
+      "durationMs": 3080,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-input.spec.ts",
+      "title": "U9 integrated worker rejects every U1 hostile fixture and preserves the prior run",
+      "status": "passed",
+      "durationMs": 10314,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-input.spec.ts",
+      "title": "U9 browser privacy intercepts external links and WEBSERVICE without exposing source data",
+      "status": "passed",
+      "durationMs": 1718,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-input.spec.ts",
+      "title": "U9 cancellation stops workbook processing and retries the unchanged active source",
+      "status": "passed",
+      "durationMs": 2210,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-input.spec.ts",
+      "title": "U9 10000-row integrated workbook remains responsive and exports every selected value",
+      "status": "passed",
+      "durationMs": 5716,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-input.spec.ts",
+      "title": "U9 manual replacements require a fresh worksheet choice and preserve the prior run after a selected-sheet failure",
+      "status": "passed",
+      "durationMs": 2244,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-input.spec.ts",
+      "title": "U9 source inspection stays deferred after ending an inspected session",
+      "status": "passed",
+      "durationMs": 1385,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-output.spec.ts",
+      "title": "U10 CSV to typed Excel controls, selected columns/order, blanks and literal strings",
+      "status": "passed",
+      "durationMs": 4952,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-output.spec.ts",
+      "title": "U10 XLSX to XLSX copies cached values without source formulas, links or package members",
+      "status": "passed",
+      "durationMs": 971,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-output.spec.ts",
+      "title": "U10 precision errors block download and offer exact CSV or explicit text alternatives",
+      "status": "passed",
+      "durationMs": 1808,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-output.spec.ts",
+      "title": "U10 saved and portable workflows preserve Excel settings and all types across browser timezones",
+      "status": "passed",
+      "durationMs": 3188,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-output.spec.ts",
+      "title": "U10 invalid rows and stale configuration continue to block Excel export",
+      "status": "passed",
+      "durationMs": 1445,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-output.spec.ts",
+      "title": "U10 privacy covers both source formats, cached formulas, Excel settings, saved work and downloads",
+      "status": "passed",
+      "durationMs": 2055,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-output.spec.ts",
+      "title": "U10 integrated safeguards reject hostile workbooks while preserving eligible Excel download",
+      "status": "passed",
+      "durationMs": 7981,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-output.spec.ts",
+      "title": "U10 performance exports every 10000 by 20 value from CSV and XLSX without blocking the interface",
+      "status": "passed",
+      "durationMs": 29970,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-output.spec.ts",
+      "title": "U10 amplified output fails boundedly rather than silently truncating rows or columns",
+      "status": "passed",
+      "durationMs": 1965,
+      "project": "chromium"
+    },
+    {
+      "file": "excel-output.spec.ts",
+      "title": "U10 cancelling Excel serialization discards the download and retries the same workflow",
+      "status": "passed",
+      "durationMs": 6356,
+      "project": "chromium"
+    },
+    {
+      "file": "partial-export.spec.ts",
+      "title": "500 candidates export exactly 490 acknowledged eligible records with visible warnings and all 10 exclusions privately",
+      "status": "passed",
+      "durationMs": 3699,
+      "project": "chromium"
+    },
+    {
+      "file": "partial-export.spec.ts",
+      "title": "every excluded row and issue is accessible across pages; acknowledgement survives navigation only",
+      "status": "passed",
+      "durationMs": 5899,
+      "project": "chromium"
+    },
+    {
+      "file": "partial-export.spec.ts",
+      "title": "formula handling changes reset partial acknowledgement and zero eligible rows remain blocked",
+      "status": "passed",
+      "durationMs": 2288,
+      "project": "chromium"
+    },
+    {
+      "file": "partial-export.spec.ts",
+      "title": "production worker enforces permission and current revision independently of UI controls",
+      "status": "passed",
+      "durationMs": 907,
+      "project": "chromium"
+    },
+    {
+      "file": "partial-export.spec.ts",
+      "title": "10000 candidate rows retain every eligible record and exact hidden-page exclusions",
+      "status": "passed",
+      "durationMs": 1888,
+      "project": "chromium"
+    },
+    {
+      "file": "partial-export.spec.ts",
+      "title": "Excel partial export keeps worksheet row provenance after offset headers, skipped blanks and exception pagination",
+      "status": "passed",
+      "durationMs": 2670,
+      "project": "chromium"
+    },
+    {
+      "file": "performance.spec.ts",
+      "title": "10000 U3 rows preserve every fixed value, exact decimal, trim result and original reference",
+      "status": "passed",
+      "durationMs": 6027,
+      "project": "chromium"
+    },
+    {
+      "file": "performance.spec.ts",
+      "title": "10000 x 20 rows remain intact; record cold and five warm full-pipeline runs",
+      "status": "passed",
+      "durationMs": 20705,
+      "project": "chromium"
+    },
+    {
+      "file": "performance.spec.ts",
+      "title": "busy cancel and retry preserve the active mapping and full downloaded data",
+      "status": "passed",
+      "durationMs": 1652,
+      "project": "chromium"
+    },
+    {
+      "file": "performance.spec.ts",
+      "title": "cancellation terminates an active parsing worker and retries the original file",
+      "status": "passed",
+      "durationMs": 4657,
+      "project": "chromium"
+    },
+    {
+      "file": "performance.spec.ts",
+      "title": "499 x 20 import to preview stays under the one-second smoke budget",
+      "status": "passed",
+      "durationMs": 3335,
+      "project": "chromium"
+    },
+    {
+      "file": "performance.spec.ts",
+      "title": "10000 U6 rows preserve every split and combined empty component",
+      "status": "passed",
+      "durationMs": 2187,
+      "project": "chromium"
+    },
+    {
+      "file": "performance.spec.ts",
+      "title": "10000 U7 rows keep exact arithmetic, identifiers, counts and downloaded bytes",
+      "status": "passed",
+      "durationMs": 2325,
+      "project": "chromium"
+    },
+    {
+      "file": "performance.spec.ts",
+      "title": "10000 U8 rows preserve every explicit date, identifier and exported byte",
+      "status": "passed",
+      "durationMs": 2492,
+      "project": "chromium"
+    },
+    {
+      "file": "persistence.spec.ts",
+      "title": "ad hoc edits persist nothing; explicit save commits configuration that survives reload",
+      "status": "passed",
+      "durationMs": 1470,
+      "project": "chromium"
+    },
+    {
+      "file": "persistence.spec.ts",
+      "title": "two tabs cannot silently replace a workflow changed since opening",
+      "status": "passed",
+      "durationMs": 1208,
+      "project": "chromium"
+    },
+    {
+      "file": "persistence.spec.ts",
+      "title": "write abort after request success preserves the draft and independent portable download",
+      "status": "passed",
+      "durationMs": 744,
+      "project": "chromium"
+    },
+    {
+      "file": "persistence.spec.ts",
+      "title": "corrupt records stay untouched while intact saved definitions remain available",
+      "status": "passed",
+      "durationMs": 909,
+      "project": "chromium"
+    },
+    {
+      "file": "persistence.spec.ts",
+      "title": "save acknowledges its submitted snapshot while newer name edits remain unsaved",
+      "status": "passed",
+      "durationMs": 783,
+      "project": "chromium"
+    },
+    {
+      "file": "persistence.spec.ts",
+      "title": "storage denial keeps portable workflow download and ad hoc processing available",
+      "status": "passed",
+      "durationMs": 921,
+      "project": "chromium"
+    },
+    {
+      "file": "persistence.spec.ts",
+      "title": "a delayed saved-workflow read uses current confirmation after a draft edit",
+      "status": "passed",
+      "durationMs": 1168,
+      "project": "chromium"
+    },
+    {
+      "file": "persistence.spec.ts",
+      "title": "native chooser waits for the selected saved workflow to activate",
+      "status": "passed",
+      "durationMs": 1282,
+      "project": "chromium"
+    },
+    {
+      "file": "persistence.spec.ts",
+      "title": "upload helper waits for the selected saved workflow to activate",
+      "status": "passed",
+      "durationMs": 1505,
+      "project": "chromium"
+    },
+    {
+      "file": "persistence.spec.ts",
+      "title": "pending Open releases controls after cancel without activating a late workflow",
+      "status": "passed",
+      "durationMs": 1249,
+      "project": "chromium"
+    },
+    {
+      "file": "persistence.spec.ts",
+      "title": "pending Open releases controls after missing without activating a late workflow",
+      "status": "passed",
+      "durationMs": 1199,
+      "project": "chromium"
+    },
+    {
+      "file": "privacy.spec.ts",
+      "title": "production journey sends no customer values, file names or IDs and stores no source data",
+      "status": "passed",
+      "durationMs": 7394,
+      "project": "chromium"
+    },
+    {
+      "file": "release.spec.ts",
+      "title": "integrated csv input supports partial export, correction and both output formats",
+      "status": "passed",
+      "durationMs": 1657,
+      "project": "chromium"
+    },
+    {
+      "file": "release.spec.ts",
+      "title": "integrated xlsx input supports partial export, correction and both output formats",
+      "status": "passed",
+      "durationMs": 1728,
+      "project": "chromium"
+    },
+    {
+      "file": "review-regressions.spec.ts",
+      "title": "CE #1: removing a previewed field and repreviewing cannot render stale values",
+      "status": "passed",
+      "durationMs": 1739,
+      "project": "chromium"
+    },
+    {
+      "file": "review-regressions.spec.ts",
+      "title": "CE #1: sample transaction replaces a wider completed preview",
+      "status": "passed",
+      "durationMs": 1831,
+      "project": "chromium"
+    },
+    {
+      "file": "review-regressions.spec.ts",
+      "title": "CE #4: failed sample read retains the prior active mapping and visible failure",
+      "status": "passed",
+      "durationMs": 1456,
+      "project": "chromium"
+    },
+    {
+      "file": "review-regressions.spec.ts",
+      "title": "CE #5: cancelled sample and active-file retry keep matching preview and output",
+      "status": "passed",
+      "durationMs": 1538,
+      "project": "chromium"
+    },
+    {
+      "file": "review-regressions.spec.ts",
+      "title": "new source upload requires a fresh CSV safety choice",
+      "status": "passed",
+      "durationMs": 1511,
+      "project": "chromium"
+    },
+    {
+      "file": "row-mapping.spec.ts",
+      "title": "both drag directions, grouping, source reuse, replacement and unlink preserve export order",
+      "status": "passed",
+      "durationMs": 2352,
+      "project": "chromium"
+    },
+    {
+      "file": "row-mapping.spec.ts",
+      "title": "keyboard counterpart selection in both directions, Escape and pair reordering retain focus",
+      "status": "passed",
+      "durationMs": 2483,
+      "project": "chromium"
+    },
+    {
+      "file": "row-mapping.spec.ts",
+      "title": "25 sources and 30 outputs stay searchable and aligned at desktop and laptop widths",
+      "status": "passed",
+      "durationMs": 6954,
+      "project": "chromium"
+    },
+    {
+      "file": "row-mapping.spec.ts",
+      "title": "rapid edits debounce and never enable an old export",
+      "status": "passed",
+      "durationMs": 1926,
+      "project": "chromium"
+    },
+    {
+      "file": "row-mapping.spec.ts",
+      "title": "edits during an older worker evaluation queue the latest draft",
+      "status": "passed",
+      "durationMs": 1961,
+      "project": "chromium"
+    },
+    {
+      "file": "row-mapping.spec.ts",
+      "title": "template replacement is deliberate and failed parsing preserves mapped columns",
+      "status": "passed",
+      "durationMs": 2226,
+      "project": "chromium"
+    },
+    {
+      "file": "row-mapping.spec.ts",
+      "title": "automatic evaluation waits for a fresh 250 ms quiet period",
+      "status": "passed",
+      "durationMs": 1208,
+      "project": "chromium"
+    },
+    {
+      "file": "row-mapping.spec.ts",
+      "title": "a failed automatic evaluation stops until explicit recovery",
+      "status": "passed",
+      "durationMs": 1221,
+      "project": "chromium"
+    },
+    {
+      "file": "row-mapping.spec.ts",
+      "title": "zero output columns give an actionable empty state rather than a pending preview",
+      "status": "passed",
+      "durationMs": 1345,
+      "project": "chromium"
+    },
+    {
+      "file": "row-mapping.spec.ts",
+      "title": "external drops cannot create mappings; contextual settings and deletion restore focus",
+      "status": "passed",
+      "durationMs": 1055,
+      "project": "chromium"
+    },
+    {
+      "file": "sample-journey.spec.ts",
+      "title": "visitor sample and integrated logistics backup run in a fresh browser with exact CSV and typed Excel output",
+      "status": "passed",
+      "durationMs": 5230,
+      "project": "chromium"
+    },
+    {
+      "file": "suggestions.spec.ts",
+      "title": "keyboard accept/reject leaves candidates unconfirmed and existing recipes authoritative",
+      "status": "passed",
+      "durationMs": 2363,
+      "project": "chromium"
+    },
+    {
+      "file": "suggestions.spec.ts",
+      "title": "ambiguous exact/dictionary candidates remain alternatives until an explicit choice",
+      "status": "passed",
+      "durationMs": 1290,
+      "project": "chromium"
+    },
+    {
+      "file": "suggestions.spec.ts",
+      "title": "only accepted mappings save, back up and rerun; renamed headers still block",
+      "status": "passed",
+      "durationMs": 2660,
+      "project": "chromium"
+    },
+    {
+      "file": "workflow-portability.spec.ts",
+      "title": "portable backup runs in a fresh browser and separate local origin without remapping",
+      "status": "passed",
+      "durationMs": 1692,
+      "project": "chromium"
+    },
+    {
+      "file": "workflow-portability.spec.ts",
+      "title": "invalid workflow imports preserve the prior run and compatible headers never guess",
+      "status": "passed",
+      "durationMs": 1298,
+      "project": "chromium"
+    },
+    {
+      "file": "workflow-portability.spec.ts",
+      "title": "identity and name collisions require an explicit target or distinct copy",
+      "status": "passed",
+      "durationMs": 1166,
+      "project": "chromium"
+    },
+    {
+      "file": "workflow-portability.spec.ts",
+      "title": "saved source delimiter policy is committed independently of the next upload picker",
+      "status": "passed",
+      "durationMs": 1016,
+      "project": "chromium"
+    },
+    {
+      "file": "workflow-portability.spec.ts",
+      "title": "a late workflow read cannot resurrect a conversion after New conversion",
+      "status": "passed",
+      "durationMs": 613,
+      "project": "chromium"
+    },
+    {
+      "file": "workflow-portability.spec.ts",
+      "title": "opening a workflow resets formula permission and added output IDs remain unique",
+      "status": "passed",
+      "durationMs": 1865,
+      "project": "chromium"
+    },
+    {
+      "file": "workflow-portability.spec.ts",
+      "title": "a delayed workflow read confirms against the current newly uploaded source",
+      "status": "passed",
+      "durationMs": 1150,
+      "project": "chromium"
+    }
+  ],
+  "attachments": [
+    "privacy.json",
+    "correction-timing.json",
+    "u9-hostile-integrated.json",
+    "u9-10000-integrated.json",
+    "u10-hostile-integrated.json",
+    "u10-10000-integrated.json",
+    "partial-export-privacy.json",
+    "partial-10000-timing.json",
+    "timings.json",
+    "small-timings.json",
+    "u6-timings.json",
+    "u7-cloud-smoke.json",
+    "u8-cloud-smoke.json"
+  ]
+}

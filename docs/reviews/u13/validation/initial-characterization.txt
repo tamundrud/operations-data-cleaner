@@ -1,0 +1,76 @@
+[WebServer] (node:1368) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:1411) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/release.spec.ts:7:52 › integrated csv input supports partial export, correction and both output formats (30.1s)
+(node:1558) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [chromium] › tests/e2e/release.spec.ts:7:52 › integrated xlsx input supports partial export, correction and both output formats (30.1s)
+(node:1710) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [chromium] › tests/e2e/sample-journey.spec.ts:8:1 › visitor sample and integrated logistics backup run in a fresh browser with exact CSV and typed Excel output (5.5s)
+
+
+  1) [chromium] › tests/e2e/release.spec.ts:7:52 › integrated csv input supports partial export, correction and both output formats 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.selectOption: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByLabel('Output format', { exact: true })
+
+
+      29 |   await expect(counts).toContainText('Invalid 0');
+      30 |   expect(await download(page)).toEqual(await readFile('examples/release/expected.csv'));
+    > 31 |   await page.getByLabel('Output format',{exact:true}).selectOption('xlsx');
+         |                                                       ^
+      32 |   const event=page.waitForEvent('download'); await page.getByRole('button',{name:'Download converted Excel',exact:true}).click();
+      33 |   const book=XLSX.read(await readFile((await (await event).path())!),{type:'array'});
+      34 |   expect(book.Sheets.Output.A3.v).toBe('009876'); expect(book.Sheets.Output.I3.v).toBe(3);
+        at /workspace/operations-data-cleaner/tests/e2e/release.spec.ts:31:55
+
+    Error Context: test-results/release-integrated-csv-inp-f364c-ion-and-both-output-formats-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/release-integrated-csv-inp-f364c-ion-and-both-output-formats-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/release-integrated-csv-inp-f364c-ion-and-both-output-formats-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests/e2e/release.spec.ts:7:52 › integrated xlsx input supports partial export, correction and both output formats 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.selectOption: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByLabel('Worksheet', { exact: true })
+
+
+      14 |     XLSX.utils.book_append_sheet(book,XLSX.utils.aoa_to_sheet(Papa.parse<string[]>(text,{skipEmptyLines:true}).data),'Orders');
+      15 |     await page.getByLabel('Upload source CSV').setInputFiles({name:'synthetic-orders.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:Buffer.from(XLSX.write(book,{type:'buffer',bookType:'xlsx'}))});
+    > 16 |     await page.getByLabel('Worksheet',{exact:true}).selectOption({label:'Orders'});
+         |                                                     ^
+      17 |     await page.getByRole('button',{name:'Import selected worksheet',exact:true}).click();
+      18 |   }
+      19 |   const counts=page.getByLabel('Full dataset counts');
+        at /workspace/operations-data-cleaner/tests/e2e/release.spec.ts:16:53
+
+    Error Context: test-results/release-integrated-xlsx-in-de1ef-ion-and-both-output-formats-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/release-integrated-xlsx-in-de1ef-ion-and-both-output-formats-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/release-integrated-xlsx-in-de1ef-ion-and-both-output-formats-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests/e2e/release.spec.ts:7:52 › integrated csv input supports partial export, correction and both output formats 
+    [chromium] › tests/e2e/release.spec.ts:7:52 › integrated xlsx input supports partial export, correction and both output formats 
+  1 passed (1.1m)
