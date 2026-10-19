@@ -23,8 +23,8 @@ export type Request = { request: number; dataset: string; revision: number } & (
     }
   | { kind: "correct"; correction: Correction; revert?: boolean }
   | { kind: "run"; workflow: Workflow }
-  | { kind: "page"; page: number; exceptions: boolean }
-  | { kind: "export"; choice: SafetyChoice }
+  | { kind: "page"; page: number; exceptions: boolean; invalidOnly?: boolean }
+  | { kind: "export"; choice: SafetyChoice; partialAcknowledged?: boolean }
 );
 export type View = {
   columns: SourceColumn[];
@@ -37,6 +37,7 @@ export type View = {
   page: number;
   totalPages: number;
   exceptions: boolean;
+  invalidOnly?: boolean;
   delimiter: string;
   worksheet?: string;
 };

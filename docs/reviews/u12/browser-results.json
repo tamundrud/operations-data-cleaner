@@ -1,0 +1,12 @@
+{
+  "command": "U2_CHROMIUM_PATH=/usr/bin/chromium PLAYWRIGHT_JSON_OUTPUT_FILE=/tmp/u12-e2e-final.json npx playwright test --project=chromium --reporter=list,json",
+  "stats": {
+    "startTime": "2026-10-19T02:29:27.922Z",
+    "duration": 320096.054,
+    "expected": 109,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "errors": []
+}

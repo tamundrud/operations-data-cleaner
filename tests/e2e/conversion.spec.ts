@@ -66,7 +66,7 @@ test("sample produces golden bytes without any customer file", async ({
     await readFile("examples/u2/expected.csv"),
   );
 });
-test("unmapped and invalid rows block download, all exceptions are reachable", async ({
+test("unmapped and unacknowledged invalid rows block download, all exceptions are reachable", async ({
   page,
 }) => {
   await page.goto("/");
@@ -96,7 +96,7 @@ test("unmapped and invalid rows block download, all exceptions are reachable", a
   await closeSettings(page);
   await preview(page);
   await expect(
-    page.getByText("Download blocked: 1 invalid rows.", { exact: false }),
+    page.getByLabel("Partial export review"),
   ).toBeVisible();
   await page.getByLabel("Show only rows with exceptions").check();
   await expect(

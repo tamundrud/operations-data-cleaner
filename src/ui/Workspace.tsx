@@ -104,6 +104,7 @@ export default function Workspace() {
     failedGeneration.current = undefined;
     setWorkflow((w) => ({ ...w, ...patch }));
     setDirty(true);
+    session.acknowledgePartial(false);
     setChoice(undefined);
   };
   const change = (fields: Field[]) => changeWorkflow({ fields });
@@ -206,6 +207,7 @@ export default function Workspace() {
       { workflow: decodeWorkflow(fixed ? fixedConfig : sampleConfig) },
     );
   };
+  const eligibleCount = view ? view.summary.valid + view.summary.warningOnly : 0;
   const validPreview =
     view &&
     !dirty &&
@@ -218,8 +220,8 @@ export default function Workspace() {
   );
   const canExport = Boolean(
     validPreview &&
-      view.summary.candidates > 0 &&
-      !view.summary.invalid &&
+      eligibleCount > 0 &&
+      (!view.summary.invalid || state.partialAcknowledged) &&
       (!risk || choice),
   );
   const outputDelimiterLabel = { ",": "comma", ";": "semicolon", "\t": "tab" }[workflow.output.delimiter];
@@ -404,7 +406,7 @@ export default function Workspace() {
                     {view.sourceRows.map((r) => (
                       <tr key={r.id}>
                         <th>
-                          {r.record} / {r.line}
+                          {view.worksheet ? `${view.worksheet} · ` : ""}{r.record} / {r.line}
                         </th>
                         {view.columns.map((c) => (
                           <td key={c.key}>
@@ -515,7 +517,7 @@ export default function Workspace() {
                     Corrected <strong>{view.summary.corrected}</strong>
                   </span>
                   <span>
-                    Excluded <strong>0</strong>
+                    Excluded <strong>{state.partialAcknowledged ? view.summary.invalid : 0}</strong>
                   </span>
                 </div>
                 {view.workflowIssues.length > 0 && (
@@ -531,11 +533,27 @@ export default function Workspace() {
                   </div>
                 )}
                 {view.summary.invalid > 0 && (
-                  <p className="notice" role="alert">
-                    Download blocked: {view.summary.invalid} invalid rows.
-                    Review exceptions, correct cells in the source table or upload a fixed file,
-                    or update validation. This preview does not exclude rows.
-                  </p>
+                  <section className="notice" aria-label="Partial export review">
+                    <h3>Review before partial export</h3>
+                    <p>
+                      {eligibleCount} eligible rows can be exported,
+                      including {view.summary.warningOnly} warning-only rows.
+                      All {view.summary.invalid} invalid rows will be excluded from this download.
+                      Review their source references and issues below, correct source cells,
+                      upload a fixed file, or update validation.
+                    </p>
+                    {eligibleCount > 0 ? (
+                      <label className="check">
+                        <input type="checkbox" checked={state.partialAcknowledged}
+                          disabled={!validPreview || saving || opening}
+                          onChange={(e) => session.acknowledgePartial(e.target.checked)} />
+                        I acknowledge that {view.summary.invalid} invalid rows will be excluded and
+                        only {eligibleCount} eligible rows will be exported.
+                      </label>
+                    ) : <p>No eligible rows. Correct source cells or update validation before downloading.</p>}
+                    <p className="small">This permission applies to the current result and output settings only.
+                      Changing data, rules, or export options requires a new acknowledgement.</p>
+                  </section>
                 )}
                 {risk && (
                   <fieldset className="safety" disabled={busy || saving || opening}>
@@ -558,7 +576,7 @@ export default function Workspace() {
                         type="radio"
                         name="safety"
                         checked={choice === "escape"}
-                        onChange={() => setChoice("escape")}
+                        onChange={() => { session.acknowledgePartial(false); setChoice("escape"); }}
                       />
                       Escape risky text with an apostrophe
                     </label>
@@ -567,7 +585,7 @@ export default function Workspace() {
                         type="radio"
                         name="safety"
                         checked={choice === "raw"}
-                        onChange={() => setChoice("raw")}
+                        onChange={() => { session.acknowledgePartial(false); setChoice("raw"); }}
                       />
                       Preserve raw text for TMS import — do not open in
                       spreadsheets
@@ -596,6 +614,17 @@ export default function Workspace() {
                       Show only rows with exceptions (
                       {view.summary.warningOnly + view.summary.invalid})
                     </label>
+                    <label className="check">
+                      <input type="checkbox" disabled={busy || saving || opening}
+                        checked={Boolean(view.invalidOnly)}
+                        onChange={(e) => {
+                          setExceptions(e.target.checked || exceptions);
+                          session.page(0, e.target.checked || exceptions, e.target.checked);
+                        }} />
+                      Show only excluded (invalid) rows ({view.summary.invalid})
+                    </label>
+                    <p className="small">All counts cover the full dataset. Use the page controls to inspect every
+                      exception and excluded source reference. Invalid rows shown in the preview are never downloaded.</p>
                     <div
                       className="table-scroll"
                       tabIndex={0}
@@ -623,9 +652,9 @@ export default function Workspace() {
                           {view.rows.map((r) => (
                             <tr key={r.id}>
                               <th>
-                                {r.record} / {r.line}
+                                {view.worksheet ? `${view.worksheet} · ` : ""}{r.record} / {r.line}
                               </th>
-                              <td>{r.status}</td>
+                              <td>{r.status}{r.status === "invalid" ? " · excluded from partial export" : ""}</td>
                               {r.values.map((v, i) => (
                                 <td key={workflow.fields[i].id}>
                                   {v.kind === "text"
@@ -642,7 +671,7 @@ export default function Workspace() {
                       <button
                         disabled={busy || opening || view.page === 0}
                         onClick={() =>
-                          session.page(view.page - 1, view.exceptions)
+                          session.page(view.page - 1, view.exceptions, view.invalidOnly)
                         }
                       >
                         Previous page
@@ -653,22 +682,23 @@ export default function Workspace() {
                       <button
                         disabled={busy || opening || view.page + 1 >= view.totalPages}
                         onClick={() =>
-                          session.page(view.page + 1, view.exceptions)
+                          session.page(view.page + 1, view.exceptions, view.invalidOnly)
                         }
                       >
                         Next page
                       </button>
                     </div>
-                    {view.exceptions && (
-                      <ul className="issues">
+                    {view.rows.some(row => row.issues.length) && (
+                      <ul className="issues" aria-label="Exception details">
                         {view.rows
                           .flatMap((r) => r.issues)
                           .map((issue, i) => (
                             <li key={i}>
                               <strong>
-                                Record {issue.record}, line {issue.line}:
+                                {view.worksheet ? `${view.worksheet} · ` : ""}Record {issue.record}, line {issue.line}:
                               </strong>{" "}
-                              {issue.reason} {issue.action}
+                              {issue.reason} {issue.action}{" "}
+                              <span className="small">Field: {workflow.fields.find(field => field.id === issue.field)?.header ?? issue.field} · {issue.severity}</span>
                             </li>
                           ))}
                       </ul>
@@ -692,7 +722,7 @@ export default function Workspace() {
         </div>
       )}
       <footer>
-        U11 internal preview · CSV and one-sheet Excel conversion with reusable local workflows. Data is cleared on reload
+        U12 internal preview · CSV and one-sheet Excel conversion with reusable local workflows. Data is cleared on reload
         or End session. Source data and file names are never saved. Static
         application assets are requested from the host; customer file processing
         stays local.
