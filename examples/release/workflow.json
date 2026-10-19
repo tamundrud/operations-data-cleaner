@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "id": "synthetic-release",
+  "name": "Fictional logistics release demonstration",
+  "source": {
+    "format": "csv",
+    "delimiter": ",",
+    "referencedHeaders": [
+      "po #",
+      "ship to",
+      "address",
+      "units",
+      "units per case",
+      "cases",
+      "date",
+      "notes"
+    ]
+  },
+  "fields": [
+    {
+      "id": "0",
+      "header": "Reference",
+      "type": "text",
+      "required": true,
+      "recipe": {
+        "kind": "copy",
+        "source": "po #"
+      }
+    },
+    {
+      "id": "1",
+      "header": "Consignee",
+      "type": "text",
+      "required": true,
+      "recipe": {
+        "kind": "copy",
+        "source": "ship to"
+      },
+      "trim": true
+    },
+    {
+      "id": "2",
+      "header": "CustomerCode",
+      "type": "text",
+      "required": true,
+      "recipe": {
+        "kind": "constant",
+        "value": {
+          "kind": "text",
+          "text": "SYNTHETIC"
+        }
+      }
+    },
+    {
+      "id": "3",
+      "header": "Street",
+      "type": "text",
+      "required": true,
+      "recipe": {
+        "kind": "split",
+        "source": "address",
+        "delimiter": ",",
+        "segments": 4,
+        "index": 0,
+        "trim": true,
+        "optionalEmpty": []
+      }
+    },
+    {
+      "id": "4",
+      "header": "City",
+      "type": "text",
+      "required": true,
+      "recipe": {
+        "kind": "split",
+        "source": "address",
+        "delimiter": ",",
+        "segments": 4,
+        "index": 1,
+        "trim": true,
+        "optionalEmpty": []
+      }
+    },
+    {
+      "id": "5",
+      "header": "Province",
+      "type": "text",
+      "required": true,
+      "recipe": {
+        "kind": "split",
+        "source": "address",
+        "delimiter": ",",
+        "segments": 4,
+        "index": 2,
+        "trim": true,
+        "optionalEmpty": []
+      }
+    },
+    {
+      "id": "6",
+      "header": "PostalCode",
+      "type": "text",
+      "required": true,
+      "recipe": {
+        "kind": "split",
+        "source": "address",
+        "delimiter": ",",
+        "segments": 4,
+        "index": 3,
+        "trim": true,
+        "optionalEmpty": []
+      }
+    },
+    {
+      "id": "7",
+      "header": "Delivery",
+      "type": "text",
+      "required": true,
+      "recipe": {
+        "kind": "combine",
+        "components": [
+          {
+            "kind": "source",
+            "source": "ship to"
+          },
+          {
+            "kind": "source",
+            "source": "notes"
+          }
+        ],
+        "separator": " | "
+      },
+      "trim": true
+    },
+    {
+      "id": "8",
+      "header": "ConvertedCases",
+      "type": "number",
+      "required": true,
+      "recipe": {
+        "kind": "calculate",
+        "operation": "divide",
+        "left": {
+          "kind": "source",
+          "source": "units"
+        },
+        "right": {
+          "kind": "source",
+          "source": "units per case"
+        }
+      },
+      "wholeNumber": true
+    },
+    {
+      "id": "9",
+      "header": "WeightKg",
+      "type": "number",
+      "required": true,
+      "recipe": {
+        "kind": "calculate",
+        "operation": "multiply",
+        "left": {
+          "kind": "source",
+          "source": "cases"
+        },
+        "right": {
+          "kind": "number",
+          "decimal": "12"
+        }
+      }
+    },
+    {
+      "id": "10",
+      "header": "DeliveryDate",
+      "type": "date",
+      "required": true,
+      "recipe": {
+        "kind": "copy",
+        "source": "date"
+      },
+      "date": {
+        "source": "MM/DD/YYYY",
+        "target": "YYYY-MM-DD"
+      }
+    }
+  ],
+  "output": {
+    "format": "csv",
+    "delimiter": ",",
+    "bom": false,
+    "header": true,
+    "lineEnding": "CRLF",
+    "dateSystem": "1900"
+  }
+}

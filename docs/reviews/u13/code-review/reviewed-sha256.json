@@ -1,0 +1,15 @@
+{
+  "CONTRIBUTING.md": "bb3970b5fb842471767681480c7ff4b060da2d84d863492d91cd8a20f9678e35",
+  "README.md": "5fb803d27fce742dcd4ede2fd3626051b212fba63c4046a19dee7a05ad7e36a2",
+  "docs/release-qualification.md": "74146fd1eb9ddda6000b23d2fe62f3c2dd2f4ebb3ee98a1c5919b00406ebcd4a",
+  "docs/release-requirements-matrix.md": "a1b83f03f2663555bb22b59f58caf82f755234af86bebd6b0abbd25170c8f9b9",
+  "tests/e2e/release.spec.ts": "802b2eb8a19bd4108da0d35518e0cd3c13bd7a5a74672e860681376a7156b213",
+  "tests/e2e/sample-journey.spec.ts": "f178a850ede3d3c5a859c70f5721b00137f3d21653b4c9612e4d39cb3e9ce136",
+  "examples/release/expected.csv": "e7c24e54902afa2696d71fa703f3c882a619c08b1afeb341e2f2dcff27bad416",
+  "examples/release/template.csv": "c38e76d8835d63dbf9c282aa811328ea493cfeabe479eca1f27527b0aa8b82d6",
+  "examples/release/README.md": "e8c64406074f6db628f134496ff936af94e45371b5237dd97fd849f606e00afe",
+  "examples/release/source.csv": "218de44f534574dac40cff0b02a2f5e232ec6fd13c8b463f437c26813522efbe",
+  "examples/release/needs-correction.csv": "9eb403f113ed4e92ec6d0763078505f18f85572add7764a8437b3c8b88cd0ccb",
+  "examples/release/workflow.json": "0aaad5faadbaf7d2a33fe4bd5a7cee5331ee2cf9459131207fbb7cd4b46bd60e",
+  "docs/reviews/u13/verification.md": "a8163876763b8b99e13479f12a8b6c620937e3208ddd3b5a9fcb1fba28c020e6"
+}

@@ -1,0 +1,21 @@
+{
+  "alternate-worksheet-range": 21.49589500000002,
+  "alternate-binary-worksheet": 8.38711699997657,
+  "malformed": 16.752949000016088,
+  "encrypted": 12.648657000012463,
+  "huge-declared": 13.985969000001205,
+  "forged-small": 28.492612999980338,
+  "bomb": 13.597563999996055,
+  "crc-corrupt": 8.950179000006756,
+  "duplicate": 11.832771999994293,
+  "path-conflict": 8.039434000005713,
+  "local-name-conflict": 7.454362000018591,
+  "truncated": 7.476337999978568,
+  "zip64-sentinel": 11.752655999996932,
+  "dimensions": 12.816967999999179,
+  "far-cell": 10.16958600000362,
+  "hyperlink-range": 21.89216600000509,
+  "oversized": 15.40443100000266,
+  "huge-format": 12.565691000025254,
+  "entities": 40.399265000014566
+}

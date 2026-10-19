@@ -1,6 +1,6 @@
 # Operations Data Cleaner
 
-U12 internal preview: convert a CSV or one selected Excel worksheet into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations, exact decimal calculations and explicit date conversions. Trim text only when you choose to. Choose CSV or value-only Excel output, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
+U13 internal release candidate (final release acceptance and reference-laptop qualification deferred): convert a CSV or one selected Excel worksheet into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations, exact decimal calculations and explicit date conversions. Trim text only when you choose to. Choose CSV or value-only Excel output, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
 
 ## Run locally
 
@@ -13,6 +13,8 @@ npm run preview
 ```
 
 Open **http://127.0.0.1:4173**. This serves the production application and privacy policy. `npm run dev` starts Vite for development; its HMR traffic and styles conflict with the restrictive production CSP, so use build/preview for product verification. No deployment or server-side file processing is involved.
+
+See [release qualification and hosting guidance](docs/release-qualification.md), the [requirements-to-evidence matrix](docs/release-requirements-matrix.md), and the [integrated logistics demonstration](examples/release/README.md).
 
 ## Working synthetic example
 
@@ -129,5 +131,7 @@ npm run test:performance
 Tests serve the production build and check real download bytes. `U2_CHROMIUM_PATH=/usr/bin/chromium npm run test:e2e -- --project=chromium` uses an existing system Chromium when supplied. CI runs all three browsers. Performance artifacts distinguish cloud smoke timing from the pending reference-laptop qualification.
 
 See [PRD](docs/PRD.md), [implementation plan](docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md), [U1 qualification](docs/decisions/excel-fidelity.md), and [browser processing decision](docs/decisions/browser-processing.md). Use synthetic data only in published examples, issues and tests. See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
+
+Source and contributions: [GitHub repository](https://github.com/tamundrud/operations-data-cleaner). For support or a custom-integration inquiry, [open a repository issue](https://github.com/tamundrud/operations-data-cleaner/issues/new/choose) describing the required format with synthetic examples only. This does not promise a supported integration or certified TMS import.
 
 Licensed under [Apache-2.0](LICENSE). Dependency license files are retained in npm packages; redistribution details are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

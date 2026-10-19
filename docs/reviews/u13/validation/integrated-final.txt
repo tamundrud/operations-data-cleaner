@@ -1,0 +1,12 @@
+[WebServer] (node:7509) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:7533) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/release.spec.ts:7:52 › integrated csv input supports partial export, correction and both output formats (2.0s)
+  ✓  2 [chromium] › tests/e2e/release.spec.ts:7:52 › integrated xlsx input supports partial export, correction and both output formats (1.7s)
+  ✓  3 [chromium] › tests/e2e/sample-journey.spec.ts:8:1 › visitor sample and integrated logistics backup run in a fresh browser with exact CSV and typed Excel output (10.1s)
+
+  3 passed (15.6s)

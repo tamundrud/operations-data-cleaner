@@ -1,0 +1,16 @@
+
+> operations-data-cleaner@0.2.0 test:unit
+> vitest run
+
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+
+ Test Files  23 passed (23)
+      Tests  289 passed (289)
+   Start at  05:40:47
+   Duration  16.02s (tests 69%, import 28%, transform 2%, worker 1%)
+
+    Isolate  23 workers spawned · ~162ms startup each (spawn + environment, per file)
+             at least ~3.57s faster with isolate: false — reuses workers across files instead of one per file
+

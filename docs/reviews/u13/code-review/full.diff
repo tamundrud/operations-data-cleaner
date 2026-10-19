@@ -1,0 +1,51 @@
+diff --git a/CONTRIBUTING.md b/CONTRIBUTING.md
+index 5b51257..8d574bf 100644
+--- a/CONTRIBUTING.md
++++ b/CONTRIBUTING.md
+@@ -1,11 +1,11 @@
+ # Contributing
+ 
+ Operations Data Cleaner is still in the product-review phase. The implementation architecture is not approved yet.
+ 
+-Before proposing substantial changes, read the [PRD](docs/product/operations-data-cleaner-prd-v0.2.md) and [agent instructions](AGENTS.md). Open an issue describing the operational problem, user impact, and proposed approach. Avoid scope expansion beyond the approved MVP plan.
++Before proposing substantial changes, read the [PRD](docs/PRD.md) and [agent instructions](AGENTS.md). Open an issue describing the operational problem, user impact, and proposed approach. Avoid scope expansion beyond the approved MVP plan.
+ 
+ For pull requests, keep changes focused, describe the relevant issue or plan, include automated checks where applicable, explain data-fidelity or privacy risks, and document any limitations.
+ 
+ **Never post real operational, customer, employee, employer, invoice, or personally identifying data.** All test fixtures and examples must be synthetic.
+ 
+ By contributing, you agree your contribution can be distributed under the project's Apache-2.0 license. You must have the necessary rights to contribute your code or data. No separate contributor-license agreement is currently required. A future change to relicensing policies would require its own review.
+diff --git a/README.md b/README.md
+index 014a15b..e91e09a 100644
+--- a/README.md
++++ b/README.md
+@@ -1,26 +1,28 @@
+ # Operations Data Cleaner
+ 
+-U12 internal preview: convert a CSV or one selected Excel worksheet into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations, exact decimal calculations and explicit date conversions. Trim text only when you choose to. Choose CSV or value-only Excel output, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
++U13 internal release candidate (final release acceptance and reference-laptop qualification deferred): convert a CSV or one selected Excel worksheet into explicitly matched, reordered output columns, including fixed text, exact decimal numbers, intentional blanks, strict delimiter splits, ordered combinations, exact decimal calculations and explicit date conversions. Trim text only when you choose to. Choose CSV or value-only Excel output, inspect the automatically refreshed preview, then download. Use it ad hoc, or explicitly save a named workflow in this browser and download a portable JSON backup. No account is needed.
+ 
+ ## Run locally
+ 
+ Use Node 24 LTS (U6 cloud verification: Node 24.19.0).
+ 
+ ```sh
+ npm ci
+ npm run build
+ npm run preview
+ ```
+ 
+ Open **http://127.0.0.1:4173**. This serves the production application and privacy policy. `npm run dev` starts Vite for development; its HMR traffic and styles conflict with the restrictive production CSP, so use build/preview for product verification. No deployment or server-side file processing is involved.
+ 
++See [release qualification and hosting guidance](docs/release-qualification.md), the [requirements-to-evidence matrix](docs/release-requirements-matrix.md), and the [integrated logistics demonstration](examples/release/README.md).
++
+ ## Working synthetic example
+ 
+ Select **Try sample data** to run the bundled, fictional order conversion. Download should match [expected.csv](examples/u2/expected.csv), including `001234`, quoted commas, an embedded newline, and preserved spaces.
+ 
+ Select **Try fixed fields example** for [the U3 source](examples/u3-source.csv) and [configuration](examples/u3-workflow.json). It adds text `0012`, number `12.50`, an optional blank and explicit Consignee trimming. Download matches [the U3 golden file](examples/u3-expected.csv): semicolon, UTF-8 BOM, no header, CRLF. Internal spaces stay unchanged. Both examples are fictional.
+ 
+ Open an output card’s **⋯** settings to choose **Copy a source column** or **Use a fixed value**. Fixed fields join completed rows with a “No source needed” summary and can be reordered with matched pairs. Text identifiers preserve leading zeros and whitespace. **Remove leading and trailing whitespace** is off by default and operates before required/maximum-length checks; originals remain available under **Inspect original source table**. CSV settings sit beside preview/download; changing any configuration blocks old downloads and clears formula handling until the current result is checked.
+ 
+ The existing [U2 source](examples/u2/source.csv), [template](examples/u2/template.csv) and [configuration](examples/u2/workflow.json) remain available. Bundled configurations use the same version 1 model as saved and portable workflows. The approved U2/U3 paired-card interface and contextual settings are retained.
+ 

@@ -1,0 +1,8 @@
+{
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "cpu": "3 exposed Intel Xeon Platinum 8573C CPUs",
+  "memory": "9968 MiB",
+  "node": "v24.19.0",
+  "browser": "Chromium 154.0.8037.57 built on Debian GNU/Linux 13 (trixie)",
+  "qualification": "Cloud smoke only; reference laptop and final acceptance deferred"
+}
