@@ -23,7 +23,7 @@ for(const sourceFormat of ['csv','xlsx'] as const) test(`integrated ${sourceForm
   await page.getByText('Inspect original source table',{exact:true}).click();
   await page.getByRole('button',{name:'Correct Units, record 3',exact:true}).click();
   await page.getByLabel('Replacement for Units, record 3',{exact:true}).fill('12');
-  await page.getByRole('button',{name:'Apply correction',exact:true}).click();
+  await page.getByRole('button',{name:'Apply 1 corrections',exact:true}).first().click();
   await expect(counts).toContainText('Invalid 0');
   expect(await download(page)).toEqual(await readFile('examples/release/expected.csv'));
   await page.getByRole('button',{name:'Edit workflow',exact:true}).click();

@@ -66,3 +66,17 @@ test("constant zero divisor and copy precision failures target explicit settings
   expect(items.map(i=>i.sources)).toEqual([[],[]]);
   expect(items.map(i=>i.rule)).toEqual(w.fields.map(f=>f.id));
 });
+
+test("identical failed calculation rules share a source cause across their output fields",()=>{
+  const w=makeWorkflow(["Cases","CasesCopy"]);
+  w.fields.forEach(f=>{
+    f.type="number";f.required=true;
+    f.recipe={kind:"calculate",operation:"divide",left:{kind:"source",source:"units"},right:{kind:"number",decimal:"4"}};
+  });
+  const run=evaluate(w,source("Units\nTwelve"));
+  expect(run.summary).toMatchObject({invalid:1,errorIssues:4});
+  const items=reviewIssues(run.rows[0].issues);
+  expect(items).toHaveLength(1);
+  expect(items[0].fields).toEqual(w.fields.map(f=>f.id));
+  expect(items[0].sources).toEqual([{source:"units",operand:"left"}]);
+});

@@ -92,7 +92,7 @@ test('every excluded row and issue is accessible across pages; acknowledgement s
   await page.getByText('Inspect original source table',{exact:true}).click();
   await page.getByRole('button',{name:'Correct Required, record 3',exact:true}).click();
   await page.getByLabel('Replacement for Required, record 3',{exact:true}).fill('ok');
-  await page.getByRole('button',{name:'Apply correction',exact:true}).click();
+  await page.getByRole('button',{name:'Apply 1 corrections',exact:true}).first().click();
   await expect(acknowledgement(page)).not.toBeChecked(); await acknowledgement(page).check();
   await page.getByLabel('Upload source CSV').setInputFiles({name:'new.csv',mimeType:'text/csv',buffer:Buffer.from('ID,Required\nNEW,ok\nBAD,')});
   await page.getByRole('button',{name:'Replace source and discard corrections',exact:true}).click();

@@ -914,6 +914,17 @@ h3 {
 .workflow-actions span { font-size: 12px; padding: 10px; }
 .repeat-summary { margin-bottom: 16px; }
 .repeat-summary p { font-size: 13px; }
+.editing-summary { margin-bottom: 16px; }
+.source-actions, .issue-actions { display:flex; flex-wrap:wrap; align-items:end; gap:8px; margin:12px 0; }
+.source-actions label { flex:1 1 220px; }
+.source-inspection td { min-width:180px; vertical-align:top; }
+.source-inspection textarea { width:100%; min-height:72px; }
+.source-error { background:#fff0ed; border-left:4px solid #a32c18; }
+.source-error > strong { color:#84200f; }
+.source-warning { background:#fff8df; border-left:4px solid #85620a; }
+.source-pending { outline:2px dashed #345b9e; outline-offset:-3px; }
+.pending-marker { color:#24467d; font-weight:700; }
+.diagnostics { margin:12px 0; overflow-wrap:anywhere; }
 @media (max-width: 700px) { .workflow-actions label { max-width: 100%; flex-basis: 100%; } }
 
 .suggestions {

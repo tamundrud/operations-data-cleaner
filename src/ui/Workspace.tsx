@@ -10,7 +10,8 @@ import {
 import { displayValue } from "../engine/values";
 import { exportText, type SafetyChoice } from "../formats/spreadsheet-safety";
 import MappingRows from "./MappingRows";
-import SourceCorrection from "./SourceCorrection";
+import SourceInspector from "./SourceInspector";
+import { reviewIssues } from "../engine/issues";
 import SavedWorkflows from "./SavedWorkflows";
 import { snapshotWorkflow, encodeWorkflow } from "../workflows/codec";
 import type { StoredWorkflow } from "../workflows/indexeddb-store";
@@ -37,7 +38,8 @@ export default function Workspace() {
   const [choice, setChoice] = useState<SafetyChoice>();
   const [exceptions, setExceptions] = useState(false);
   const [worksheet, setWorksheet] = useState("");
-  const [inspectSource, setInspectSource] = useState(false);
+  const [canReturnToRepeat, setCanReturnToRepeat] = useState(false);
+  const [ruleTarget,setRuleTarget] = useState<string>();
   const draftGeneration = useRef(0);
   const pendingGeneration = useRef<number | undefined>(undefined);
   const failedGeneration = useRef<number | undefined>(undefined);
@@ -55,7 +57,7 @@ export default function Workspace() {
   useEffect(() => {
     session.onState = (s) => {
       setState(s);
-      if (!s.view) setInspectSource(false);
+
       if (!s.busy) {
         setExceptions(s.view?.exceptions ?? false);
         const completed = pendingGeneration.current;
@@ -66,7 +68,7 @@ export default function Workspace() {
           else if (completed === draftGeneration.current) setDirty(false);
         }
       }
-      if (s.error) { samplePending.current = false; statusRef.current?.focus(); }
+      if (s.error) { samplePending.current = false; statusRef.current?.focus({preventScroll:true}); }
     };
     session.onDownload = saveDownload;
     session.onSourcePolicy = (policy, format = "csv", worksheet) => {
@@ -78,7 +80,7 @@ export default function Workspace() {
         samplePending.current = false;
         setBaseline(undefined);
         durableID.current = undefined;
-        setRepeat(false);
+        setRepeat(false); setCanReturnToRepeat(false);
       }
       draftGeneration.current++;
       pendingGeneration.current = undefined;
@@ -153,7 +155,7 @@ export default function Workspace() {
     try { unsaved = encodeWorkflow({ ...workflow, source: { ...workflow.source, delimiter: activePolicy.current } }) !== baseline.json; }
     catch { unsaved = true; }
   }
-  const confirmReplacement = () => !(unsaved || view || state.recoverable) || window.confirm("Replace the current conversion? Unsaved configuration and source data in this session will be discarded.");
+  const confirmReplacement = () => !(unsaved || view || state.recoverable || state.pendingCorrections.length) || window.confirm("Replace the current conversion? Unsaved configuration, pending corrections and source data in this session will be discarded.");
   const resetWorking = () => {
     samplePending.current = false;
     setOpening(false);
@@ -171,6 +173,7 @@ export default function Workspace() {
     if (!confirmReplacement()) return false;
     resetWorking();
     setRepeat(true);
+    setCanReturnToRepeat(true);
     setBaseline(record);
     session.activate(next);
     return true;
@@ -182,7 +185,7 @@ export default function Workspace() {
     setDelimiter("auto");
     setWorkflow(makeWorkflow([]));
     setDirty(true);
-    setRepeat(false);
+    setRepeat(false); setCanReturnToRepeat(false);
   };
   const snapshot = (copy = false) => {
     const current = currentWorkflow.current;
@@ -220,10 +223,23 @@ export default function Workspace() {
   );
   const canExport = Boolean(
     validPreview &&
+      !state.pendingCorrections.length &&
       eligibleCount > 0 &&
       (!view.summary.invalid || state.partialAcknowledged) &&
       (!risk || choice),
   );
+  useEffect(() => {
+    if (!state.pendingCorrections.length) return;
+    const warn = (event: BeforeUnloadEvent) => {event.preventDefault();};
+    window.addEventListener("beforeunload",warn);
+    return () => window.removeEventListener("beforeunload",warn);
+  },[state.pendingCorrections.length]);
+  useEffect(() => {
+    if (!ruleTarget || repeat || !view) return;
+    const card = [...document.querySelectorAll<HTMLElement>(".matching [data-field-id]")].find(node=>node.dataset.fieldId===ruleTarget);
+    card?.querySelector<HTMLButtonElement>("button.edit")?.click();
+    setRuleTarget(undefined);
+  },[ruleTarget,repeat,view]);
   const outputDelimiterLabel = { ",": "comma", ";": "semicolon", "\t": "tab" }[workflow.output.delimiter];
   return (
     <main>
@@ -252,11 +268,16 @@ export default function Workspace() {
         <h2>{workflow.name || "Imported workflow"}</h2>
         <p>{workflow.fields.length} output columns. Upload a compatible source CSV or Excel file, review the current results, then download.</p>
         <p>{workflow.output.format === "xlsx" ? `Excel output · ${workflow.output.dateSystem} date system` : `CSV output: ${outputDelimiterLabel} · ${workflow.output.bom ? "with BOM" : "no BOM"}`} · {workflow.output.header ? "with header" : "no header"}</p>
-        <button onClick={() => setRepeat(false)}>Edit workflow</button>
+        {unsaved && <p><strong>Unsaved workflow changes retained.</strong> Save explicitly to update this browser.</p>}
+        <button disabled={busy || opening} onClick={() => setRepeat(false)}>Edit workflow</button>
+      </section>}
+      {!repeat && (canReturnToRepeat || baseline) && <section className="panel editing-summary" aria-label="Editing workflow">
+        <button onClick={()=>setRepeat(true)}>Done editing</button>
+        <p>{unsaved ? "Unsaved workflow changes retained. Save explicitly when ready." : "Workflow changes are saved."} Validation and download checks still apply.</p>
       </section>}
       {state.replacement && <section className="panel" role="alertdialog" aria-label="Replace source file" aria-describedby="replacement-warning">
         <h2>Discard session corrections?</h2>
-        <p id="replacement-warning">Replacing the source discards your session corrections after the new file loads successfully. Cancel keeps the current source and corrections.</p>
+        <p id="replacement-warning">Replacing the source discards your pending and applied session corrections after the new file loads successfully. Cancel keeps the current source and corrections.</p>
         <button onClick={() => void session.confirmReplacement()}>Replace source and discard corrections</button>
         <button onClick={() => session.cancelReplacement()}>Keep current source</button>
       </section>}
@@ -314,7 +335,9 @@ export default function Workspace() {
             <button
               disabled={busy || saving || opening}
               onClick={() => {
+                if (state.pendingCorrections.length && !window.confirm("End session and discard pending corrections?")) return;
                 resetWorking();
+                setCanReturnToRepeat(false);
                 setWorkflow(makeWorkflow([]));
                 activePolicy.current = "auto";
                 setDelimiter("auto");
@@ -375,59 +398,7 @@ export default function Workspace() {
       </div>
       {view && (
         <div className="workspace">
-          <details className="panel source-inspection" onToggle={(event) => {
-            if (event.target === event.currentTarget) setInspectSource(event.currentTarget.open);
-          }}>
-            <summary>Inspect original source table</summary>
-            {inspectSource && <section aria-labelledby="source-title">
-              <h2 id="source-title">Source table</h2>
-              <p>
-                Current source values · {view.sourceRows.length} rows on this preview page. Corrections stay in this session; originals remain inspectable.
-              </p>
-              <div
-                className="table-scroll"
-                tabIndex={0}
-                role="region"
-                aria-label="Source table, scroll horizontally"
-              >
-                <table>
-                  <caption>
-                    {view.worksheet ? `Worksheet ${view.worksheet} · ` : ""}Uploaded source columns and original record references
-                  </caption>
-                  <thead>
-                    <tr>
-                      <th>Source record / line</th>
-                      {view.columns.map((c) => (
-                        <th key={c.key}>{c.header}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {view.sourceRows.map((r) => (
-                      <tr key={r.id}>
-                        <th>
-                          {view.worksheet ? `${view.worksheet} · ` : ""}{r.record} / {r.line}
-                        </th>
-                        {view.columns.map((c) => (
-                          <td key={c.key}>
-                            <SourceCorrection
-                              key={r.id + c.key}
-                              cell={r.cells[c.position] ?? {kind:"text",raw:"",display:""}}
-                              header={c.header}
-                              record={r.record}
-                              disabled={busy || dirty || state.recoverable}
-                              onSave={value => { setChoice(undefined); session.correct(r.id, c.key, value); }}
-                              onRevert={() => { setChoice(undefined); session.correct(r.id, c.key, "", true); }}
-                            />
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>}
-          </details>
+          <SourceInspector session={session} state={state} disabled={busy || dirty || opening || state.recoverable} clearChoice={()=>setChoice(undefined)} />
           {!repeat && <MappingRows key={activation}
             view={view}
             fields={workflow.fields}
@@ -690,19 +661,22 @@ export default function Workspace() {
                     </div>
                     {view.rows.some(row => row.issues.length) && (
                       <ul className="issues" aria-label="Exception details">
-                        {view.rows
-                          .flatMap((r) => r.issues)
-                          .map((issue, i) => (
-                            <li key={i}>
-                              <strong>
-                                {view.worksheet ? `${view.worksheet} · ` : ""}Record {issue.record}, line {issue.line}:
-                              </strong>{" "}
-                              {issue.reason} {issue.action}{" "}
-                              <span className="small">Field: {workflow.fields.find(field => field.id === issue.field)?.header ?? issue.field} · {issue.severity}</span>
-                            </li>
-                          ))}
+                        {view.rows.flatMap(row => reviewIssues(row.issues).map(item => <li key={item.key}>
+                          <strong>{view.worksheet ? `${view.worksheet} · ` : ""}Record {item.issue.record}, line {item.issue.line}:</strong>{" "}
+                          {item.issue.reason} {item.issue.action}{" "}
+                          <span className="small">Affected outputs: {item.fields.map(id=>workflow.fields.find(f=>f.id===id)?.header ?? id).join(", ")} · {item.issue.severity}</span>
+                          <div className="issue-actions">{item.sources.map(source=><button key={JSON.stringify(source)} disabled={busy || dirty || opening} onClick={()=>session.sourcePage({page:0,filter:"all",target:row.id,column:source.source})}>
+                            Inspect {view.columns.find(c=>c.key===source.source)?.header ?? source.source}, record {row.record}
+                          </button>)}
+                          {(item.rule || !item.sources.length) && <button disabled={busy || opening} onClick={()=>{setRepeat(false);setRuleTarget(item.rule ?? item.issue.field);}}>Review {workflow.fields.find(f=>f.id===(item.rule ?? item.issue.field))?.header ?? "workflow"} settings</button>}
+                          </div>
+                        </li>))}
+
                       </ul>
                     )}
+                    <details className="diagnostics"><summary>Full issue diagnostics (including dependent effects)</summary>
+                      <ul>{view.rows.flatMap(r=>r.issues).map((issue,i)=><li key={i}>Record {issue.record}, line {issue.line}: {issue.code} · {issue.reason} {issue.action}</li>)}</ul>
+                    </details>
                   </>
                 )}
               </>

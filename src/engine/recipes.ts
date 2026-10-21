@@ -244,13 +244,18 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
             }
             if (!bad.length && !badConstant && error.code === "division-zero" && recipe.right.kind === "source")
               bad.push({source:recipe.right.source,operand:"right"});
+            const operandIdentity = (input: typeof recipe.left) => input.kind === "source"
+              ? ["source", input.source] : ["constant", input.decimal];
+            const sharedInput = bad.length && !badConstant
+              ? ["calculation-input", recipe.operation, operandIdentity(recipe.left), operandIdentity(recipe.right), bad]
+              : undefined;
             add(
               error.code,
               "error",
               `${f.header}: ${error.message}`,
               "Correct the operands or explicitly change numeric validation / rounding settings.",
               bad.length === 1 ? bad[0].source : undefined,
-              {...cause(error.code, bad), ...(badConstant ? {rule:f.id} : {})},
+              {...cause(error.code, bad, sharedInput), ...(badConstant ? {rule:f.id} : {})},
             );
             value = { kind: "blank" };
           }
@@ -361,8 +366,8 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
         }
       }
       const text = displayValue(value);
-      const upstream = fieldIssues.filter(i => i.severity === "error").map(i => i.cause!.key);
-      if (f.required && text.trim() === "")
+      if (f.required && text.trim() === "") {
+        const upstream = fieldIssues.filter(i => i.severity === "error").map(i => i.cause!.key);
         add(
           "required",
           "error",
@@ -372,6 +377,7 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
           cause("required"),
           upstream,
         );
+      }
       if (f.maxLength && [...text].length > f.maxLength)
         add(
           "max-length",

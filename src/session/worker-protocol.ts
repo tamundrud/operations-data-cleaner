@@ -4,6 +4,7 @@ import type { SourceColumn, SourceRow } from "../engine/values";
 import type { Run, ResultRow } from "../engine/recipes";
 import type { Issue } from "../engine/issues";
 import type { SafetyChoice } from "../formats/spreadsheet-safety";
+export type SourceQuery = {page:number; filter:SourceFilter; target?:string; nextAfter?:string; column?:string};
 export type Request = { request: number; dataset: string; revision: number } & (
   | {
       kind: "import";
@@ -22,7 +23,7 @@ export type Request = { request: number; dataset: string; revision: number } & (
       delimiter: "auto" | "," | ";" | "\t";
     }
   | { kind: "correct-batch"; edits: PendingCorrection[] }
-  | { kind: "source-page"; page: number; filter: SourceFilter; target?: string; nextAfter?: string; column?:string }
+  | ({ kind: "source-page" } & SourceQuery)
   | { kind: "run"; workflow: Workflow }
   | { kind: "page"; page: number; exceptions: boolean; invalidOnly?: boolean }
   | { kind: "export"; choice: SafetyChoice; partialAcknowledged?: boolean }

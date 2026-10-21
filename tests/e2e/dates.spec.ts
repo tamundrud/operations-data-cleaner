@@ -134,7 +134,9 @@ test("strict dates, optional/required blanks, explicit ambiguity and source repl
   await page.getByLabel("Required value", { exact: true }).check();
   await closeSettings(page);
   await page.getByLabel("Show only rows with exceptions").check();
-  await expect(page.locator(".issues li")).toHaveCount(9);
+  await expect(page.locator(".issues li")).toHaveCount(5);
+  await expect(page.locator(".diagnostics li")).toHaveCount(9);
+  await expect(page.getByLabel("Full dataset counts")).toContainText("Error issues 9");
   await expect(page.locator(".issues li").last()).toContainText(
     "required but blank",
   );

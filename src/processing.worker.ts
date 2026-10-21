@@ -17,6 +17,7 @@ let source: SourceTable | undefined,
 let sourceRowsById = new Map<string, SourceRow>();
 const PAGE_SIZE = 50;
 let exceptionRows: ResultRow[] = [];
+let resultById = new Map<string, ResultRow>();
 let outputQuery = {page:0, exceptions:false, invalidOnly:false};
 let sourceQuery: {page:number; filter:SourceFilter; target?:string; column?:string} = {page:0,filter:"all"};
 let retained = new Set<string>();
@@ -24,6 +25,7 @@ let sourceNavigation = 0;
 function setRun(next: Run) {
   run = next;
   exceptionRows = next.rows.filter((r) => r.issues.length);
+  resultById = new Map(next.rows.map(r => [r.id,r]));
 }
 function view(): View {
   let {page} = outputQuery;
@@ -34,7 +36,7 @@ function view(): View {
   const totalPages = Math.max(1, Math.ceil(selected.length / PAGE_SIZE));
   page = Math.max(0, Math.min(page, totalPages - 1));
   outputQuery.page = page;
-  const sourceSelected = run.workflowIssues.length || sourceQuery.filter === "all" ? source.rows
+  const sourceSelected = sourceQuery.filter === "all" ? source.rows
     : run.rows.filter(r => retained.has(r.id) || (sourceQuery.filter === "invalid" ? r.status === "invalid" : r.issues.length)).map(r => sourceRowsById.get(r.id)!);
   const sourceTotalPages = Math.max(1, Math.ceil(sourceSelected.length / PAGE_SIZE));
   if (sourceQuery.target) {
@@ -43,7 +45,6 @@ function view(): View {
   }
   sourceQuery.page = Math.max(0, Math.min(sourceQuery.page, sourceTotalPages - 1));
   const sourceSlice = sourceSelected.slice(sourceQuery.page * PAGE_SIZE, (sourceQuery.page + 1) * PAGE_SIZE);
-  const resultById = new Map(run.rows.map(r => [r.id,r]));
   return {
     columns: source.columns,
     sourceRows: correctedRows(source, corrections, sourceSlice),
@@ -128,8 +129,7 @@ self.onmessage = async (event: MessageEvent<Request>) => {
         let target = m.target;
         if (m.nextAfter !== undefined) {
           const after = sourceRowsById.get(m.nextAfter)?.record ?? -1;
-          const unresolved = run!.rows.filter(r => r.issues.length);
-          target = unresolved.find(r => r.record > after)?.id ?? unresolved[0]?.id;
+          target = exceptionRows.find(r => r.record > after)?.id ?? exceptionRows[0]?.id;
         }
         sourceQuery = {page:m.page,filter:target ? "all" : m.filter,target,column:m.column};
       }

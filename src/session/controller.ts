@@ -1,7 +1,7 @@
 import type { Workflow } from "../engine/workflow";
 import type { SafetyChoice } from "../formats/spreadsheet-safety";
 import { MAX_FILE_BYTES } from "../formats/csv";
-import type { Request, Response, View, SourceFilter } from "./worker-protocol";
+import type { Request, Response, View, SourceQuery } from "./worker-protocol";
 import { mergeCorrections, type Correction, type PendingCorrection } from "./correction-overlay";
 export type SessionState = {
   partialAcknowledged: boolean;
@@ -238,9 +238,9 @@ export class Session {
     this.applyingCorrections = mergeCorrections(this.corrections, this.state.pendingCorrections);
     this.send({kind:"correct-batch", edits:this.state.pendingCorrections, request:++this.sequence, dataset:this.active.dataset, revision:++this.revision}, "Applying corrections and checking all rows…");
   }
-  sourcePage(page: number, filter: SourceFilter, target?: string, nextAfter?: string, column?:string) {
+  sourcePage(query: SourceQuery) {
     if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable) return;
-    this.send({kind:"source-page",page,filter,target,nextAfter,column,request:++this.sequence,dataset:this.active.dataset,revision:this.revision}, "Loading source rows…");
+    this.send({kind:"source-page",...query,request:++this.sequence,dataset:this.active.dataset,revision:this.revision}, "Loading source rows…");
   }
   selectWorksheet(worksheet: string) {
     const selection = this.selection;
