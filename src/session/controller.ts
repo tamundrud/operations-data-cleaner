@@ -1,10 +1,12 @@
 import type { Workflow } from "../engine/workflow";
 import type { SafetyChoice } from "../formats/spreadsheet-safety";
 import { MAX_FILE_BYTES } from "../formats/csv";
-import type { Request, Response, View } from "./worker-protocol";
-import type { Correction } from "./correction-overlay";
+import type { Request, Response, View, SourceFilter } from "./worker-protocol";
+import { mergeCorrections, type Correction, type PendingCorrection } from "./correction-overlay";
 export type SessionState = {
   partialAcknowledged: boolean;
+  pendingCorrections: PendingCorrection[];
+  correctionMessage: string;
   replacement?: boolean;
   busy: string;
   view?: View;
@@ -14,6 +16,7 @@ export type SessionState = {
 };
 export class Session {
   private corrections: Correction[] = [];
+  private applyingCorrections?: Correction[];
   private replacement?: { file: File; delimiter: "auto" | "," | ";" | "\t"; options: { workflow?: Workflow; worksheet?: string } };
   private worker?: Worker;
   private sequence = 0;
@@ -29,7 +32,7 @@ export class Session {
   private selection?: { file: File; delimiter: "auto" | "," | ";" | "\t"; options: { template?: boolean; workflow?: Workflow; worksheet?: string } };
   private workflow?: Workflow;
   private revision = 0;
-  state: SessionState = { partialAcknowledged: false, busy: "", error: "", recoverable: false };
+  state: SessionState = { pendingCorrections: [], correctionMessage: "", partialAcknowledged: false, busy: "", error: "", recoverable: false };
   onState: (state: SessionState) => void = () => {};
   onTemplate: (headers: string[]) => void = () => {};
   onWorkflow: (workflow: Workflow) => void = () => {};
@@ -73,14 +76,23 @@ export class Session {
       this.selection = undefined;
       if (m.kind === "error") {
         this.candidate = undefined;
+        this.applyingCorrections = undefined;
+        if (pending.kind === "correct-batch") this.revision = pending.revision - 1;
         this.update({ busy: "", error: m.message });
         return;
       }
       if (m.kind === "view") {
+        if (pending.kind === "correct-batch" && this.applyingCorrections) {
+          this.corrections = this.applyingCorrections;
+          this.applyingCorrections = undefined;
+          this.update({pendingCorrections:[], correctionMessage:`Applied ${pending.edits.length} corrections. Results and counts updated.`});
+        }
         if (this.candidate) {
           const { workflow: replacementWorkflow, ...active } = this.candidate;
           const format = active.file.name.toLowerCase().endsWith(".xlsx") ? "xlsx" : "csv";
-          if (active.dataset !== this.active?.dataset) this.corrections = [];
+          if (active.dataset !== this.active?.dataset) {
+            this.corrections = []; this.update({pendingCorrections:[], correctionMessage:""});
+          }
           this.active = { ...active, worksheet: m.view.worksheet };
           this.onSourcePolicy(active.delimiter, format, m.view.worksheet);
           this.candidate = undefined;
@@ -104,7 +116,7 @@ export class Session {
     this.pending = m;
     this.update({
       busy, error: "", recoverable: false,
-      partialAcknowledged: m.kind === "page" || m.kind === "export"
+      partialAcknowledged: m.kind === "page" || m.kind === "source-page" || m.kind === "export"
         ? this.state.partialAcknowledged : false,
     });
     clearTimeout(this.timer);
@@ -128,7 +140,7 @@ export class Session {
   ) {
     if (this.state.busy || this.state.replacement) return;
     this.acknowledgePartial(false);
-    if (!options.template && this.corrections.length && !recovery && !approved) {
+    if (!options.template && (this.corrections.length || this.state.pendingCorrections.length) && !recovery && !approved) {
       this.replacement = { file, delimiter, options };
       this.update({ replacement: true });
       return;
@@ -206,11 +218,29 @@ export class Session {
     this.replacement = undefined;
     this.update({ replacement: false });
   }
-  correct(row: string, column: string, value: string, revert = false) {
+  stageCorrection(row: string, column: string, value: string, revert = false) {
     if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable) return;
-    this.corrections = this.corrections.filter(e => e.row !== row || e.column !== column);
-    if (!revert) this.corrections.push({row, column, value});
-    this.send({kind: "correct", correction: {row, column, value}, revert, request: ++this.sequence, dataset: this.active.dataset, revision: ++this.revision}, "Rechecking corrected row…");
+    const current = this.state.view?.sourceRows.find(r => r.id === row);
+    const position = this.state.view?.columns.find(c => c.key === column)?.position;
+    if (!current || position === undefined) return;
+    const cell = current.cells[position];
+    const pending = this.state.pendingCorrections.filter(e => e.row !== row || e.column !== column);
+    if (revert ? Boolean(cell?.original) : value !== (cell?.raw ?? "")) pending.push({row,column,value,...(revert ? {revert:true} : {})});
+    this.update({pendingCorrections:pending, partialAcknowledged:false, correctionMessage:""});
+  }
+  discardPending() {
+    if (this.state.busy) return;
+    this.update({pendingCorrections:[], correctionMessage:"Pending changes discarded."});
+  }
+  applyCorrections() {
+    if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable || !this.state.pendingCorrections.length) return;
+    // The visible page is only a slice; the worker validates all batch coordinates.
+    this.applyingCorrections = mergeCorrections(this.corrections, this.state.pendingCorrections);
+    this.send({kind:"correct-batch", edits:this.state.pendingCorrections, request:++this.sequence, dataset:this.active.dataset, revision:++this.revision}, "Applying corrections and checking all rows…");
+  }
+  sourcePage(page: number, filter: SourceFilter, target?: string, nextAfter?: string, column?:string) {
+    if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable) return;
+    this.send({kind:"source-page",page,filter,target,nextAfter,column,request:++this.sequence,dataset:this.active.dataset,revision:this.revision}, "Loading source rows…");
   }
   selectWorksheet(worksheet: string) {
     const selection = this.selection;
@@ -260,13 +290,13 @@ export class Session {
     const view = this.state.view;
     this.update({ partialAcknowledged: Boolean(acknowledged && view && !this.state.busy &&
       !this.state.worksheets && !this.state.replacement && !this.state.recoverable &&
-      !view.workflowIssues.length && view.summary.invalid &&
+      !this.state.pendingCorrections.length && !view.workflowIssues.length && view.summary.invalid &&
       view.summary.valid + view.summary.warningOnly > 0) });
   }
   export(choice: SafetyChoice) {
     if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable) return;
     const view = this.state.view;
-    if (!view || view.workflowIssues.length || !(view.summary.valid + view.summary.warningOnly) ||
+    if (this.state.pendingCorrections.length || !view || view.workflowIssues.length || !(view.summary.valid + view.summary.warningOnly) ||
       (view.summary.invalid && !this.state.partialAcknowledged)) return;
     this.send(
       {
@@ -286,6 +316,7 @@ export class Session {
     this.worker = undefined;
     this.pending = undefined;
     this.candidate = undefined;
+    this.applyingCorrections = undefined;
     this.selection = undefined;
     clearTimeout(this.timer);
     this.update({
@@ -311,6 +342,7 @@ export class Session {
     this.stop("");
     this.active = undefined;
     this.corrections = [];
+    this.update({pendingCorrections:[], correctionMessage:""});
     this.cancelReplacement();
     this.workflow = undefined;
     this.update({ recoverable: false, error: "" });

@@ -1,4 +1,4 @@
-import type { Correction } from "./correction-overlay";
+import type { Correction, PendingCorrection } from "./correction-overlay";
 import type { Workflow } from "../engine/workflow";
 import type { SourceColumn, SourceRow } from "../engine/values";
 import type { Run, ResultRow } from "../engine/recipes";
@@ -21,14 +21,24 @@ export type Request = { request: number; dataset: string; revision: number } & (
       worksheet?: string;
       delimiter: "auto" | "," | ";" | "\t";
     }
-  | { kind: "correct"; correction: Correction; revert?: boolean }
+  | { kind: "correct-batch"; edits: PendingCorrection[] }
+  | { kind: "source-page"; page: number; filter: SourceFilter; target?: string; nextAfter?: string; column?:string }
   | { kind: "run"; workflow: Workflow }
   | { kind: "page"; page: number; exceptions: boolean; invalidOnly?: boolean }
   | { kind: "export"; choice: SafetyChoice; partialAcknowledged?: boolean }
 );
+export type SourceFilter = "all" | "exceptions" | "invalid";
 export type View = {
   columns: SourceColumn[];
   sourceRows: SourceRow[];
+  sourceResults: ResultRow[];
+  sourcePage: number;
+  sourceTotalPages: number;
+  sourceFilter: SourceFilter;
+  sourceCount: number;
+  sourceTarget?: string;
+  sourceColumn?: string;
+  sourceNavigation: number;
   rows: ResultRow[];
   workflowIssues: Issue[];
   summary: Run["summary"];

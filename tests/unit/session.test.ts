@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { correctedRun, type Correction } from "../../src/session/correction-overlay";
+import { correctedRun, applyCorrectionBatch, type Correction } from "../../src/session/correction-overlay";
 import { Session } from "../../src/session/controller";
 import type {
   Request,
@@ -50,10 +50,9 @@ class Transport {
       this.workflow = m.workflow;
       this.run = correctedRun(m.workflow, this.source!, this.corrections);
     }
-    if (m.kind === "correct") {
-      this.corrections = this.corrections.filter(e => e.row !== m.correction.row || e.column !== m.correction.column);
-      if (!m.revert) this.corrections.push(m.correction);
-      this.run = correctedRun(this.workflow!, this.source!, this.corrections, this.run, m.correction.row);
+    if (m.kind === "correct-batch") {
+      this.corrections = applyCorrectionBatch(this.source!, this.corrections, m.edits);
+      this.run = correctedRun(this.workflow!, this.source!, this.corrections);
     }
     if (m.kind === "export") {
       this.onmessage?.({
@@ -69,6 +68,7 @@ class Transport {
     const view: View = {
       columns: this.source!.columns,
       sourceRows: this.source!.rows,
+      sourceResults:this.run!.rows, sourcePage:0, sourceTotalPages:1, sourceFilter:"all",sourceCount:this.source!.rows.length,sourceNavigation:0,
       rows: this.run!.rows,
       workflowIssues: this.run!.workflowIssues,
       summary: this.run!.summary,
@@ -83,6 +83,9 @@ class Transport {
       data: { ...envelope, kind: "view", view },
     } as MessageEvent<Response>);
   }
+}
+function correct(s: Session, row: string, column: string, value: string, revert = false) {
+  s.stageCorrection(row,column,value,revert); s.applyCorrections();
 }
 const latest = () => Transport.instances.at(-1)!;
 const file = () => new File(["ID\n001234"], "synthetic.csv");
@@ -221,7 +224,7 @@ test("Excel worksheet discovery keeps the committed run until a selected sheet s
 test("corrections survive cancelled replacements and reject stale worker replies during recovery", async () => {
   const s = new Session(); s.activate(workflow()); await s.upload(file(), ","); latest().flush();
   const row = s.state.view!.rows[0].id;
-  s.correct(row, "id", "009876"); latest().flush();
+  correct(s,row, "id", "009876"); latest().flush();
   expect(s.state.view!.summary.corrected).toBe(1);
   await s.upload(new File(["ID\nNEW"], "new.csv"), ",");
   expect(s.state.replacement).toBe(true);
@@ -247,7 +250,7 @@ test("corrections survive cancelled replacements and reject stale worker replies
 
 test("cancelled delayed replacement cannot grant approval to a later upload", async () => {
   const s = new Session(); s.activate(workflow()); await s.upload(file(), ","); latest().flush();
-  s.correct(s.state.view!.rows[0].id,"id","009876"); latest().flush();
+  correct(s,s.state.view!.rows[0].id,"id","009876"); latest().flush();
   const delayed = new File(["ID\nNEW"],"delayed.csv");
   let release: (value: ArrayBuffer) => void = () => {};
   vi.spyOn(delayed,"arrayBuffer").mockImplementation(() => new Promise(resolve => {release=resolve;}));
@@ -265,7 +268,7 @@ test("cancelled delayed replacement cannot grant approval to a later upload", as
 
 test("same-worker older correction reply cannot complete a newer rule evaluation", async () => {
   const s = new Session(); s.activate(workflow()); await s.upload(file(), ","); latest().flush();
-  s.correct(s.state.view!.rows[0].id,"id","009876");
+  correct(s,s.state.view!.rows[0].id,"id","009876");
   const transport = latest(), correction = transport.requests.at(-1)!;
   transport.flush();
   const prior = s.state.view!;
@@ -298,7 +301,7 @@ test('partial permission survives pagination, but resets on changes and pending 
   s.configure(w); transport.flush();
   expect(s.state.partialAcknowledged).toBe(false);
   s.acknowledgePartial(true);
-  s.correct(s.state.view!.rows[0].id,'id','002'); transport.flush();
+  correct(s,s.state.view!.rows[0].id,'id','002'); transport.flush();
   expect(s.state.partialAcknowledged).toBe(false);
   s.acknowledgePartial(true);
   await s.upload(new File(['ID,Other\n003,x\n,x'], 'new.csv'), ',');
@@ -315,4 +318,38 @@ test('starting evaluation after an export error never emits an intermediate idle
   expect(states).not.toContainEqual(expect.objectContaining({busy:''}));
   expect(states.at(-1)).toMatchObject({busy:'Checking all rows…',error:'',partialAcknowledged:false});
   latest().flush(); s.end();
+});
+
+test("draft cells block download and promote recovery overlays only after matching batch success", async () => {
+  const s=new Session(); s.activate(workflow()); await s.upload(file(),","); latest().flush();
+  const row=s.state.view!.rows[0].id;
+  s.stageCorrection(row,"id","CANDIDATE");
+  const transport=latest(), count=transport.requests.length;
+  s.export(undefined); expect(transport.requests).toHaveLength(count);
+  s.applyCorrections(); const pending=transport.requests.at(-1)!;
+  expect(pending).toMatchObject({kind:"correct-batch",edits:[{row,column:"id",value:"CANDIDATE"}]});
+  s.cancel(); await s.retry();
+  expect(latest().requests.at(-1)).toMatchObject({kind:"import",corrections:[]});
+  latest().flush();
+  transport.onmessage?.({data:{...pending,kind:"view",view:s.state.view!}} as unknown as MessageEvent<Response>);
+  expect(s.state.pendingCorrections).toHaveLength(1);
+  expect(s.state.view!.rows[0].values).toEqual([{kind:"text",text:"001234"}]);
+  s.applyCorrections(); latest().flush();
+  expect(s.state.pendingCorrections).toEqual([]);
+  expect(s.state.view!.rows[0].values).toEqual([{kind:"text",text:"CANDIDATE"}]);
+  s.cancel(); await s.retry();
+  expect(latest().requests.at(-1)).toMatchObject({kind:"import",corrections:[{row,column:"id",value:"CANDIDATE"}]});
+  latest().flush(); s.end();
+});
+
+test("failed batch retains drafts, and discarded drafts restore unchanged output", async () => {
+  const s=new Session();s.activate(workflow());await s.upload(file(),",");latest().flush();
+  const row=s.state.view!.rows[0].id;
+  s.stageCorrection(row,"id","DRAFT");s.applyCorrections();
+  const m=latest().requests.at(-1)!;
+  latest().onmessage?.({data:{request:m.request,dataset:m.dataset,revision:m.revision,kind:"error",message:"Synthetic rejected batch"}} as MessageEvent<Response>);
+  expect(s.state.pendingCorrections).toHaveLength(1);
+  expect(s.state.view!.rows[0].values).toEqual([{kind:"text",text:"001234"}]);
+  s.discardPending();s.export(undefined);let output="";s.onDownload=bytes=>output=new TextDecoder().decode(bytes);latest().flush();
+  expect(output).toBe("Reference\r\n001234\r\n");s.end();
 });
