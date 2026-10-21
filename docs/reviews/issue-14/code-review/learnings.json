@@ -1,0 +1,8 @@
+{
+  "reviewer": "learnings",
+  "findings": [],
+  "residual_risks": [
+    "Known Pattern (context, not a defect): docs/solutions/xlsx-qualification.md documents that flattening Excel cells loses raw type/value/display/format/epoch/formula-cache provenance. The changed correction overlay preserves the original cell at src/session/correction-overlay.ts:33, and src/ui/SourceCorrection.tsx:19-23 displays its original value and Excel details. Preserve this boundary when judging Excel correction and export acceptance; the historical note is not evidence of a violation in this diff."
+  ],
+  "testing_gaps": []
+}

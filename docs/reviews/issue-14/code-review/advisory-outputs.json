@@ -1,0 +1,12 @@
+{
+  "learnings": [
+    {
+      "type": "known_pattern",
+      "title": "Preserve typed Excel originals through session overlays",
+      "citation": "docs/solutions/xlsx-qualification.md",
+      "note": "Correction overlays retain original SourceCell metadata and SourceCorrection displays original values/Excel details; do not flatten this boundary during later changes."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

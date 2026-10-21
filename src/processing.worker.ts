@@ -7,8 +7,8 @@ import { parseCsv, serializeCsv } from "./formats/csv";
 import { type Run, type ResultRow } from "./engine/recipes";
 import { makeWorkflow, type Workflow } from "./engine/workflow";
 import type { SourceTable, SourceRow } from "./engine/values";
-import type { Request, Response, View } from "./session/worker-protocol";
-import { correctedRun, correctedRows, type Correction } from "./session/correction-overlay";
+import type { Request, Response, View, SourceFilter } from "./session/worker-protocol";
+import { correctedRun, correctedRows, applyCorrectionBatch, type Correction } from "./session/correction-overlay";
 let corrections: Correction[] = [];
 let source: SourceTable | undefined,
   workflow: Workflow | undefined,
@@ -17,21 +17,40 @@ let source: SourceTable | undefined,
 let sourceRowsById = new Map<string, SourceRow>();
 const PAGE_SIZE = 50;
 let exceptionRows: ResultRow[] = [];
+let resultById = new Map<string, ResultRow>();
+let outputQuery = {page:0, exceptions:false, invalidOnly:false};
+let sourceQuery: {page:number; filter:SourceFilter; target?:string; column?:string} = {page:0,filter:"all"};
+let retained = new Set<string>();
+let sourceNavigation = 0;
 function setRun(next: Run) {
   run = next;
   exceptionRows = next.rows.filter((r) => r.issues.length);
+  resultById = new Map(next.rows.map(r => [r.id,r]));
 }
-function view(page = 0, exceptions = false, invalidOnly = false): View {
+function view(): View {
+  let {page} = outputQuery;
+  const {exceptions, invalidOnly} = outputQuery;
   if (!source || !run)
     throw new Error("Upload a CSV and configure output fields.");
   const selected = invalidOnly ? exceptionRows.filter(row => row.status === "invalid") : exceptions ? exceptionRows : run.rows;
   const totalPages = Math.max(1, Math.ceil(selected.length / PAGE_SIZE));
   page = Math.max(0, Math.min(page, totalPages - 1));
+  outputQuery.page = page;
+  const sourceSelected = sourceQuery.filter === "all" ? source.rows
+    : run.rows.filter(r => retained.has(r.id) || (sourceQuery.filter === "invalid" ? r.status === "invalid" : r.issues.length)).map(r => sourceRowsById.get(r.id)!);
+  const sourceTotalPages = Math.max(1, Math.ceil(sourceSelected.length / PAGE_SIZE));
+  if (sourceQuery.target) {
+    const index = sourceSelected.findIndex(r => r.id === sourceQuery.target);
+    if (index >= 0) sourceQuery.page = Math.floor(index / PAGE_SIZE);
+  }
+  sourceQuery.page = Math.max(0, Math.min(sourceQuery.page, sourceTotalPages - 1));
+  const sourceSlice = sourceSelected.slice(sourceQuery.page * PAGE_SIZE, (sourceQuery.page + 1) * PAGE_SIZE);
   return {
     columns: source.columns,
-    sourceRows: correctedRows(source, corrections, run.workflowIssues.length
-      ? source.rows.slice(0, PAGE_SIZE)
-      : selected.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map(r => sourceRowsById.get(r.id)!)),
+    sourceRows: correctedRows(source, corrections, sourceSlice),
+    sourceResults: sourceSlice.flatMap(r => resultById.has(r.id) ? [resultById.get(r.id)!] : []),
+    sourcePage: sourceQuery.page, sourceFilter: sourceQuery.filter, sourceCount: sourceSelected.length,
+    sourceTotalPages, sourceTarget:sourceQuery.target, sourceColumn:sourceQuery.column, sourceNavigation,
     rows: selected.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE),
     workflowIssues: run.workflowIssues,
     summary: run.summary,
@@ -75,6 +94,8 @@ self.onmessage = async (event: MessageEvent<Request>) => {
       const candidateWorkflow = { ...original, source: { ...original.source, format: m.format ?? "csv", worksheet: candidate.worksheet, delimiter: m.delimiter } };
       const candidateRun = correctedRun(candidateWorkflow, candidate, m.corrections ?? []);
       corrections = m.corrections ?? [];
+      outputQuery = {page:0,exceptions:false,invalidOnly:false};
+      sourceQuery = {page:0,filter:"all"}; retained.clear();
       source = candidate;
       sourceRowsById = new Map(source.rows.map(r => [r.id, r]));
       workflow = candidateWorkflow;
@@ -85,11 +106,13 @@ self.onmessage = async (event: MessageEvent<Request>) => {
         throw new Error(
           "This result is out of date. Run the current mapping again.",
         );
-      if (m.kind === "correct") {
-        if (!workflow || !source.rows.some(r => r.id === m.correction.row) || !source.columns.some(c => c.key === m.correction.column)) throw new Error("Select a current source cell.");
-        corrections = corrections.filter(e => e.row !== m.correction.row || e.column !== m.correction.column);
-        if (!m.revert) corrections.push(m.correction);
-        setRun(correctedRun(workflow, source, corrections, run, m.correction.row));
+      if (m.kind === "correct-batch") {
+        if (!workflow) throw new Error("Configure a workflow before correcting source cells.");
+        const next = applyCorrectionBatch(source, corrections, m.edits);
+        const nextRun = correctedRun(workflow, source, next);
+        corrections = next;
+        retained = new Set(m.edits.map(e => e.row));
+        setRun(nextRun);
         revision = m.revision;
       } else if (m.kind === "run") {
         workflow = m.workflow;
@@ -99,6 +122,17 @@ self.onmessage = async (event: MessageEvent<Request>) => {
         throw new Error(
           "Preview and export must use the current revision. Run the mapping again.",
         );
+      if (m.kind === "page") outputQuery = {page:m.page,exceptions:m.exceptions,invalidOnly:m.invalidOnly ?? false};
+      if (m.kind === "source-page") {
+        sourceNavigation = m.request;
+        retained.clear();
+        let target = m.target;
+        if (m.nextAfter !== undefined) {
+          const after = sourceRowsById.get(m.nextAfter)?.record ?? -1;
+          target = exceptionRows.find(r => r.record > after)?.id ?? exceptionRows[0]?.id;
+        }
+        sourceQuery = {page:m.page,filter:target ? "all" : m.filter,target,column:m.column};
+      }
       if (m.kind === "export") {
         if (!workflow || !run)
           throw new Error("Preview the current mapping before download.");
@@ -114,11 +148,7 @@ self.onmessage = async (event: MessageEvent<Request>) => {
     send({
       ...envelope,
       kind: "view",
-      view: view(
-        m.kind === "page" ? m.page : 0,
-        m.kind === "page" ? m.exceptions : false,
-        m.kind === "page" ? m.invalidOnly : false,
-      ),
+      view: view(),
     });
   } catch (error) {
     send({

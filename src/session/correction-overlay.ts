@@ -2,6 +2,21 @@ import { evaluate, countResult, type Run } from "../engine/recipes";
 import type { Workflow } from "../engine/workflow";
 import type { SourceRow, SourceTable } from "../engine/values";
 export type Correction = { row: string; column: string; value: string };
+export type PendingCorrection = Correction & { revert?: boolean };
+export function applyCorrectionBatch(source: SourceTable, current: Correction[], edits: PendingCorrection[]): Correction[] {
+  const rows = new Set(source.rows.map(r => r.id)), columns = new Set(source.columns.map(c => c.key));
+  for (const edit of edits)
+    if (!rows.has(edit.row) || !columns.has(edit.column)) throw new Error("Select a current source cell.");
+  return mergeCorrections(current, edits);
+}
+export function mergeCorrections(current: Correction[], edits: PendingCorrection[]): Correction[] {
+  const next = new Map(current.map(edit => [JSON.stringify([edit.row, edit.column]), edit]));
+  for (const {revert, ...edit} of edits) {
+    const key = JSON.stringify([edit.row, edit.column]);
+    if (revert) next.delete(key); else next.set(key, edit);
+  }
+  return [...next.values()];
+}
 export function correctedRows(source: SourceTable, edits: Correction[], rows: SourceRow[] = source.rows): SourceRow[] {
   const index = new Map<string, Map<string, string>>();
   for (const edit of edits) {

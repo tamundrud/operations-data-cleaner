@@ -2,9 +2,9 @@ import { test, expect } from '@playwright/test';
 import { readdir, readFile } from 'node:fs/promises';
 import { upload, add, map, calculation, download, edit, closeSettings } from './helpers';
 async function correct(page: import('@playwright/test').Page, header: string, record: number, value: string) {
-  await page.getByRole('button', {name: 'Correct '+header+', record '+record, exact:true}).click();
+  if(!await page.getByLabel('Replacement for '+header+', record '+record, {exact:true}).isVisible()) await page.getByRole('button', {name: 'Correct '+header+', record '+record, exact:true}).click();
   await page.getByLabel('Replacement for '+header+', record '+record, {exact:true}).fill(value);
-  await page.getByRole('button', {name:'Apply correction',exact:true}).click();
+  await page.getByRole('button', {name:'Apply 1 corrections',exact:true}).first().click();
   await expect(page.locator('.status-bar [role=status]')).not.toContainText('Rechecking');
 }
 test('source corrections repair dependents, revert, preserve replacement failures and recover cancelled parsing privately', async ({page, context}, info) => {
@@ -33,11 +33,12 @@ test('source corrections repair dependents, revert, preserve replacement failure
   await page.getByRole('button',{name:'Save workflow',exact:true}).click();
   await expect(page.getByText('Saved in this browser.',{exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Revert Qty, record 2',exact:true}).click();
+  await page.getByRole('button',{name:'Apply 1 corrections',exact:true}).first().click();
   await expect(page.getByRole('button',{name:'Download converted CSV',exact:true})).toBeDisabled();
   await correct(page,'Qty',2,'24');
-  await page.getByRole('button',{name:'Correct Qty, record 2',exact:true}).click();
+  if(!await page.getByLabel('Replacement for Qty, record 2',{exact:true}).isVisible()) await page.getByRole('button',{name:'Correct Qty, record 2',exact:true}).click();
   await page.getByRole('region',{name:'Source table, scroll horizontally'}).screenshot({path:'docs/reviews/u11/screenshots/correction-editor.png'});
-  await page.getByRole('button',{name:'Cancel edit',exact:true}).click();
+  await page.getByLabel('Replacement for Qty, record 2',{exact:true}).locator('..').locator('..').getByRole('button',{name:'Cancel edit',exact:true}).click();
   await page.screenshot({path:'docs/reviews/u11/screenshots/corrected-desktop.png',fullPage:true});
   await page.getByLabel('Upload source CSV').setInputFiles({name:'replacement.csv',mimeType:'text/csv',buffer:Buffer.from('ID,Qty\nNEW,2')});
   await expect(page.getByRole('alertdialog')).toBeVisible();
@@ -85,6 +86,7 @@ test('10000 rows retain identity after clearing and correcting a later preview p
   await add(page,['Reference']); await map(page,'Reference','id');
   await page.getByRole('button',{name:'Next page',exact:true}).click();
   await page.getByText('Inspect original source table',{exact:true}).click();
+  await page.getByRole('button',{name:'Next source page',exact:true}).click();
   const start=performance.now(); await correct(page,'ID',52,'');
   const bytes=await download(page);
   expect(bytes.toString()).toBe('Reference\r\n'+Array.from({length:10000},(_,i)=>(i===50?'':String(i).padStart(6,'0'))+'\r\n').join(''));
@@ -99,10 +101,18 @@ test('filtered exception correction targets the matching source identity',async(
   await add(page,['Cases']); await calculation(page,'Cases','qty','2','multiply',true);
   await page.getByLabel('Show only rows with exceptions').check();
   await page.getByText('Inspect original source table',{exact:true}).click();
+  await page.getByLabel('Source row filter',{exact:true}).selectOption('exceptions');
   await expect(page.getByRole('button',{name:'Correct Qty, record 2',exact:true})).toHaveCount(0);
   await correct(page,'Qty',3,'12');
-  await page.getByLabel('Show only rows with exceptions').check();
+  const source=page.getByRole('region',{name:'Source table, scroll horizontally'});
+  await expect(source.locator('tbody tr')).toHaveCount(2);
+  await expect(page.getByLabel('Replacement for Qty, record 3',{exact:true})).toHaveValue('12');
+  await expect(source).toContainText('Original: Bad');
+  await expect(source.locator('tbody tr').first()).toContainText('valid');
+  await page.getByLabel('Source row filter',{exact:true}).selectOption('all');
+  await page.getByLabel('Source row filter',{exact:true}).selectOption('exceptions');
   await expect(page.getByRole('button',{name:'Correct Qty, record 3',exact:true})).toHaveCount(0);
+  await expect(page.getByLabel('Replacement for Qty, record 3',{exact:true})).toHaveCount(0);
   await correct(page,'Qty',4,'6');
   expect((await download(page)).toString()).toBe('Cases\r\n48\r\n24\r\n12\r\n');
 });
@@ -123,14 +133,16 @@ test('production worker rejects stale correction requests after a newer rule rev
       const first=await send({kind:'import',bytes:new TextEncoder().encode('Qty\n24').buffer,delimiter:',',workflow});
       if(first.kind!=='view') throw new Error('Import failed');
       const row=first.view.rows[0].id;
-      await send({kind:'correct',revision:1,correction:{row,column:'qty',value:'48'}});
+      await send({kind:'correct-batch',revision:1,edits:[{row,column:'qty',value:'48'}]});
       await send({kind:'run',revision:2,workflow});
-      const stale=await send({kind:'correct',revision:1,correction:{row,column:'qty',value:'OLD'}});
+      const stale=await send({kind:'correct-batch',revision:1,edits:[{row,column:'qty',value:'OLD'}]});
+      const rejectedBatch=await send({kind:'correct-batch',revision:3,edits:[{row,column:'qty',value:'99'},{row,column:'missing',value:'X'}]});
       const current=await send({kind:'page',revision:2,page:0,exceptions:false});
-      return {stale,current};
+      return {stale,rejectedBatch,current};
     } finally {worker.terminate();}
   },{workflow,workerFile});
   expect(result.stale.kind).toBe('error');
+  expect(result.rejectedBatch.kind).toBe('error');
   expect(result.current.revision).toBe(2);
   expect(result.current.kind==='view' && result.current.view.rows[0].values).toEqual([{kind:'text',text:'48'}]);
 });
@@ -161,6 +173,7 @@ test('missing trailing source cells can be corrected and reverted',async({page})
   await correct(page,'Qty',2,'24');
   expect((await download(page)).toString()).toBe('Quantity\r\n24\r\n');
   await page.getByRole('button',{name:'Revert Qty, record 2',exact:true}).click();
+  await page.getByRole('button',{name:'Apply 1 corrections',exact:true}).first().click();
   expect((await download(page)).toString()).toBe('Quantity\r\n\r\n');
 });
 
@@ -201,5 +214,6 @@ test('Excel source corrections retain original typed details and export literal 
   expect(sheet).toMatch(/<c[^>]*r="B2"[^>]*><v>45351<\/v>/);
   expect(sheet).not.toContain('<f>');
   await page.getByRole('button',{name:'Revert Date, record 2',exact:true}).click();
+  await page.getByRole('button',{name:'Apply 1 corrections',exact:true}).first().click();
   await expect(page.getByRole('button',{name:'Download converted Excel',exact:true})).toBeDisabled();
 });

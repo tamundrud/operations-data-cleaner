@@ -1,0 +1,2296 @@
+diff --git a/docs/plans/2026-10-20-issue-14-acceptance-plan.md b/docs/plans/2026-10-20-issue-14-acceptance-plan.md
+new file mode 100644
+index 0000000..9213e11
+--- /dev/null
++++ b/docs/plans/2026-10-20-issue-14-acceptance-plan.md
+@@ -0,0 +1,202 @@
++---
++title: Actionable exception review and batch corrections - Plan
++type: fix
++date: 2026-10-20
++artifact_contract: ce-unified-plan/v1
++product_contract_source: github-issue-14
++execution: code
++---
++
++# Actionable exception review and batch corrections - Plan
++
++## Goal Capsule
++
++- Objective: Operators can find the source of an exception, correct several cells across a dataset, and confirm the resulting output without losing their work.
++- Means: Structured exception causes, independent source inspection, and atomic session correction batches (KTD1–KTD3).
++- Authority: Issue #14 owns these five acceptance fixes; `AGENTS.md`, `docs/PRD.md`, and the approved master plan continue governing existing product behavior.
++- Execution: Start from U13 head `93ec73403b26aeddb5044c80534d30cca871dc96`, on a dedicated branch targeting `feat/u13-release-qualification`.
++- Finish: Produce tested implementation and CE evidence in a draft PR. UX acceptance belongs to the user; merging, deployment, publication, and release are outside this work.
++
++---
++
++## Product Contract
++
++### Summary
++
++Implement all five required fixes in [issue #14](https://github.com/tamundrud/operations-data-cleaner/issues/14): exit editing, actionable exceptions, source-cell navigation, independent inspection filters, and staged batch corrections.
++
++### Problem Frame
++
++The current exception list repeats dependent failures and source inspection follows the output-preview page. Per-cell apply operations make corrections across many records cumbersome and obscure the source of failed calculations.
++
++### Requirements
++
++**Editor and exception review**
++
++- R1. Saved/imported workflows offer Done editing, returning to repeat mode while retaining unsaved rules and ordinary validation/export gates; leaving editing does not save to IndexedDB.
++- R2. Present root causes with affected output fields using structured source, operand, and rule provenance; only required-blank presentation symptoms explicitly caused by an upstream failure are suppressed.
++- R3. Preserve complete raw diagnostics, invalid-row semantics, warning behavior, full-dataset counts, exclusion references, and export eligibility.
++
++**Source inspection**
++
++- R4. Exception actions open inspection, locate the original record/page, and focus/highlight implicated source cells with worksheet/record/line provenance; configuration failures identify or navigate to the relevant workflow setting.
++- R5. Source inspection independently filters All source rows, Rows with exceptions, and Invalid rows only across the whole dataset, with separate pagination from output preview.
++- R6. Keep original/current/session-corrected values inspectable, retain recently resolved records long enough to confirm the result, and make the next unresolved record reachable.
++
++**Staging and preservation**
++
++- R7. Cell edits stage across filtering and pagination without individual apply actions, with pending markers, Apply N corrections, and Discard pending changes near the source-table heading.
++- R8. Apply one coherent correction batch with one revalidation; stale replies, failed batches, cancellation, and recovery cannot partially apply or overwrite newer state.
++- R9. Pending edits block download, loss requires confirmation, and applying edits revokes partial-export acknowledgement and formula choice; successful application preserves correction context without forced scrolling.
++- R10. Corrections remain session-only, preserve original file data and revert behavior, and do not enter workflow storage or portable JSON.
++- R11. Unit and end-to-end regressions cover all acceptance examples, cross-browser CI, privacy interception, keyboard/mobile accessibility, exact exported data/bytes, and screenshots.
++
++### Acceptance Examples
++
++- AE1. Covers R2–R4, R7–R10. `examples/release/needs-correction.csv` identifies `Units=Twelve` as the offending operand; staging `12` and applying repairs ConvertedCases and counts without a duplicate required-blank presentation item.
++- AE2. Covers R2–R4. One five-segment Address feeding four identical four-segment split rules yields one actionable problem with four affected outputs; raw issues remain available and the record stays invalid until repaired.
++- AE3. Covers R3–R10. With at least 100 mixed rows and invalid rows after row 50, inspect/filter/navigate independently, stage across pages, apply once, and verify exact eligible output bytes and original provenance.
++- AE4. Covers R1, R10. Enter and leave editing repeatedly after changing a saved/imported workflow; unsaved state survives and storage/portable workflow semantics remain correct.
++- AE5. Covers R2–R4. Independently bad operands, unrelated required blanks, warning-only values, and configured-rule failures remain distinct and correctly targeted.
++
++### Scope Boundaries
++
++No new transformations, inferred values/types, drag-source-to-create-output, backend, telemetry, persistence of source records, deployment, or release. Preserve every applicable master-plan and PRD invariant. Do not add a general dependency graph or issue-text matching system; finite recipe provenance is sufficient for this release fix.
++
++---
++
++## Planning Contract
++
++### Key Technical Decisions
++
++- KTD1. Add structured runtime cause/operand metadata to engine issues and a presentation projection over raw diagnostics (R2–R4). Group by original row, source/operand or rule identity, diagnostic code, and relevant recipe configuration; never by message text. A split-family identity includes source, delimiter, expected count, trim and optional-empty policy, excluding only the selected output segment. Mark dependent required issues with an explicit upstream link. Numeric input parsing must identify every failed operand without interpreting policy failures such as nonterminating division as bad source data.
++- KTD2. Keep pending edits in Session, separate from committed correction overlays (R7–R10). A batch request carries a candidate overlay and revision; worker validates every coordinate and evaluates before replacing its committed overlay/run. Session promotes recovery state only after the matching accepted view. Error/cancel/retry retain the prior committed overlay and pending edits. Reverts participate in the same batch rather than bypassing staging.
++- KTD3. Add an independent source-query state and source result slice to the worker view (R4–R6). Filter the full run/source identities before slicing 50 rows; target navigation resolves an original row ID to its source page. Preserve output-query state during source requests and correction application. Retain newly resolved row identities for confirmation until an explicit source filter/navigation change, and offer next unresolved navigation.
++- KTD4. Integrate with existing React/session revision scheduling and source overlay types (R1, R9–R11). Reuse `SourceCell.original` and Excel details. Do not change workflow schema version or serialize runtime cause/staging state.
++
++### High-Level Technical Design
++
++```mermaid
++flowchart TB
++  Editor[Workflow editor] --> Session[Session controller]
++  Inspector[Source inspector and pending inputs] --> Session
++  Session --> Worker[Versioned worker requests]
++  Worker --> Engine[Deterministic evaluation and raw diagnostics]
++  Engine --> Projection[Cause presentation projection]
++  Projection --> Review[Exception actions and affected fields]
++  Review --> Inspector
++  Worker --> Views[Independent source and output views]
++  Views --> Inspector
++```
++
++```mermaid
++sequenceDiagram
++  participant UI
++  participant Session
++  participant Worker
++  UI->>Session: Stage cells across pages
++  UI->>Session: Apply pending corrections
++  Session->>Worker: Candidate batch with dataset and revision
++  Worker->>Worker: Validate coordinates and evaluate candidate
++  alt successful matching response
++    Worker-->>Session: Accepted view
++    Session-->>UI: Commit overlay, clear pending, show result
++  else failure or cancellation
++    Worker-->>Session: Error or stale response
++    Session-->>UI: Keep pending and committed recovery state
++  end
++```
++
++```mermaid
++stateDiagram-v2
++  [*] --> Current
++  Current --> Pending: Edit cell
++  Pending --> Current: Confirm discard
++  Pending --> Applying: Apply batch
++  Applying --> Current: Matching success
++  Applying --> Pending: Failure or recovery
++  Pending --> Pending: Filter or paginate
++```
++
++### Assumptions and System-Wide Impact
++
++Existing native inputs, pagination, worker envelopes, and production-build test harness remain the implementation patterns. No new dependency is needed. This change spans engine metadata, worker/session transport, UI state, and export/loss guards, so the units are sequential despite some file-level separation. No cross-model authoring preference is configured.
++
++External research is unnecessary for this bounded use of established local worker, overlay, and native-control patterns. Original Excel metadata preservation and integrated byte/privacy testing follow `docs/solutions/xlsx-qualification.md`. Exact control names, helper names, and responsive layout details remain implementation choices.
++
++---
++
++## Implementation Units
++
++### U1. Explain actionable exception causes
++
++- Goal: Deliver the projection and structured causes used by source navigation.
++- Requirements: R2–R4, AE1–AE2, AE5; KTD1.
++- Dependencies: Existing U13 engine.
++- Files: `src/engine/issues.ts`, `src/engine/recipes.ts`, `src/engine/decimal.ts`, a focused cause-projection module if needed, `tests/unit/exception-causes.test.ts`, existing decimal/split/validation tests.
++- Approach: Enrich diagnostics at their production boundary, preserve raw issue meaning, then derive review items and source/rule targets.
++- Patterns to follow: Existing `NumericError`, `ResultRow.issues`, `SourceTable` identity, and independent recipes.
++- Execution note: First prove duplicate split/required presentation and lost calculation operand identity with focused failing tests.
++- Test scenarios:
++  1. AE1 and AE2 preserve raw error counts/invalidity while producing the requested actionable items.
++  2. Two bad operands both remain identifiable; different split policies and unrelated required blanks do not merge.
++  3. A zero constant divisor, rounding/precision policy failure, and warnings have appropriate rule/source targets without invented source fixes.
++- Verification: Cause tests and existing unit regressions pass without changing exported values or row status.
++
++### U2. Make source batches atomic and independently paged
++
++- Goal: Support coherent multi-page correction and independent source queries.
++- Requirements: R5–R10, AE3; KTD2–KTD3.
++- Dependencies: U1.
++- Files: `src/session/controller.ts`, `src/session/worker-protocol.ts`, `src/session/correction-overlay.ts`, `src/processing.worker.ts`, `tests/unit/session.test.ts`, `tests/unit/corrections.test.ts`, focused worker/browser integration tests.
++- Approach: Extend the existing request envelope and view, replace the repository-internal single-cell mutation path, and preserve committed recovery state until batch success.
++- Patterns to follow: Existing request/dataset/revision checks, worker import candidate handling, original literal overlays, 50-row views.
++- Execution note: Capture stale/failure/recovery and independent pagination failures before production changes.
++- Test scenarios:
++  1. Stage two cells on different pages, apply once, and observe exact updated outputs/counts with unchanged originals.
++  2. Source filtering/pagination/target navigation does not change output selection or lose staged edits.
++  3. Invalid coordinates or failed evaluation do not partially commit; stale replies and cancel/retry cannot install candidate edits as committed recovery data.
++  4. Pending edits block export, discard restores ordinary gates, and applied changes invalidate acknowledgement.
++- Verification: Session/overlay tests plus real worker integration pass with complete row/provenance identities.
++
++### U3. Integrate editor and correction journeys
++
++- Goal: Expose the five fixes through accessible controls.
++- Requirements: R1–R10, AE1–AE5; KTD4.
++- Dependencies: U2.
++- Files: `src/ui/Workspace.tsx`, `src/ui/SourceCorrection.tsx`, `src/ui/styles.css`, `tests/e2e/correction-reupload.spec.ts`, `tests/e2e/partial-export.spec.ts`, `tests/e2e/release.spec.ts`, `tests/e2e/issue-14.spec.ts`.
++- Approach: Add Done editing and unsaved messaging, grouped review/actions, independent source controls, staged inputs and batch actions. Confirm pending loss on new/replaced workflow or source, disclosure/page exit paths that discard drafts, and browser unload. Preserve original/revert inspection and focus only when navigation is explicit.
++- Patterns to follow: Native labels, existing confirmation semantics, auto-run generation guards, Excel cell details, and source table horizontal scrolling.
++- Execution note: Update meaningful existing browser assertions for batch semantics and add focused missing journeys before implementation.
++- Test scenarios:
++  1. AE4 survives repeated editing exits without implicit save or new export authorization.
++  2. AE1–AE3 highlight/focus correct cells including worksheet/off-page records; rule failures identify settings.
++  3. Pending markers/actions survive source filters/pages, cancellation of loss confirmation preserves pending values, and successful apply keeps correction context.
++  4. Keyboard/mobile controls and status feedback pass accessibility checks at desktop and narrow widths.
++- Verification: Exact downloads, provenance, pending-loss guards and accessibility journeys pass through the production build.
++
++### U4. Qualify the draft for UX acceptance
++
++- Goal: Supply reproducible evidence for the complete change.
++- Requirements: R11 and all acceptance examples.
++- Dependencies: U3.
++- Files: `tests/e2e/privacy.spec.ts`, release/performance/portability regression suites, `.github/workflows/u2.yml` only if required for the existing browser matrix, `docs/reviews/issue-14/` evidence and screenshots.
++- Approach: Run the established unit/build/static and full browser suites, inspect desktop/mobile screenshots, complete CE simplification/code review, and record limitations honestly.
++- Patterns to follow: Existing U13 evidence and Chromium/Firefox/WebKit CI matrix.
++- Test scenarios:
++  1. Synthetic correction sentinels never leave the browser or enter workflow persistence/backup.
++  2. Existing 10,000-row CSV/XLSX, byte/type fidelity, formula safety, saved reuse and portability regressions remain passing.
++  3. CI covers every browser and retains reports/traces/screenshots.
++- Verification: Required checks pass or genuine environment blockers are named; no acceptance-complete claim substitutes for the user's UX acceptance.
++
++---
++
++## Verification Contract
++
++Use `npm run typecheck`, `npm run lint`, `npm run test:unit`, `npm run build`, and the full production-build `npm run test:e2e` matrix for Chromium, Firefox and WebKit. Existing privacy and performance suites remain required. New tests must inspect actual source/output/counts and download bytes, not screenshots alone. Capture focused red/green proof, current source identity, browser/accessibility/privacy reports, desktop/mobile screenshots, and CE review outcomes under `docs/reviews/issue-14/`.
++
++---
++
++## Definition of Done
++
++All five issue fixes and AE1–AE5 are implemented without weakening raw validation, data fidelity, privacy, row identity or workflow compatibility. Regression checks and CE reviews have evidence tied to the reviewed code. Remove abandoned implementation attempts. Create a dedicated draft PR targeting `feat/u13-release-qualification`, attach evidence and clear UX review instructions, and leave it unmerged for the user's acceptance.
+diff --git a/src/engine/issues.ts b/src/engine/issues.ts
+index f2bc927..8769904 100644
+--- a/src/engine/issues.ts
++++ b/src/engine/issues.ts
+@@ -1,12 +1,32 @@
++export type IssueSource = { source: string; operand?: "left" | "right" };
++export type IssueCause = { key: string; sources: IssueSource[]; rule?: string };
+ export type Issue = {
+   code: string;
+   scope: "workflow" | "row";
+   severity: "error" | "warning";
+   field?: string;
+   row?: string;
+   record?: number;
+   line?: number;
+   source?: string;
++  cause?: IssueCause;
++  causedBy?: string[];
+   reason: string;
+   action: string;
+ };
++
++export type ReviewItem = { key: string; issue: Issue; fields: string[]; sources: IssueSource[]; rule?: string };
++// Presentation only: raw diagnostics continue to determine validity and totals.
++export function reviewIssues(issues: Issue[]): ReviewItem[] {
++  const errors = new Set(issues.filter(i => i.severity === "error" && i.cause).map(i => i.cause!.key));
++  const items = new Map<string, ReviewItem>();
++  issues.forEach((issue, index) => {
++    if (issue.code === "required" && issue.causedBy?.some(key => errors.has(key))) return;
++    const key = issue.cause?.key ?? `diagnostic-${index}`;
++    const existing = items.get(key);
++    if (existing) {
++      if (issue.field && !existing.fields.includes(issue.field)) existing.fields.push(issue.field);
++    } else items.set(key, {key, issue, fields: issue.field ? [issue.field] : [], sources: issue.cause?.sources ?? (issue.source ? [{source:issue.source}] : []), rule:issue.cause?.rule});
++  });
++  return [...items.values()];
++}
+diff --git a/src/engine/recipes.ts b/src/engine/recipes.ts
+index 796d76c..135d746 100644
+--- a/src/engine/recipes.ts
++++ b/src/engine/recipes.ts
+@@ -1,16 +1,16 @@
+ import Big from "big.js";
+ import { parseDate } from "./dates";
+ import { calculateDecimal, validateDecimal, NumericError } from "./decimal";
+ import type { Workflow } from "./workflow";
+ import { displayValue, type SourceTable, type Value } from "./values";
+-import type { Issue } from "./issues";
++import type { Issue, IssueCause, IssueSource } from "./issues";
+ import { validateWorkflow } from "./validation";
+ import { riskyText } from "../formats/spreadsheet-safety";
+ export type ResultRow = {
+   id: string;
+   record: number;
+   line: number;
+   values: Value[];
+   provenance: ({
+     corrected?: true;
+     field: string;
+@@ -70,39 +70,54 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+   for (const row of source.rows) {
+     const issues: Issue[] = [],
+       provenance: ResultRow["provenance"] = [];
+     const values: Value[] = workflow.fields.map((f) => {
+       const recipe = f.recipe;
+       if (!recipe) throw new Error("Unvalidated recipe");
+       const sourceKey =
+         recipe.kind === "copy" || recipe.kind === "split"
+           ? recipe.source
+           : undefined;
++      const fieldIssues: Issue[] = [];
++      const recipeSources: IssueSource[] = recipe.kind === "copy" || recipe.kind === "split"
++        ? [{source:recipe.source}]
++        : recipe.kind === "combine" ? recipe.components.flatMap(c => c.kind === "source" ? [{source:c.source}] : [])
++        : [];
++      const cause = (code: string, sources: IssueSource[] = recipeSources, shared?: unknown): IssueCause => ({
++        key: JSON.stringify([row.id, code, shared ?? f.id]), sources,
++        ...(sources.length ? {} : {rule:f.id}),
++      });
+       const add = (
+         code: string,
+         severity: "error" | "warning",
+         reason: string,
+         action: string,
+         source = sourceKey,
+-      ) =>
+-        issues.push({
++        origin = cause(code),
++        causedBy?: string[],
++      ) => {
++        const issue: Issue = {
+           code,
+           scope: "row",
+           severity,
+           row: row.id,
+           record: row.record,
+           line: row.line,
+           field: f.id,
+           source,
+           reason,
+           action,
+-        });
++          cause:origin,
++          ...(causedBy?.length ? {causedBy} : {}),
++        };
++        issues.push(issue); fieldIssues.push(issue);
++      };
+       let unusableSource = false;
+       const readSource = (source: string) => {
+         const cell = row.cells[positions.get(source)!];
+         const excel = cell?.excel;
+         provenance.push({
+           field: f.id,
+           row: row.id,
+           source,
+           ...(cell?.original ? { corrected: true as const } : {}),
+           ...(excel ? { excel: { ...excel } } : {}),
+@@ -112,21 +127,21 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+           ...(recipe.kind === "split"
+             ? { segment: recipe.index, segmentTrim: recipe.trim }
+             : {}),
+         });
+         const issue = (
+           code: string,
+           severity: "error" | "warning",
+           reason: string,
+           action: string,
+         ) => {
+-          add(code, severity, `${f.header}: ${reason}`, action, source);
++          add(code, severity, `${f.header}: ${reason}`, action, source, cause(code, [{source}], ["cell", source]));
+         };
+         if (excel) {
+           if (excel.type === "e") {
+             unusableSource = true;
+             issue(
+               "excel-cell-error",
+               "error",
+               "the referenced Excel cell contains an error.",
+               "Correct the source workbook and reupload.",
+             );
+@@ -209,25 +224,40 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+               : displayValue(readConstant(o));
+           const left = operand(recipe.left),
+             right = operand(recipe.right);
+           try {
+             value = {
+               kind: "number",
+               decimal: calculateDecimal(left, right, recipe.operation, f),
+             };
+           } catch (error) {
+             if (!(error instanceof NumericError)) throw error;
++            const bad: IssueSource[] = [];
++            let badConstant = false;
++            for (const [side, text] of [["left", left], ["right", right]] as const) {
++              try { validateDecimal(text, {}); }
++              catch (failure) {
++                if (!(failure instanceof NumericError)) throw failure;
++                const input = recipe[side];
++                if (input.kind === "source") bad.push({source:input.source,operand:side});
++                else badConstant = true;
++              }
++            }
++            if (!bad.length && !badConstant && error.code === "division-zero" && recipe.right.kind === "source")
++              bad.push({source:recipe.right.source,operand:"right"});
+             add(
+               error.code,
+               "error",
+               `${f.header}: ${error.message}`,
+               "Correct the operands or explicitly change numeric validation / rounding settings.",
++              bad.length === 1 ? bad[0].source : undefined,
++              {...cause(error.code, bad), ...(badConstant ? {rule:f.id} : {})},
+             );
+             value = { kind: "blank" };
+           }
+           break;
+         }
+         case "copy":
+           value = { kind: "text", text: readSource(recipe.source) };
+           break;
+         case "constant":
+           value = readConstant(recipe.value);
+@@ -246,37 +276,41 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+           break;
+         case "split": {
+           const parts = readSource(recipe.source).split(recipe.delimiter);
+           value = { kind: "blank" };
+           if (parts.length !== recipe.segments) {
+             add(
+               "split-count",
+               "error",
+               `${f.header}: expected ${recipe.segments} segments but found ${parts.length}.`,
+               "Correct the source delimiter positions or change the expected segment count.",
++              sourceKey,
++              cause("split-count", recipeSources, ["split", recipe.source, recipe.delimiter, recipe.segments, recipe.trim, recipe.optionalEmpty]),
+             );
+             break;
+           }
+           const segments = recipe.trim
+             ? parts.map((part) => part.trim())
+             : parts;
+           const empty = segments.flatMap((part, index) =>
+             part === "" && !recipe.optionalEmpty.includes(index)
+               ? [index + 1]
+               : [],
+           );
+           if (empty.length) {
+             add(
+               "split-empty",
+               "error",
+               `${f.header}: required segment ${empty.join(", ")} is empty.`,
+               "Correct the source or explicitly mark that empty position optional; retain its delimiters.",
++              sourceKey,
++              cause("split-empty", recipeSources, ["split", recipe.source, recipe.delimiter, recipe.segments, recipe.trim, recipe.optionalEmpty]),
+             );
+             break;
+           }
+           value = { kind: "text", text: segments[recipe.index] };
+           break;
+         }
+       }
+       if (unusableSource) value = { kind: "blank" };
+       if (f.trim && value.kind === "text")
+         value = { kind: "text", text: value.text.trim() };
+@@ -295,20 +329,22 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+                 ? displayValue(value)
+                 : decimal,
+           };
+         } catch (error) {
+           if (!(error instanceof NumericError)) throw error;
+           add(
+             error.code,
+             "error",
+             `${f.header}: ${error.message}`,
+             "Correct the numeric value or change the explicit numeric settings.",
++            sourceKey,
++            cause(error.code, ["numeric-input", "missing-operand", "numeric-limit"].includes(error.code) ? recipeSources : []),
+           );
+           value = { kind: "blank" };
+         }
+       }
+       if (f.date && displayValue(value) !== "") {
+         const sourceCell = recipe.kind === "copy" ? row.cells[positions.get(recipe.source)!] : undefined;
+         const excel = sourceCell?.excel;
+         let date;
+         if (f.date.source !== "excel") date = parseDate(displayValue(value), f.date.source);
+         else if (sourceCell?.original) date = parseDate(displayValue(value), "YYYY-MM-DD");
+@@ -318,27 +354,32 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+           add(
+             "date-input",
+             "error",
+             `${f.header}: expected a real calendar date in ${f.date.source} format.`,
+             "Correct the source date or choose its exact format. Use zero-padded dates, years 0001–9999, and no time component; whitespace is preserved unless trimming is enabled.",
+           );
+           value = { kind: "blank" };
+         }
+       }
+       const text = displayValue(value);
+-      if (f.required && text.trim() === "")
++      if (f.required && text.trim() === "") {
++        const upstream = fieldIssues.filter(i => i.severity === "error").map(i => i.cause!.key);
+         add(
+           "required",
+           "error",
+           `${f.header} is required but blank.`,
+           "Correct the source file and reupload, or change the field rule.",
++          sourceKey,
++          cause("required"),
++          upstream,
+         );
++      }
+       if (f.maxLength && [...text].length > f.maxLength)
+         add(
+           "max-length",
+           "error",
+           `${f.header} exceeds ${f.maxLength} characters.`,
+           "Correct the source file or increase the maximum length.",
+         );
+       if (workflow.output.format === "csv" && value.kind === "text" && riskyText(text))
+         add(
+           "csv-risk",
+diff --git a/src/processing.worker.ts b/src/processing.worker.ts
+index 6351c9e..22295d0 100644
+--- a/src/processing.worker.ts
++++ b/src/processing.worker.ts
+@@ -1,44 +1,63 @@
+ /// <reference lib="webworker" />
+ import "./schema-runtime";
+ declare const self: DedicatedWorkerGlobalScope;
+ import { parseXlsx } from "./formats/xlsx";
+ import { serializeXlsx } from "./formats/xlsx-export";
+ import { parseCsv, serializeCsv } from "./formats/csv";
+ import { type Run, type ResultRow } from "./engine/recipes";
+ import { makeWorkflow, type Workflow } from "./engine/workflow";
+ import type { SourceTable, SourceRow } from "./engine/values";
+-import type { Request, Response, View } from "./session/worker-protocol";
+-import { correctedRun, correctedRows, type Correction } from "./session/correction-overlay";
++import type { Request, Response, View, SourceFilter } from "./session/worker-protocol";
++import { correctedRun, correctedRows, applyCorrectionBatch, type Correction } from "./session/correction-overlay";
+ let corrections: Correction[] = [];
+ let source: SourceTable | undefined,
+   workflow: Workflow | undefined,
+   run: Run | undefined,
+   revision = -1;
+ let sourceRowsById = new Map<string, SourceRow>();
+ const PAGE_SIZE = 50;
+ let exceptionRows: ResultRow[] = [];
++let resultById = new Map<string, ResultRow>();
++let outputQuery = {page:0, exceptions:false, invalidOnly:false};
++let sourceQuery: {page:number; filter:SourceFilter; target?:string; column?:string} = {page:0,filter:"all"};
++let retained = new Set<string>();
++let sourceNavigation = 0;
+ function setRun(next: Run) {
+   run = next;
+   exceptionRows = next.rows.filter((r) => r.issues.length);
++  resultById = new Map(next.rows.map(r => [r.id,r]));
+ }
+-function view(page = 0, exceptions = false, invalidOnly = false): View {
++function view(): View {
++  let {page} = outputQuery;
++  const {exceptions, invalidOnly} = outputQuery;
+   if (!source || !run)
+     throw new Error("Upload a CSV and configure output fields.");
+   const selected = invalidOnly ? exceptionRows.filter(row => row.status === "invalid") : exceptions ? exceptionRows : run.rows;
+   const totalPages = Math.max(1, Math.ceil(selected.length / PAGE_SIZE));
+   page = Math.max(0, Math.min(page, totalPages - 1));
++  outputQuery.page = page;
++  const sourceSelected = run.workflowIssues.length || sourceQuery.filter === "all" ? source.rows
++    : run.rows.filter(r => retained.has(r.id) || (sourceQuery.filter === "invalid" ? r.status === "invalid" : r.issues.length)).map(r => sourceRowsById.get(r.id)!);
++  const sourceTotalPages = Math.max(1, Math.ceil(sourceSelected.length / PAGE_SIZE));
++  if (sourceQuery.target) {
++    const index = sourceSelected.findIndex(r => r.id === sourceQuery.target);
++    if (index >= 0) sourceQuery.page = Math.floor(index / PAGE_SIZE);
++  }
++  sourceQuery.page = Math.max(0, Math.min(sourceQuery.page, sourceTotalPages - 1));
++  const sourceSlice = sourceSelected.slice(sourceQuery.page * PAGE_SIZE, (sourceQuery.page + 1) * PAGE_SIZE);
+   return {
+     columns: source.columns,
+-    sourceRows: correctedRows(source, corrections, run.workflowIssues.length
+-      ? source.rows.slice(0, PAGE_SIZE)
+-      : selected.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map(r => sourceRowsById.get(r.id)!)),
++    sourceRows: correctedRows(source, corrections, sourceSlice),
++    sourceResults: sourceSlice.flatMap(r => resultById.has(r.id) ? [resultById.get(r.id)!] : []),
++    sourcePage: sourceQuery.page, sourceFilter: sourceQuery.filter, sourceCount: sourceSelected.length,
++    sourceTotalPages, sourceTarget:sourceQuery.target, sourceColumn:sourceQuery.column, sourceNavigation,
+     rows: selected.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE),
+     workflowIssues: run.workflowIssues,
+     summary: run.summary,
+     riskyHeaders: run.riskyHeaders,
+     csvRisk: run.csvRisk,
+     page,
+     totalPages,
+     exceptions,
+     invalidOnly,
+     delimiter: source.delimiter,
+@@ -68,64 +87,75 @@ self.onmessage = async (event: MessageEvent<Request>) => {
+         send({ ...envelope, kind: "template", headers: candidate.columns.map((c) => c.header) });
+         return;
+       }
+     }
+     if (m.kind === "import") {
+       if (!candidate) throw new Error("No source table was imported.");
+       const original = m.workflow ?? makeWorkflow([]);
+       const candidateWorkflow = { ...original, source: { ...original.source, format: m.format ?? "csv", worksheet: candidate.worksheet, delimiter: m.delimiter } };
+       const candidateRun = correctedRun(candidateWorkflow, candidate, m.corrections ?? []);
+       corrections = m.corrections ?? [];
++      outputQuery = {page:0,exceptions:false,invalidOnly:false};
++      sourceQuery = {page:0,filter:"all"}; retained.clear();
+       source = candidate;
+       sourceRowsById = new Map(source.rows.map(r => [r.id, r]));
+       workflow = candidateWorkflow;
+       setRun(candidateRun);
+       revision = m.revision;
+     } else {
+       if (!source || m.dataset !== source.dataset || m.revision < revision)
+         throw new Error(
+           "This result is out of date. Run the current mapping again.",
+         );
+-      if (m.kind === "correct") {
+-        if (!workflow || !source.rows.some(r => r.id === m.correction.row) || !source.columns.some(c => c.key === m.correction.column)) throw new Error("Select a current source cell.");
+-        corrections = corrections.filter(e => e.row !== m.correction.row || e.column !== m.correction.column);
+-        if (!m.revert) corrections.push(m.correction);
+-        setRun(correctedRun(workflow, source, corrections, run, m.correction.row));
++      if (m.kind === "correct-batch") {
++        if (!workflow) throw new Error("Configure a workflow before correcting source cells.");
++        const next = applyCorrectionBatch(source, corrections, m.edits);
++        const nextRun = correctedRun(workflow, source, next);
++        corrections = next;
++        retained = new Set(m.edits.map(e => e.row));
++        setRun(nextRun);
+         revision = m.revision;
+       } else if (m.kind === "run") {
+         workflow = m.workflow;
+         setRun(correctedRun(workflow, source, corrections));
+         revision = m.revision;
+       } else if (m.revision !== revision)
+         throw new Error(
+           "Preview and export must use the current revision. Run the mapping again.",
+         );
++      if (m.kind === "page") outputQuery = {page:m.page,exceptions:m.exceptions,invalidOnly:m.invalidOnly ?? false};
++      if (m.kind === "source-page") {
++        sourceNavigation = m.request;
++        retained.clear();
++        let target = m.target;
++        if (m.nextAfter !== undefined) {
++          const after = sourceRowsById.get(m.nextAfter)?.record ?? -1;
++          target = exceptionRows.find(r => r.record > after)?.id ?? exceptionRows[0]?.id;
++        }
++        sourceQuery = {page:m.page,filter:target ? "all" : m.filter,target,column:m.column};
++      }
+       if (m.kind === "export") {
+         if (!workflow || !run)
+           throw new Error("Preview the current mapping before download.");
+         const format = workflow.output.format;
+         const bytes = format === "xlsx" ? serializeXlsx(workflow, run, m.partialAcknowledged) : serializeCsv(workflow, run, m.choice, m.partialAcknowledged);
+         self.postMessage(
+           { ...envelope, kind: "download", bytes, format } satisfies Response,
+           [bytes.buffer as ArrayBuffer],
+         );
+         return;
+       }
+     }
+     send({
+       ...envelope,
+       kind: "view",
+-      view: view(
+-        m.kind === "page" ? m.page : 0,
+-        m.kind === "page" ? m.exceptions : false,
+-        m.kind === "page" ? m.invalidOnly : false,
+-      ),
++      view: view(),
+     });
+   } catch (error) {
+     send({
+       ...envelope,
+       kind: "error",
+       message:
+         error instanceof Error
+           ? error.message
+           : "Processing failed. Check the CSV and try again.",
+     });
+diff --git a/src/session/controller.ts b/src/session/controller.ts
+index 2f6f000..c59fe92 100644
+--- a/src/session/controller.ts
++++ b/src/session/controller.ts
+@@ -1,42 +1,45 @@
+ import type { Workflow } from "../engine/workflow";
+ import type { SafetyChoice } from "../formats/spreadsheet-safety";
+ import { MAX_FILE_BYTES } from "../formats/csv";
+-import type { Request, Response, View } from "./worker-protocol";
+-import type { Correction } from "./correction-overlay";
++import type { Request, Response, View, SourceQuery } from "./worker-protocol";
++import { mergeCorrections, type Correction, type PendingCorrection } from "./correction-overlay";
+ export type SessionState = {
+   partialAcknowledged: boolean;
++  pendingCorrections: PendingCorrection[];
++  correctionMessage: string;
+   replacement?: boolean;
+   busy: string;
+   view?: View;
+   error: string;
+   recoverable: boolean;
+   worksheets?: string[];
+ };
+ export class Session {
+   private corrections: Correction[] = [];
++  private applyingCorrections?: Correction[];
+   private replacement?: { file: File; delimiter: "auto" | "," | ";" | "\t"; options: { workflow?: Workflow; worksheet?: string } };
+   private worker?: Worker;
+   private sequence = 0;
+   private pending?: Request;
+   private timer?: ReturnType<typeof setTimeout>;
+   private active?: {
+     file: File;
+     delimiter: "auto" | "," | ";" | "\t";
+     dataset: string;
+     worksheet?: string;
+   };
+   private candidate?: NonNullable<Session["active"]> & { workflow?: Workflow };
+   private selection?: { file: File; delimiter: "auto" | "," | ";" | "\t"; options: { template?: boolean; workflow?: Workflow; worksheet?: string } };
+   private workflow?: Workflow;
+   private revision = 0;
+-  state: SessionState = { partialAcknowledged: false, busy: "", error: "", recoverable: false };
++  state: SessionState = { pendingCorrections: [], correctionMessage: "", partialAcknowledged: false, busy: "", error: "", recoverable: false };
+   onState: (state: SessionState) => void = () => {};
+   onTemplate: (headers: string[]) => void = () => {};
+   onWorkflow: (workflow: Workflow) => void = () => {};
+   onSourcePolicy: (delimiter: "auto" | "," | ";" | "\t", format?: "csv" | "xlsx", worksheet?: string) => void = () => {};
+   onDownload: (bytes: Uint8Array, format: Workflow["output"]["format"]) => void = () => {};
+   private update(patch: Partial<SessionState>) {
+     this.state = { ...this.state, ...patch };
+     this.onState(this.state);
+   }
+   private startWorker() {
+@@ -66,28 +69,37 @@ export class Session {
+       clearTimeout(this.timer);
+       this.pending = undefined;
+       if (m.kind === "worksheets") {
+         this.candidate = undefined;
+         this.update({ busy: "", worksheets: m.sheets });
+         return;
+       }
+       this.selection = undefined;
+       if (m.kind === "error") {
+         this.candidate = undefined;
++        this.applyingCorrections = undefined;
++        if (pending.kind === "correct-batch") this.revision = pending.revision - 1;
+         this.update({ busy: "", error: m.message });
+         return;
+       }
+       if (m.kind === "view") {
++        if (pending.kind === "correct-batch" && this.applyingCorrections) {
++          this.corrections = this.applyingCorrections;
++          this.applyingCorrections = undefined;
++          this.update({pendingCorrections:[], correctionMessage:`Applied ${pending.edits.length} corrections. Results and counts updated.`});
++        }
+         if (this.candidate) {
+           const { workflow: replacementWorkflow, ...active } = this.candidate;
+           const format = active.file.name.toLowerCase().endsWith(".xlsx") ? "xlsx" : "csv";
+-          if (active.dataset !== this.active?.dataset) this.corrections = [];
++          if (active.dataset !== this.active?.dataset) {
++            this.corrections = []; this.update({pendingCorrections:[], correctionMessage:""});
++          }
+           this.active = { ...active, worksheet: m.view.worksheet };
+           this.onSourcePolicy(active.delimiter, format, m.view.worksheet);
+           this.candidate = undefined;
+           if (replacementWorkflow) {
+             this.workflow = { ...replacementWorkflow, source: { ...replacementWorkflow.source, format, worksheet: m.view.worksheet, delimiter: active.delimiter } };
+             this.onWorkflow(this.workflow);
+           }
+         }
+         this.update({ busy: "", view: m.view, error: "", recoverable: false });
+       } else if (m.kind === "template") {
+@@ -97,21 +109,21 @@ export class Session {
+         this.update({ busy: "", error: "" });
+         this.onDownload(m.bytes, m.format);
+       }
+     };
+   }
+   private send(m: Request, busy: string) {
+     this.startWorker();
+     this.pending = m;
+     this.update({
+       busy, error: "", recoverable: false,
+-      partialAcknowledged: m.kind === "page" || m.kind === "export"
++      partialAcknowledged: m.kind === "page" || m.kind === "source-page" || m.kind === "export"
+         ? this.state.partialAcknowledged : false,
+     });
+     clearTimeout(this.timer);
+     this.timer = setTimeout(
+       () =>
+         this.stop(
+           "Processing exceeded 30 seconds. Split the table into smaller files and retry.",
+         ),
+       30000,
+     );
+@@ -121,21 +133,21 @@ export class Session {
+   }
+   private async importFile(
+     file: File,
+     delimiter: "auto" | "," | ";" | "\t",
+     options: { template?: boolean; workflow?: Workflow; worksheet?: string } = {},
+     recovery = false,
+     approved = false,
+   ) {
+     if (this.state.busy || this.state.replacement) return;
+     this.acknowledgePartial(false);
+-    if (!options.template && this.corrections.length && !recovery && !approved) {
++    if (!options.template && (this.corrections.length || this.state.pendingCorrections.length) && !recovery && !approved) {
+       this.replacement = { file, delimiter, options };
+       this.update({ replacement: true });
+       return;
+     }
+     const format: "csv" | "xlsx" = file.name.toLowerCase().endsWith(".xlsx") ? "xlsx" : "csv";
+     if (!/\.(csv|xlsx)$/iu.test(file.name)) {
+       this.update({
+         error:
+           "Choose a .csv or .xlsx file. Save older Excel formats as .xlsx or UTF-8 CSV.",
+       });
+@@ -199,25 +211,43 @@ export class Session {
+     const replacement = this.replacement;
+     this.replacement = undefined;
+     this.update({ replacement: false });
+     if (!replacement) return;
+     await this.importFile(replacement.file, replacement.delimiter, replacement.options, false, true);
+   }
+   cancelReplacement() {
+     this.replacement = undefined;
+     this.update({ replacement: false });
+   }
+-  correct(row: string, column: string, value: string, revert = false) {
++  stageCorrection(row: string, column: string, value: string, revert = false) {
++    if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable) return;
++    const current = this.state.view?.sourceRows.find(r => r.id === row);
++    const position = this.state.view?.columns.find(c => c.key === column)?.position;
++    if (!current || position === undefined) return;
++    const cell = current.cells[position];
++    const pending = this.state.pendingCorrections.filter(e => e.row !== row || e.column !== column);
++    if (revert ? Boolean(cell?.original) : value !== (cell?.raw ?? "")) pending.push({row,column,value,...(revert ? {revert:true} : {})});
++    this.update({pendingCorrections:pending, partialAcknowledged:false, correctionMessage:""});
++  }
++  discardPending() {
++    if (this.state.busy) return;
++    this.update({pendingCorrections:[], correctionMessage:"Pending changes discarded."});
++  }
++  applyCorrections() {
++    if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable || !this.state.pendingCorrections.length) return;
++    // The visible page is only a slice; the worker validates all batch coordinates.
++    this.applyingCorrections = mergeCorrections(this.corrections, this.state.pendingCorrections);
++    this.send({kind:"correct-batch", edits:this.state.pendingCorrections, request:++this.sequence, dataset:this.active.dataset, revision:++this.revision}, "Applying corrections and checking all rows…");
++  }
++  sourcePage(query: SourceQuery) {
+     if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable) return;
+-    this.corrections = this.corrections.filter(e => e.row !== row || e.column !== column);
+-    if (!revert) this.corrections.push({row, column, value});
+-    this.send({kind: "correct", correction: {row, column, value}, revert, request: ++this.sequence, dataset: this.active.dataset, revision: ++this.revision}, "Rechecking corrected row…");
++    this.send({kind:"source-page",...query,request:++this.sequence,dataset:this.active.dataset,revision:this.revision}, "Loading source rows…");
+   }
+   selectWorksheet(worksheet: string) {
+     const selection = this.selection;
+     if (!selection || !this.state.worksheets?.includes(worksheet)) return;
+     void this.importFile(selection.file, selection.delimiter, { ...selection.options, worksheet }, false, true);
+   }
+   cancelWorksheetSelection() {
+     this.selection = undefined;
+     this.update({ worksheets: undefined, error: "" });
+   }
+@@ -253,46 +283,47 @@ export class Session {
+         exceptions,
+         invalidOnly,
+       },
+       "Loading preview…",
+     );
+   }
+   acknowledgePartial(acknowledged: boolean) {
+     const view = this.state.view;
+     this.update({ partialAcknowledged: Boolean(acknowledged && view && !this.state.busy &&
+       !this.state.worksheets && !this.state.replacement && !this.state.recoverable &&
+-      !view.workflowIssues.length && view.summary.invalid &&
++      !this.state.pendingCorrections.length && !view.workflowIssues.length && view.summary.invalid &&
+       view.summary.valid + view.summary.warningOnly > 0) });
+   }
+   export(choice: SafetyChoice) {
+     if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable) return;
+     const view = this.state.view;
+-    if (!view || view.workflowIssues.length || !(view.summary.valid + view.summary.warningOnly) ||
++    if (this.state.pendingCorrections.length || !view || view.workflowIssues.length || !(view.summary.valid + view.summary.warningOnly) ||
+       (view.summary.invalid && !this.state.partialAcknowledged)) return;
+     this.send(
+       {
+         kind: "export",
+         request: ++this.sequence,
+         dataset: this.active.dataset,
+         revision: this.revision,
+         choice,
+         partialAcknowledged: this.state.partialAcknowledged,
+       },
+       "Preparing download…",
+     );
+   }
+   private stop(message: string) {
+     this.sequence++;
+     this.worker?.terminate();
+     this.worker = undefined;
+     this.pending = undefined;
+     this.candidate = undefined;
++    this.applyingCorrections = undefined;
+     this.selection = undefined;
+     clearTimeout(this.timer);
+     this.update({
+       partialAcknowledged: false,
+       busy: "",
+       worksheets: undefined,
+       view: undefined,
+       error: message,
+       recoverable: Boolean(this.active),
+     });
+@@ -304,15 +335,16 @@ export class Session {
+   }
+   async retry() {
+     if (this.active) {
+       await this.importFile(this.active.file, this.active.delimiter, { worksheet: this.active.worksheet }, true);
+     }
+   }
+   end() {
+     this.stop("");
+     this.active = undefined;
+     this.corrections = [];
++    this.update({pendingCorrections:[], correctionMessage:""});
+     this.cancelReplacement();
+     this.workflow = undefined;
+     this.update({ recoverable: false, error: "" });
+   }
+ }
+diff --git a/src/session/correction-overlay.ts b/src/session/correction-overlay.ts
+index 8975686..f92fe7f 100644
+--- a/src/session/correction-overlay.ts
++++ b/src/session/correction-overlay.ts
+@@ -1,14 +1,29 @@
+ import { evaluate, countResult, type Run } from "../engine/recipes";
+ import type { Workflow } from "../engine/workflow";
+ import type { SourceRow, SourceTable } from "../engine/values";
+ export type Correction = { row: string; column: string; value: string };
++export type PendingCorrection = Correction & { revert?: boolean };
++export function applyCorrectionBatch(source: SourceTable, current: Correction[], edits: PendingCorrection[]): Correction[] {
++  const rows = new Set(source.rows.map(r => r.id)), columns = new Set(source.columns.map(c => c.key));
++  for (const edit of edits)
++    if (!rows.has(edit.row) || !columns.has(edit.column)) throw new Error("Select a current source cell.");
++  return mergeCorrections(current, edits);
++}
++export function mergeCorrections(current: Correction[], edits: PendingCorrection[]): Correction[] {
++  const next = new Map(current.map(edit => [JSON.stringify([edit.row, edit.column]), edit]));
++  for (const {revert, ...edit} of edits) {
++    const key = JSON.stringify([edit.row, edit.column]);
++    if (revert) next.delete(key); else next.set(key, edit);
++  }
++  return [...next.values()];
++}
+ export function correctedRows(source: SourceTable, edits: Correction[], rows: SourceRow[] = source.rows): SourceRow[] {
+   const index = new Map<string, Map<string, string>>();
+   for (const edit of edits) {
+     if (!index.has(edit.row)) index.set(edit.row, new Map());
+     index.get(edit.row)!.set(edit.column, edit.value);
+   }
+   return rows.map(row => {
+     const replacements = index.get(row.id);
+     if (!replacements) return row;
+     return { ...row, cells: source.columns.map(({key, position}) => {
+diff --git a/src/session/worker-protocol.ts b/src/session/worker-protocol.ts
+index 528b8e8..d7670a2 100644
+--- a/src/session/worker-protocol.ts
++++ b/src/session/worker-protocol.ts
+@@ -1,41 +1,52 @@
+-import type { Correction } from "./correction-overlay";
++import type { Correction, PendingCorrection } from "./correction-overlay";
+ import type { Workflow } from "../engine/workflow";
+ import type { SourceColumn, SourceRow } from "../engine/values";
+ import type { Run, ResultRow } from "../engine/recipes";
+ import type { Issue } from "../engine/issues";
+ import type { SafetyChoice } from "../formats/spreadsheet-safety";
++export type SourceQuery = {page:number; filter:SourceFilter; target?:string; nextAfter?:string; column?:string};
+ export type Request = { request: number; dataset: string; revision: number } & (
+   | {
+       kind: "import";
+       corrections?: Correction[];
+       bytes: ArrayBuffer;
+       format?: "csv" | "xlsx";
+       worksheet?: string;
+       delimiter: "auto" | "," | ";" | "\t";
+       workflow?: Workflow;
+     }
+   | {
+       kind: "template";
+       bytes: ArrayBuffer;
+       format?: "csv" | "xlsx";
+       worksheet?: string;
+       delimiter: "auto" | "," | ";" | "\t";
+     }
+-  | { kind: "correct"; correction: Correction; revert?: boolean }
++  | { kind: "correct-batch"; edits: PendingCorrection[] }
++  | ({ kind: "source-page" } & SourceQuery)
+   | { kind: "run"; workflow: Workflow }
+   | { kind: "page"; page: number; exceptions: boolean; invalidOnly?: boolean }
+   | { kind: "export"; choice: SafetyChoice; partialAcknowledged?: boolean }
+ );
++export type SourceFilter = "all" | "exceptions" | "invalid";
+ export type View = {
+   columns: SourceColumn[];
+   sourceRows: SourceRow[];
++  sourceResults: ResultRow[];
++  sourcePage: number;
++  sourceTotalPages: number;
++  sourceFilter: SourceFilter;
++  sourceCount: number;
++  sourceTarget?: string;
++  sourceColumn?: string;
++  sourceNavigation: number;
+   rows: ResultRow[];
+   workflowIssues: Issue[];
+   summary: Run["summary"];
+   riskyHeaders: string[];
+   csvRisk: boolean;
+   page: number;
+   totalPages: number;
+   exceptions: boolean;
+   invalidOnly?: boolean;
+   delimiter: string;
+diff --git a/src/ui/SourceCorrection.tsx b/src/ui/SourceCorrection.tsx
+index f65dc6e..bc67506 100644
+--- a/src/ui/SourceCorrection.tsx
++++ b/src/ui/SourceCorrection.tsx
+@@ -1,23 +1,27 @@
+-import { useState } from "react";
++import { useEffect, useRef, useState } from "react";
+ import type { SourceCell } from "../engine/values";
++import type { PendingCorrection } from "../session/correction-overlay";
+ import ExcelCellDetails from "./ExcelCellDetails";
+-export default function SourceCorrection({ cell, header, record, disabled, onSave, onRevert }: {
++export default function SourceCorrection({ cell, header, record, disabled, pending, target, navigation, onSave, onRevert }: {
+   cell: SourceCell; header: string; record: number; disabled: boolean;
++  pending?: PendingCorrection; target?: boolean;
++  navigation: number;
+   onSave: (value: string) => void; onRevert: () => void;
+ }) {
+   const [editing, setEditing] = useState(false);
+-  const [value, setValue] = useState(cell.raw);
++  const input = useRef<HTMLTextAreaElement>(null);
++  useEffect(() => { if (target) input.current?.focus(); }, [target, navigation]);
+   const original = cell.original ?? cell;
+   return <div>
+     <span>{cell.display || "(blank)"}</span>
+     {cell.original && <p>Corrected in this session · Original: {original.display || "(blank)"}</p>}
+     {original.excel && <ExcelCellDetails cell={original.excel} />}
+-    {editing ? <form onSubmit={e => { e.preventDefault(); onSave(value); setEditing(false); }}>
+-      <label>Replacement for {header}, record {record}<textarea aria-label={`Replacement for ${header}, record ${record}`} value={value} onChange={e => setValue(e.target.value)} disabled={disabled} /></label>
++    {pending && <p className="pending-marker">Pending change{pending.revert ? " · revert to original" : ""}</p>}
++    {editing || pending || target ? <div>
++      <label>Replacement for {header}, record {record}<textarea ref={input} aria-label={`Replacement for ${header}, record ${record}`} value={pending ? pending.revert ? original.raw : pending.value : cell.raw} onChange={e => onSave(e.target.value)} disabled={disabled} /></label>
+       <p>Literal text replacement. Numeric rules still apply. For Excel date rules, enter YYYY-MM-DD.</p>
+-      <button disabled={disabled}>Apply correction</button>
+-      <button type="button" onClick={() => setEditing(false)}>Cancel edit</button>
+-    </form> : <button disabled={disabled} onClick={() => { setValue(cell.raw); setEditing(true); }}>Correct {header}, record {record}</button>}
++      <button type="button" disabled={disabled} onClick={() => { onSave(cell.raw); setEditing(false); }}>Cancel edit</button>
++    </div> : <button disabled={disabled} onClick={() => setEditing(true)}>Correct {header}, record {record}</button>}
+     {cell.original && <button disabled={disabled} onClick={onRevert}>Revert {header}, record {record}</button>}
+   </div>;
+ }
+diff --git a/src/ui/SourceInspector.tsx b/src/ui/SourceInspector.tsx
+new file mode 100644
+index 0000000..234610b
+--- /dev/null
++++ b/src/ui/SourceInspector.tsx
+@@ -0,0 +1,73 @@
++import { useEffect, useRef, useState } from "react";
++import { reviewIssues } from "../engine/issues";
++import type { Session, SessionState } from "../session/controller";
++import type { SourceFilter } from "../session/worker-protocol";
++import SourceCorrection from "./SourceCorrection";
++
++export default function SourceInspector({session,state,disabled,clearChoice}: {
++  session: Session; state: SessionState; disabled: boolean; clearChoice: () => void;
++}) {
++  const details=useRef<HTMLDetailsElement>(null);
++  const [open,setOpen]=useState(false);
++  const view=state.view!;
++  useEffect(()=>{
++    if(view.sourceTarget && details.current) {details.current.open=true;setOpen(true);}
++  },[view.sourceTarget,view.sourceNavigation]);
++  const count=state.pendingCorrections.length;
++  const pendingByCell=new Map(state.pendingCorrections.map(edit=>[JSON.stringify([edit.row,edit.column]),edit]));
++  const results=new Map(view.sourceResults.map(r=>[r.id,r]));
++  const apply=()=>{clearChoice();session.applyCorrections();};
++  return <details ref={details} className="panel source-inspection" onToggle={event=>{
++    if(event.target===event.currentTarget) setOpen(event.currentTarget.open);
++  }}>
++    <summary>Inspect original source table</summary>
++    {open && <section aria-labelledby="source-title">
++      <h2 id="source-title">Source table</h2>
++      <p>Current source values · {view.sourceCount} matching rows across the full dataset. Corrections stay in this session; originals remain inspectable.</p>
++      <p className="small">Resolved records stay here after Apply so you can confirm the result, until you change the source filter or page.</p>
++      <div className="source-actions">
++        <label>Source row filter <select aria-label="Source row filter" disabled={disabled} value={view.sourceFilter} onChange={e=>session.sourcePage({page:0,filter:e.target.value as SourceFilter})}>
++          <option value="all">All source rows ({view.summary.candidates})</option>
++          <option value="exceptions">Rows with exceptions ({view.summary.invalid+view.summary.warningOnly})</option>
++          <option value="invalid">Invalid rows only ({view.summary.invalid})</option>
++        </select></label>
++        <button className="primary" disabled={disabled || !count} onClick={apply}>Apply {count} corrections</button>
++        <button disabled={disabled || !count} onClick={()=>{if(window.confirm(`Discard ${count} pending changes?`)) session.discardPending();}}>Discard pending changes</button>
++        <button disabled={disabled || !(view.summary.invalid+view.summary.warningOnly)} onClick={()=>session.sourcePage({page:0,filter:"all",nextAfter:view.sourceTarget ?? view.sourceRows.at(-1)?.id ?? ""})}>Next unresolved record</button>
++      </div>
++      <p role="status">{count ? `${count} pending corrections. Download is blocked until you apply or discard them.` : state.correctionMessage}</p>
++      <div className="table-scroll" tabIndex={0} role="region" aria-label="Source table, scroll horizontally">
++        <table>
++          <caption>{view.worksheet ? `Worksheet ${view.worksheet} · ` : ""}Uploaded source columns and original record references</caption>
++          <thead><tr><th>Source record / line</th><th>Result</th>{view.columns.map(c=><th key={c.key}>{c.header}</th>)}</tr></thead>
++          <tbody>{view.sourceRows.map(r=>{
++            const result=results.get(r.id);
++            const items=reviewIssues(result?.issues ?? []);
++            return <tr key={r.id}>
++              <th>{r.worksheet ? `${r.worksheet} · ` : ""}{r.record} / {r.line}</th>
++              <td>{result?.status ?? "Mapping needs attention"}</td>
++              {view.columns.map(c=>{
++                const related=items.filter(item=>item.sources.some(s=>s.source===c.key));
++                const severity=related.some(i=>i.issue.severity==="error") ? "error" : related.length ? "warning" : undefined;
++                const pending=pendingByCell.get(JSON.stringify([r.id,c.key]));
++                return <td key={c.key} className={[severity ? `source-${severity}` : "",pending ? "source-pending" : ""].join(" ")}>
++                  {severity && <strong>{severity==="error" ? "Source error" : "Source warning"}</strong>}
++                  <SourceCorrection cell={r.cells[c.position] ?? {kind:"text",raw:"",display:""}} header={c.header} record={r.record}
++                    disabled={disabled} pending={pending} navigation={view.sourceNavigation} target={view.sourceTarget===r.id && (view.sourceColumn ? view.sourceColumn===c.key : items[0]?.sources[0]?.source===c.key)}
++                    onSave={value=>{clearChoice();session.stageCorrection(r.id,c.key,value);}}
++                    onRevert={()=>{clearChoice();session.stageCorrection(r.id,c.key,"",true);}} />
++                </td>;
++              })}
++            </tr>;
++          })}</tbody>
++        </table>
++      </div>
++      <div className="pagination">
++        <button disabled={disabled || view.sourcePage===0} onClick={()=>session.sourcePage({page:view.sourcePage-1,filter:view.sourceFilter})}>Previous source page</button>
++        <span>Source page {view.sourcePage+1} of {view.sourceTotalPages}</span>
++        <button disabled={disabled || view.sourcePage+1>=view.sourceTotalPages} onClick={()=>session.sourcePage({page:view.sourcePage+1,filter:view.sourceFilter})}>Next source page</button>
++      </div>
++      {view.sourceRows.length>10 && <button disabled={disabled || !count} onClick={apply}>Apply {count} corrections</button>}
++    </section>}
++  </details>;
++}
+diff --git a/src/ui/Workspace.tsx b/src/ui/Workspace.tsx
+index 5422243..dd95c62 100644
+--- a/src/ui/Workspace.tsx
++++ b/src/ui/Workspace.tsx
+@@ -3,21 +3,22 @@ import { Session, type SessionState } from "../session/controller";
+ import {
+   makeWorkflow,
+   decodeWorkflow,
+   referencedHeaders,
+   type Workflow,
+   type Field,
+ } from "../engine/workflow";
+ import { displayValue } from "../engine/values";
+ import { exportText, type SafetyChoice } from "../formats/spreadsheet-safety";
+ import MappingRows from "./MappingRows";
+-import SourceCorrection from "./SourceCorrection";
++import SourceInspector from "./SourceInspector";
++import { reviewIssues } from "../engine/issues";
+ import SavedWorkflows from "./SavedWorkflows";
+ import { snapshotWorkflow, encodeWorkflow } from "../workflows/codec";
+ import type { StoredWorkflow } from "../workflows/indexeddb-store";
+ import sampleSource from "../../examples/u2/source.csv?raw";
+ import sampleConfig from "../../examples/u2/workflow.json?raw";
+ import fixedSource from "../../examples/u3-source.csv?raw";
+ import fixedConfig from "../../examples/u3-workflow.json?raw";
+ function saveDownload(bytes: Uint8Array, format: Workflow["output"]["format"]) {
+   const url = URL.createObjectURL(
+     new Blob([new Uint8Array(bytes)], { type: format === "xlsx" ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : "text/csv;charset=utf-8" }),
+@@ -30,62 +31,63 @@ function saveDownload(bytes: Uint8Array, format: Workflow["output"]["format"]) {
+ }
+ export default function Workspace() {
+   const [session] = useState(() => new Session());
+   const [state, setState] = useState<SessionState>(session.state);
+   const [workflow, setWorkflow] = useState<Workflow>(() => makeWorkflow([]));
+   const [dirty, setDirty] = useState(true);
+   const [delimiter, setDelimiter] = useState<"auto" | "," | ";" | "\t">("auto");
+   const [choice, setChoice] = useState<SafetyChoice>();
+   const [exceptions, setExceptions] = useState(false);
+   const [worksheet, setWorksheet] = useState("");
+-  const [inspectSource, setInspectSource] = useState(false);
++  const [canReturnToRepeat, setCanReturnToRepeat] = useState(false);
++  const [ruleTarget,setRuleTarget] = useState<string>();
+   const draftGeneration = useRef(0);
+   const pendingGeneration = useRef<number | undefined>(undefined);
+   const failedGeneration = useRef<number | undefined>(undefined);
+   const [baseline, setBaseline] = useState<StoredWorkflow>();
+   const [saving, setSaving] = useState(false);
+   const [opening, setOpening] = useState(false);
+   const [repeat, setRepeat] = useState(false);
+   const [activation, setActivation] = useState(0);
+   const durableID = useRef<string | undefined>(undefined);
+   const samplePending = useRef(false);
+   const activePolicy = useRef<Workflow["source"]["delimiter"]>("auto");
+   const currentWorkflow = useRef(workflow);
+   currentWorkflow.current = workflow;
+   const statusRef = useRef<HTMLParagraphElement>(null);
+   useEffect(() => {
+     session.onState = (s) => {
+       setState(s);
+-      if (!s.view) setInspectSource(false);
++
+       if (!s.busy) {
+         setExceptions(s.view?.exceptions ?? false);
+         const completed = pendingGeneration.current;
+         if (completed !== undefined) {
+           pendingGeneration.current = undefined;
+           if (s.error || s.recoverable)
+             failedGeneration.current = draftGeneration.current;
+           else if (completed === draftGeneration.current) setDirty(false);
+         }
+       }
+-      if (s.error) { samplePending.current = false; statusRef.current?.focus(); }
++      if (s.error) { samplePending.current = false; statusRef.current?.focus({preventScroll:true}); }
+     };
+     session.onDownload = saveDownload;
+     session.onSourcePolicy = (policy, format = "csv", worksheet) => {
+       activePolicy.current = policy;
+       setWorkflow((w) => ({ ...w, source: { ...w.source, delimiter: policy, format, worksheet } }));
+     };
+     session.onWorkflow = (w) => {
+       if (samplePending.current) {
+         samplePending.current = false;
+         setBaseline(undefined);
+         durableID.current = undefined;
+-        setRepeat(false);
++        setRepeat(false); setCanReturnToRepeat(false);
+       }
+       draftGeneration.current++;
+       pendingGeneration.current = undefined;
+       failedGeneration.current = undefined;
+       activePolicy.current = w.source.delimiter;
+       setDelimiter(w.source.delimiter);
+       setWorkflow(w);
+       setDirty(false);
+       setChoice(undefined);
+     };
+@@ -146,50 +148,51 @@ export default function Workspace() {
+       pendingGeneration.current = generation;
+       session.configure(current);
+     }, 250);
+     return () => clearTimeout(timer);
+   }, [dirty, busy, opening, view, state.recoverable, workflow, session]);
+   let unsaved = workflow.fields.length > 0;
+   if (baseline) {
+     try { unsaved = encodeWorkflow({ ...workflow, source: { ...workflow.source, delimiter: activePolicy.current } }) !== baseline.json; }
+     catch { unsaved = true; }
+   }
+-  const confirmReplacement = () => !(unsaved || view || state.recoverable) || window.confirm("Replace the current conversion? Unsaved configuration and source data in this session will be discarded.");
++  const confirmReplacement = () => !(unsaved || view || state.recoverable || state.pendingCorrections.length) || window.confirm("Replace the current conversion? Unsaved configuration, pending corrections and source data in this session will be discarded.");
+   const resetWorking = () => {
+     samplePending.current = false;
+     setOpening(false);
+     draftGeneration.current++;
+     pendingGeneration.current = undefined;
+     failedGeneration.current = undefined;
+     setActivation((n) => n + 1);
+     setChoice(undefined);
+     setExceptions(false);
+     durableID.current = undefined;
+     setBaseline(undefined);
+     session.end();
+   };
+   const activate = (next: Workflow, record?: StoredWorkflow) => {
+     if (!confirmReplacement()) return false;
+     resetWorking();
+     setRepeat(true);
++    setCanReturnToRepeat(true);
+     setBaseline(record);
+     session.activate(next);
+     return true;
+   };
+   const newConversion = () => {
+     if (!confirmReplacement()) return;
+     resetWorking();
+     activePolicy.current = "auto";
+     setDelimiter("auto");
+     setWorkflow(makeWorkflow([]));
+     setDirty(true);
+-    setRepeat(false);
++    setRepeat(false); setCanReturnToRepeat(false);
+   };
+   const snapshot = (copy = false) => {
+     const current = currentWorkflow.current;
+     const next = snapshotWorkflow({ ...current, source: { ...current.source, delimiter: activePolicy.current } });
+     if (copy) next.id = crypto.randomUUID();
+     else if (next.id === "draft") next.id = durableID.current ??= crypto.randomUUID();
+     return next;
+   };
+   const saved = (record: StoredWorkflow) => {
+     setBaseline(record);
+@@ -213,24 +216,37 @@ export default function Workspace() {
+     !dirty &&
+     !busy &&
+     !opening &&
+     !state.recoverable &&
+     view.workflowIssues.length === 0;
+   const risk = Boolean(
+     validPreview && workflow.output.format === "csv" && (view.csvRisk || view.riskyHeaders.length),
+   );
+   const canExport = Boolean(
+     validPreview &&
++      !state.pendingCorrections.length &&
+       eligibleCount > 0 &&
+       (!view.summary.invalid || state.partialAcknowledged) &&
+       (!risk || choice),
+   );
++  useEffect(() => {
++    if (!state.pendingCorrections.length) return;
++    const warn = (event: BeforeUnloadEvent) => {event.preventDefault();};
++    window.addEventListener("beforeunload",warn);
++    return () => window.removeEventListener("beforeunload",warn);
++  },[state.pendingCorrections.length]);
++  useEffect(() => {
++    if (!ruleTarget || repeat || !view) return;
++    const card = [...document.querySelectorAll<HTMLElement>(".matching [data-field-id]")].find(node=>node.dataset.fieldId===ruleTarget);
++    card?.querySelector<HTMLButtonElement>("button.edit")?.click();
++    setRuleTarget(undefined);
++  },[ruleTarget,repeat,view]);
+   const outputDelimiterLabel = { ",": "comma", ";": "semicolon", "\t": "tab" }[workflow.output.delimiter];
+   return (
+     <main>
+       <header className="masthead">
+         <div>
+           <p className="eyebrow">OPERATIONS DATA CLEANER · EXCEL & CSV PREVIEW</p>
+           <h1>Match your columns.</h1>
+           <p>Map a source table to the columns your import needs.</p>
+         </div>
+         <div className="privacy">
+@@ -245,25 +261,30 @@ export default function Workspace() {
+       </nav>
+       <SavedWorkflows workflow={workflow} baseline={baseline} disabled={busy || saving} writePending={saving || opening}
+         openPending={opening} opening={setOpening}
+         generation={activation} unsaved={unsaved}
+         name={(name) => setWorkflow((w) => ({ ...w, name }))}
+         snapshot={snapshot} activate={activate} saved={saved} saving={setSaving} reset={newConversion} />
+       {repeat && <section className="panel repeat-summary" aria-label="Repeat workflow">
+         <h2>{workflow.name || "Imported workflow"}</h2>
+         <p>{workflow.fields.length} output columns. Upload a compatible source CSV or Excel file, review the current results, then download.</p>
+         <p>{workflow.output.format === "xlsx" ? `Excel output · ${workflow.output.dateSystem} date system` : `CSV output: ${outputDelimiterLabel} · ${workflow.output.bom ? "with BOM" : "no BOM"}`} · {workflow.output.header ? "with header" : "no header"}</p>
+-        <button onClick={() => setRepeat(false)}>Edit workflow</button>
++        {unsaved && <p><strong>Unsaved workflow changes retained.</strong> Save explicitly to update this browser.</p>}
++        <button disabled={busy || opening} onClick={() => setRepeat(false)}>Edit workflow</button>
++      </section>}
++      {!repeat && (canReturnToRepeat || baseline) && <section className="panel editing-summary" aria-label="Editing workflow">
++        <button onClick={()=>setRepeat(true)}>Done editing</button>
++        <p>{unsaved ? "Unsaved workflow changes retained. Save explicitly when ready." : "Workflow changes are saved."} Validation and download checks still apply.</p>
+       </section>}
+       {state.replacement && <section className="panel" role="alertdialog" aria-label="Replace source file" aria-describedby="replacement-warning">
+         <h2>Discard session corrections?</h2>
+-        <p id="replacement-warning">Replacing the source discards your session corrections after the new file loads successfully. Cancel keeps the current source and corrections.</p>
++        <p id="replacement-warning">Replacing the source discards your pending and applied session corrections after the new file loads successfully. Cancel keeps the current source and corrections.</p>
+         <button onClick={() => void session.confirmReplacement()}>Replace source and discard corrections</button>
+         <button onClick={() => session.cancelReplacement()}>Keep current source</button>
+       </section>}
+       <section aria-labelledby="upload-title" className="panel upload">
+         <div>
+           <h2 id="upload-title">1. Choose your source</h2>
+           <p>
+             UTF-8 CSV or .xlsx with a header row. Choose one worksheet. Leading zeros and spaces are preserved.
+           </p>
+         </div>
+@@ -307,21 +328,23 @@ export default function Workspace() {
+           >
+             Try sample data
+           </button>
+           <button disabled={busy || saving || opening} onClick={() => { void sample(true); }}>
+             Try fixed fields example
+           </button>
+           {(view || state.recoverable) && (
+             <button
+               disabled={busy || saving || opening}
+               onClick={() => {
++                if (state.pendingCorrections.length && !window.confirm("End session and discard pending corrections?")) return;
+                 resetWorking();
++                setCanReturnToRepeat(false);
+                 setWorkflow(makeWorkflow([]));
+                 activePolicy.current = "auto";
+                 setDelimiter("auto");
+                 setDirty(true);
+                 setRepeat(false);
+               }}
+             >
+               End session
+             </button>
+           )}
+@@ -368,73 +391,21 @@ export default function Workspace() {
+               failedGeneration.current = undefined;
+               void session.retry();
+             }}
+           >
+             Retry active file
+           </button>
+         )}
+       </div>
+       {view && (
+         <div className="workspace">
+-          <details className="panel source-inspection" onToggle={(event) => {
+-            if (event.target === event.currentTarget) setInspectSource(event.currentTarget.open);
+-          }}>
+-            <summary>Inspect original source table</summary>
+-            {inspectSource && <section aria-labelledby="source-title">
+-              <h2 id="source-title">Source table</h2>
+-              <p>
+-                Current source values · {view.sourceRows.length} rows on this preview page. Corrections stay in this session; originals remain inspectable.
+-              </p>
+-              <div
+-                className="table-scroll"
+-                tabIndex={0}
+-                role="region"
+-                aria-label="Source table, scroll horizontally"
+-              >
+-                <table>
+-                  <caption>
+-                    {view.worksheet ? `Worksheet ${view.worksheet} · ` : ""}Uploaded source columns and original record references
+-                  </caption>
+-                  <thead>
+-                    <tr>
+-                      <th>Source record / line</th>
+-                      {view.columns.map((c) => (
+-                        <th key={c.key}>{c.header}</th>
+-                      ))}
+-                    </tr>
+-                  </thead>
+-                  <tbody>
+-                    {view.sourceRows.map((r) => (
+-                      <tr key={r.id}>
+-                        <th>
+-                          {view.worksheet ? `${view.worksheet} · ` : ""}{r.record} / {r.line}
+-                        </th>
+-                        {view.columns.map((c) => (
+-                          <td key={c.key}>
+-                            <SourceCorrection
+-                              key={r.id + c.key}
+-                              cell={r.cells[c.position] ?? {kind:"text",raw:"",display:""}}
+-                              header={c.header}
+-                              record={r.record}
+-                              disabled={busy || dirty || state.recoverable}
+-                              onSave={value => { setChoice(undefined); session.correct(r.id, c.key, value); }}
+-                              onRevert={() => { setChoice(undefined); session.correct(r.id, c.key, "", true); }}
+-                            />
+-                          </td>
+-                        ))}
+-                      </tr>
+-                    ))}
+-                  </tbody>
+-                </table>
+-              </div>
+-            </section>}
+-          </details>
++          <SourceInspector session={session} state={state} disabled={busy || dirty || opening || state.recoverable} clearChoice={()=>setChoice(undefined)} />
+           {!repeat && <MappingRows key={activation}
+             view={view}
+             fields={workflow.fields}
+             disabled={opening || (busy && state.busy !== "Checking all rows…")}
+             importing={busy || opening}
+             change={change}
+             makeFields={makeFields}
+             importTemplate={(file) => {
+               setChoice(undefined);
+               setWorksheet("");
+@@ -683,33 +654,36 @@ export default function Workspace() {
+                         disabled={busy || opening || view.page + 1 >= view.totalPages}
+                         onClick={() =>
+                           session.page(view.page + 1, view.exceptions, view.invalidOnly)
+                         }
+                       >
+                         Next page
+                       </button>
+                     </div>
+                     {view.rows.some(row => row.issues.length) && (
+                       <ul className="issues" aria-label="Exception details">
+-                        {view.rows
+-                          .flatMap((r) => r.issues)
+-                          .map((issue, i) => (
+-                            <li key={i}>
+-                              <strong>
+-                                {view.worksheet ? `${view.worksheet} · ` : ""}Record {issue.record}, line {issue.line}:
+-                              </strong>{" "}
+-                              {issue.reason} {issue.action}{" "}
+-                              <span className="small">Field: {workflow.fields.find(field => field.id === issue.field)?.header ?? issue.field} · {issue.severity}</span>
+-                            </li>
+-                          ))}
++                        {view.rows.flatMap(row => reviewIssues(row.issues).map(item => <li key={item.key}>
++                          <strong>{view.worksheet ? `${view.worksheet} · ` : ""}Record {item.issue.record}, line {item.issue.line}:</strong>{" "}
++                          {item.issue.reason} {item.issue.action}{" "}
++                          <span className="small">Affected outputs: {item.fields.map(id=>workflow.fields.find(f=>f.id===id)?.header ?? id).join(", ")} · {item.issue.severity}</span>
++                          <div className="issue-actions">{item.sources.map(source=><button key={JSON.stringify(source)} disabled={busy || dirty || opening} onClick={()=>session.sourcePage({page:0,filter:"all",target:row.id,column:source.source})}>
++                            Inspect {view.columns.find(c=>c.key===source.source)?.header ?? source.source}, record {row.record}
++                          </button>)}
++                          {(item.rule || !item.sources.length) && <button disabled={busy || opening} onClick={()=>{setRepeat(false);setRuleTarget(item.rule ?? item.issue.field);}}>Review {workflow.fields.find(f=>f.id===(item.rule ?? item.issue.field))?.header ?? "workflow"} settings</button>}
++                          </div>
++                        </li>))}
++
+                       </ul>
+                     )}
++                    <details className="diagnostics"><summary>Full issue diagnostics (including dependent effects)</summary>
++                      <ul>{view.rows.flatMap(r=>r.issues).map((issue,i)=><li key={i}>Record {issue.record}, line {issue.line}: {issue.code} · {issue.reason} {issue.action}</li>)}</ul>
++                    </details>
+                   </>
+                 )}
+               </>
+             )}
+             <button
+               className="primary download"
+               disabled={!canExport}
+               onClick={() => session.export(choice)}
+             >
+               Download converted {workflow.output.format === "xlsx" ? "Excel" : "CSV"}
+diff --git a/src/ui/styles.css b/src/ui/styles.css
+index 7424775..3dd7dfb 100644
+--- a/src/ui/styles.css
++++ b/src/ui/styles.css
+@@ -907,20 +907,31 @@ h3 {
+ .workflow-controls { margin-bottom: 16px; padding: 14px 18px; }
+ .workflow-controls h2 { font-size: 15px; }
+ .workflow-controls p { font-size: 12px; margin: 6px 0; overflow-wrap: anywhere; }
+ .workflow-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: end; }
+ .workflow-actions label { flex: 1 1 180px; min-width: 0; font-size: 12px; max-width: 300px; }
+ .workflow-actions button { font-size: 12px; }
+ .workflow-actions input[type=file] { max-width: 100%; font-size: 11px; }
+ .workflow-actions span { font-size: 12px; padding: 10px; }
+ .repeat-summary { margin-bottom: 16px; }
+ .repeat-summary p { font-size: 13px; }
++.editing-summary { margin-bottom: 16px; }
++.source-actions, .issue-actions { display:flex; flex-wrap:wrap; align-items:end; gap:8px; margin:12px 0; }
++.source-actions label { flex:1 1 220px; }
++.source-inspection td { min-width:180px; vertical-align:top; }
++.source-inspection textarea { width:100%; min-height:72px; }
++.source-error { background:#fff0ed; border-left:4px solid #a32c18; }
++.source-error > strong { color:#84200f; }
++.source-warning { background:#fff8df; border-left:4px solid #85620a; }
++.source-pending { outline:2px dashed #345b9e; outline-offset:-3px; }
++.pending-marker { color:#24467d; font-weight:700; }
++.diagnostics { margin:12px 0; overflow-wrap:anywhere; }
+ @media (max-width: 700px) { .workflow-actions label { max-width: 100%; flex-basis: 100%; } }
+ 
+ .suggestions {
+   margin-top: 6px;
+   padding: 8px;
+   border-left: 3px solid #a47821;
+   background: #fff8e8;
+   font-size: 12px;
+ }
+ .suggestions p { margin: 0 0 6px; }
+diff --git a/tests/e2e/acceptance-corrections.spec.ts b/tests/e2e/acceptance-corrections.spec.ts
+new file mode 100644
+index 0000000..42057f8
+--- /dev/null
++++ b/tests/e2e/acceptance-corrections.spec.ts
+@@ -0,0 +1,176 @@
++import { test, expect, type Page } from "@playwright/test";
++import AxeBuilder from "@axe-core/playwright";
++import { readdir } from "node:fs/promises";
++import * as XLSX from "xlsx";
++import { makeWorkflow, referencedHeaders, type Workflow } from "../../src/engine/workflow";
++import { download, edit, closeSettings, upload } from "./helpers";
++
++async function open(page: Page, workflow: Workflow, csv: string) {
++  workflow.source.referencedHeaders = referencedHeaders(workflow.fields);
++  await page.goto("/");
++  await page.getByLabel("Import workflow", {exact:true}).setInputFiles({name:"synthetic.json",mimeType:"application/json",buffer:Buffer.from(JSON.stringify(workflow))});
++  await expect(page.getByRole("button",{name:"Edit workflow",exact:true})).toBeVisible();
++  await upload(page,csv);
++}
++function quantityWorkflow() {
++  const w = makeWorkflow(["Reference","ConvertedCases"]);
++  w.name="Synthetic batch";
++  w.fields[0].recipe={kind:"copy",source:"id"};
++  w.fields[1].type="number"; w.fields[1].required=true;
++  w.fields[1].recipe={kind:"calculate",operation:"divide",left:{kind:"source",source:"units"},right:{kind:"number",decimal:"4"}};
++  return w;
++}
++const apply = (page: Page, count: number) => page.getByRole("button",{name:`Apply ${count} corrections`,exact:true}).first().click();
++
++test("Done editing retains unsaved configuration across repeat mode and portable workflows", async ({page}) => {
++  await open(page,quantityWorkflow(),"ID,Units\n001234,12");
++  await page.getByRole("button",{name:"Save workflow",exact:true}).click();
++  await expect(page.getByText("Saved in this browser.",{exact:true})).toBeVisible();
++  await page.getByRole("button",{name:"Edit workflow",exact:true}).click();
++  await edit(page,"Reference");
++  await page.getByLabel("Output column name",{exact:true}).fill("Unsaved reference");
++  await closeSettings(page);
++  await page.getByRole("button",{name:"Done editing",exact:true}).click();
++  await expect(page.getByLabel("Repeat workflow")).toContainText("Unsaved");
++  expect((await download(page)).toString()).toBe("Unsaved reference,ConvertedCases\r\n001234,3\r\n");
++  await page.getByRole("button",{name:"Edit workflow",exact:true}).click();
++  await edit(page,"Unsaved reference");
++  await expect(page.getByLabel("Output column name",{exact:true})).toHaveValue("Unsaved reference");
++  await closeSettings(page);
++  await page.getByRole("button",{name:"Done editing",exact:true}).click();
++  // Exiting did not implicitly update the saved workflow.
++  await page.reload();
++  await page.getByLabel("Saved workflows",{exact:true}).selectOption({label:"Synthetic batch"});
++  await page.getByRole("button",{name:"Open workflow",exact:true}).click();
++  await upload(page,"ID,Units\n001234,12");
++  expect((await download(page)).toString()).toBe("Reference,ConvertedCases\r\n001234,3\r\n");
++});
++
++test("one address root cause navigates and highlights the original cell; diagnostics and independent errors remain", async ({page}) => {
++  const w=makeWorkflow(["Street","City","Province","PostalCode","Required"]);
++  w.fields.slice(0,4).forEach((f,index)=>{f.required=true;f.recipe={kind:"split",source:"address",delimiter:",",segments:4,index,trim:true,optionalEmpty:[]};});
++  w.fields[4].required=true;w.fields[4].recipe={kind:"copy",source:"empty"};
++  await open(page,w,'Address,Empty\n"Street,City,Province,Postal,Extra",');
++  const review=page.getByLabel("Exception details");
++  await expect(review.locator(":scope > li")).toHaveCount(2);
++  await expect(review).toContainText("Street, City, Province, PostalCode");
++  await review.getByRole("button",{name:"Inspect Address, record 2",exact:true}).click();
++  const input=page.getByLabel("Replacement for Address, record 2",{exact:true});
++  await expect(input).toBeFocused();
++  await expect(input.locator("xpath=ancestor::td")).toHaveClass(/source-error/);
++  await input.fill("Street,City,Province,Postal");
++  await expect(page.getByText("Pending change",{exact:true})).toBeVisible();
++  await apply(page,1);
++  await expect(page.getByLabel("Full dataset counts")).toContainText("Invalid 1");
++  await expect(review.locator(":scope > li")).toHaveCount(1);
++  await expect(review).toContainText("Required is required but blank");
++});
++
++test("independent filters retain multi-page drafts and apply once without changing output pages", async ({page,context}, info) => {
++  const unexpected:string[]=[];
++  const assets=new Set(["/","/index.html",...(await readdir("dist/assets")).map(f=>"/assets/"+f)]);
++  await context.route("**/*",async route=>{
++    const r=route.request(),u=new URL(r.url());
++    if(u.origin!=="http://127.0.0.1:4173" || r.method()!=="GET" || !assets.has(u.pathname) || u.search) {unexpected.push(r.url());await route.abort();}
++    else await route.continue();
++  });
++  await context.routeWebSocket(/.*/,ws=>{unexpected.push(ws.url());ws.close();});
++  const rows=Array.from({length:125},(_,i)=>`${String(i).padStart(6,"0")},${i===124?"=WARNING":i%2?"Twelve":"12"}`);
++  await open(page,quantityWorkflow(),"ID,Units\n"+rows.join("\n"));
++  const counts=page.getByLabel("Full dataset counts");
++  await expect(counts).toContainText("Invalid 63");
++  await page.getByRole("button",{name:"Next page",exact:true}).click();
++  await expect(page.getByRole("region",{name:"Output preview, scroll horizontally"})).toContainText("000050");
++  await page.getByText("Inspect original source table",{exact:true}).click();
++  await page.getByLabel("Source row filter",{exact:true}).selectOption("invalid");
++  const source=page.getByRole("region",{name:"Source table, scroll horizontally"});
++  await expect(source.locator("tbody tr")).toHaveCount(50);
++  await page.getByRole("button",{name:"Correct Units, record 3",exact:true}).click();
++  await page.getByLabel("Replacement for Units, record 3",{exact:true}).fill("12");
++  await page.getByRole("button",{name:"Next source page",exact:true}).click();
++  await page.getByRole("button",{name:"Correct Units, record 103",exact:true}).click();
++  await page.getByLabel("Replacement for Units, record 103",{exact:true}).fill("20");
++  await page.getByLabel("Source row filter",{exact:true}).selectOption("all");
++  await expect(page.getByRole("button",{name:"Apply 2 corrections",exact:true}).first()).toBeEnabled();
++  await expect(page.getByRole("button",{name:"Download converted CSV",exact:true})).toBeDisabled();
++  await apply(page,2);
++  await expect(counts).toContainText("Invalid 61");
++  await expect(counts).toContainText("Corrected 2");
++  await expect(page.getByRole("region",{name:"Output preview, scroll horizontally"})).toContainText("000050");
++  await expect(page.getByRole("status").filter({hasText:"Applied 2 corrections"})).toBeVisible();
++  await page.getByLabel(/I acknowledge that .* invalid rows will be excluded/).check();
++  const expected=Array.from({length:125},(_,i)=>i%2===0 && i!==124 || i===1 || i===101 ? `${String(i).padStart(6,"0")},${i===101?"5":"3"}\r\n`:"").join("");
++  expect((await download(page)).toString()).toBe("Reference,ConvertedCases\r\n"+expected);
++  if(info.project.name==="chromium") {
++    await page.screenshot({path:"docs/reviews/issue-14/screenshots/batch-desktop.png",fullPage:true});
++    await page.setViewportSize({width:390,height:844});
++    await page.screenshot({path:"docs/reviews/issue-14/screenshots/batch-mobile.png",fullPage:true});
++  }
++  expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
++  expect(unexpected).toEqual([]);
++  await info.attach("batch-privacy.json",{body:JSON.stringify({unexpected}),contentType:"application/json"});
++});
++
++test("pending changes survive cancelled loss, failed replacement and inspection, with explicit discard",async({page})=>{
++  await open(page,quantityWorkflow(),"ID,Units\n001234,Twelve");
++  await page.getByLabel("Exception details").getByRole("button",{name:"Inspect Units, record 2",exact:true}).click();
++  const input=page.getByLabel("Replacement for Units, record 2",{exact:true});
++  await input.fill("12");
++  await page.getByText("Inspect original source table",{exact:true}).click();
++  await page.getByText("Inspect original source table",{exact:true}).click();
++  await expect(input).toHaveValue("12");
++  page.once("dialog",dialog=>dialog.dismiss());
++  await page.getByRole("button",{name:"End session",exact:true}).click();
++  await expect(input).toHaveValue("12");
++  await page.getByLabel("Upload source CSV",{exact:true}).setInputFiles({name:"invalid.csv",mimeType:"text/csv",buffer:Buffer.from("ID,ID\na,b")});
++  await page.getByRole("button",{name:"Keep current source",exact:true}).click();
++  await expect(input).toHaveValue("12");
++  await page.getByLabel("Upload source CSV",{exact:true}).setInputFiles({name:"invalid.csv",mimeType:"text/csv",buffer:Buffer.from("ID,ID\na,b")});
++  await page.getByRole("button",{name:"Replace source and discard corrections",exact:true}).click();
++  await expect(page.getByRole("alert")).toBeVisible();
++  await expect(input).toHaveValue("12");
++  page.once("dialog",dialog=>dialog.dismiss());
++  await page.getByRole("button",{name:"Discard pending changes",exact:true}).click();
++  await expect(input).toHaveValue("12");
++  page.once("dialog",dialog=>dialog.accept());
++  await page.getByRole("button",{name:"Discard pending changes",exact:true}).click();
++  await expect(input).toHaveValue("Twelve");
++  await expect(page.getByRole("button",{name:"Download converted CSV",exact:true})).toBeDisabled();
++});
++
++test("rule failures open settings instead of highlighting valid source data",async({page})=>{
++  const w=quantityWorkflow();
++  w.fields[1].recipe={kind:"calculate",operation:"divide",left:{kind:"source",source:"units"},right:{kind:"number",decimal:"3"}};
++  await open(page,w,"ID,Units\n001234,1");
++  const review=page.getByLabel("Exception details");
++  await expect(review.getByRole("button",{name:/Inspect/})).toHaveCount(0);
++  await review.getByRole("button",{name:"Review ConvertedCases settings",exact:true}).click();
++  await expect(page.getByRole("dialog",{name:/ConvertedCases.*column settings/})).toBeVisible();
++  await closeSettings(page);
++  await page.getByRole("button",{name:"Done editing",exact:true}).click();
++  await expect(page.getByRole("button",{name:"Download converted CSV",exact:true})).toBeDisabled();
++});
++
++test("off-page Excel exception navigation preserves worksheet provenance and reaches the next unresolved record",async({page},info)=>{
++  const w=quantityWorkflow();w.source.referencedHeaders=referencedHeaders(w.fields);
++  const book=XLSX.utils.book_new();
++  XLSX.utils.book_append_sheet(book,XLSX.utils.aoa_to_sheet([["ID","Units"],...Array.from({length:105},(_,i)=>[String(i).padStart(6,"0"),i===53 || i===101 ? "Twelve" : "12"])]),"Orders");
++  await page.goto("/");
++  await page.getByLabel("Import workflow",{exact:true}).setInputFiles({name:"synthetic.json",mimeType:"application/json",buffer:Buffer.from(JSON.stringify(w))});
++  await page.getByLabel("Upload source CSV",{exact:true}).setInputFiles({name:"synthetic.xlsx",mimeType:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",buffer:Buffer.from(XLSX.write(book,{type:"buffer",bookType:"xlsx"}))});
++  await expect(page.getByLabel("Full dataset counts")).toContainText("Invalid 2");
++  await page.getByLabel("Show only rows with exceptions").check();
++  await page.getByLabel("Exception details").getByRole("button",{name:"Inspect Units, record 103",exact:true}).click();
++  const input=page.getByLabel("Replacement for Units, record 103",{exact:true});
++  await expect(input).toBeFocused();
++  await expect(page.getByText("Source page 3 of 3",{exact:true})).toBeVisible();
++  await expect(page.getByRole("region",{name:"Source table, scroll horizontally"})).toContainText("Worksheet Orders");
++  await input.fill("12");
++  if(info.project.name==="chromium") {
++    await page.locator(".source-inspection").screenshot({path:"docs/reviews/issue-14/screenshots/highlighted-pending.png"});
++  }
++  await apply(page,1);
++  await expect(page.getByRole("region",{name:"Source table, scroll horizontally"})).toContainText("Original: Twelve");
++  await page.getByRole("button",{name:"Next unresolved record",exact:true}).click();
++  await expect(page.getByLabel("Replacement for Units, record 55",{exact:true})).toBeFocused();
++});
+diff --git a/tests/e2e/constants.spec.ts b/tests/e2e/constants.spec.ts
+index bcc6aa4..60e5901 100644
+--- a/tests/e2e/constants.spec.ts
++++ b/tests/e2e/constants.spec.ts
+@@ -79,21 +79,21 @@ test("fixed fields complete without sources, trim validates resulting text and r
+   await page.getByLabel("Maximum characters", { exact: true }).fill("4");
+   await closeSettings(page);
+   await preview(page);
+   await expect(page.getByRole("button", { name: "Download converted CSV" })).toBeDisabled();
+   await edit(page, "Name");
+   await page.getByLabel("Remove leading and trailing whitespace", { exact: true }).check();
+   await closeSettings(page);
+   await preview(page);
+   await expect(page.getByRole("cell", { name: "A B", exact: true })).toHaveText("A  B");
+   await page.locator(".source-inspection summary").click();
+-  expect(await page.getByRole("region", { name: "Source table, scroll horizontally" }).getByRole("cell").nth(1).locator("span").first().textContent()).toBe("  A  B  ");
++  expect(await page.getByRole("button", {name:"Correct Name, record 2",exact:true}).locator("..").locator("span").first().textContent()).toBe("  A  B  ");
+   await page.getByRole("button", { name: "Reorder pair Weight", exact: true }).press("Alt+ArrowUp");
+   await preview(page);
+   expect((await download(page)).toString()).toBe("Weight,CustomerCode,Blank,Name\r\n12.50,0012,,A  B\r\n12.50,0012,,C  D\r\n");
+   await page.getByRole("button", { name: "Reorder pair Weight", exact: true }).dragTo(page.locator(".pair").last());
+   await preview(page);
+   expect((await download(page)).toString()).toBe("CustomerCode,Blank,Name,Weight\r\n0012,,A  B,12.50\r\n0012,,C  D,12.50\r\n");
+   // An explicit source match replaces a numeric constant and returns to text copy semantics.
+   await map(page, "Weight", "id");
+   await preview(page);
+   expect((await download(page)).toString()).toContain("0012,,A  B,001\r\n");
+diff --git a/tests/e2e/correction-reupload.spec.ts b/tests/e2e/correction-reupload.spec.ts
+index 6d2f8e2..ee82dd8 100644
+--- a/tests/e2e/correction-reupload.spec.ts
++++ b/tests/e2e/correction-reupload.spec.ts
+@@ -1,17 +1,17 @@
+ import { test, expect } from '@playwright/test';
+ import { readdir, readFile } from 'node:fs/promises';
+ import { upload, add, map, calculation, download, edit, closeSettings } from './helpers';
+ async function correct(page: import('@playwright/test').Page, header: string, record: number, value: string) {
+-  await page.getByRole('button', {name: 'Correct '+header+', record '+record, exact:true}).click();
++  if(!await page.getByLabel('Replacement for '+header+', record '+record, {exact:true}).isVisible()) await page.getByRole('button', {name: 'Correct '+header+', record '+record, exact:true}).click();
+   await page.getByLabel('Replacement for '+header+', record '+record, {exact:true}).fill(value);
+-  await page.getByRole('button', {name:'Apply correction',exact:true}).click();
++  await page.getByRole('button', {name:'Apply 1 corrections',exact:true}).first().click();
+   await expect(page.locator('.status-bar [role=status]')).not.toContainText('Rechecking');
+ }
+ test('source corrections repair dependents, revert, preserve replacement failures and recover cancelled parsing privately', async ({page, context}, info) => {
+   const unexpected: string[] = [], diagnostics: string[] = [];
+   const assets = new Set(['/', '/index.html', ...(await readdir('dist/assets')).map(f=>'/assets/'+f)]);
+   await context.route('**/*', async route => {
+     const r=route.request(), u=new URL(r.url());
+     if(u.origin!=='http://127.0.0.1:4173'||r.method()!=='GET'||!assets.has(u.pathname)||u.search) {unexpected.push(r.url()); await route.abort();}
+     else await route.continue();
+   });
+@@ -26,25 +26,26 @@ test('source corrections repair dependents, revert, preserve replacement failure
+   expect((await download(page)).toString()).toBe('Reference,Double,Triple\r\nPRIVATE_U11_ORIGINAL,48,72\r\n');
+   await expect(page.getByRole('region',{name:'Source table, scroll horizontally'})).toContainText('Original: Twenty Four');
+   await correct(page,'ID',2,'PRIVATE_U11_CORRECTED');
+   await page.getByLabel('Workflow name',{exact:true}).fill('U11 synthetic');
+   const backupEvent=page.waitForEvent('download'); await page.getByRole('button',{name:'Download workflow',exact:true}).click();
+   const portable=await readFile((await (await backupEvent).path())!);
+   expect(portable.toString()).not.toMatch(/PRIVATE_U11|Twenty Four/);
+   await page.getByRole('button',{name:'Save workflow',exact:true}).click();
+   await expect(page.getByText('Saved in this browser.',{exact:true})).toBeVisible();
+   await page.getByRole('button',{name:'Revert Qty, record 2',exact:true}).click();
++  await page.getByRole('button',{name:'Apply 1 corrections',exact:true}).first().click();
+   await expect(page.getByRole('button',{name:'Download converted CSV',exact:true})).toBeDisabled();
+   await correct(page,'Qty',2,'24');
+-  await page.getByRole('button',{name:'Correct Qty, record 2',exact:true}).click();
++  if(!await page.getByLabel('Replacement for Qty, record 2',{exact:true}).isVisible()) await page.getByRole('button',{name:'Correct Qty, record 2',exact:true}).click();
+   await page.getByRole('region',{name:'Source table, scroll horizontally'}).screenshot({path:'docs/reviews/u11/screenshots/correction-editor.png'});
+-  await page.getByRole('button',{name:'Cancel edit',exact:true}).click();
++  await page.getByLabel('Replacement for Qty, record 2',{exact:true}).locator('..').locator('..').getByRole('button',{name:'Cancel edit',exact:true}).click();
+   await page.screenshot({path:'docs/reviews/u11/screenshots/corrected-desktop.png',fullPage:true});
+   await page.getByLabel('Upload source CSV').setInputFiles({name:'replacement.csv',mimeType:'text/csv',buffer:Buffer.from('ID,Qty\nNEW,2')});
+   await expect(page.getByRole('alertdialog')).toBeVisible();
+   await page.screenshot({path:'docs/reviews/u11/screenshots/replacement-warning.png',fullPage:true});
+   await page.getByRole('button',{name:'Keep current source',exact:true}).click();
+   expect((await download(page)).toString()).toContain('PRIVATE_U11_CORRECTED,48,72');
+   await page.getByLabel('Upload source CSV').setInputFiles({name:'bad.csv',mimeType:'text/csv',buffer:Buffer.from('ID,ID\na,b')});
+   await page.getByRole('button',{name:'Replace source and discard corrections',exact:true}).click();
+   await expect(page.getByRole('alert')).toBeVisible();
+   expect((await download(page)).toString()).toContain('PRIVATE_U11_CORRECTED,48,72');
+@@ -78,37 +79,40 @@ test('source corrections repair dependents, revert, preserve replacement failure
+   });
+   expect(stored).not.toMatch(/PRIVATE_U11|Twenty Four/);
+   expect(unexpected).toEqual([]); expect(diagnostics.join('\n')).not.toMatch(/PRIVATE_U11|Twenty Four/);
+   await info.attach('privacy.json',{body:JSON.stringify({unexpected,diagnosticLeaks:0}),contentType:'application/json'});
+ });
+ test('10000 rows retain identity after clearing and correcting a later preview page',async({page,browser},info)=>{
+   await page.goto('/'); await upload(page,'ID\n'+Array.from({length:10000},(_,i)=>String(i).padStart(6,'0')).join('\n'));
+   await add(page,['Reference']); await map(page,'Reference','id');
+   await page.getByRole('button',{name:'Next page',exact:true}).click();
+   await page.getByText('Inspect original source table',{exact:true}).click();
++  await page.getByRole('button',{name:'Next source page',exact:true}).click();
+   const start=performance.now(); await correct(page,'ID',52,'');
+   const bytes=await download(page);
+   expect(bytes.toString()).toBe('Reference\r\n'+Array.from({length:10000},(_,i)=>(i===50?'':String(i).padStart(6,'0'))+'\r\n').join(''));
+   await expect(page.getByLabel('Full dataset counts')).toContainText('Candidate rows 10000');
+   const elapsed=performance.now()-start;
+   await info.attach('correction-timing.json',{body:JSON.stringify({rows:10000,correctionThroughExportMs:elapsed,browser:browser.version(),environment:'Codex Cloud, not reference laptop'}),contentType:'application/json'});
+   expect(elapsed).toBeLessThan(5000);
+ });
+ 
+ test('filtered exception correction targets the matching source identity',async({page})=>{
+   await page.goto('/'); await upload(page,'Qty\n24\nBad\nWrong');
+   await add(page,['Cases']); await calculation(page,'Cases','qty','2','multiply',true);
+   await page.getByLabel('Show only rows with exceptions').check();
+   await page.getByText('Inspect original source table',{exact:true}).click();
++  await page.getByLabel('Source row filter',{exact:true}).selectOption('exceptions');
+   await expect(page.getByRole('button',{name:'Correct Qty, record 2',exact:true})).toHaveCount(0);
+   await correct(page,'Qty',3,'12');
+-  await page.getByLabel('Show only rows with exceptions').check();
++  await page.getByLabel('Source row filter',{exact:true}).selectOption('all');
++  await page.getByLabel('Source row filter',{exact:true}).selectOption('exceptions');
+   await expect(page.getByRole('button',{name:'Correct Qty, record 3',exact:true})).toHaveCount(0);
+   await correct(page,'Qty',4,'6');
+   expect((await download(page)).toString()).toBe('Cases\r\n48\r\n24\r\n12\r\n');
+ });
+ 
+ test('production worker rejects stale correction requests after a newer rule revision',async({page})=>{
+   const {makeWorkflow}=await import('../../src/engine/workflow');
+   const workflow=makeWorkflow(['Qty']); workflow.fields[0].recipe={kind:'copy',source:'qty'};
+   const workerFile=(await readdir('dist/assets')).find(f=>f.startsWith('processing.worker-'))!;
+   await page.goto('/');
+@@ -116,28 +120,30 @@ test('production worker rejects stale correction requests after a newer rule rev
+     const worker=new Worker('/assets/'+workerFile,{type:'module'});
+     let request=0;
+     const send=(payload:object)=>new Promise<import('../../src/session/worker-protocol').Response>((resolve,reject)=>{
+       worker.onmessage=e=>resolve(e.data);worker.onerror=()=>reject(new Error('Worker failed'));
+       worker.postMessage({request:++request,dataset:'stale-test',revision:0,...payload});
+     });
+     try {
+       const first=await send({kind:'import',bytes:new TextEncoder().encode('Qty\n24').buffer,delimiter:',',workflow});
+       if(first.kind!=='view') throw new Error('Import failed');
+       const row=first.view.rows[0].id;
+-      await send({kind:'correct',revision:1,correction:{row,column:'qty',value:'48'}});
++      await send({kind:'correct-batch',revision:1,edits:[{row,column:'qty',value:'48'}]});
+       await send({kind:'run',revision:2,workflow});
+-      const stale=await send({kind:'correct',revision:1,correction:{row,column:'qty',value:'OLD'}});
++      const stale=await send({kind:'correct-batch',revision:1,edits:[{row,column:'qty',value:'OLD'}]});
++      const rejectedBatch=await send({kind:'correct-batch',revision:3,edits:[{row,column:'qty',value:'99'},{row,column:'missing',value:'X'}]});
+       const current=await send({kind:'page',revision:2,page:0,exceptions:false});
+-      return {stale,current};
++      return {stale,rejectedBatch,current};
+     } finally {worker.terminate();}
+   },{workflow,workerFile});
+   expect(result.stale.kind).toBe('error');
++  expect(result.rejectedBatch.kind).toBe('error');
+   expect(result.current.revision).toBe(2);
+   expect(result.current.kind==='view' && result.current.view.rows[0].values).toEqual([{kind:'text',text:'48'}]);
+ });
+ 
+ test('cancelling replacement in the parsing worker restores corrected provenance and exports',async({page})=>{
+   await page.goto('/'); await upload(page,'ID\nORIGINAL');
+   await add(page,['Reference']); await map(page,'Reference','id');
+   await page.getByText('Inspect original source table',{exact:true}).click();
+   await correct(page,'ID',2,'CORRECTED');
+   const csv=['ID',...Array.from({length:19},(_,i)=>'X'+i)].join(',')+'\n'+
+@@ -154,20 +160,21 @@ test('cancelling replacement in the parsing worker restores corrected provenance
+   await expect(page.getByRole('region',{name:'Source table, scroll horizontally'})).toContainText('Original: ORIGINAL');
+ });
+ 
+ test('missing trailing source cells can be corrected and reverted',async({page})=>{
+   await page.goto('/'); await upload(page,'ID,Qty\n001234');
+   await add(page,['Quantity']); await map(page,'Quantity','qty');
+   await page.getByText('Inspect original source table',{exact:true}).click();
+   await correct(page,'Qty',2,'24');
+   expect((await download(page)).toString()).toBe('Quantity\r\n24\r\n');
+   await page.getByRole('button',{name:'Revert Qty, record 2',exact:true}).click();
++  await page.getByRole('button',{name:'Apply 1 corrections',exact:true}).first().click();
+   expect((await download(page)).toString()).toBe('Quantity\r\n\r\n');
+ });
+ 
+ 
+ test('Excel source corrections retain original typed details and export literal IDs and calendar dates',async({page})=>{
+   // @ts-expect-error Independently authored synthetic OOXML fixtures are JavaScript.
+   const {workbook}=await import('../qualification/xlsx/fixtures.mjs');
+   const {unzipSync,strFromU8}=await import('fflate');
+   const bytes=workbook('<row r="1"><c r="A1" t="inlineStr"><is><t>ID</t></is></c><c r="B1" t="inlineStr"><is><t>Date</t></is></c></row><row r="2"><c r="A2" s="1"><v>1234</v></c><c r="B2" t="e"><v>#VALUE!</v></c></row>',{dimension:'A1:B2'});
+   await page.goto('/');
+@@ -194,12 +201,13 @@ test('Excel source corrections retain original typed details and export literal
+   await expect(source).toContainText('1234'); await expect(source).toContainText('000000');
+   await page.getByLabel('Output format',{exact:true}).selectOption('xlsx');
+   const event=page.waitForEvent('download');
+   await page.getByRole('button',{name:'Download converted Excel',exact:true}).click();
+   const output=unzipSync(await readFile((await (await event).path())!));
+   expect(strFromU8(output['xl/sharedStrings.xml'])).toContain('000012');
+   const sheet=strFromU8(output['xl/worksheets/sheet1.xml']);
+   expect(sheet).toMatch(/<c[^>]*r="B2"[^>]*><v>45351<\/v>/);
+   expect(sheet).not.toContain('<f>');
+   await page.getByRole('button',{name:'Revert Date, record 2',exact:true}).click();
++  await page.getByRole('button',{name:'Apply 1 corrections',exact:true}).first().click();
+   await expect(page.getByRole('button',{name:'Download converted Excel',exact:true})).toBeDisabled();
+ });
+diff --git a/tests/e2e/dates.spec.ts b/tests/e2e/dates.spec.ts
+index 028d31a..08a3dff 100644
+--- a/tests/e2e/dates.spec.ts
++++ b/tests/e2e/dates.spec.ts
+@@ -127,21 +127,23 @@ test("strict dates, optional/required blanks, explicit ambiguity and source repl
+   ).toBeDisabled();
+   await page.screenshot({
+     path: info.outputPath("date-errors.png"),
+     fullPage: true,
+   });
+   await edit(page, "Delivery");
+   await page.locator("details.column-validation summary").click();
+   await page.getByLabel("Required value", { exact: true }).check();
+   await closeSettings(page);
+   await page.getByLabel("Show only rows with exceptions").check();
+-  await expect(page.locator(".issues li")).toHaveCount(9);
++  await expect(page.locator(".issues li")).toHaveCount(5);
++  await expect(page.locator(".diagnostics li")).toHaveCount(9);
++  await expect(page.getByLabel("Full dataset counts")).toContainText("Error issues 9");
+   await expect(page.locator(".issues li").last()).toContainText(
+     "required but blank",
+   );
+   await upload(page, "Date,Other,ID\n03/04/2026,10/08/2026,1");
+   await edit(page, "Delivery");
+   await page
+     .getByLabel("Source date format", { exact: true })
+     .selectOption("MM/DD/YYYY");
+   await closeSettings(page);
+   expect((await download(page)).toString()).toBe("Delivery\r\n2026-03-04\r\n");
+diff --git a/tests/e2e/partial-export.spec.ts b/tests/e2e/partial-export.spec.ts
+index f408bcf..720cd6c 100644
+--- a/tests/e2e/partial-export.spec.ts
++++ b/tests/e2e/partial-export.spec.ts
+@@ -85,21 +85,21 @@ test('every excluded row and issue is accessible across pages; acknowledgement s
+   }
+   await page.getByLabel('Include UTF-8 BOM').check();
+   await expect(acknowledgement(page)).not.toBeChecked();
+   await acknowledgement(page).check();
+   await edit(page,'Required'); await page.getByText('Validation (optional)',{exact:true}).click(); await page.getByLabel('Maximum characters').fill('2'); await closeSettings(page);
+   await expect(acknowledgement(page)).not.toBeChecked();
+   await acknowledgement(page).check();
+   await page.getByText('Inspect original source table',{exact:true}).click();
+   await page.getByRole('button',{name:'Correct Required, record 3',exact:true}).click();
+   await page.getByLabel('Replacement for Required, record 3',{exact:true}).fill('ok');
+-  await page.getByRole('button',{name:'Apply correction',exact:true}).click();
++  await page.getByRole('button',{name:'Apply 1 corrections',exact:true}).first().click();
+   await expect(acknowledgement(page)).not.toBeChecked(); await acknowledgement(page).check();
+   await page.getByLabel('Upload source CSV').setInputFiles({name:'new.csv',mimeType:'text/csv',buffer:Buffer.from('ID,Required\nNEW,ok\nBAD,')});
+   await page.getByRole('button',{name:'Replace source and discard corrections',exact:true}).click();
+   await expect(acknowledgement(page)).not.toBeChecked();
+ });
+ 
+ test('formula handling changes reset partial acknowledgement and zero eligible rows remain blocked',async({page})=>{
+   await setup(page,'ID,Required\n=WARNING,ok\nBAD,');
+   await page.getByLabel('Preserve raw text for TMS import').check();
+   await acknowledgement(page).check();
+diff --git a/tests/e2e/release.spec.ts b/tests/e2e/release.spec.ts
+index a014487..5cf6ba7 100644
+--- a/tests/e2e/release.spec.ts
++++ b/tests/e2e/release.spec.ts
+@@ -16,19 +16,19 @@ for(const sourceFormat of ['csv','xlsx'] as const) test(`integrated ${sourceForm
+   }
+   const counts=page.getByLabel('Full dataset counts');
+   await expect(counts).toContainText('Candidate rows 2'); await expect(counts).toContainText('Invalid 1');
+   await expect(page.getByRole('button',{name:'Download converted CSV',exact:true})).toBeDisabled();
+   await page.getByLabel(/I acknowledge that .* invalid rows will be excluded/).check();
+   const rows=Papa.parse<string[]>((await download(page)).toString(),{skipEmptyLines:true}).data;
+   expect(rows).toHaveLength(2); expect(rows[1][0]).toBe('001234');
+   await page.getByText('Inspect original source table',{exact:true}).click();
+   await page.getByRole('button',{name:'Correct Units, record 3',exact:true}).click();
+   await page.getByLabel('Replacement for Units, record 3',{exact:true}).fill('12');
+-  await page.getByRole('button',{name:'Apply correction',exact:true}).click();
++  await page.getByRole('button',{name:'Apply 1 corrections',exact:true}).first().click();
+   await expect(counts).toContainText('Invalid 0');
+   expect(await download(page)).toEqual(await readFile('examples/release/expected.csv'));
+   await page.getByRole('button',{name:'Edit workflow',exact:true}).click();
+   await page.getByLabel('Output format',{exact:true}).selectOption('xlsx');
+   const event=page.waitForEvent('download'); await page.getByRole('button',{name:'Download converted Excel',exact:true}).click();
+   const book=XLSX.read(await readFile((await (await event).path())!),{type:'array'});
+   expect(book.Sheets.Output.A3.v).toBe('009876'); expect(book.Sheets.Output.I3.v).toBe(3);
+ });
+diff --git a/tests/unit/corrections.test.ts b/tests/unit/corrections.test.ts
+index 56c3c09..e4e3193 100644
+--- a/tests/unit/corrections.test.ts
++++ b/tests/unit/corrections.test.ts
+@@ -1,14 +1,14 @@
+ import { expect, test } from 'vitest';
+ import { parseCsv } from '../../src/formats/csv';
+ import { makeWorkflow } from '../../src/engine/workflow';
+-import { correctedRun } from '../../src/session/correction-overlay';
++import { correctedRun, applyCorrectionBatch } from '../../src/session/correction-overlay';
+ test('corrections repair all dependent fields without changing originals, workflow or candidate identity', () => {
+   const source = parseCsv(new TextEncoder().encode('Qty\nTwenty Four'), ',', 'test');
+   const w = makeWorkflow(['Cases', 'Weight']);
+   w.fields.forEach((f) => { f.type = 'number'; f.recipe = { kind: 'calculate', operation: 'multiply', left: {kind:'source',source:'qty'}, right:{kind:'number',decimal:'2'} }; });
+   const before = JSON.stringify(w), id = source.rows[0].id;
+   const edits = [{row:id, column:'qty', value:'24'}];
+   const run = correctedRun(w, source, edits);
+   expect(run.rows[0].values).toEqual([{kind:'number',decimal:'48'}, {kind:'number',decimal:'48'}]);
+   expect(run.summary).toMatchObject({corrected:1, valid:1, candidates:1});
+   expect(run.rows[0].provenance.filter(p => 'source' in p).every(p => p.corrected)).toBe(true);
+@@ -60,10 +60,20 @@ test("correction with unfinished mapping keeps full dataset counts", () => {
+   const incremental = correctedRun(w,source,edits,correctedRun(w,source,[]),source.rows[0].id);
+   expect(incremental.summary).toEqual(correctedRun(w,source,edits).summary);
+ });
+ test("missing trailing CSV cells can receive source-only corrections", () => {
+   const source = parseCsv(new TextEncoder().encode("ID,Qty\n001234"), ",", "short");
+   const w = makeWorkflow(["Qty"]); w.fields[0].recipe={kind:"copy",source:"qty"};
+   const edits=[{row:source.rows[0].id,column:"qty",value:"24"}];
+   expect(correctedRun(w,source,edits).rows[0].values).toEqual([{kind:"text",text:"24"}]);
+   expect(source.rows[0].cells).toHaveLength(1);
+ });
++
++test("a source batch is validated completely before either cell is changed", () => {
++  const source=parseCsv(new TextEncoder().encode("ID,Qty\n001,12\n002,24"),",","batch");
++  const original=JSON.stringify(source);
++  const edits=[{row:source.rows[0].id,column:"qty",value:"16"},{row:source.rows[1].id,column:"qty",value:"20"}];
++  expect(applyCorrectionBatch(source,[],edits)).toEqual(edits);
++  expect(()=>applyCorrectionBatch(source,[],[edits[0],{...edits[1],column:"missing"}])).toThrow("current source cell");
++  expect(JSON.stringify(source)).toBe(original);
++  expect(applyCorrectionBatch(source,edits,[{...edits[0],value:"",revert:true}])).toEqual([edits[1]]);
++});
+diff --git a/tests/unit/issue-review.test.ts b/tests/unit/issue-review.test.ts
+new file mode 100644
+index 0000000..99d8aaa
+--- /dev/null
++++ b/tests/unit/issue-review.test.ts
+@@ -0,0 +1,68 @@
++import { expect, test } from "vitest";
++import { evaluate } from "../../src/engine/recipes";
++import { reviewIssues } from "../../src/engine/issues";
++import { makeWorkflow } from "../../src/engine/workflow";
++import { parseCsv } from "../../src/formats/csv";
++
++const source = (csv: string) => parseCsv(new TextEncoder().encode(csv), ",", "causes");
++test("four split outputs share one actionable cause while all diagnostics and invalidity remain", () => {
++  const w = makeWorkflow(["Street", "City", "Province", "PostalCode"]);
++  w.fields.forEach((f, index) => {
++    f.required = true;
++    f.recipe = { kind: "split", source: "address", delimiter: ",", segments: 4, index, trim: true, optionalEmpty: [] };
++  });
++  const run = evaluate(w, source('Address\n"Street,City,Province,Postal,Extra"'));
++  expect(run.summary).toMatchObject({ invalid: 1, errorIssues: 8 });
++  const items = reviewIssues(run.rows[0].issues);
++  expect(items).toHaveLength(1);
++  expect(items[0].fields).toEqual(w.fields.map(f => f.id));
++  expect(items[0].sources).toEqual([{source: "address"}]);
++  expect(items[0].issue.code).toBe("split-count");
++  // Different split rules over the same cell must remain distinct.
++  w.fields[1].recipe = { ...w.fields[1].recipe!, kind: "split", source: "address", delimiter: ",", segments: 3, index: 0, trim: true, optionalEmpty: [] };
++  expect(reviewIssues(evaluate(w, source('Address\n"A,B,C,D,E"')).rows[0].issues)).toHaveLength(2);
++});
++
++test("arithmetic identifies every bad source operand and independent required blanks remain", () => {
++  const w = makeWorkflow(["Cases", "Required"]);
++  w.fields[0].type = "number"; w.fields[0].required = true;
++  w.fields[0].recipe = { kind: "calculate", operation: "divide", left: {kind:"source",source:"units"}, right:{kind:"source",source:"factor"} };
++  w.fields[1].required = true; w.fields[1].recipe = {kind:"copy",source:"empty"};
++  const run = evaluate(w, source("Units,Factor,Empty\nTwelve,Bad,"));
++  const items = reviewIssues(run.rows[0].issues);
++  expect(items).toHaveLength(2);
++  expect(items[0].sources).toEqual([{source:"units",operand:"left"},{source:"factor",operand:"right"}]);
++  expect(items[1].issue.code).toBe("required");
++  expect(items[1].sources).toEqual([{source:"empty"}]);
++  expect(run.summary.invalid).toBe(1);
++});
++
++test("numeric policy failure identifies the rule rather than blaming valid source operands", () => {
++  const w = makeWorkflow(["Cases"]);
++  w.fields[0].type = "number"; w.fields[0].required = true;
++  w.fields[0].recipe = {kind:"calculate",operation:"divide",left:{kind:"source",source:"units"},right:{kind:"number",decimal:"3"}};
++  const [item] = reviewIssues(evaluate(w, source("Units\n1")).rows[0].issues);
++  expect(item.issue.code).toBe("nonterminating-division");
++  expect(item.sources).toEqual([]);
++  expect(item.rule).toBe(w.fields[0].id);
++});
++
++test("same-text independent failures and warnings are never accidentally grouped", () => {
++  const w = makeWorkflow(["One", "Two"]);
++  w.fields[0].recipe = {kind:"copy",source:"one"}; w.fields[0].maxLength = 1;
++  w.fields[1].recipe = {kind:"copy",source:"two"}; w.fields[1].maxLength = 1;
++  const run = evaluate(w, source("One,Two\n=RISK,=RISK"));
++  const items = reviewIssues(run.rows[0].issues);
++  expect(items).toHaveLength(4);
++  expect(items.filter(item => item.issue.severity === "warning")).toHaveLength(2);
++  expect(run.summary).toMatchObject({invalid:1,warningIssues:2,errorIssues:2});
++});
++
++test("constant zero divisor and copy precision failures target explicit settings", () => {
++  const w=makeWorkflow(["Division","Quantity"]);
++  w.fields[0].type="number";w.fields[0].recipe={kind:"calculate",operation:"divide",left:{kind:"source",source:"units"},right:{kind:"number",decimal:"0"}};
++  w.fields[1].type="number";w.fields[1].scale=0;w.fields[1].recipe={kind:"copy",source:"units"};
++  const items=reviewIssues(evaluate(w,source("Units\n1.5")).rows[0].issues);
++  expect(items.map(i=>i.sources)).toEqual([[],[]]);
++  expect(items.map(i=>i.rule)).toEqual(w.fields.map(f=>f.id));
++});
+diff --git a/tests/unit/session.test.ts b/tests/unit/session.test.ts
+index 91443d7..2b37127 100644
+--- a/tests/unit/session.test.ts
++++ b/tests/unit/session.test.ts
+@@ -1,12 +1,12 @@
+ import { afterEach, beforeEach, expect, test, vi } from "vitest";
+-import { correctedRun, type Correction } from "../../src/session/correction-overlay";
++import { correctedRun, applyCorrectionBatch, type Correction } from "../../src/session/correction-overlay";
+ import { Session } from "../../src/session/controller";
+ import type {
+   Request,
+   Response,
+   View,
+ } from "../../src/session/worker-protocol";
+ import { makeWorkflow, type Workflow } from "../../src/engine/workflow";
+ import { parseCsv, serializeCsv } from "../../src/formats/csv";
+ import { serializeXlsx } from "../../src/formats/xlsx-export";
+ import { strFromU8, unzipSync } from "fflate";
+@@ -43,54 +43,57 @@ class Transport {
+     if (m.kind === "import") {
+       this.source = parseCsv(new Uint8Array(m.bytes), m.delimiter, m.dataset);
+       this.workflow = m.workflow ?? makeWorkflow([]);
+       this.corrections = m.corrections ?? [];
+       this.run = correctedRun(this.workflow, this.source, this.corrections);
+     }
+     if (m.kind === "run") {
+       this.workflow = m.workflow;
+       this.run = correctedRun(m.workflow, this.source!, this.corrections);
+     }
+-    if (m.kind === "correct") {
+-      this.corrections = this.corrections.filter(e => e.row !== m.correction.row || e.column !== m.correction.column);
+-      if (!m.revert) this.corrections.push(m.correction);
+-      this.run = correctedRun(this.workflow!, this.source!, this.corrections, this.run, m.correction.row);
++    if (m.kind === "correct-batch") {
++      this.corrections = applyCorrectionBatch(this.source!, this.corrections, m.edits);
++      this.run = correctedRun(this.workflow!, this.source!, this.corrections);
+     }
+     if (m.kind === "export") {
+       this.onmessage?.({
+         data: {
+           ...envelope,
+           kind: "download",
+           format: this.workflow!.output.format,
+           bytes: this.workflow!.output.format === "xlsx" ? serializeXlsx(this.workflow!, this.run!) : serializeCsv(this.workflow!, this.run!, m.choice),
+         },
+       } as MessageEvent<Response>);
+       return;
+     }
+     const view: View = {
+       columns: this.source!.columns,
+       sourceRows: this.source!.rows,
++      sourceResults:this.run!.rows, sourcePage:0, sourceTotalPages:1, sourceFilter:"all",sourceCount:this.source!.rows.length,sourceNavigation:0,
+       rows: this.run!.rows,
+       workflowIssues: this.run!.workflowIssues,
+       summary: this.run!.summary,
+       riskyHeaders: this.run!.riskyHeaders,
+       csvRisk: this.run!.csvRisk,
+       page: 0,
+       totalPages: 1,
+       exceptions: false,
+       delimiter: ",",
+     };
+     this.onmessage?.({
+       data: { ...envelope, kind: "view", view },
+     } as MessageEvent<Response>);
+   }
+ }
++function correct(s: Session, row: string, column: string, value: string, revert = false) {
++  s.stageCorrection(row,column,value,revert); s.applyCorrections();
++}
+ const latest = () => Transport.instances.at(-1)!;
+ const file = () => new File(["ID\n001234"], "synthetic.csv");
+ const workflow = () => {
+   const w = makeWorkflow(["Reference"]);
+   w.fields[0].recipe = { kind: "copy", source: "id" };
+   return w;
+ };
+ beforeEach(() => {
+   Transport.instances = [];
+   vi.stubGlobal("Worker", Transport);
+@@ -214,21 +217,21 @@ test("Excel worksheet discovery keeps the committed run until a selected sheet s
+   expect(s.state.view).toBe(committed);
+   expect(s.state.worksheets).toEqual(['Orders', 'Other']);
+   s.cancelWorksheetSelection();
+   expect(s.state.view).toBe(committed);
+   expect(s.state.worksheets).toBeUndefined();
+ });
+ 
+ test("corrections survive cancelled replacements and reject stale worker replies during recovery", async () => {
+   const s = new Session(); s.activate(workflow()); await s.upload(file(), ","); latest().flush();
+   const row = s.state.view!.rows[0].id;
+-  s.correct(row, "id", "009876"); latest().flush();
++  correct(s,row, "id", "009876"); latest().flush();
+   expect(s.state.view!.summary.corrected).toBe(1);
+   await s.upload(new File(["ID\nNEW"], "new.csv"), ",");
+   expect(s.state.replacement).toBe(true);
+   s.cancelReplacement();
+   expect(s.state.view!.rows[0].values).toEqual([{kind:"text",text:"009876"}]);
+   await s.upload(new File(["ID\nNEW"], "new.csv"), ",");
+   await s.confirmReplacement();
+   const old = latest(), pending = old.requests.at(-1)!;
+   s.cancel(); await s.retry();
+   expect(s.state.busy).not.toBe("");
+@@ -240,39 +243,39 @@ test("corrections survive cancelled replacements and reject stale worker replies
+   expect(s.state.view!.rows[0].id).toBe(row);
+   expect(s.state.view!.summary.corrected).toBe(1);
+   let result = ""; s.onDownload = bytes => {result = new TextDecoder().decode(bytes);};
+   s.export(undefined); latest().flush();
+   expect(result).toBe("Reference\r\n009876\r\n");
+   s.end();
+ });
+ 
+ test("cancelled delayed replacement cannot grant approval to a later upload", async () => {
+   const s = new Session(); s.activate(workflow()); await s.upload(file(), ","); latest().flush();
+-  s.correct(s.state.view!.rows[0].id,"id","009876"); latest().flush();
++  correct(s,s.state.view!.rows[0].id,"id","009876"); latest().flush();
+   const delayed = new File(["ID\nNEW"],"delayed.csv");
+   let release: (value: ArrayBuffer) => void = () => {};
+   vi.spyOn(delayed,"arrayBuffer").mockImplementation(() => new Promise(resolve => {release=resolve;}));
+   await s.upload(delayed,","); const reading = s.confirmReplacement();
+   s.cancel();
+   await s.upload(new File(["ID\nOTHER"],"other.csv"),",");
+   expect(s.state.replacement).toBe(true);
+   s.cancelReplacement();
+   await s.retry(); latest().flush();
+   expect(s.state.view!.rows[0].values).toEqual([{kind:"text",text:"009876"}]);
+   release(new TextEncoder().encode("ID\nNEW").buffer); await reading;
+   expect(s.state.view!.rows[0].values).toEqual([{kind:"text",text:"009876"}]);
+   s.end();
+ });
+ 
+ test("same-worker older correction reply cannot complete a newer rule evaluation", async () => {
+   const s = new Session(); s.activate(workflow()); await s.upload(file(), ","); latest().flush();
+-  s.correct(s.state.view!.rows[0].id,"id","009876");
++  correct(s,s.state.view!.rows[0].id,"id","009876");
+   const transport = latest(), correction = transport.requests.at(-1)!;
+   transport.flush();
+   const prior = s.state.view!;
+   const nextWorkflow = workflow(); nextWorkflow.fields[0].trim = true;
+   s.configure(nextWorkflow);
+   transport.onmessage?.({data:{request:correction.request,dataset:correction.dataset,revision:correction.revision,kind:"view",view:{...prior, summary:{...prior.summary,corrected:0}}}} as MessageEvent<Response>);
+   expect(s.state.busy).toBe("Checking all rows…");
+   expect(s.state.view!.summary.corrected).toBe(1);
+   transport.flush();
+   expect(s.state.busy).toBe("");
+@@ -291,28 +294,62 @@ test('partial permission survives pagination, but resets on changes and pending
+   s.page(0, true); s.export('raw');
+   expect(transport.requests.at(-1)?.kind).toBe('page'); transport.flush();
+   s.export('raw');
+   expect(transport.requests.at(-1)).toMatchObject({kind:'export',partialAcknowledged:true});
+   // Finish transport without simulating a download; real serializer tests cover bytes.
+   const request = transport.requests.at(-1)!;
+   transport.onmessage?.({data:{request:request.request,dataset:request.dataset,revision:request.revision,kind:'error',message:'test completion'}} as MessageEvent<Response>);
+   s.configure(w); transport.flush();
+   expect(s.state.partialAcknowledged).toBe(false);
+   s.acknowledgePartial(true);
+-  s.correct(s.state.view!.rows[0].id,'id','002'); transport.flush();
++  correct(s,s.state.view!.rows[0].id,'id','002'); transport.flush();
+   expect(s.state.partialAcknowledged).toBe(false);
+   s.acknowledgePartial(true);
+   await s.upload(new File(['ID,Other\n003,x\n,x'], 'new.csv'), ',');
+   expect(s.state.partialAcknowledged).toBe(false);
+   s.cancelReplacement(); s.end();
+ });
+ 
+ test('starting evaluation after an export error never emits an intermediate idle error state', async () => {
+   const s = new Session(); s.activate(workflow()); await s.upload(file(), ','); latest().flush();
+   s.export(undefined); const request=latest().requests.at(-1)!;
+   latest().onmessage?.({data:{request:request.request,dataset:request.dataset,revision:request.revision,kind:'error',message:'Use CSV or text.'}} as MessageEvent<Response>);
+   const states: typeof s.state[]=[]; s.onState=state=>states.push(state);
+   s.configure(workflow());
+   expect(states).not.toContainEqual(expect.objectContaining({busy:''}));
+   expect(states.at(-1)).toMatchObject({busy:'Checking all rows…',error:'',partialAcknowledged:false});
+   latest().flush(); s.end();
+ });
++
++test("draft cells block download and promote recovery overlays only after matching batch success", async () => {
++  const s=new Session(); s.activate(workflow()); await s.upload(file(),","); latest().flush();
++  const row=s.state.view!.rows[0].id;
++  s.stageCorrection(row,"id","CANDIDATE");
++  const transport=latest(), count=transport.requests.length;
++  s.export(undefined); expect(transport.requests).toHaveLength(count);
++  s.applyCorrections(); const pending=transport.requests.at(-1)!;
++  expect(pending).toMatchObject({kind:"correct-batch",edits:[{row,column:"id",value:"CANDIDATE"}]});
++  s.cancel(); await s.retry();
++  expect(latest().requests.at(-1)).toMatchObject({kind:"import",corrections:[]});
++  latest().flush();
++  transport.onmessage?.({data:{...pending,kind:"view",view:s.state.view!}} as unknown as MessageEvent<Response>);
++  expect(s.state.pendingCorrections).toHaveLength(1);
++  expect(s.state.view!.rows[0].values).toEqual([{kind:"text",text:"001234"}]);
++  s.applyCorrections(); latest().flush();
++  expect(s.state.pendingCorrections).toEqual([]);
++  expect(s.state.view!.rows[0].values).toEqual([{kind:"text",text:"CANDIDATE"}]);
++  s.cancel(); await s.retry();
++  expect(latest().requests.at(-1)).toMatchObject({kind:"import",corrections:[{row,column:"id",value:"CANDIDATE"}]});
++  latest().flush(); s.end();
++});
++
++test("failed batch retains drafts, and discarded drafts restore unchanged output", async () => {
++  const s=new Session();s.activate(workflow());await s.upload(file(),",");latest().flush();
++  const row=s.state.view!.rows[0].id;
++  s.stageCorrection(row,"id","DRAFT");s.applyCorrections();
++  const m=latest().requests.at(-1)!;
++  latest().onmessage?.({data:{request:m.request,dataset:m.dataset,revision:m.revision,kind:"error",message:"Synthetic rejected batch"}} as MessageEvent<Response>);
++  expect(s.state.pendingCorrections).toHaveLength(1);
++  expect(s.state.view!.rows[0].values).toEqual([{kind:"text",text:"001234"}]);
++  s.discardPending();s.export(undefined);let output="";s.onDownload=bytes=>output=new TextDecoder().decode(bytes);latest().flush();
++  expect(output).toBe("Reference\r\n001234\r\n");s.end();
++});

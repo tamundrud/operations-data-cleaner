@@ -1,0 +1,26 @@
+{
+  "reviewer": "maintainability",
+  "findings": [
+    {
+      "title": "Information Leakage: settings navigation depends on MappingRows markup",
+      "severity": "P2",
+      "file": "src/ui/Workspace.tsx",
+      "line": 239,
+      "why_it_matters": "The exception action opens a field's settings by finding a MappingRows card through its CSS class and data attribute, then clicking that card's private edit button. Changing either component's markup or button state can silently break navigation, and the parent clears the target even if no button was found. MappingRows already owns the editing state, so a field-ID request can open the same dialog without coupling the parent to its DOM structure.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "suggested_fix": "Pass the requested field ID to MappingRows as a prop and let MappingRows set its existing editing state when that field is present and enabled. Clear the request after MappingRows handles it; delete the document query and synthetic button click in Workspace.",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:239 --     const card = [...document.querySelectorAll<HTMLElement>(\".matching [data-field-id]\")].find(node=>node.dataset.fieldId===ruleTarget);",
+        "src/ui/Workspace.tsx:240 --     card?.querySelector<HTMLButtonElement>(\"button.edit\")?.click();",
+        "src/ui/Workspace.tsx:241 --     setRuleTarget(undefined);",
+        "src/ui/MappingRows.tsx:372 --       onClick={() => setEditing(f.id)}"
+      ],
+      "pre_existing": false
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

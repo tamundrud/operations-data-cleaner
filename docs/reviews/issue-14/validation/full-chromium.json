@@ -1,0 +1,4663 @@
+{
+  "config": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/workspace/operations-data-cleaner/node_modules/.bin/playwright",
+      "test",
+      "--project=chromium",
+      "--reporter=list,json"
+    ],
+    "configFile": "/workspace/operations-data-cleaner/playwright.config.ts",
+    "rootDir": "/workspace/operations-data-cleaner/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/workspace/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/workspace/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/workspace/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/workspace/operations-data-cleaner/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "snapshotDir": "/workspace/operations-data-cleaner/tests/e2e",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 30000,
+        "use": {
+          "baseURL": "http://127.0.0.1:4173",
+          "serviceWorkers": "block",
+          "trace": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium",
+          "launchOptions": {
+            "executablePath": "/usr/bin/chromium"
+          }
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run preview",
+      "url": "http://127.0.0.1:4173",
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "acceptance-corrections.spec.ts",
+      "file": "acceptance-corrections.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Done editing retains unsaved configuration across repeat mode and portable workflows",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3110,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:35:54.466Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "03d442afeaaf7612bbba-b94b932ccba3253ac009",
+          "file": "acceptance-corrections.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "one address root cause navigates and highlights the original cell; diagnostics and independent errors remain",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3240,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:35:58.207Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "03d442afeaaf7612bbba-f783994e2612b893dc1c",
+          "file": "acceptance-corrections.spec.ts",
+          "line": 49,
+          "column": 1
+        },
+        {
+          "title": "independent filters retain multi-page drafts and apply once without changing output pages",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6838,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:01.468Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "batch-privacy.json",
+                      "contentType": "application/json",
+                      "body": "eyJ1bmV4cGVjdGVkIjpbXX0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "03d442afeaaf7612bbba-e522da77d365af662dff",
+          "file": "acceptance-corrections.spec.ts",
+          "line": 76,
+          "column": 1
+        },
+        {
+          "title": "pending changes survive cancelled loss, failed replacement and inspection, with explicit discard",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1715,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:08.327Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "03d442afeaaf7612bbba-6a3bdfc51c2f7d66cd50",
+          "file": "acceptance-corrections.spec.ts",
+          "line": 121,
+          "column": 1
+        },
+        {
+          "title": "rule failures open settings instead of highlighting valid source data",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1371,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:10.059Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "03d442afeaaf7612bbba-88868ca4fce9c98e3fcd",
+          "file": "acceptance-corrections.spec.ts",
+          "line": 148,
+          "column": 1
+        },
+        {
+          "title": "off-page Excel exception navigation preserves worksheet provenance and reaches the next unresolved record",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1710,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:11.447Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "03d442afeaaf7612bbba-d73caaf9d9c6c23f7da0",
+          "file": "acceptance-corrections.spec.ts",
+          "line": 161,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "accessibility.spec.ts",
+      "file": "accessibility.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "labelled keyboard controls, laptop/mobile layouts and automated accessibility",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4786,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:13.193Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ddd864604af8a6a0198f-8541934cb8b2e41a384c",
+          "file": "accessibility.spec.ts",
+          "line": 4,
+          "column": 1
+        },
+        {
+          "title": "U3 fixed fields, CSV options and contextual trim controls remain accessible",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3904,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:17.994Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ddd864604af8a6a0198f-95b29f5c54c1e70a6d51",
+          "file": "accessibility.spec.ts",
+          "line": 35,
+          "column": 1
+        },
+        {
+          "title": "workflow metadata stays literal and keyboard collision cancellation restores focus",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2237,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:21.915Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ddd864604af8a6a0198f-bcd5eb6efbe6fea544e5",
+          "file": "accessibility.spec.ts",
+          "line": 48,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "address-recipes.spec.ts",
+      "file": "address-recipes.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "AC-03/04 contextual split/combine, saved reuse and fresh-context JSON preserve exact output",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7793,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:24.187Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d2755e5f352bff6192e7-390215da64f22a5a400b",
+          "file": "address-recipes.spec.ts",
+          "line": 24,
+          "column": 1
+        },
+        {
+          "title": "strict count and optional empty slots show row/field errors and block invalid download",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3202,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:31.997Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d2755e5f352bff6192e7-f14085acdd9b713afcc1",
+          "file": "address-recipes.spec.ts",
+          "line": 60,
+          "column": 1
+        },
+        {
+          "title": "keyboard recipe controls retain paired-card ordering, literal-only combinations and mobile accessibility",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2983,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:35.219Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d2755e5f352bff6192e7-3abed733c968719ff410",
+          "file": "address-recipes.spec.ts",
+          "line": 78,
+          "column": 1
+        },
+        {
+          "title": "reducing split count removes obsolete optional positions visibly and keeps the recipe usable",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2720,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:38.222Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d2755e5f352bff6192e7-59646bccd9b88a56e653",
+          "file": "address-recipes.spec.ts",
+          "line": 102,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "calculations.spec.ts",
+      "file": "calculations.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "AC-05/06/10 contextual calculations export exact bytes, save/reopen and portable reuse",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5968,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:40.962Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8ebd8106908a17de735d-9a1437fc49e8e67ac78d",
+          "file": "calculations.spec.ts",
+          "line": 14,
+          "column": 1
+        },
+        {
+          "title": "errors stay visible, rounding is explicit, and fractional cases fail before rounding",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3855,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:46.944Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8ebd8106908a17de735d-20f7f6bb6659ef5fb48d",
+          "file": "calculations.spec.ts",
+          "line": 83,
+          "column": 1
+        },
+        {
+          "title": "mobile calculation settings, output type switches and keyboard focus preserve paired cards",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3622,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:50.815Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8ebd8106908a17de735d-cdc1bb2d54c806d5ef53",
+          "file": "calculations.spec.ts",
+          "line": 119,
+          "column": 1
+        },
+        {
+          "title": "numeric copy validation and precision edits renew CSV safety decisions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4382,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:54.450Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8ebd8106908a17de735d-2d3317ed255cf88a5428",
+          "file": "calculations.spec.ts",
+          "line": 153,
+          "column": 1
+        },
+        {
+          "title": "numeric copy source retains rules when first choosing a source",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2429,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:36:58.855Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8ebd8106908a17de735d-8c608106fb545ba83ada",
+          "file": "calculations.spec.ts",
+          "line": 205,
+          "column": 3
+        },
+        {
+          "title": "numeric copy source retains rules when replacing a source",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2545,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:01.358Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8ebd8106908a17de735d-fc7ca5cacdd865d2ad63",
+          "file": "calculations.spec.ts",
+          "line": 205,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "title": "constants.spec.ts",
+      "file": "constants.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "switching trimmed max-length fixed text to number clears text-only settings",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2474,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:03.927Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "61f6207473dd4c57f49d-bb5c1593ef5f24893ca0",
+          "file": "constants.spec.ts",
+          "line": 5,
+          "column": 1
+        },
+        {
+          "title": "numeric constant clear and copy radio restore unmatched and faithful text states",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2983,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:06.417Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "61f6207473dd4c57f49d-fb5b873840d42d128820",
+          "file": "constants.spec.ts",
+          "line": 27,
+          "column": 1
+        },
+        {
+          "title": "U3 sample demonstrates constants, trim and nondefault CSV settings",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1303,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:09.432Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "61f6207473dd4c57f49d-bfb99f7b2939e10ce710",
+          "file": "constants.spec.ts",
+          "line": 51,
+          "column": 1
+        },
+        {
+          "title": "fixed fields complete without sources, trim validates resulting text and reorder preserves values",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6247,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:10.754Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "61f6207473dd4c57f49d-5795f256d7c22c0928c6",
+          "file": "constants.spec.ts",
+          "line": 62,
+          "column": 1
+        },
+        {
+          "title": "constant reorder permutes configured slots while unmatched outputs stay fixed",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2495,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:17.016Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "61f6207473dd4c57f49d-859fa92011726a186900",
+          "file": "constants.spec.ts",
+          "line": 105,
+          "column": 1
+        },
+        {
+          "title": "intentional required blanks and invalid numeric literals block export with actionable errors",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3479,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:19.527Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "61f6207473dd4c57f49d-9f48afc2e4f4ff2b9a52",
+          "file": "constants.spec.ts",
+          "line": 123,
+          "column": 1
+        },
+        {
+          "title": "all twelve CSV setting combinations download independent exact UTF-8 byte goldens",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8831,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:23.021Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "61f6207473dd4c57f49d-1f967f7227db079fc58d",
+          "file": "constants.spec.ts",
+          "line": 145,
+          "column": 1
+        },
+        {
+          "title": "formula constants require renewed choice after constant, trim and every export setting edit",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4808,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:31.871Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "61f6207473dd4c57f49d-d421684b6791f2382cfc",
+          "file": "constants.spec.ts",
+          "line": 166,
+          "column": 1
+        },
+        {
+          "title": "constant and CSV edits during an older evaluation cannot export stale settings",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5254,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:36.696Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "61f6207473dd4c57f49d-125db96be900ec949ee4",
+          "file": "constants.spec.ts",
+          "line": 199,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "conversion.spec.ts",
+      "file": "conversion.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "upload template, keyboard map, rename, reorder, preview and verify actual bytes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3477,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:41.986Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "222f7e5d85987e089f07-fd5e474624aef79fd7fb",
+          "file": "conversion.spec.ts",
+          "line": 15,
+          "column": 1
+        },
+        {
+          "title": "sample produces golden bytes without any customer file",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1225,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:45.484Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "222f7e5d85987e089f07-009b8d530204a891843a",
+          "file": "conversion.spec.ts",
+          "line": 57,
+          "column": 1
+        },
+        {
+          "title": "unmapped and unacknowledged invalid rows block download, all exceptions are reachable",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3492,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:46.731Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "222f7e5d85987e089f07-05bb9dd919a8ae2ab2f7",
+          "file": "conversion.spec.ts",
+          "line": 69,
+          "column": 1
+        },
+        {
+          "title": "formula headers and text block export until explicit choice, representation matches bytes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3067,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:50.243Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "222f7e5d85987e089f07-970c06600e7a0be98727",
+          "file": "conversion.spec.ts",
+          "line": 114,
+          "column": 1
+        },
+        {
+          "title": "failed replacement retains active file and valid mapping; ending session clears it",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1809,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:53.366Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "222f7e5d85987e089f07-146b69ff2a6400a0b0d9",
+          "file": "conversion.spec.ts",
+          "line": 140,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "correction-reupload.spec.ts",
+      "file": "correction-reupload.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "source corrections repair dependents, revert, preserve replacement failures and recover cancelled parsing privately",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5566,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:37:55.211Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "privacy.json",
+                      "contentType": "application/json",
+                      "body": "eyJ1bmV4cGVjdGVkIjpbXSwiZGlhZ25vc3RpY0xlYWtzIjowfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "562fac3b7dca9dac3532-559c5e92dd80c7cb7ea7",
+          "file": "correction-reupload.spec.ts",
+          "line": 10,
+          "column": 1
+        },
+        {
+          "title": "10000 rows retain identity after clearing and correcting a later preview page",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2360,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:38:00.788Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "correction-timing.json",
+                      "contentType": "application/json",
+                      "body": "eyJyb3dzIjoxMDAwMCwiY29ycmVjdGlvblRocm91Z2hFeHBvcnRNcyI6Mzg5LjE5ODg0NTAwMDAwNjI2LCJicm93c2VyIjoiMTU0LjAuODAzNy41NyIsImVudmlyb25tZW50IjoiQ29kZXggQ2xvdWQsIG5vdCByZWZlcmVuY2UgbGFwdG9wIn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "562fac3b7dca9dac3532-16914cb86ac1e9da73d4",
+          "file": "correction-reupload.spec.ts",
+          "line": 84,
+          "column": 1
+        },
+        {
+          "title": "filtered exception correction targets the matching source identity",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3359,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:38:03.168Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "562fac3b7dca9dac3532-ffa7ca79fc21c44dcd2e",
+          "file": "correction-reupload.spec.ts",
+          "line": 99,
+          "column": 1
+        },
+        {
+          "title": "production worker rejects stale correction requests after a newer rule revision",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 684,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:38:06.553Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "562fac3b7dca9dac3532-ed7f834ace09f9d04080",
+          "file": "correction-reupload.spec.ts",
+          "line": 114,
+          "column": 1
+        },
+        {
+          "title": "cancelling replacement in the parsing worker restores corrected provenance and exports",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6716,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:38:07.255Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "562fac3b7dca9dac3532-c5ca2c0506f8ba34a4cb",
+          "file": "correction-reupload.spec.ts",
+          "line": 144,
+          "column": 1
+        },
+        {
+          "title": "missing trailing source cells can be corrected and reverted",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1984,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:38:14.029Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "562fac3b7dca9dac3532-b5a04daae060103ff290",
+          "file": "correction-reupload.spec.ts",
+          "line": 163,
+          "column": 1
+        },
+        {
+          "title": "Excel source corrections retain original typed details and export literal IDs and calendar dates",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3323,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:38:16.037Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "562fac3b7dca9dac3532-aa102488a5bf341bd1e2",
+          "file": "correction-reupload.spec.ts",
+          "line": 175,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "dates.spec.ts",
+      "file": "dates.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "AC-09 contextual dates, exact downloads, local reopen and portable timezone reuse",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7655,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:38:19.403Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7e96ffc28cfcfe4474bb-17a7235f7b6a43012e05",
+          "file": "dates.spec.ts",
+          "line": 26,
+          "column": 1
+        },
+        {
+          "title": "strict dates, optional/required blanks, explicit ambiguity and source replacement",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4851,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:38:27.071Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7e96ffc28cfcfe4474bb-b05395fc4cbe7ee1a4de",
+          "file": "dates.spec.ts",
+          "line": 108,
+          "column": 1
+        },
+        {
+          "title": "mobile date settings preserve layout and type changes clear incompatible rules and CSV acknowledgement",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5248,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:38:31.932Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7e96ffc28cfcfe4474bb-bfe30d7eabdaf68312b1",
+          "file": "dates.spec.ts",
+          "line": 172,
+          "column": 1
+        },
+        {
+          "title": "date rules survive first source choice; fixed dates and trimming remain explicit",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3335,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:38:37.203Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7e96ffc28cfcfe4474bb-e9fe1a81b49dbd4da707",
+          "file": "dates.spec.ts",
+          "line": 214,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "excel-input.spec.ts",
+      "file": "excel-input.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "U9 worksheet choice, Excel metadata and exact identifier, arithmetic, date and cached bytes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9552,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:38:40.578Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-f4a3ee6d77517800ab8a",
+          "file": "excel-input.spec.ts",
+          "line": 61,
+          "column": 1
+        },
+        {
+          "title": "U9 both date epochs, invalid dates and missing cached formulas remain inspectable errors",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5196,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:38:50.150Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-261956cd6952b2a7f7d2",
+          "file": "excel-input.spec.ts",
+          "line": 100,
+          "column": 1
+        },
+        {
+          "title": "U9 selected worksheet, first nonblank header, blank rows and footer retain original semantics",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3496,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:38:55.363Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-2b44458a56c3db7538e6",
+          "file": "excel-input.spec.ts",
+          "line": 123,
+          "column": 1
+        },
+        {
+          "title": "U9 XLSX templates supply names and order only; saved and portable workflows reuse Excel input",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4650,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:38:58.871Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-14004914fb4639d763e1",
+          "file": "excel-input.spec.ts",
+          "line": 142,
+          "column": 1
+        },
+        {
+          "title": "U9 long numeric identifiers and unsupported display formats warn without inventing digits",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2786,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:39:03.542Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-35ee0edceeeec6b7a292",
+          "file": "excel-input.spec.ts",
+          "line": 179,
+          "column": 1
+        },
+        {
+          "title": "U9 integrated worker rejects every U1 hostile fixture and preserves the prior run",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 11681,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "alternate-worksheet-range",
+                      "duration": 181
+                    },
+                    {
+                      "title": "alternate-binary-worksheet",
+                      "duration": 189
+                    },
+                    {
+                      "title": "malformed",
+                      "duration": 141
+                    },
+                    {
+                      "title": "encrypted",
+                      "duration": 133
+                    },
+                    {
+                      "title": "huge-declared",
+                      "duration": 175
+                    },
+                    {
+                      "title": "forged-small",
+                      "duration": 177
+                    },
+                    {
+                      "title": "bomb",
+                      "duration": 175
+                    },
+                    {
+                      "title": "crc-corrupt",
+                      "duration": 157
+                    },
+                    {
+                      "title": "duplicate",
+                      "duration": 132
+                    },
+                    {
+                      "title": "path-conflict",
+                      "duration": 176
+                    },
+                    {
+                      "title": "local-name-conflict",
+                      "duration": 169
+                    },
+                    {
+                      "title": "truncated",
+                      "duration": 177
+                    },
+                    {
+                      "title": "zip64-sentinel",
+                      "duration": 161
+                    },
+                    {
+                      "title": "dimensions",
+                      "duration": 181
+                    },
+                    {
+                      "title": "far-cell",
+                      "duration": 200
+                    },
+                    {
+                      "title": "hyperlink-range",
+                      "duration": 161
+                    },
+                    {
+                      "title": "oversized",
+                      "duration": 4802
+                    },
+                    {
+                      "title": "huge-format",
+                      "duration": 156
+                    },
+                    {
+                      "title": "entities",
+                      "duration": 156
+                    }
+                  ],
+                  "startTime": "2026-10-21T05:39:06.350Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "u9-hostile-integrated.json",
+                      "contentType": "application/json",
+                      "body": "ewogICJhbHRlcm5hdGUtd29ya3NoZWV0LXJhbmdlIjogewogICAgInNlbGVjdGlvblRocm91Z2hEb3dubG9hZE1zIjogMTgwLjQwNTI4OTk5OTk5NTE1LAogICAgInJlamVjdGlvbkFmdGVyU2VsZWN0aW9uTXMiOiA0Ny42Nzk5MjY5OTk5OTAxMwogIH0sCiAgImFsdGVybmF0ZS1iaW5hcnktd29ya3NoZWV0IjogewogICAgInNlbGVjdGlvblRocm91Z2hEb3dubG9hZE1zIjogMTg1LjM4OTQ1Mjk5OTk4MTYsCiAgICAicmVqZWN0aW9uQWZ0ZXJTZWxlY3Rpb25NcyI6IDE5LjAzMjIwMjAwMDAwMjE0NAogIH0sCiAgIm1hbGZvcm1lZCI6IHsKICAgICJzZWxlY3Rpb25UaHJvdWdoRG93bmxvYWRNcyI6IDEzOS44NDQwMDA5OTk5OTAzOSwKICAgICJyZWplY3Rpb25BZnRlclNlbGVjdGlvbk1zIjogMTUuMzI1NTI2MDAwMDAwNTM2CiAgfSwKICAiZW5jcnlwdGVkIjogewogICAgInNlbGVjdGlvblRocm91Z2hEb3dubG9hZE1zIjogMTMyLjYzNjEyMjAwMDAyNTM1LAogICAgInJlamVjdGlvbkFmdGVyU2VsZWN0aW9uTXMiOiAyNy45NjI0NDU5OTk5OTA0NQogIH0sCiAgImh1Z2UtZGVjbGFyZWQiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiAxNzQuODkzMDg1MDAwMDE3OSwKICAgICJyZWplY3Rpb25BZnRlclNlbGVjdGlvbk1zIjogMzQuNTE2NDg0MDAwMDIxNTkKICB9LAogICJmb3JnZWQtc21hbGwiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiAxNzUuODgyNzE1MDAwMDE0MywKICAgICJyZWplY3Rpb25BZnRlclNlbGVjdGlvbk1zIjogNDMuMzA5MTg4MDAwMDEzODIKICB9LAogICJib21iIjogewogICAgInNlbGVjdGlvblRocm91Z2hEb3dubG9hZE1zIjogMTczLjU3MDEzNTk5OTk5NDgyLAogICAgInJlamVjdGlvbkFmdGVyU2VsZWN0aW9uTXMiOiAxNi43NDk5OTU5OTk5OTg2NDYKICB9LAogICJjcmMtY29ycnVwdCI6IHsKICAgICJzZWxlY3Rpb25UaHJvdWdoRG93bmxvYWRNcyI6IDE1Ni43NDExMTQwMDAwMDQwMiwKICAgICJyZWplY3Rpb25BZnRlclNlbGVjdGlvbk1zIjogMzAuMDI4NDE5OTk5OTg3ODIKICB9LAogICJkdXBsaWNhdGUiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiAxMzEuMDM4NDk4MDAwMDA4OTksCiAgICAicmVqZWN0aW9uQWZ0ZXJTZWxlY3Rpb25NcyI6IDE2LjMwNzc5NzAwMDAxNTg1MwogIH0sCiAgInBhdGgtY29uZmxpY3QiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiAxNzQuODM0MTA4MDAwMDEwMDIsCiAgICAicmVqZWN0aW9uQWZ0ZXJTZWxlY3Rpb25NcyI6IDI4LjM5MjM5MTAwMDAwMTIyNgogIH0sCiAgImxvY2FsLW5hbWUtY29uZmxpY3QiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiAxNjguMDc4NDg3OTk5OTk5MiwKICAgICJyZWplY3Rpb25BZnRlclNlbGVjdGlvbk1zIjogMjguMzEyODc5MDAwMDA0NjE0CiAgfSwKICAidHJ1bmNhdGVkIjogewogICAgInNlbGVjdGlvblRocm91Z2hEb3dubG9hZE1zIjogMTc2LjAyNjIyNDAwMDAwMTEsCiAgICAicmVqZWN0aW9uQWZ0ZXJTZWxlY3Rpb25NcyI6IDE1LjIwODMwMzk5OTk5OTc3MQogIH0sCiAgInppcDY0LXNlbnRpbmVsIjogewogICAgInNlbGVjdGlvblRocm91Z2hEb3dubG9hZE1zIjogMTYwLjQ2ODIxMzAwMDAxNDY2LAogICAgInJlamVjdGlvbkFmdGVyU2VsZWN0aW9uTXMiOiAyOS4zMzMwNzIwMDAwMDg1NDIKICB9LAogICJkaW1lbnNpb25zIjogewogICAgInNlbGVjdGlvblRocm91Z2hEb3dubG9hZE1zIjogMTgwLjU5OTk0Nzk5OTk4ODIyLAogICAgInJlamVjdGlvbkFmdGVyU2VsZWN0aW9uTXMiOiAxOC45MjUwNDUwMDAwMTA4NwogIH0sCiAgImZhci1jZWxsIjogewogICAgInNlbGVjdGlvblRocm91Z2hEb3dubG9hZE1zIjogMTk5LjM1MzQ0OTAwMDAxNjU1LAogICAgInJlamVjdGlvbkFmdGVyU2VsZWN0aW9uTXMiOiAzNS4xNjU0Nzg5OTk5ODg0MQogIH0sCiAgImh5cGVybGluay1yYW5nZSI6IHsKICAgICJzZWxlY3Rpb25UaHJvdWdoRG93bmxvYWRNcyI6IDE2MC43MjU4Nzc5OTk5OTc0NiwKICAgICJyZWplY3Rpb25BZnRlclNlbGVjdGlvbk1zIjogMTYuOTQzMDYyMDAwMDA1NzQKICB9LAogICJvdmVyc2l6ZWQiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiA0ODAwLjg1MjYxMzAwMDAyNSwKICAgICJyZWplY3Rpb25BZnRlclNlbGVjdGlvbk1zIjogMTkuMzAzNzkwMDAwMDA1MzkyCiAgfSwKICAiaHVnZS1mb3JtYXQiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiAxNTUuMTI4NDQ1MDAwMDA5MzgsCiAgICAicmVqZWN0aW9uQWZ0ZXJTZWxlY3Rpb25NcyI6IDE2LjYzNDg2NDk5OTk5OTk5CiAgfSwKICAiZW50aXRpZXMiOiB7CiAgICAic2VsZWN0aW9uVGhyb3VnaERvd25sb2FkTXMiOiAxNTQuOTUxNTM4MDAwMDIzLAogICAgInJlamVjdGlvbkFmdGVyU2VsZWN0aW9uTXMiOiAyOS40MDczOTMwMDAwMDEzMgogIH0KfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-1f8f09e88450fc43a746",
+          "file": "excel-input.spec.ts",
+          "line": 191,
+          "column": 1
+        },
+        {
+          "title": "U9 browser privacy intercepts external links and WEBSERVICE without exposing source data",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2184,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:39:18.054Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-ccae1b553222b043d061",
+          "file": "excel-input.spec.ts",
+          "line": 225,
+          "column": 1
+        },
+        {
+          "title": "U9 cancellation stops workbook processing and retries the unchanged active source",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3096,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:39:20.280Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-bf334e9884025cd534bf",
+          "file": "excel-input.spec.ts",
+          "line": 250,
+          "column": 1
+        },
+        {
+          "title": "U9 10000-row integrated workbook remains responsive and exports every selected value",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 11284,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:39:23.392Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "u9-10000-integrated.json",
+                      "contentType": "application/json",
+                      "body": "ewogICJyb3dzIjogMTAwMDAsCiAgImNvbHVtbnMiOiAyMCwKICAiYnJvd3NlciI6ICIxNTQuMC44MDM3LjU3IiwKICAicmVwZWF0SW1wb3J0VGhyb3VnaERvd25sb2FkTXMiOiAzMjk3LjUxMzM3MDAwMDAwMDYsCiAgImhlYXJ0YmVhdCI6IHsKICAgICJwcmV2aW91cyI6IDg3MzQuOTAwMDAwMDAyMjM1LAogICAgIm1heEdhcCI6IDQyMi42MDAwMDAwMDE0OTAxLAogICAgInRpY2tzIjogMzc2CiAgfSwKICAiZW52aXJvbm1lbnQiOiAiQ2xvdWQgcnVubmVyOyByZWZlcmVuY2UgbGFwdG9wIHF1YWxpZmljYXRpb24gcGVuZGluZyIKfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-26bd4830f9ee0b9d96a6",
+          "file": "excel-input.spec.ts",
+          "line": 268,
+          "column": 1
+        },
+        {
+          "title": "U9 manual replacements require a fresh worksheet choice and preserve the prior run after a selected-sheet failure",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2925,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:39:34.810Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-d3e2d15f9e14ecb97eb9",
+          "file": "excel-input.spec.ts",
+          "line": 295,
+          "column": 1
+        },
+        {
+          "title": "U9 source inspection stays deferred after ending an inspected session",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1882,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:39:37.766Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d79f74ed720d6aca555e-e6b4d368bdfab2ac1e58",
+          "file": "excel-input.spec.ts",
+          "line": 329,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "excel-output.spec.ts",
+      "file": "excel-output.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "U10 CSV to typed Excel controls, selected columns/order, blanks and literal strings",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6423,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:39:39.717Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "u10-synthetic-output.xlsx",
+                      "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                      "body": "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"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "00183d06401ceecddb7a-54ffa9d05df31cb6f802",
+          "file": "excel-output.spec.ts",
+          "line": 91,
+          "column": 1
+        },
+        {
+          "title": "U10 XLSX to XLSX copies cached values without source formulas, links or package members",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1466,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:39:46.156Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "00183d06401ceecddb7a-d2dd0384b8fe97e91d30",
+          "file": "excel-output.spec.ts",
+          "line": 128,
+          "column": 1
+        },
+        {
+          "title": "U10 precision errors block download and offer exact CSV or explicit text alternatives",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2205,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:39:47.640Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "00183d06401ceecddb7a-c29dbdb4fb5aeb71e1a6",
+          "file": "excel-output.spec.ts",
+          "line": 139,
+          "column": 1
+        },
+        {
+          "title": "U10 saved and portable workflows preserve Excel settings and all types across browser timezones",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4725,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:39:49.858Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "00183d06401ceecddb7a-8506b5962d20d3a677a6",
+          "file": "excel-output.spec.ts",
+          "line": 155,
+          "column": 1
+        },
+        {
+          "title": "U10 invalid rows and stale configuration continue to block Excel export",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1855,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:39:54.627Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "00183d06401ceecddb7a-6cd548823846a92b6287",
+          "file": "excel-output.spec.ts",
+          "line": 178,
+          "column": 1
+        },
+        {
+          "title": "U10 privacy covers both source formats, cached formulas, Excel settings, saved work and downloads",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1731,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:39:56.494Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "00183d06401ceecddb7a-e791ce7cc20ec5652c5c",
+          "file": "excel-output.spec.ts",
+          "line": 191,
+          "column": 1
+        },
+        {
+          "title": "U10 integrated safeguards reject hostile workbooks while preserving eligible Excel download",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 11206,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "U10 hostile fixture: alternate-worksheet-range\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: alternate-binary-worksheet\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: malformed\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: encrypted\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: huge-declared\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: forged-small\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: bomb\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: crc-corrupt\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: duplicate\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: path-conflict\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: local-name-conflict\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: truncated\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: zip64-sentinel\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: dimensions\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: far-cell\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: hyperlink-range\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: oversized\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: huge-format\n"
+                    },
+                    {
+                      "text": "U10 hostile fixture: entities\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "alternate-worksheet-range",
+                      "duration": 170
+                    },
+                    {
+                      "title": "alternate-binary-worksheet",
+                      "duration": 171
+                    },
+                    {
+                      "title": "malformed",
+                      "duration": 128
+                    },
+                    {
+                      "title": "encrypted",
+                      "duration": 111
+                    },
+                    {
+                      "title": "huge-declared",
+                      "duration": 129
+                    },
+                    {
+                      "title": "forged-small",
+                      "duration": 167
+                    },
+                    {
+                      "title": "bomb",
+                      "duration": 138
+                    },
+                    {
+                      "title": "crc-corrupt",
+                      "duration": 131
+                    },
+                    {
+                      "title": "duplicate",
+                      "duration": 144
+                    },
+                    {
+                      "title": "path-conflict",
+                      "duration": 130
+                    },
+                    {
+                      "title": "local-name-conflict",
+                      "duration": 102
+                    },
+                    {
+                      "title": "truncated",
+                      "duration": 130
+                    },
+                    {
+                      "title": "zip64-sentinel",
+                      "duration": 115
+                    },
+                    {
+                      "title": "dimensions",
+                      "duration": 130
+                    },
+                    {
+                      "title": "far-cell",
+                      "duration": 128
+                    },
+                    {
+                      "title": "hyperlink-range",
+                      "duration": 149
+                    },
+                    {
+                      "title": "oversized",
+                      "duration": 5275
+                    },
+                    {
+                      "title": "huge-format",
+                      "duration": 132
+                    },
+                    {
+                      "title": "entities",
+                      "duration": 163
+                    }
+                  ],
+                  "startTime": "2026-10-21T05:39:58.244Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "u10-hostile-integrated.json",
+                      "contentType": "application/json",
+                      "body": "ewogICJhbHRlcm5hdGUtd29ya3NoZWV0LXJhbmdlIjogMzAuNDU4MTQxMDAwMDEwMDczLAogICJhbHRlcm5hdGUtYmluYXJ5LXdvcmtzaGVldCI6IDIwLjU1MzkzOTAwMDAwNDkwMiwKICAibWFsZm9ybWVkIjogMTcuODAyOTQ2OTk5OTg5MjE3LAogICJlbmNyeXB0ZWQiOiAxMi4zNjY5MjI5OTk5OTQxMywKICAiaHVnZS1kZWNsYXJlZCI6IDEwLjEzMjA3Mzk5OTk5MzczNiwKICAiZm9yZ2VkLXNtYWxsIjogMjcuODIwNzg1MDAwMDE4MDc3LAogICJib21iIjogMTMuODAxMjE5MDAwMDE1NDA4LAogICJjcmMtY29ycnVwdCI6IDE2LjkwODgxMTk5OTk3OTY2MiwKICAiZHVwbGljYXRlIjogMjQuNDQ5OTAyMDAwMDIyMTIsCiAgInBhdGgtY29uZmxpY3QiOiAyNC43NTU4MTI5OTk5OTYxMjQsCiAgImxvY2FsLW5hbWUtY29uZmxpY3QiOiAxMi4zMDI3NTgwMDAwMDUyNywKICAidHJ1bmNhdGVkIjogMTkuNjQwODEzOTk5OTgzOTQ4LAogICJ6aXA2NC1zZW50aW5lbCI6IDE2Ljc4NTgxMTk5OTk4NzM0NSwKICAiZGltZW5zaW9ucyI6IDIxLjczNzAyNjk5OTk5NTU3OCwKICAiZmFyLWNlbGwiOiAxNi40MzQ5MjgwMDAwMDI0LAogICJoeXBlcmxpbmstcmFuZ2UiOiAyMC4xMDgwMTE5OTk5ODI0MSwKICAib3ZlcnNpemVkIjogMTEuNDQ0NjA4OTk5OTk4MzA5LAogICJodWdlLWZvcm1hdCI6IDkuODI5MTU4OTk5OTg2MjQ4LAogICJlbnRpdGllcyI6IDM0LjIxNTQ1ODk5OTk5OTEKfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "00183d06401ceecddb7a-3ce3b15aff68526ce6e3",
+          "file": "excel-output.spec.ts",
+          "line": 224,
+          "column": 1
+        },
+        {
+          "title": "U10 performance exports every 10000 by 20 value from CSV and XLSX without blocking the interface",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 39867,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:40:09.466Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "u10-10000-integrated.json",
+                      "contentType": "application/json",
+                      "body": "ewogICJyb3dzIjogMTAwMDAsCiAgImNvbHVtbnMiOiAyMCwKICAiYnJvd3NlciI6ICIxNTQuMC44MDM3LjU3IiwKICAiaW1wb3J0VGhyb3VnaERvd25sb2FkIjogewogICAgImNzdiI6IHsKICAgICAgImZpcnN0TXMiOiAyMzg4LjU3MjczNDk5OTk5NDMsCiAgICAgICJ3YXJtTWVkaWFuTXMiOiAxODAwLjA2ODEyOTAwMDAyMTEsCiAgICAgICJ3YXJtV29yc3RNcyI6IDIxMjkuNzQ4MjA2MDAwMDE4NCwKICAgICAgInNhbXBsZXNNcyI6IFsKICAgICAgICAyMzg4LjU3MjczNDk5OTk5NDMsCiAgICAgICAgMTk3NS4zMTcxMzAwMDAwMTA0LAogICAgICAgIDE4MDAuMDY4MTI5MDAwMDIxMSwKICAgICAgICAyMTI5Ljc0ODIwNjAwMDAxODQsCiAgICAgICAgMTc2Ny40MTgyMjIwMDAwMDc1LAogICAgICAgIDE2NDguODY0NjcxOTk5OTk2CiAgICAgIF0KICAgIH0sCiAgICAieGxzeCI6IHsKICAgICAgImZpcnN0TXMiOiA0MzI0LjMwMDg1MTk5OTk1NywKICAgICAgIndhcm1NZWRpYW5NcyI6IDM0MjguNjY2NTUxOTk5OTgwNiwKICAgICAgIndhcm1Xb3JzdE1zIjogNDU2MS4xMDc1MTc5OTk5NDYsCiAgICAgICJzYW1wbGVzTXMiOiBbCiAgICAgICAgNDMyNC4zMDA4NTE5OTk5NTcsCiAgICAgICAgNDU2MS4xMDc1MTc5OTk5NDYsCiAgICAgICAgMzY1NS40OTIyMTkwMDAwMDcsCiAgICAgICAgMzQyOC42NjY1NTE5OTk5ODA2LAogICAgICAgIDMzMzkuNjgwNzM1MDAwMDAxNywKICAgICAgICAzMzYwLjYzOTU0Mzk5OTk3NgogICAgICBdCiAgICB9CiAgfSwKICAic2l6ZXMiOiB7CiAgICAiY3N2IjogewogICAgICAiZG93bmxvYWRCeXRlcyI6IDI4NjY4NDcsCiAgICAgICJleHBhbmRlZEJ5dGVzIjogODI0ODE0OQogICAgfSwKICAgICJ4bHN4IjogewogICAgICAiZG93bmxvYWRCeXRlcyI6IDI4NjY4NDcsCiAgICAgICJleHBhbmRlZEJ5dGVzIjogODI0ODE0OQogICAgfQogIH0sCiAgImhlYXJ0YmVhdCI6IHsKICAgICJwcmV2aW91cyI6IDM5NjU4LjMwMDAwMDAwMDc0NSwKICAgICJtYXhHYXAiOiAyMzAuMzk5OTk5OTk4NTA5ODgsCiAgICAidGlja3MiOiAxODMwCiAgfSwKICAiZW52aXJvbm1lbnQiOiAiQ29kZXggQ2xvdWQ7IHNhbWUgd29ya2VyIHJldXNlZCBhY3Jvc3MgdHJpYWxzLCBpbmNsdWRpbmcgZmlsZS1waWNrZXIgdHJhbnNwb3J0OyByZWZlcmVuY2UgbGFwdG9wIHF1YWxpZmljYXRpb24gcmVtYWlucyBVMTMiCn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "00183d06401ceecddb7a-f774dadbe35bf5872c99",
+          "file": "excel-output.spec.ts",
+          "line": 248,
+          "column": 1
+        },
+        {
+          "title": "U10 amplified output fails boundedly rather than silently truncating rows or columns",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3231,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:40:49.348Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "00183d06401ceecddb7a-54441a450f4ca72efa8c",
+          "file": "excel-output.spec.ts",
+          "line": 299,
+          "column": 1
+        },
+        {
+          "title": "U10 cancelling Excel serialization discards the download and retries the same workflow",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9316,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:40:52.592Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "00183d06401ceecddb7a-a05875098a5da5001531",
+          "file": "excel-output.spec.ts",
+          "line": 310,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "partial-export.spec.ts",
+      "file": "partial-export.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "500 candidates export exactly 490 acknowledged eligible records with visible warnings and all 10 exclusions privately",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4107,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:41:01.954Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "partial-export-privacy.json",
+                      "contentType": "application/json",
+                      "body": "eyJ1bmV4cGVjdGVkIjpbXSwiZGlhZ25vc3RpY0xlYWtzIjowLCJjYW5kaWRhdGVzIjo1MDAsImV4cG9ydGVkIjo0OTAsImV4Y2x1ZGVkIjoxMH0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8a6d7706c72f9358fee9-329f50df4c9f181e4cfc",
+          "file": "partial-export.spec.ts",
+          "line": 15,
+          "column": 1
+        },
+        {
+          "title": "every excluded row and issue is accessible across pages; acknowledgement survives navigation only",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7993,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:41:06.126Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8a6d7706c72f9358fee9-70d91e62936c2422c020",
+          "file": "partial-export.spec.ts",
+          "line": 71,
+          "column": 1
+        },
+        {
+          "title": "formula handling changes reset partial acknowledgement and zero eligible rows remain blocked",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3116,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:41:14.139Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8a6d7706c72f9358fee9-48cec4a6cc4824b3e358",
+          "file": "partial-export.spec.ts",
+          "line": 102,
+          "column": 1
+        },
+        {
+          "title": "production worker enforces permission and current revision independently of UI controls",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1820,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:41:17.290Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8a6d7706c72f9358fee9-d68c1d02fb2ccfc84222",
+          "file": "partial-export.spec.ts",
+          "line": 119,
+          "column": 1
+        },
+        {
+          "title": "10000 candidate rows retain every eligible record and exact hidden-page exclusions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3721,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:41:19.126Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "partial-10000-timing.json",
+                      "contentType": "application/json",
+                      "body": "eyJyb3dzIjoxMDAwMCwiZXhwb3J0ZWQiOjk5OTAsImV4Y2x1ZGVkIjoxMCwicmV2aWV3VGhyb3VnaERvd25sb2FkTXMiOjU1Ni4yNzU5OTQ5OTk5NzQ1LCJlbnZpcm9ubWVudCI6IkNvZGV4IENsb3VkIHN5c3RlbSBDaHJvbWl1bTsgbm90IHRoZSByZWZlcmVuY2UgbGFwdG9wIn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8a6d7706c72f9358fee9-609a9e23dab400530e81",
+          "file": "partial-export.spec.ts",
+          "line": 147,
+          "column": 1
+        },
+        {
+          "title": "Excel partial export keeps worksheet row provenance after offset headers, skipped blanks and exception pagination",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6185,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:41:22.900Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8a6d7706c72f9358fee9-820e55be221daec23164",
+          "file": "partial-export.spec.ts",
+          "line": 160,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "performance.spec.ts",
+      "file": "performance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "10000 U3 rows preserve every fixed value, exact decimal, trim result and original reference",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 17207,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:41:29.127Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b15d6361b2fc38288977-08220513c0e9082444a4",
+          "file": "performance.spec.ts",
+          "line": 17,
+          "column": 1
+        },
+        {
+          "title": "10000 x 20 rows remain intact; record cold and five warm full-pipeline runs",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 25995,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:41:46.356Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "timings.json",
+                      "contentType": "application/json",
+                      "body": "ewogICJicm93c2VyTmFtZSI6ICJjaHJvbWl1bSIsCiAgInZlcnNpb24iOiAiMTU0LjAuODAzNy41NyIsCiAgInJvd3MiOiAxMDAwMCwKICAiY29sdW1ucyI6IDIwLAogICJjb2xkSW5jbHVkaW5nTWFudWFsU2V0dXBNcyI6IDMzMTkuODY1MzYzMDAwMDE5LAogICJ3YXJtTXMiOiBbCiAgICAxMjMzLjA3MTgxMTAwMDAwMTYsCiAgICA5MzMuOTk2MzUyOTk5OTk1LAogICAgODk5LjcwMDg0MjAwMDAyMDIsCiAgICA5MzAuNjI3OTAyOTk5OTg2LAogICAgMTA0NC44MjY3Mzk5OTk5ODk1CiAgXSwKICAibWVkaWFuTXMiOiA5MzMuOTk2MzUyOTk5OTk1LAogICJ3b3JzdE1zIjogMTIzMy4wNzE4MTEwMDAwMDE2LAogICJlbnZpcm9ubWVudCI6ICJDb2RleCBjbG91ZCBydW5uZXI7IG5vdCByZWZlcmVuY2UgbGFwdG9wIHF1YWxpZmljYXRpb24iCn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b15d6361b2fc38288977-08791083335f335ae6dc",
+          "file": "performance.spec.ts",
+          "line": 44,
+          "column": 1
+        },
+        {
+          "title": "busy cancel and retry preserve the active mapping and full downloaded data",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2358,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:12.394Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b15d6361b2fc38288977-170bb9e044ace2075d68",
+          "file": "performance.spec.ts",
+          "line": 135,
+          "column": 1
+        },
+        {
+          "title": "cancellation terminates an active parsing worker and retries the original file",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6030,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:14.769Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b15d6361b2fc38288977-965c5bc89e6d3b6b487f",
+          "file": "performance.spec.ts",
+          "line": 173,
+          "column": 1
+        },
+        {
+          "title": "499 x 20 import to preview stays under the one-second smoke budget",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5624,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:20.820Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "small-timings.json",
+                      "contentType": "application/json",
+                      "body": "ewogICJicm93c2VyTmFtZSI6ICJjaHJvbWl1bSIsCiAgInZlcnNpb24iOiAiMTU0LjAuODAzNy41NyIsCiAgInJvd3MiOiA0OTksCiAgImNvbHVtbnMiOiAyMCwKICAiY29sZEltcG9ydFBsdXNFdmFsdWF0aW9uRXhjbHVkaW5nTWFudWFsTWFwcGluZ01zIjogODg5LjczODE4NjAwMDAzMTQsCiAgIndhcm1JbXBvcnRUaHJvdWdoUHJldmlld01zIjogWwogICAgMjEyLjAwNTA1MzAwMDAwMDc3LAogICAgMjM0LjE5Mjk5Njk5OTk0NzM1LAogICAgMjIxLjkxNjkyOTk5OTk0ODQ4LAogICAgMjIxLjM3NDcyNzk5OTk2NjEzLAogICAgMjY3LjAzNzA3NzAwMDAxNTQKICBdLAogICJtZWRpYW5NcyI6IDIyMS45MTY5Mjk5OTk5NDg0OCwKICAid29yc3RNcyI6IDI2Ny4wMzcwNzcwMDAwMTU0LAogICJlbnZpcm9ubWVudCI6ICJjbG91ZCBydW5uZXI7IFVJIGF1dG9tYXRpb24gb3ZlcmhlYWQgaW5jbHVkZWQ7IHJlZmVyZW5jZSBsYXB0b3AgcGVuZGluZyIKfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b15d6361b2fc38288977-cde643714459b7613694",
+          "file": "performance.spec.ts",
+          "line": 206,
+          "column": 1
+        },
+        {
+          "title": "10000 U6 rows preserve every split and combined empty component",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2993,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:26.458Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "u6-timings.json",
+                      "contentType": "application/json",
+                      "body": "eyJyb3dzIjoxMDAwMCwicmVwZWF0SW1wb3J0VGhyb3VnaERvd25sb2FkTXMiOjY2OS45OTMxMjMwMDAwMjIsImVudmlyb25tZW50IjoiQ29kZXggY2xvdWQgcnVubmVyOyBub3QgcmVmZXJlbmNlLWxhcHRvcCBxdWFsaWZpY2F0aW9uIn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b15d6361b2fc38288977-7a4b8d016489909794e7",
+          "file": "performance.spec.ts",
+          "line": 270,
+          "column": 1
+        },
+        {
+          "title": "10000 U7 rows keep exact arithmetic, identifiers, counts and downloaded bytes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3503,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:29.467Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "u7-cloud-smoke.json",
+                      "contentType": "application/json",
+                      "body": "eyJicm93c2VyIjoiMTU0LjAuODAzNy41NyIsIm5vZGUiOiJ2MjQuMTkuMCIsInJvd3MiOjEwMDAwLCJ0b3RhbFNldHVwQW5kRXhwb3J0TXMiOjMzMTIuODI3OTUwMDAwMDA2MiwiYnl0ZXMiOjE4MDAzMn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b15d6361b2fc38288977-c559d68c8646435ff438",
+          "file": "performance.spec.ts",
+          "line": 292,
+          "column": 1
+        },
+        {
+          "title": "10000 U8 rows preserve every explicit date, identifier and exported byte",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2580,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:32.989Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "u8-cloud-smoke.json",
+                      "contentType": "application/json",
+                      "body": "eyJicm93c2VyIjoiMTU0LjAuODAzNy41NyIsInJvd3MiOjEwMDAwLCJyZXBlYXRJbXBvcnRUaHJvdWdoRG93bmxvYWRNcyI6NzE2LjIyNTY4MTAwMDAzOTksImJ5dGVzIjoxOTAwMjB9"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b15d6361b2fc38288977-fcc8472667530b67745b",
+          "file": "performance.spec.ts",
+          "line": 309,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "persistence.spec.ts",
+      "file": "persistence.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "ad hoc edits persist nothing; explicit save commits configuration that survives reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1750,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:35.605Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-d60144fb82ddd73a31db",
+          "file": "persistence.spec.ts",
+          "line": 31,
+          "column": 1
+        },
+        {
+          "title": "two tabs cannot silently replace a workflow changed since opening",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1727,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:37.374Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-a57c9211eac970ab4840",
+          "file": "persistence.spec.ts",
+          "line": 50,
+          "column": 1
+        },
+        {
+          "title": "write abort after request success preserves the draft and independent portable download",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1035,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:39.118Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-627fa2d6729d6e0ec9ba",
+          "file": "persistence.spec.ts",
+          "line": 67,
+          "column": 1
+        },
+        {
+          "title": "corrupt records stay untouched while intact saved definitions remain available",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1329,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:40.174Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-2de053648c17cdeb3f19",
+          "file": "persistence.spec.ts",
+          "line": 89,
+          "column": 1
+        },
+        {
+          "title": "save acknowledges its submitted snapshot while newer name edits remain unsaved",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 999,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:41.529Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-f9fd7a349a350793f69c",
+          "file": "persistence.spec.ts",
+          "line": 111,
+          "column": 1
+        },
+        {
+          "title": "storage denial keeps portable workflow download and ad hoc processing available",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1268,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:42.548Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-09f35a24833dea257b8f",
+          "file": "persistence.spec.ts",
+          "line": 136,
+          "column": 1
+        },
+        {
+          "title": "a delayed saved-workflow read uses current confirmation after a draft edit",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1523,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:43.833Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-5580b1016a34024b1169",
+          "file": "persistence.spec.ts",
+          "line": 149,
+          "column": 1
+        },
+        {
+          "title": "native chooser waits for the selected saved workflow to activate",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1584,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:45.378Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-22c6379f78e6261829ae",
+          "file": "persistence.spec.ts",
+          "line": 180,
+          "column": 3
+        },
+        {
+          "title": "upload helper waits for the selected saved workflow to activate",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2040,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:46.979Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-db61376b62544ac233b4",
+          "file": "persistence.spec.ts",
+          "line": 180,
+          "column": 3
+        },
+        {
+          "title": "pending Open releases controls after cancel without activating a late workflow",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1762,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:49.040Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-a424560098043069167e",
+          "file": "persistence.spec.ts",
+          "line": 228,
+          "column": 3
+        },
+        {
+          "title": "pending Open releases controls after missing without activating a late workflow",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1549,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:50.822Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a5ef73a4e2a1baaea746-d7b4f7aae0babcda31d8",
+          "file": "persistence.spec.ts",
+          "line": 228,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "title": "privacy.spec.ts",
+      "file": "privacy.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "production journey sends no customer values, file names or IDs and stores no source data",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9013,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:42:52.398Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "62491902cb946290adea-d66ddcfc559e9d6031a6",
+          "file": "privacy.spec.ts",
+          "line": 4,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "release.spec.ts",
+      "file": "release.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "integrated csv input supports partial export, correction and both output formats",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2385,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:01.442Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7324964a6aa193ebd049-2b8abf684da6b4ebe1bd",
+          "file": "release.spec.ts",
+          "line": 7,
+          "column": 52
+        },
+        {
+          "title": "integrated xlsx input supports partial export, correction and both output formats",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2179,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:03.845Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7324964a6aa193ebd049-2e300844887683e91db7",
+          "file": "release.spec.ts",
+          "line": 7,
+          "column": 52
+        }
+      ]
+    },
+    {
+      "title": "review-regressions.spec.ts",
+      "file": "review-regressions.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "CE #1: removing a previewed field and repreviewing cannot render stale values",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2379,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:06.050Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "70295784855ab916a09e-ac536822fa52132d7250",
+          "file": "review-regressions.spec.ts",
+          "line": 4,
+          "column": 1
+        },
+        {
+          "title": "CE #1: sample transaction replaces a wider completed preview",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2475,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:08.445Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "70295784855ab916a09e-43a06715e335ffa79fc2",
+          "file": "review-regressions.spec.ts",
+          "line": 20,
+          "column": 1
+        },
+        {
+          "title": "CE #4: failed sample read retains the prior active mapping and visible failure",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1806,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:10.946Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "70295784855ab916a09e-2d72f0dd403d67943e14",
+          "file": "review-regressions.spec.ts",
+          "line": 39,
+          "column": 1
+        },
+        {
+          "title": "CE #5: cancelled sample and active-file retry keep matching preview and output",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2234,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:12.772Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "70295784855ab916a09e-3730bf42a85b6b12705e",
+          "file": "review-regressions.spec.ts",
+          "line": 65,
+          "column": 1
+        },
+        {
+          "title": "new source upload requires a fresh CSV safety choice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2120,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:15.017Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "70295784855ab916a09e-db36a1f0acf1468e4d94",
+          "file": "review-regressions.spec.ts",
+          "line": 96,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "row-mapping.spec.ts",
+      "file": "row-mapping.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "both drag directions, grouping, source reuse, replacement and unlink preserve export order",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2823,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:17.166Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-dd36becc2ab7ec5fd27a",
+          "file": "row-mapping.spec.ts",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "keyboard counterpart selection in both directions, Escape and pair reordering retain focus",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3393,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:20.003Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-b104e1e0d51c6b82580e",
+          "file": "row-mapping.spec.ts",
+          "line": 63,
+          "column": 1
+        },
+        {
+          "title": "25 sources and 30 outputs stay searchable and aligned at desktop and laptop widths",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10711,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:23.414Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-dc723e52e0d12533a088",
+          "file": "row-mapping.spec.ts",
+          "line": 162,
+          "column": 1
+        },
+        {
+          "title": "rapid edits debounce and never enable an old export",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2275,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:34.151Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-d06fd5fb7dd4fa05dc71",
+          "file": "row-mapping.spec.ts",
+          "line": 218,
+          "column": 1
+        },
+        {
+          "title": "edits during an older worker evaluation queue the latest draft",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2791,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:36.439Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-6ea9b03fc66bd5eafd0a",
+          "file": "row-mapping.spec.ts",
+          "line": 239,
+          "column": 1
+        },
+        {
+          "title": "template replacement is deliberate and failed parsing preserves mapped columns",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2922,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:39.250Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-24ac17760be3977c2bf9",
+          "file": "row-mapping.spec.ts",
+          "line": 308,
+          "column": 1
+        },
+        {
+          "title": "automatic evaluation waits for a fresh 250 ms quiet period",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1685,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:42.188Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-f1fd180620a19b47d56e",
+          "file": "row-mapping.spec.ts",
+          "line": 366,
+          "column": 1
+        },
+        {
+          "title": "a failed automatic evaluation stops until explicit recovery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1710,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:43.893Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-5a3edffbc3f5eead8956",
+          "file": "row-mapping.spec.ts",
+          "line": 407,
+          "column": 1
+        },
+        {
+          "title": "zero output columns give an actionable empty state rather than a pending preview",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1848,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:45.624Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-51f1da4369f0d00b4f22",
+          "file": "row-mapping.spec.ts",
+          "line": 459,
+          "column": 1
+        },
+        {
+          "title": "external drops cannot create mappings; contextual settings and deletion restore focus",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1488,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:47.493Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dde240f1d9c05c1c130e-a8877fa942621ec8b816",
+          "file": "row-mapping.spec.ts",
+          "line": 479,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "sample-journey.spec.ts",
+      "file": "sample-journey.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "visitor sample and integrated logistics backup run in a fresh browser with exact CSV and typed Excel output",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8900,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:49.008Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fc1f2d024b270cc4682f-65bbd82b0e613a6231d7",
+          "file": "sample-journey.spec.ts",
+          "line": 8,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "suggestions.spec.ts",
+      "file": "suggestions.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "keyboard accept/reject leaves candidates unconfirmed and existing recipes authoritative",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4375,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:43:57.942Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "848a40db5beffc798ac7-e7b116b80f71047d2b24",
+          "file": "suggestions.spec.ts",
+          "line": 6,
+          "column": 1
+        },
+        {
+          "title": "ambiguous exact/dictionary candidates remain alternatives until an explicit choice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1869,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:44:02.337Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "848a40db5beffc798ac7-97577bf4fb8728fc2054",
+          "file": "suggestions.spec.ts",
+          "line": 33,
+          "column": 1
+        },
+        {
+          "title": "only accepted mappings save, back up and rerun; renamed headers still block",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4061,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:44:04.221Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "848a40db5beffc798ac7-5dfd2c629427c5157003",
+          "file": "suggestions.spec.ts",
+          "line": 68,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "workflow-portability.spec.ts",
+      "file": "workflow-portability.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "portable backup runs in a fresh browser and separate local origin without remapping",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2494,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:44:08.330Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-597ef6eed70340ddf23f",
+          "file": "workflow-portability.spec.ts",
+          "line": 32,
+          "column": 1
+        },
+        {
+          "title": "invalid workflow imports preserve the prior run and compatible headers never guess",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1742,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:44:11.067Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-0161769a381d6a5637c8",
+          "file": "workflow-portability.spec.ts",
+          "line": 63,
+          "column": 1
+        },
+        {
+          "title": "identity and name collisions require an explicit target or distinct copy",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1406,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:44:12.829Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-15335022c2803f6d1e1f",
+          "file": "workflow-portability.spec.ts",
+          "line": 81,
+          "column": 1
+        },
+        {
+          "title": "saved source delimiter policy is committed independently of the next upload picker",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1413,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:44:14.258Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-49999cd1e6a3fa7daf26",
+          "file": "workflow-portability.spec.ts",
+          "line": 102,
+          "column": 1
+        },
+        {
+          "title": "a late workflow read cannot resurrect a conversion after New conversion",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 763,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:44:15.695Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-81eba4671cf793dab213",
+          "file": "workflow-portability.spec.ts",
+          "line": 121,
+          "column": 1
+        },
+        {
+          "title": "opening a workflow resets formula permission and added output IDs remain unique",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2573,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:44:16.505Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-583c414900849387e4f2",
+          "file": "workflow-portability.spec.ts",
+          "line": 139,
+          "column": 1
+        },
+        {
+          "title": "a delayed workflow read confirms against the current newly uploaded source",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1669,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T05:44:19.102Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "723837967ef4ead741ca-67362837f59db920cf3e",
+          "file": "workflow-portability.spec.ts",
+          "line": 163,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-21T05:35:52.527Z",
+    "duration": 508899.897,
+    "expected": 119,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -1,0 +1,28 @@
+[WebServer] (node:5255) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:5268) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 12 tests using 1 worker
+
+(node:5280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › tests/e2e/acceptance-corrections.spec.ts:24:1 › Done editing retains unsaved configuration across repeat mode and portable workflows (3.3s)
+  ✓   2 [chromium] › tests/e2e/acceptance-corrections.spec.ts:48:1 › one address root cause navigates and highlights the original cell; diagnostics and independent errors remain (1.5s)
+  ✓   3 [chromium] › tests/e2e/acceptance-corrections.spec.ts:68:1 › independent filters retain multi-page drafts and apply once without changing output pages (8.1s)
+  ✓   4 [chromium] › tests/e2e/acceptance-corrections.spec.ts:113:1 › pending changes survive cancelled loss, failed replacement and inspection, with explicit discard (1.8s)
+  ✓   5 [chromium] › tests/e2e/acceptance-corrections.spec.ts:140:1 › rule failures open settings instead of highlighting valid source data (1.5s)
+  ✓   6 [chromium] › tests/e2e/correction-reupload.spec.ts:10:1 › source corrections repair dependents, revert, preserve replacement failures and recover cancelled parsing privately (5.7s)
+  ✓   7 [chromium] › tests/e2e/correction-reupload.spec.ts:84:1 › 10000 rows retain identity after clearing and correcting a later preview page (2.4s)
+  ✓   8 [chromium] › tests/e2e/correction-reupload.spec.ts:99:1 › filtered exception correction targets the matching source identity (3.1s)
+  ✓   9 [chromium] › tests/e2e/correction-reupload.spec.ts:114:1 › production worker rejects stale correction requests after a newer rule revision (973ms)
+  ✓  10 [chromium] › tests/e2e/correction-reupload.spec.ts:144:1 › cancelling replacement in the parsing worker restores corrected provenance and exports (7.9s)
+  ✓  11 [chromium] › tests/e2e/correction-reupload.spec.ts:163:1 › missing trailing source cells can be corrected and reverted (4.8s)
+  ✓  12 [chromium] › tests/e2e/correction-reupload.spec.ts:175:1 › Excel source corrections retain original typed details and export literal IDs and calendar dates (6.6s)
+
+  12 passed (50.7s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

@@ -1,0 +1,12 @@
+{
+  "src/engine/issues.ts": "171a3a8e4a2c08c882dd5d77335470bbfde057a14ced5463f256fec3886e08c7",
+  "src/engine/recipes.ts": "55ff4e79d2aa477ff43564f0e29ca5370567027548476439e1e1964ecd7cdfe2",
+  "src/processing.worker.ts": "d2580d06f54dfde0f0f3f0db12cc95c910bd999f78114ccb7abb6787d337b7f5",
+  "src/session/controller.ts": "8c18a4adaaa593e8cccc077bf507fb324feced17ac67440bd4e6e68ddb0da586",
+  "src/session/correction-overlay.ts": "e9c06f2cc0e216df6154082f67ec0cd74376200f0dfa9385a6f1995adf110aaf",
+  "src/session/worker-protocol.ts": "1c49844b92889b330ac770d9a6c7e5b1ed1fd81f45065446f5d7e11f9749d58f",
+  "src/ui/SourceCorrection.tsx": "c510333ece36db963fdcca32af9d7c2d5f50c30184a03871295c033631f98843",
+  "src/ui/Workspace.tsx": "77ad700fd55efcdaa740dd013da7272008ba134348e11973095f785055817823",
+  "src/ui/styles.css": "8e6325b27043284acb98fe4159d9b6e2f7a15dc81eea596a4df7097ffbc53db5",
+  "src/ui/SourceInspector.tsx": "e7eaf69781f8d3253480627f88a6aa1788c74ac99da6eb1e614150d69e98e531"
+}

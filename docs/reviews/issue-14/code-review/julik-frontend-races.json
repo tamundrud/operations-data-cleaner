@@ -1,0 +1,25 @@
+{
+  "reviewer": "julik-frontend-races",
+  "findings": [
+    {
+      "title": "Invalid source filter shows all rows when mapping fails",
+      "severity": "P2",
+      "file": "src/processing.worker.ts",
+      "line": 39,
+      "why_it_matters": "When a workflow has a configuration error, the new source filter offers ‘Invalid rows only (0)’, but selecting it still displays every source row. The worker bypasses the selected filter whenever workflow issues exist, so the visible table contradicts its filter and count. Apply the filter against the available run rows even in this state; with no evaluated rows, the invalid and exception filters should show an empty result.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "suggested_fix": "Remove the run.workflowIssues.length shortcut from sourceSelected in view(); use source.rows only for the 'all' filter, and return filtered run rows for 'exceptions' and 'invalid'. Add a focused browser or worker assertion for a workflow issue with the invalid source filter selected.",
+      "confidence": 100,
+      "evidence": [
+        "src/processing.worker.ts:39 -- const sourceSelected = run.workflowIssues.length || sourceQuery.filter === \"all\" ? source.rows",
+        "src/engine/recipes.ts:68 -- if (workflowIssues.length) return run;",
+        "src/ui/SourceInspector.tsx:32 -- <option value=\"invalid\">Invalid rows only ({view.summary.invalid})</option>"
+      ],
+      "pre_existing": false
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

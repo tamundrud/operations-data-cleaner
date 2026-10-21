@@ -1,0 +1,26 @@
+{
+  "reviewer": "correctness",
+  "findings": [
+    {
+      "title": "Group identical calculation failures by source and rule",
+      "severity": "P2",
+      "file": "src/engine/recipes.ts",
+      "line": 253,
+      "why_it_matters": "When two output fields use the same calculation over an invalid source operand, the exception review still shows two separate actionable items for one source/rule problem. For example, two identical Units \u00d7 2 recipes with Units=Twelve produce distinct cause keys solely because their output field IDs differ, so reviewIssues cannot combine their affected outputs. This leaves the flat duplicate presentation in place for calculation roots even though the new contract requires source/rule causes with affected output fields.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "pre_existing": false,
+      "confidence": 75,
+      "suggested_fix": "Use a structured shared identity for identical arithmetic operand failures (source/operand identity, diagnostic code and applicable recipe/parser policy, excluding destination field ID), analogous to split-family causes; retain separate identities for unrelated source or configured-rule failures. Add a regression with two identical calculation outputs sharing Units=Twelve and assert one actionable item with both output IDs while raw diagnostics and invalidity remain unchanged.",
+      "evidence": [
+        "src/engine/recipes.ts:253 -- {...cause(error.code, bad), ...(badConstant ? {rule:f.id} : {})},",
+        "src/engine/recipes.ts:86 -- key: JSON.stringify([row.id, code, shared ?? f.id]), sources,",
+        "For two number/required output fields with identical calculate multiply(left source units, right constant 2) and one row Units=Twelve, calculateDecimal throws numeric-input in both fields; bad is [{source:\"units\",operand:\"left\"}] for both, but cause is [row.id,\"numeric-input\",field1.id] versus [row.id,\"numeric-input\",field2.id].",
+        "src/engine/issues.ts:21-25 groups only equal cause keys, so the two arithmetic causes survive as two ReviewItems. The explicit issue-14 plan R2/KTD1 requires root causes with affected output fields grouped by row/source/operand or rule identity and relevant configuration."
+      ]
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

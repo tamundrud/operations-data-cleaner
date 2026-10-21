@@ -1,0 +1,40 @@
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+ ❯ tests/unit/issue-review.test.ts (5 tests | 1 failed) 29ms
+   × constant zero divisor and copy precision failures target explicit settings 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/issue-review.test.ts > constant zero divisor and copy precision failures target explicit settings
+AssertionError: expected [ [], [ { source: 'units' } ] ] to deeply equal [ [], [] ]
+
+- Expected
++ Received
+
+  [
+    [],
+-   [],
++   [
++     {
++       "source": "units",
++     },
++   ],
+  ]
+
+ ❯ tests/unit/issue-review.test.ts:66:35
+     64|   w.fields[1].type="number";w.fields[1].scale=0;w.fields[1].recipe={ki…
+     65|   const items=reviewIssues(evaluate(w,source("Units\n1.5")).rows[0].is…
+     66|   expect(items.map(i=>i.sources)).toEqual([[],[]]);
+       |                                   ^
+     67|   expect(items.map(i=>i.rule)).toEqual(w.fields.map(f=>f.id));
+     68| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  00:44:20
+   Duration  324ms (import 52%, transform 28%, tests 17%, worker 3%)
+

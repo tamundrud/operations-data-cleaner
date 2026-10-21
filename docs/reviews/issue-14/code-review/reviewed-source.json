@@ -1,0 +1,22 @@
+{
+  "docs/plans/2026-10-20-issue-14-acceptance-plan.md": "d2423f1353218ba3578dee248b91e8d18f91b7283d7f14ecc6cb7711f62be443",
+  "src/engine/issues.ts": "171a3a8e4a2c08c882dd5d77335470bbfde057a14ced5463f256fec3886e08c7",
+  "src/engine/recipes.ts": "064370a68634315b45ec95ca6c7ab43d3918db27084bbece2f125229f965940f",
+  "src/processing.worker.ts": "6eced256df604446e29775c76e53eb1648a00ebe7eb7f9870f92bff0962b62b2",
+  "src/session/controller.ts": "a299d7daf6566651391f7f61e95ad5fac04bdc0f47d8bb84fbd4db5be89fa5fa",
+  "src/session/correction-overlay.ts": "e9c06f2cc0e216df6154082f67ec0cd74376200f0dfa9385a6f1995adf110aaf",
+  "src/session/worker-protocol.ts": "87ced6aa01404d5f91a3679461e536edead13006f485934e6134af7244c8cefb",
+  "src/ui/SourceCorrection.tsx": "c510333ece36db963fdcca32af9d7c2d5f50c30184a03871295c033631f98843",
+  "src/ui/SourceInspector.tsx": "80f4f01cc2394f488463725054ee9e0c0a58520712d9520b27f3235aa8397577",
+  "src/ui/Workspace.tsx": "ec514b38217ca551773abb985138adba61b736cbe2d2271f61661ae7e98f0c48",
+  "src/ui/styles.css": "8e6325b27043284acb98fe4159d9b6e2f7a15dc81eea596a4df7097ffbc53db5",
+  "tests/e2e/acceptance-corrections.spec.ts": "78b3909909eea36d5609da1c276eee26dd115eae5286a3d419009046956f7696",
+  "tests/e2e/constants.spec.ts": "d738853b62babbaec74d8922973aed1f007dcc33a5397f313dea8486c35dce7a",
+  "tests/e2e/correction-reupload.spec.ts": "dd53228d79c9afb4646ec24c38051e76e003e73b08e4cc37bbff093e579c0a0b",
+  "tests/e2e/dates.spec.ts": "bebae80aac096c9585c3b2607ac3196845e3d19e77be585eff00825c64e47eeb",
+  "tests/e2e/partial-export.spec.ts": "275a3b53cb1edcf9a12c4ce3bf92e4032ba711f90786b472e61fe7dcef1ebe59",
+  "tests/e2e/release.spec.ts": "97fc43c1216a8ab93889161d8d90ce3751a3c634f6b267c056fa777fb8144f6c",
+  "tests/unit/corrections.test.ts": "1a7d53e37e5f72153ac7a18659687102a8813e8a26525a90ff63252619014173",
+  "tests/unit/issue-review.test.ts": "5bf27241f79160027261a2de3b19dc6c5e0f684ab8ea4f767d5024ed5f1dd217",
+  "tests/unit/session.test.ts": "680341dd8ac5bdbc809ed85c737eab39b373db67da56f9163ca4d6b988c2c662"
+}

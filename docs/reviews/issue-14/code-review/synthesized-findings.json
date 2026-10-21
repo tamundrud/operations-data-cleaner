@@ -1,0 +1,341 @@
+{
+  "status": "complete",
+  "findings": [],
+  "primary_findings": [],
+  "actionable_findings": [],
+  "pre_existing_findings": [],
+  "suppressed_findings": [],
+  "suppressed_by_confidence": {},
+  "first_evidence_backfilled": 0,
+  "malformed_findings": 0,
+  "malformed_returns": 0,
+  "mode_aware_demotion_count": 0,
+  "triage_groups": [],
+  "residual_risks": [],
+  "testing_gaps": [],
+  "learnings": [
+    {
+      "type": "known_pattern",
+      "title": "Preserve typed Excel originals through session overlays",
+      "citation": "docs/solutions/xlsx-qualification.md",
+      "note": "Correction overlays retain original SourceCell metadata and SourceCorrection displays original values/Excel details; do not flatten this boundary during later changes."
+    }
+  ],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "rejected_findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 100,
+      "evidence": [
+        "src/processing.worker.ts:39 -- const sourceSelected = run.workflowIssues.length || sourceQuery.filter === \"all\" ? source.rows",
+        "src/engine/recipes.ts:68 -- if (workflowIssues.length) return run;",
+        "src/ui/SourceInspector.tsx:32 -- <option value=\"invalid\">Invalid rows only ({view.summary.invalid})</option>"
+      ],
+      "file": "src/processing.worker.ts",
+      "first_evidence": "src/processing.worker.ts:39 -- const sourceSelected = run.workflowIssues.length || sourceQuery.filter === \"all\" ? source.rows",
+      "independent_reviewers": [
+        "julik-frontend-races"
+      ],
+      "line": 39,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "julik-frontend-races"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Remove the run.workflowIssues.length shortcut from sourceSelected in view(); use source.rows only for the 'all' filter, and return filtered run rows for 'exceptions' and 'invalid'. Add a focused browser or worker assertion for a workflow issue with the invalid source filter selected.",
+      "title": "Invalid source filter shows all rows when mapping fails",
+      "why_it_matters": "When a workflow has a configuration error, the new source filter offers \u2018Invalid rows only (0)\u2019, but selecting it still displays every source row. The worker bypasses the selected filter whenever workflow issues exist, so the visible table contradicts its filter and count. Apply the filter against the available run rows even in this state; with no evaluated rows, the invalid and exception filters should show an empty result.",
+      "disposition": "resolved-before-synthesis",
+      "reason": "Resolved in current reviewed tree before synthesis: src/processing.worker.ts:39 now selects source.rows only for filter all; filters invalid/exceptions use run.rows at line40. tests/unit/worker-view.test.ts exercises2candidate rows with workflow errors and asserts0filtered rows/counts, then2Allrows."
+    },
+    {
+      "#": 2,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/engine/recipes.ts:253 -- {...cause(error.code, bad), ...(badConstant ? {rule:f.id} : {})},",
+        "src/engine/recipes.ts:86 -- key: JSON.stringify([row.id, code, shared ?? f.id]), sources,",
+        "For two number/required output fields with identical calculate multiply(left source units, right constant 2) and one row Units=Twelve, calculateDecimal throws numeric-input in both fields; bad is [{source:\"units\",operand:\"left\"}] for both, but cause is [row.id,\"numeric-input\",field1.id] versus [row.id,\"numeric-input\",field2.id].",
+        "src/engine/issues.ts:21-25 groups only equal cause keys, so the two arithmetic causes survive as two ReviewItems. The explicit issue-14 plan R2/KTD1 requires root causes with affected output fields grouped by row/source/operand or rule identity and relevant configuration."
+      ],
+      "file": "src/engine/recipes.ts",
+      "first_evidence": "src/engine/recipes.ts:253 -- {...cause(error.code, bad), ...(badConstant ? {rule:f.id} : {})},",
+      "independent_reviewers": [
+        "correctness"
+      ],
+      "line": 253,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Use a structured shared identity for identical arithmetic operand failures (source/operand identity, diagnostic code and applicable recipe/parser policy, excluding destination field ID), analogous to split-family causes; retain separate identities for unrelated source or configured-rule failures. Add a regression with two identical calculation outputs sharing Units=Twelve and assert one actionable item with both output IDs while raw diagnostics and invalidity remain unchanged.",
+      "title": "Group identical calculation failures by source and rule",
+      "why_it_matters": "When two output fields use the same calculation over an invalid source operand, the exception review still shows two separate actionable items for one source/rule problem. For example, two identical Units \u00d7 2 recipes with Units=Twelve produce distinct cause keys solely because their output field IDs differ, so reviewIssues cannot combine their affected outputs. This leaves the flat duplicate presentation in place for calculation roots even though the new contract requires source/rule causes with affected output fields.",
+      "disposition": "resolved-before-synthesis",
+      "reason": "Resolved in current reviewed tree before synthesis: src/engine/recipes.ts:247-258 constructs sharedInput from calculation operation, both operand identities and bad source/side list, passing it into cause; tests/unit/issue-review.test.ts final test asserts2identical calculation outputs produce1item2fields while retaining4raw errors."
+    },
+    {
+      "#": 3,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/processing.worker.ts:112 --         const nextRun = correctedRun(workflow, source, next);",
+        "src/session/correction-overlay.ts:38-39 -- const rows = changed ? source.rows.filter(r => r.id === changed) : source.rows; const next = evaluate(workflow, { ...source, rows: correctedRows(source, edits, rows) });",
+        "Base diff of src/processing.worker.ts replaced correctedRun(workflow, source, corrections, run, m.correction.row) with the no-previous/no-changed call above.",
+        "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md:280 -- Engineering targets include single-row correction within 200 ms at the supported 10,000-by-20 scale."
+      ],
+      "file": "src/processing.worker.ts",
+      "first_evidence": "src/processing.worker.ts:112 --         const nextRun = correctedRun(workflow, source, next);",
+      "independent_reviewers": [
+        "performance"
+      ],
+      "line": 112,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "performance"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Generalize correctedRun's existing previous/changed-row path to accept the set of distinct edited row IDs: validate the candidate overlay, evaluate those rows, replace their results in the prior run, recount summary and csvRisk, and only then commit corrections/run/revision atomically. Fall back to full evaluation for a workflow change or workflow-level validation failure. Measure a 10,000-by-20 single-row correction as well as a multi-row batch.",
+      "title": "Single-cell batch reapplies every row",
+      "why_it_matters": "Applying even one staged correction now recomputes every row and output field before the corrected view appears. For the supported 10,000-row, 20-column workflow, correction latency therefore grows with the entire dataset rather than the number of touched rows, losing the prior incremental path and putting the documented 200 ms single-row target at risk. Evaluate the touched rows as one candidate batch, then publish the merged run only after all validation succeeds.",
+      "disposition": "rejected",
+      "reason": "Rejected: full-dataset evaluation is the selected one-revalidation atomic batch design explicitly required by issue14/R8 and KTD2; source is evaluated in the worker before promotion. Reviewer established extra work but supplied no measured failed timing/responsiveness consequence at supported scale; current10kcorrection/browser checks are reported passing. Incremental batch optimization is an alternative mechanism, not a demonstrated defect."
+    },
+    {
+      "#": 4,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/ui/Workspace.tsx:239 --     const card = [...document.querySelectorAll<HTMLElement>(\".matching [data-field-id]\")].find(node=>node.dataset.fieldId===ruleTarget);",
+        "src/ui/Workspace.tsx:240 --     card?.querySelector<HTMLButtonElement>(\"button.edit\")?.click();",
+        "src/ui/Workspace.tsx:241 --     setRuleTarget(undefined);",
+        "src/ui/MappingRows.tsx:372 --       onClick={() => setEditing(f.id)}"
+      ],
+      "file": "src/ui/Workspace.tsx",
+      "first_evidence": "src/ui/Workspace.tsx:239 --     const card = [...document.querySelectorAll<HTMLElement>(\".matching [data-field-id]\")].find(node=>node.dataset.fieldId===ruleTarget);",
+      "independent_reviewers": [
+        "maintainability"
+      ],
+      "line": 239,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "maintainability"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Pass the requested field ID to MappingRows as a prop and let MappingRows set its existing editing state when that field is present and enabled. Clear the request after MappingRows handles it; delete the document query and synthetic button click in Workspace.",
+      "title": "Information Leakage: settings navigation depends on MappingRows markup",
+      "why_it_matters": "The exception action opens a field's settings by finding a MappingRows card through its CSS class and data attribute, then clicking that card's private edit button. Changing either component's markup or button state can silently break navigation, and the parent clears the target even if no button was found. MappingRows already owns the editing state, so a field-ID request can open the same dialog without coupling the parent to its DOM structure.",
+      "disposition": "rejected",
+      "reason": "Rejected: current code demonstrably locates the existing data-field-id/edit controls in MappingRows and triggers the existing settings state. tests/e2e/acceptance-corrections.spec.ts rule-failures journey exercises the requested navigation. Replacing it with a prop may be an alternative structure, but no present broken behavior or worthwhile maintenance benefit sufficient to justify disruption was established."
+    },
+    {
+      "#": 5,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "tests/e2e/correction-reupload.spec.ts:104:   await page.getByLabel('Source row filter',{exact:true}).selectOption('exceptions');",
+        "tests/e2e/correction-reupload.spec.ts:100-101: The fixture has bad numeric operands, making its exception rows invalid.",
+        "tests/e2e/acceptance-corrections.spec.ts:92:   await page.getByLabel(\"Source row filter\",{exact:true}).selectOption(\"invalid\");",
+        "src/processing.worker.ts:40:     : run.rows.filter(r => retained.has(r.id) || (sourceQuery.filter === \"invalid\" ? r.status === \"invalid\" : r.issues.length)).map(r => sourceRowsById.get(r.id)!);"
+      ],
+      "file": "tests/e2e/correction-reupload.spec.ts",
+      "first_evidence": "tests/e2e/correction-reupload.spec.ts:104:   await page.getByLabel('Source row filter',{exact:true}).selectOption('exceptions');",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 104,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Add a browser case with a warning-only source row, such as a formula-like text value copied to output. Assert it appears under Rows with exceptions with its source identity and warning marker, and disappears under Invalid rows only while full-dataset counts remain unchanged.",
+      "title": "Exercise warning-only rows in source exception filters",
+      "why_it_matters": "All exercised source-filter examples have invalid rows. An implementation that treats Rows with exceptions as Invalid rows only would satisfy the current assertions but hide warning-only records, contrary to the new independent-filter contract.",
+      "disposition": "resolved-before-synthesis",
+      "reason": "Resolved coverage before synthesis: tests/e2e/acceptance-corrections.spec.ts:88-100 creates true warning-only risky Reference with valid Units, verifies Warning rows1, Exceptions includes it and Invalid excludes it; lines115-119 choose raw/acknowledge then assert exact bytes with warning retained."
+    },
+    {
+      "#": 6,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "tests/e2e/correction-reupload.spec.ts:107:   await page.getByLabel('Source row filter',{exact:true}).selectOption('all');",
+        "tests/e2e/correction-reupload.spec.ts:104-106: The source filter is exceptions, then record 3 is corrected before the filter changes.",
+        "src/processing.worker.ts:40:     : run.rows.filter(r => retained.has(r.id) || (sourceQuery.filter === \"invalid\" ? r.status === \"invalid\" : r.issues.length)).map(r => sourceRowsById.get(r.id)!);"
+      ],
+      "file": "tests/e2e/correction-reupload.spec.ts",
+      "first_evidence": "tests/e2e/correction-reupload.spec.ts:107:   await page.getByLabel('Source row filter',{exact:true}).selectOption('all');",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 107,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Before switching back to All at line 107, assert that record 3 remains in the exceptions source table after Apply and displays both its corrected value and `Original: Bad`; then keep the existing assertion that it disappears after explicitly changing the filter.",
+      "title": "Assert resolved rows remain visible for confirmation",
+      "why_it_matters": "The exceptions-filter test applies a correction and immediately changes the filter. It would still pass if the worker stopped retaining just-resolved rows, leaving operators unable to inspect the corrected value and original provenance in their current exception review.",
+      "disposition": "resolved-before-synthesis",
+      "reason": "Resolved coverage before synthesis: tests/e2e/correction-reupload.spec.ts:107-111 asserts corrected record remains in Exceptions with12, Original Bad and valid status before filters change; lines112-115 verify it disappears only after explicit filter change."
+    }
+  ],
+  "resolved_findings": [
+    {
+      "#": 1,
+      "autofix_class": "gated_auto",
+      "confidence": 100,
+      "evidence": [
+        "src/processing.worker.ts:39 -- const sourceSelected = run.workflowIssues.length || sourceQuery.filter === \"all\" ? source.rows",
+        "src/engine/recipes.ts:68 -- if (workflowIssues.length) return run;",
+        "src/ui/SourceInspector.tsx:32 -- <option value=\"invalid\">Invalid rows only ({view.summary.invalid})</option>"
+      ],
+      "file": "src/processing.worker.ts",
+      "first_evidence": "src/processing.worker.ts:39 -- const sourceSelected = run.workflowIssues.length || sourceQuery.filter === \"all\" ? source.rows",
+      "independent_reviewers": [
+        "julik-frontend-races"
+      ],
+      "line": 39,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "julik-frontend-races"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Remove the run.workflowIssues.length shortcut from sourceSelected in view(); use source.rows only for the 'all' filter, and return filtered run rows for 'exceptions' and 'invalid'. Add a focused browser or worker assertion for a workflow issue with the invalid source filter selected.",
+      "title": "Invalid source filter shows all rows when mapping fails",
+      "why_it_matters": "When a workflow has a configuration error, the new source filter offers \u2018Invalid rows only (0)\u2019, but selecting it still displays every source row. The worker bypasses the selected filter whenever workflow issues exist, so the visible table contradicts its filter and count. Apply the filter against the available run rows even in this state; with no evaluated rows, the invalid and exception filters should show an empty result.",
+      "disposition": "resolved-before-synthesis",
+      "reason": "Resolved in current reviewed tree before synthesis: src/processing.worker.ts:39 now selects source.rows only for filter all; filters invalid/exceptions use run.rows at line40. tests/unit/worker-view.test.ts exercises2candidate rows with workflow errors and asserts0filtered rows/counts, then2Allrows."
+    },
+    {
+      "#": 2,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "src/engine/recipes.ts:253 -- {...cause(error.code, bad), ...(badConstant ? {rule:f.id} : {})},",
+        "src/engine/recipes.ts:86 -- key: JSON.stringify([row.id, code, shared ?? f.id]), sources,",
+        "For two number/required output fields with identical calculate multiply(left source units, right constant 2) and one row Units=Twelve, calculateDecimal throws numeric-input in both fields; bad is [{source:\"units\",operand:\"left\"}] for both, but cause is [row.id,\"numeric-input\",field1.id] versus [row.id,\"numeric-input\",field2.id].",
+        "src/engine/issues.ts:21-25 groups only equal cause keys, so the two arithmetic causes survive as two ReviewItems. The explicit issue-14 plan R2/KTD1 requires root causes with affected output fields grouped by row/source/operand or rule identity and relevant configuration."
+      ],
+      "file": "src/engine/recipes.ts",
+      "first_evidence": "src/engine/recipes.ts:253 -- {...cause(error.code, bad), ...(badConstant ? {rule:f.id} : {})},",
+      "independent_reviewers": [
+        "correctness"
+      ],
+      "line": 253,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "correctness"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Use a structured shared identity for identical arithmetic operand failures (source/operand identity, diagnostic code and applicable recipe/parser policy, excluding destination field ID), analogous to split-family causes; retain separate identities for unrelated source or configured-rule failures. Add a regression with two identical calculation outputs sharing Units=Twelve and assert one actionable item with both output IDs while raw diagnostics and invalidity remain unchanged.",
+      "title": "Group identical calculation failures by source and rule",
+      "why_it_matters": "When two output fields use the same calculation over an invalid source operand, the exception review still shows two separate actionable items for one source/rule problem. For example, two identical Units \u00d7 2 recipes with Units=Twelve produce distinct cause keys solely because their output field IDs differ, so reviewIssues cannot combine their affected outputs. This leaves the flat duplicate presentation in place for calculation roots even though the new contract requires source/rule causes with affected output fields.",
+      "disposition": "resolved-before-synthesis",
+      "reason": "Resolved in current reviewed tree before synthesis: src/engine/recipes.ts:247-258 constructs sharedInput from calculation operation, both operand identities and bad source/side list, passing it into cause; tests/unit/issue-review.test.ts final test asserts2identical calculation outputs produce1item2fields while retaining4raw errors."
+    },
+    {
+      "#": 5,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "tests/e2e/correction-reupload.spec.ts:104:   await page.getByLabel('Source row filter',{exact:true}).selectOption('exceptions');",
+        "tests/e2e/correction-reupload.spec.ts:100-101: The fixture has bad numeric operands, making its exception rows invalid.",
+        "tests/e2e/acceptance-corrections.spec.ts:92:   await page.getByLabel(\"Source row filter\",{exact:true}).selectOption(\"invalid\");",
+        "src/processing.worker.ts:40:     : run.rows.filter(r => retained.has(r.id) || (sourceQuery.filter === \"invalid\" ? r.status === \"invalid\" : r.issues.length)).map(r => sourceRowsById.get(r.id)!);"
+      ],
+      "file": "tests/e2e/correction-reupload.spec.ts",
+      "first_evidence": "tests/e2e/correction-reupload.spec.ts:104:   await page.getByLabel('Source row filter',{exact:true}).selectOption('exceptions');",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 104,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Add a browser case with a warning-only source row, such as a formula-like text value copied to output. Assert it appears under Rows with exceptions with its source identity and warning marker, and disappears under Invalid rows only while full-dataset counts remain unchanged.",
+      "title": "Exercise warning-only rows in source exception filters",
+      "why_it_matters": "All exercised source-filter examples have invalid rows. An implementation that treats Rows with exceptions as Invalid rows only would satisfy the current assertions but hide warning-only records, contrary to the new independent-filter contract.",
+      "disposition": "resolved-before-synthesis",
+      "reason": "Resolved coverage before synthesis: tests/e2e/acceptance-corrections.spec.ts:88-100 creates true warning-only risky Reference with valid Units, verifies Warning rows1, Exceptions includes it and Invalid excludes it; lines115-119 choose raw/acknowledge then assert exact bytes with warning retained."
+    },
+    {
+      "#": 6,
+      "autofix_class": "gated_auto",
+      "confidence": 75,
+      "evidence": [
+        "tests/e2e/correction-reupload.spec.ts:107:   await page.getByLabel('Source row filter',{exact:true}).selectOption('all');",
+        "tests/e2e/correction-reupload.spec.ts:104-106: The source filter is exceptions, then record 3 is corrected before the filter changes.",
+        "src/processing.worker.ts:40:     : run.rows.filter(r => retained.has(r.id) || (sourceQuery.filter === \"invalid\" ? r.status === \"invalid\" : r.issues.length)).map(r => sourceRowsById.get(r.id)!);"
+      ],
+      "file": "tests/e2e/correction-reupload.spec.ts",
+      "first_evidence": "tests/e2e/correction-reupload.spec.ts:107:   await page.getByLabel('Source row filter',{exact:true}).selectOption('all');",
+      "independent_reviewers": [
+        "testing"
+      ],
+      "line": 107,
+      "owner": "downstream-resolver",
+      "pre_existing": false,
+      "requires_verification": true,
+      "reviewers": [
+        "testing"
+      ],
+      "severity": "P2",
+      "suggested_fix": "Before switching back to All at line 107, assert that record 3 remains in the exceptions source table after Apply and displays both its corrected value and `Original: Bad`; then keep the existing assertion that it disappears after explicitly changing the filter.",
+      "title": "Assert resolved rows remain visible for confirmation",
+      "why_it_matters": "The exceptions-filter test applies a correction and immediately changes the filter. It would still pass if the worker stopped retaining just-resolved rows, leaving operators unable to inspect the corrected value and original provenance in their current exception review.",
+      "disposition": "resolved-before-synthesis",
+      "reason": "Resolved coverage before synthesis: tests/e2e/correction-reupload.spec.ts:107-111 asserts corrected record remains in Exceptions with12, Original Bad and valid status before filters change; lines112-115 verify it disappears only after explicit filter change."
+    }
+  ],
+  "peer_outcome": {
+    "selected": true,
+    "target": null,
+    "route": null,
+    "preference_source": "default",
+    "outcome": "in-process-fallback",
+    "artifact": null,
+    "coverage": "Cross-model pass: not run; only Codex CLI installed on attested Codex host. Native adversarial reviewer completed; no different-provider independence claimed."
+  },
+  "coverage_notes": [
+    "AGENTS.md supplied instruction-file standards fallback; no CODING_STANDARDS.md or CLAUDE.md found.",
+    "Initial reviewer processes were interrupted by environment steering; security terminal artifact preserved and all remaining personas restarted and collected successfully. No failed reviewer remains.",
+    "Root applied filter defect discovered during review: sourceSelected no longer forces All on workflow errors. Real worker test tests/unit/worker-view.test.ts captured red then green. Validate current tree.",
+    "Root fixed identical calculation cause duplication via shared structured operation/operand/bad-source identity, retaining field-specific policy failures; new unit regression preserves4raw errors but1review item2outputs. Validate current tree.",
+    "Root strengthened tests: resolved row current/original/valid status retained before explicit source filter change; warning-only risky Reference row appears Exceptions but not Invalid; explicit raw choice and acknowledgement before exact export. Validate current tests.",
+    "Root changed explicit target focus to preventScroll then scrollIntoView nearest/center on target/navigation only, with repeated/mobile navigation regression. Validate current source.",
+    "Current .github/workflows/u2.yml adds only docs/reviews/issue-14/screenshots artifact path; matrix/permissions/gates unchanged. It postdates initial captured diff; inspect current diff.",
+    "Final119testChromium run and isolated297unit/static checks owned by root; Firefox/WebKit downloads blocked403, existing cross-browser PR CI matrix retained.",
+    "No publication/merge/deployment/release authorized; draft is for user UX acceptance.",
+    "The dispatch diff and file inventory have been refreshed to include root fixes and latest staged tests/CI; initial.diff preserves the earlier reviewed snapshot. Validator must inspect the final current tree.",
+    "Caller reports settings-navigation and 10k-row checks passed; performance/DOM-coupling claims remain unverified until validation, not automatic action items.",
+    "Six mechanically admissible reviewer claims were examined against the current tree: four were already resolved with source/test changes before synthesis, two lacked a demonstrated defect or sufficient maintenance benefit and were rejected. No rejected claim is recycled as a remaining risk or testing gap.",
+    "All retained primary findings have hydrated detail; retained primary set is empty after evidence-based reconciliation. No semantic duplicates, settlement conflicts, mode-aware demotions, malformed candidates or quote backfills.",
+    "No validator shortcut based on same-family agreement was used. Validator input is empty because no actionable or P0/P1 finding remains, not because time or confidence licensed a skip."
+  ]
+}

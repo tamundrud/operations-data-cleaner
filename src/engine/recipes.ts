@@ -3,7 +3,7 @@ import { parseDate } from "./dates";
 import { calculateDecimal, validateDecimal, NumericError } from "./decimal";
 import type { Workflow } from "./workflow";
 import { displayValue, type SourceTable, type Value } from "./values";
-import type { Issue } from "./issues";
+import type { Issue, IssueCause, IssueSource } from "./issues";
 import { validateWorkflow } from "./validation";
 import { riskyText } from "../formats/spreadsheet-safety";
 export type ResultRow = {
@@ -77,14 +77,25 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
         recipe.kind === "copy" || recipe.kind === "split"
           ? recipe.source
           : undefined;
+      const fieldIssues: Issue[] = [];
+      const recipeSources: IssueSource[] = recipe.kind === "copy" || recipe.kind === "split"
+        ? [{source:recipe.source}]
+        : recipe.kind === "combine" ? recipe.components.flatMap(c => c.kind === "source" ? [{source:c.source}] : [])
+        : [];
+      const cause = (code: string, sources: IssueSource[] = recipeSources, shared?: unknown): IssueCause => ({
+        key: JSON.stringify([row.id, code, shared ?? f.id]), sources,
+        ...(sources.length ? {} : {rule:f.id}),
+      });
       const add = (
         code: string,
         severity: "error" | "warning",
         reason: string,
         action: string,
         source = sourceKey,
-      ) =>
-        issues.push({
+        origin = cause(code),
+        causedBy?: string[],
+      ) => {
+        const issue: Issue = {
           code,
           scope: "row",
           severity,
@@ -95,7 +106,11 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
           source,
           reason,
           action,
-        });
+          cause:origin,
+          ...(causedBy?.length ? {causedBy} : {}),
+        };
+        issues.push(issue); fieldIssues.push(issue);
+      };
       let unusableSource = false;
       const readSource = (source: string) => {
         const cell = row.cells[positions.get(source)!];
@@ -119,7 +134,7 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
           reason: string,
           action: string,
         ) => {
-          add(code, severity, `${f.header}: ${reason}`, action, source);
+          add(code, severity, `${f.header}: ${reason}`, action, source, cause(code, [{source}], ["cell", source]));
         };
         if (excel) {
           if (excel.type === "e") {
@@ -216,11 +231,31 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
             };
           } catch (error) {
             if (!(error instanceof NumericError)) throw error;
+            const bad: IssueSource[] = [];
+            let badConstant = false;
+            for (const [side, text] of [["left", left], ["right", right]] as const) {
+              try { validateDecimal(text, {}); }
+              catch (failure) {
+                if (!(failure instanceof NumericError)) throw failure;
+                const input = recipe[side];
+                if (input.kind === "source") bad.push({source:input.source,operand:side});
+                else badConstant = true;
+              }
+            }
+            if (!bad.length && !badConstant && error.code === "division-zero" && recipe.right.kind === "source")
+              bad.push({source:recipe.right.source,operand:"right"});
+            const operandIdentity = (input: typeof recipe.left) => input.kind === "source"
+              ? ["source", input.source] : ["constant", input.decimal];
+            const sharedInput = bad.length && !badConstant
+              ? ["calculation-input", recipe.operation, operandIdentity(recipe.left), operandIdentity(recipe.right), bad]
+              : undefined;
             add(
               error.code,
               "error",
               `${f.header}: ${error.message}`,
               "Correct the operands or explicitly change numeric validation / rounding settings.",
+              bad.length === 1 ? bad[0].source : undefined,
+              {...cause(error.code, bad, sharedInput), ...(badConstant ? {rule:f.id} : {})},
             );
             value = { kind: "blank" };
           }
@@ -253,6 +288,8 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
               "error",
               `${f.header}: expected ${recipe.segments} segments but found ${parts.length}.`,
               "Correct the source delimiter positions or change the expected segment count.",
+              sourceKey,
+              cause("split-count", recipeSources, ["split", recipe.source, recipe.delimiter, recipe.segments, recipe.trim, recipe.optionalEmpty]),
             );
             break;
           }
@@ -270,6 +307,8 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
               "error",
               `${f.header}: required segment ${empty.join(", ")} is empty.`,
               "Correct the source or explicitly mark that empty position optional; retain its delimiters.",
+              sourceKey,
+              cause("split-empty", recipeSources, ["split", recipe.source, recipe.delimiter, recipe.segments, recipe.trim, recipe.optionalEmpty]),
             );
             break;
           }
@@ -302,6 +341,8 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
             "error",
             `${f.header}: ${error.message}`,
             "Correct the numeric value or change the explicit numeric settings.",
+            sourceKey,
+            cause(error.code, ["numeric-input", "missing-operand", "numeric-limit"].includes(error.code) ? recipeSources : []),
           );
           value = { kind: "blank" };
         }
@@ -325,13 +366,18 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
         }
       }
       const text = displayValue(value);
-      if (f.required && text.trim() === "")
+      if (f.required && text.trim() === "") {
+        const upstream = fieldIssues.filter(i => i.severity === "error").map(i => i.cause!.key);
         add(
           "required",
           "error",
           `${f.header} is required but blank.`,
           "Correct the source file and reupload, or change the field rule.",
+          sourceKey,
+          cause("required"),
+          upstream,
         );
+      }
       if (f.maxLength && [...text].length > f.maxLength)
         add(
           "max-length",

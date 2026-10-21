@@ -1,9 +1,10 @@
-import type { Correction } from "./correction-overlay";
+import type { Correction, PendingCorrection } from "./correction-overlay";
 import type { Workflow } from "../engine/workflow";
 import type { SourceColumn, SourceRow } from "../engine/values";
 import type { Run, ResultRow } from "../engine/recipes";
 import type { Issue } from "../engine/issues";
 import type { SafetyChoice } from "../formats/spreadsheet-safety";
+export type SourceQuery = {page:number; filter:SourceFilter; target?:string; nextAfter?:string; column?:string};
 export type Request = { request: number; dataset: string; revision: number } & (
   | {
       kind: "import";
@@ -21,14 +22,24 @@ export type Request = { request: number; dataset: string; revision: number } & (
       worksheet?: string;
       delimiter: "auto" | "," | ";" | "\t";
     }
-  | { kind: "correct"; correction: Correction; revert?: boolean }
+  | { kind: "correct-batch"; edits: PendingCorrection[] }
+  | ({ kind: "source-page" } & SourceQuery)
   | { kind: "run"; workflow: Workflow }
   | { kind: "page"; page: number; exceptions: boolean; invalidOnly?: boolean }
   | { kind: "export"; choice: SafetyChoice; partialAcknowledged?: boolean }
 );
+export type SourceFilter = "all" | "exceptions" | "invalid";
 export type View = {
   columns: SourceColumn[];
   sourceRows: SourceRow[];
+  sourceResults: ResultRow[];
+  sourcePage: number;
+  sourceTotalPages: number;
+  sourceFilter: SourceFilter;
+  sourceCount: number;
+  sourceTarget?: string;
+  sourceColumn?: string;
+  sourceNavigation: number;
   rows: ResultRow[];
   workflowIssues: Issue[];
   summary: Run["summary"];

@@ -1,0 +1,31 @@
+[WebServer] (node:1538) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:1551) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 15 tests using 1 worker
+
+(node:1564) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › tests/e2e/correction-reupload.spec.ts:10:1 › source corrections repair dependents, revert, preserve replacement failures and recover cancelled parsing privately (5.7s)
+  ✓   2 [chromium] › tests/e2e/correction-reupload.spec.ts:83:1 › 10000 rows retain identity after clearing and correcting a later preview page (2.1s)
+  ✓   3 [chromium] › tests/e2e/correction-reupload.spec.ts:97:1 › filtered exception correction targets the matching source identity (2.5s)
+  ✓   4 [chromium] › tests/e2e/correction-reupload.spec.ts:110:1 › production worker rejects stale correction requests after a newer rule revision (1.2s)
+  ✓   5 [chromium] › tests/e2e/correction-reupload.spec.ts:138:1 › cancelling replacement in the parsing worker restores corrected provenance and exports (6.2s)
+  ✓   6 [chromium] › tests/e2e/correction-reupload.spec.ts:157:1 › missing trailing source cells can be corrected and reverted (2.3s)
+  ✓   7 [chromium] › tests/e2e/correction-reupload.spec.ts:168:1 › Excel source corrections retain original typed details and export literal IDs and calendar dates (3.7s)
+  ✓   8 [chromium] › tests/e2e/partial-export.spec.ts:15:1 › 500 candidates export exactly 490 acknowledged eligible records with visible warnings and all 10 exclusions privately (4.4s)
+  ✓   9 [chromium] › tests/e2e/partial-export.spec.ts:71:1 › every excluded row and issue is accessible across pages; acknowledgement survives navigation only (9.0s)
+  ✓  10 [chromium] › tests/e2e/partial-export.spec.ts:102:1 › formula handling changes reset partial acknowledgement and zero eligible rows remain blocked (3.4s)
+  ✓  11 [chromium] › tests/e2e/partial-export.spec.ts:119:1 › production worker enforces permission and current revision independently of UI controls (811ms)
+  ✓  12 [chromium] › tests/e2e/partial-export.spec.ts:147:1 › 10000 candidate rows retain every eligible record and exact hidden-page exclusions (2.7s)
+  ✓  13 [chromium] › tests/e2e/partial-export.spec.ts:160:1 › Excel partial export keeps worksheet row provenance after offset headers, skipped blanks and exception pagination (4.0s)
+  ✓  14 [chromium] › tests/e2e/release.spec.ts:7:52 › integrated csv input supports partial export, correction and both output formats (2.4s)
+  ✓  15 [chromium] › tests/e2e/release.spec.ts:7:52 › integrated xlsx input supports partial export, correction and both output formats (2.4s)
+
+  15 passed (56.2s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

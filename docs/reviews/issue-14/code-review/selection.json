@@ -1,0 +1,36 @@
+{
+  "reviewers": [
+    "correctness",
+    "project-standards",
+    "testing",
+    "maintainability",
+    "learnings",
+    "security",
+    "performance",
+    "reliability",
+    "adversarial",
+    "julik-frontend-races"
+  ],
+  "tiers": {
+    "correctness": "session",
+    "project-standards": "mid",
+    "testing": "mid",
+    "maintainability": "mid",
+    "learnings": "mid",
+    "security": "session",
+    "performance": "mid",
+    "reliability": "mid",
+    "adversarial": "session",
+    "julik-frontend-races": "mid"
+  },
+  "cross_model": {
+    "status": "not_run",
+    "reason": "No different-provider CLI installed; attested Codex host has only Codex CLI"
+  },
+  "skip": {
+    "api-contract": "Internal module/worker interfaces only, no evidenced external consumers",
+    "data-migration": "No migration/schema/backfill artifacts",
+    "agent-native": "No agent-facing surfaces",
+    "previous-comments": "Standalone base review; no PR metadata"
+  }
+}

@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 import { parseCsv } from '../../src/formats/csv';
 import { makeWorkflow } from '../../src/engine/workflow';
-import { correctedRun } from '../../src/session/correction-overlay';
+import { correctedRun, applyCorrectionBatch } from '../../src/session/correction-overlay';
 test('corrections repair all dependent fields without changing originals, workflow or candidate identity', () => {
   const source = parseCsv(new TextEncoder().encode('Qty\nTwenty Four'), ',', 'test');
   const w = makeWorkflow(['Cases', 'Weight']);
@@ -66,4 +66,14 @@ test("missing trailing CSV cells can receive source-only corrections", () => {
   const edits=[{row:source.rows[0].id,column:"qty",value:"24"}];
   expect(correctedRun(w,source,edits).rows[0].values).toEqual([{kind:"text",text:"24"}]);
   expect(source.rows[0].cells).toHaveLength(1);
+});
+
+test("a source batch is validated completely before either cell is changed", () => {
+  const source=parseCsv(new TextEncoder().encode("ID,Qty\n001,12\n002,24"),",","batch");
+  const original=JSON.stringify(source);
+  const edits=[{row:source.rows[0].id,column:"qty",value:"16"},{row:source.rows[1].id,column:"qty",value:"20"}];
+  expect(applyCorrectionBatch(source,[],edits)).toEqual(edits);
+  expect(()=>applyCorrectionBatch(source,[],[edits[0],{...edits[1],column:"missing"}])).toThrow("current source cell");
+  expect(JSON.stringify(source)).toBe(original);
+  expect(applyCorrectionBatch(source,edits,[{...edits[0],value:"",revert:true}])).toEqual([edits[1]]);
 });

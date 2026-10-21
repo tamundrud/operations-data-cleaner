@@ -1,0 +1,26 @@
+{
+  "reviewer": "performance",
+  "findings": [
+    {
+      "title": "Single-cell batch reapplies every row",
+      "severity": "P2",
+      "file": "src/processing.worker.ts",
+      "line": 112,
+      "why_it_matters": "Applying even one staged correction now recomputes every row and output field before the corrected view appears. For the supported 10,000-row, 20-column workflow, correction latency therefore grows with the entire dataset rather than the number of touched rows, losing the prior incremental path and putting the documented 200 ms single-row target at risk. Evaluate the touched rows as one candidate batch, then publish the merged run only after all validation succeeds.",
+      "autofix_class": "gated_auto",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "suggested_fix": "Generalize correctedRun's existing previous/changed-row path to accept the set of distinct edited row IDs: validate the candidate overlay, evaluate those rows, replace their results in the prior run, recount summary and csvRisk, and only then commit corrections/run/revision atomically. Fall back to full evaluation for a workflow change or workflow-level validation failure. Measure a 10,000-by-20 single-row correction as well as a multi-row batch.",
+      "confidence": 75,
+      "evidence": [
+        "src/processing.worker.ts:112 --         const nextRun = correctedRun(workflow, source, next);",
+        "src/session/correction-overlay.ts:38-39 -- const rows = changed ? source.rows.filter(r => r.id === changed) : source.rows; const next = evaluate(workflow, { ...source, rows: correctedRows(source, edits, rows) });",
+        "Base diff of src/processing.worker.ts replaced correctedRun(workflow, source, corrections, run, m.correction.row) with the no-previous/no-changed call above.",
+        "docs/plans/2026-10-11-1607-feat-operations-data-cleaner-plan.md:280 -- Engineering targets include single-row correction within 200 ms at the supported 10,000-by-20 scale."
+      ],
+      "pre_existing": false
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

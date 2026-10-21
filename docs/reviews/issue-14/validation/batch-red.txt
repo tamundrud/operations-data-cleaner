@@ -1,0 +1,26 @@
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+ ❯ tests/unit/corrections.test.ts (6 tests | 1 failed) 34ms
+   × a source batch is validated completely before either cell is changed 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/corrections.test.ts > a source batch is validated completely before either cell is changed
+TypeError: applyCorrectionBatch is not a function
+ ❯ tests/unit/corrections.test.ts:75:10
+     73|   const original=JSON.stringify(source);
+     74|   const edits=[{row:source.rows[0].id,column:"qty",value:"16"},{row:so…
+     75|   expect(applyCorrectionBatch(source,[],edits)).toEqual(edits);
+       |          ^
+     76|   expect(()=>applyCorrectionBatch(source,[],[edits[0],{...edits[1],col…
+     77|   expect(JSON.stringify(source)).toBe(original);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  00:40:00
+   Duration  508ms (import 43%, transform 43%, tests 11%, worker 2%)
+

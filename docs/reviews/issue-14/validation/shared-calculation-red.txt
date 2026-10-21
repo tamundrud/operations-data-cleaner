@@ -1,0 +1,33 @@
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+ ❯ tests/unit/issue-review.test.ts (6 tests | 1 failed) 123ms
+   × identical failed calculation rules share a source cause across their output fields 30ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/issue-review.test.ts > identical failed calculation rules share a source cause across their output fields
+AssertionError: expected [ { …(5) }, { …(5) } ] to have a length of 1 but got 2
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ tests/unit/issue-review.test.ts:79:17
+     77|   expect(run.summary).toMatchObject({invalid:1,errorIssues:4});
+     78|   const items=reviewIssues(run.rows[0].issues);
+     79|   expect(items).toHaveLength(1);
+       |                 ^
+     80|   expect(items[0].fields).toEqual(w.fields.map(f=>f.id));
+     81|   expect(items[0].sources).toEqual([{source:"units",operand:"left"}]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  05:38:23
+   Duration  978ms (import 56%, tests 24%, transform 18%, worker 2%)
+

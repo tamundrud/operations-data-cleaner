@@ -1,0 +1,12 @@
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+
+ Test Files  3 passed (3)
+      Tests  25 passed (25)
+   Start at  00:44:40
+   Duration  1.07s (import 57%, tests 22%, transform 19%, worker 2%)
+
+    Isolate  3 workers spawned · ~137ms startup each (spawn + environment, per file)
+             at least ~274ms faster with isolate: false — reuses workers across files instead of one per file
+
