@@ -1,0 +1,38 @@
+[
+  {
+    "reviewer": "coherence",
+    "findings": [],
+    "residual_risks": [],
+    "deferred_questions": []
+  },
+  {
+    "reviewer": "feasibility",
+    "findings": [],
+    "residual_risks": [],
+    "deferred_questions": []
+  },
+  {
+    "reviewer": "design-lens",
+    "findings": [],
+    "residual_risks": [],
+    "deferred_questions": []
+  },
+  {
+    "reviewer": "scope-guardian",
+    "findings": [],
+    "residual_risks": [],
+    "deferred_questions": []
+  },
+  {
+    "reviewer": "adversarial",
+    "findings": [],
+    "residual_risks": [],
+    "deferred_questions": []
+  },
+  {
+    "reviewer": "security-lens",
+    "findings": [],
+    "residual_risks": [],
+    "deferred_questions": []
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "reviewer": "quality",
+  "status": "complete",
+  "findings": [
+    {
+      "id": "quality-1",
+      "location": "src/session/controller.ts:241",
+      "finding": "sourcePage has five positional parameters, requiring undefined placeholders for navigation modes.",
+      "suggestion": "Use a shared named source-query object and spread it into the worker request; update SourceInspector and Workspace callers."
+    }
+  ],
+  "read_only": true,
+  "checks_run": []
+}

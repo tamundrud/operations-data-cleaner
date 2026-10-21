@@ -1,0 +1,782 @@
+diff --git a/src/engine/issues.ts b/src/engine/issues.ts
+index f2bc927..8769904 100644
+--- a/src/engine/issues.ts
++++ b/src/engine/issues.ts
+@@ -1,3 +1,5 @@
++export type IssueSource = { source: string; operand?: "left" | "right" };
++export type IssueCause = { key: string; sources: IssueSource[]; rule?: string };
+ export type Issue = {
+   code: string;
+   scope: "workflow" | "row";
+@@ -7,6 +9,24 @@ export type Issue = {
+   record?: number;
+   line?: number;
+   source?: string;
++  cause?: IssueCause;
++  causedBy?: string[];
+   reason: string;
+   action: string;
+ };
++
++export type ReviewItem = { key: string; issue: Issue; fields: string[]; sources: IssueSource[]; rule?: string };
++// Presentation only: raw diagnostics continue to determine validity and totals.
++export function reviewIssues(issues: Issue[]): ReviewItem[] {
++  const errors = new Set(issues.filter(i => i.severity === "error" && i.cause).map(i => i.cause!.key));
++  const items = new Map<string, ReviewItem>();
++  issues.forEach((issue, index) => {
++    if (issue.code === "required" && issue.causedBy?.some(key => errors.has(key))) return;
++    const key = issue.cause?.key ?? `diagnostic-${index}`;
++    const existing = items.get(key);
++    if (existing) {
++      if (issue.field && !existing.fields.includes(issue.field)) existing.fields.push(issue.field);
++    } else items.set(key, {key, issue, fields: issue.field ? [issue.field] : [], sources: issue.cause?.sources ?? (issue.source ? [{source:issue.source}] : []), rule:issue.cause?.rule});
++  });
++  return [...items.values()];
++}
+diff --git a/src/engine/recipes.ts b/src/engine/recipes.ts
+index 796d76c..79e34d5 100644
+--- a/src/engine/recipes.ts
++++ b/src/engine/recipes.ts
+@@ -3,7 +3,7 @@ import { parseDate } from "./dates";
+ import { calculateDecimal, validateDecimal, NumericError } from "./decimal";
+ import type { Workflow } from "./workflow";
+ import { displayValue, type SourceTable, type Value } from "./values";
+-import type { Issue } from "./issues";
++import type { Issue, IssueCause, IssueSource } from "./issues";
+ import { validateWorkflow } from "./validation";
+ import { riskyText } from "../formats/spreadsheet-safety";
+ export type ResultRow = {
+@@ -77,14 +77,25 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+         recipe.kind === "copy" || recipe.kind === "split"
+           ? recipe.source
+           : undefined;
++      const fieldIssues: Issue[] = [];
++      const recipeSources: IssueSource[] = recipe.kind === "copy" || recipe.kind === "split"
++        ? [{source:recipe.source}]
++        : recipe.kind === "combine" ? recipe.components.flatMap(c => c.kind === "source" ? [{source:c.source}] : [])
++        : [];
++      const cause = (code: string, sources: IssueSource[] = recipeSources, shared?: unknown): IssueCause => ({
++        key: JSON.stringify([row.id, code, shared ?? f.id]), sources,
++        ...(sources.length ? {} : {rule:f.id}),
++      });
+       const add = (
+         code: string,
+         severity: "error" | "warning",
+         reason: string,
+         action: string,
+         source = sourceKey,
+-      ) =>
+-        issues.push({
++        origin = cause(code),
++        causedBy?: string[],
++      ) => {
++        const issue: Issue = {
+           code,
+           scope: "row",
+           severity,
+@@ -95,7 +106,11 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+           source,
+           reason,
+           action,
+-        });
++          cause:origin,
++          ...(causedBy?.length ? {causedBy} : {}),
++        };
++        issues.push(issue); fieldIssues.push(issue);
++      };
+       let unusableSource = false;
+       const readSource = (source: string) => {
+         const cell = row.cells[positions.get(source)!];
+@@ -119,7 +134,7 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+           reason: string,
+           action: string,
+         ) => {
+-          add(code, severity, `${f.header}: ${reason}`, action, source);
++          add(code, severity, `${f.header}: ${reason}`, action, source, cause(code, [{source}], ["cell", source]));
+         };
+         if (excel) {
+           if (excel.type === "e") {
+@@ -216,11 +231,26 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+             };
+           } catch (error) {
+             if (!(error instanceof NumericError)) throw error;
++            const bad: IssueSource[] = [];
++            let badConstant = false;
++            for (const [side, text] of [["left", left], ["right", right]] as const) {
++              try { validateDecimal(text, {}); }
++              catch (failure) {
++                if (!(failure instanceof NumericError)) throw failure;
++                const input = recipe[side];
++                if (input.kind === "source") bad.push({source:input.source,operand:side});
++                else badConstant = true;
++              }
++            }
++            if (!bad.length && !badConstant && error.code === "division-zero" && recipe.right.kind === "source")
++              bad.push({source:recipe.right.source,operand:"right"});
+             add(
+               error.code,
+               "error",
+               `${f.header}: ${error.message}`,
+               "Correct the operands or explicitly change numeric validation / rounding settings.",
++              bad.length === 1 ? bad[0].source : undefined,
++              {...cause(error.code, bad), ...(badConstant ? {rule:f.id} : {})},
+             );
+             value = { kind: "blank" };
+           }
+@@ -253,6 +283,8 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+               "error",
+               `${f.header}: expected ${recipe.segments} segments but found ${parts.length}.`,
+               "Correct the source delimiter positions or change the expected segment count.",
++              sourceKey,
++              cause("split-count", recipeSources, ["split", recipe.source, recipe.delimiter, recipe.segments, recipe.trim, recipe.optionalEmpty]),
+             );
+             break;
+           }
+@@ -270,6 +302,8 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+               "error",
+               `${f.header}: required segment ${empty.join(", ")} is empty.`,
+               "Correct the source or explicitly mark that empty position optional; retain its delimiters.",
++              sourceKey,
++              cause("split-empty", recipeSources, ["split", recipe.source, recipe.delimiter, recipe.segments, recipe.trim, recipe.optionalEmpty]),
+             );
+             break;
+           }
+@@ -302,6 +336,8 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+             "error",
+             `${f.header}: ${error.message}`,
+             "Correct the numeric value or change the explicit numeric settings.",
++            sourceKey,
++            cause(error.code, ["numeric-input", "missing-operand", "numeric-limit"].includes(error.code) ? recipeSources : []),
+           );
+           value = { kind: "blank" };
+         }
+@@ -325,12 +361,16 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
+         }
+       }
+       const text = displayValue(value);
++      const upstream = fieldIssues.filter(i => i.severity === "error").map(i => i.cause!.key);
+       if (f.required && text.trim() === "")
+         add(
+           "required",
+           "error",
+           `${f.header} is required but blank.`,
+           "Correct the source file and reupload, or change the field rule.",
++          sourceKey,
++          cause("required"),
++          upstream,
+         );
+       if (f.maxLength && [...text].length > f.maxLength)
+         add(
+diff --git a/src/processing.worker.ts b/src/processing.worker.ts
+index 6351c9e..4497a02 100644
+--- a/src/processing.worker.ts
++++ b/src/processing.worker.ts
+@@ -7,8 +7,8 @@ import { parseCsv, serializeCsv } from "./formats/csv";
+ import { type Run, type ResultRow } from "./engine/recipes";
+ import { makeWorkflow, type Workflow } from "./engine/workflow";
+ import type { SourceTable, SourceRow } from "./engine/values";
+-import type { Request, Response, View } from "./session/worker-protocol";
+-import { correctedRun, correctedRows, type Correction } from "./session/correction-overlay";
++import type { Request, Response, View, SourceFilter } from "./session/worker-protocol";
++import { correctedRun, correctedRows, applyCorrectionBatch, type Correction } from "./session/correction-overlay";
+ let corrections: Correction[] = [];
+ let source: SourceTable | undefined,
+   workflow: Workflow | undefined,
+@@ -17,21 +17,39 @@ let source: SourceTable | undefined,
+ let sourceRowsById = new Map<string, SourceRow>();
+ const PAGE_SIZE = 50;
+ let exceptionRows: ResultRow[] = [];
++let outputQuery = {page:0, exceptions:false, invalidOnly:false};
++let sourceQuery: {page:number; filter:SourceFilter; target?:string; column?:string} = {page:0,filter:"all"};
++let retained = new Set<string>();
++let sourceNavigation = 0;
+ function setRun(next: Run) {
+   run = next;
+   exceptionRows = next.rows.filter((r) => r.issues.length);
+ }
+-function view(page = 0, exceptions = false, invalidOnly = false): View {
++function view(): View {
++  let {page} = outputQuery;
++  const {exceptions, invalidOnly} = outputQuery;
+   if (!source || !run)
+     throw new Error("Upload a CSV and configure output fields.");
+   const selected = invalidOnly ? exceptionRows.filter(row => row.status === "invalid") : exceptions ? exceptionRows : run.rows;
+   const totalPages = Math.max(1, Math.ceil(selected.length / PAGE_SIZE));
+   page = Math.max(0, Math.min(page, totalPages - 1));
++  outputQuery.page = page;
++  const sourceSelected = run.workflowIssues.length || sourceQuery.filter === "all" ? source.rows
++    : run.rows.filter(r => retained.has(r.id) || (sourceQuery.filter === "invalid" ? r.status === "invalid" : r.issues.length)).map(r => sourceRowsById.get(r.id)!);
++  const sourceTotalPages = Math.max(1, Math.ceil(sourceSelected.length / PAGE_SIZE));
++  if (sourceQuery.target) {
++    const index = sourceSelected.findIndex(r => r.id === sourceQuery.target);
++    if (index >= 0) sourceQuery.page = Math.floor(index / PAGE_SIZE);
++  }
++  sourceQuery.page = Math.max(0, Math.min(sourceQuery.page, sourceTotalPages - 1));
++  const sourceSlice = sourceSelected.slice(sourceQuery.page * PAGE_SIZE, (sourceQuery.page + 1) * PAGE_SIZE);
++  const resultById = new Map(run.rows.map(r => [r.id,r]));
+   return {
+     columns: source.columns,
+-    sourceRows: correctedRows(source, corrections, run.workflowIssues.length
+-      ? source.rows.slice(0, PAGE_SIZE)
+-      : selected.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map(r => sourceRowsById.get(r.id)!)),
++    sourceRows: correctedRows(source, corrections, sourceSlice),
++    sourceResults: sourceSlice.flatMap(r => resultById.has(r.id) ? [resultById.get(r.id)!] : []),
++    sourcePage: sourceQuery.page, sourceFilter: sourceQuery.filter, sourceCount: sourceSelected.length,
++    sourceTotalPages, sourceTarget:sourceQuery.target, sourceColumn:sourceQuery.column, sourceNavigation,
+     rows: selected.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE),
+     workflowIssues: run.workflowIssues,
+     summary: run.summary,
+@@ -75,6 +93,8 @@ self.onmessage = async (event: MessageEvent<Request>) => {
+       const candidateWorkflow = { ...original, source: { ...original.source, format: m.format ?? "csv", worksheet: candidate.worksheet, delimiter: m.delimiter } };
+       const candidateRun = correctedRun(candidateWorkflow, candidate, m.corrections ?? []);
+       corrections = m.corrections ?? [];
++      outputQuery = {page:0,exceptions:false,invalidOnly:false};
++      sourceQuery = {page:0,filter:"all"}; retained.clear();
+       source = candidate;
+       sourceRowsById = new Map(source.rows.map(r => [r.id, r]));
+       workflow = candidateWorkflow;
+@@ -85,11 +105,13 @@ self.onmessage = async (event: MessageEvent<Request>) => {
+         throw new Error(
+           "This result is out of date. Run the current mapping again.",
+         );
+-      if (m.kind === "correct") {
+-        if (!workflow || !source.rows.some(r => r.id === m.correction.row) || !source.columns.some(c => c.key === m.correction.column)) throw new Error("Select a current source cell.");
+-        corrections = corrections.filter(e => e.row !== m.correction.row || e.column !== m.correction.column);
+-        if (!m.revert) corrections.push(m.correction);
+-        setRun(correctedRun(workflow, source, corrections, run, m.correction.row));
++      if (m.kind === "correct-batch") {
++        if (!workflow) throw new Error("Configure a workflow before correcting source cells.");
++        const next = applyCorrectionBatch(source, corrections, m.edits);
++        const nextRun = correctedRun(workflow, source, next);
++        corrections = next;
++        retained = new Set(m.edits.map(e => e.row));
++        setRun(nextRun);
+         revision = m.revision;
+       } else if (m.kind === "run") {
+         workflow = m.workflow;
+@@ -99,6 +121,18 @@ self.onmessage = async (event: MessageEvent<Request>) => {
+         throw new Error(
+           "Preview and export must use the current revision. Run the mapping again.",
+         );
++      if (m.kind === "page") outputQuery = {page:m.page,exceptions:m.exceptions,invalidOnly:m.invalidOnly ?? false};
++      if (m.kind === "source-page") {
++        sourceNavigation = m.request;
++        retained.clear();
++        let target = m.target;
++        if (m.nextAfter !== undefined) {
++          const after = sourceRowsById.get(m.nextAfter)?.record ?? -1;
++          const unresolved = run!.rows.filter(r => r.issues.length);
++          target = unresolved.find(r => r.record > after)?.id ?? unresolved[0]?.id;
++        }
++        sourceQuery = {page:m.page,filter:target ? "all" : m.filter,target,column:m.column};
++      }
+       if (m.kind === "export") {
+         if (!workflow || !run)
+           throw new Error("Preview the current mapping before download.");
+@@ -114,11 +148,7 @@ self.onmessage = async (event: MessageEvent<Request>) => {
+     send({
+       ...envelope,
+       kind: "view",
+-      view: view(
+-        m.kind === "page" ? m.page : 0,
+-        m.kind === "page" ? m.exceptions : false,
+-        m.kind === "page" ? m.invalidOnly : false,
+-      ),
++      view: view(),
+     });
+   } catch (error) {
+     send({
+diff --git a/src/session/controller.ts b/src/session/controller.ts
+index 2f6f000..efc5652 100644
+--- a/src/session/controller.ts
++++ b/src/session/controller.ts
+@@ -1,10 +1,12 @@
+ import type { Workflow } from "../engine/workflow";
+ import type { SafetyChoice } from "../formats/spreadsheet-safety";
+ import { MAX_FILE_BYTES } from "../formats/csv";
+-import type { Request, Response, View } from "./worker-protocol";
+-import type { Correction } from "./correction-overlay";
++import type { Request, Response, View, SourceFilter } from "./worker-protocol";
++import { mergeCorrections, type Correction, type PendingCorrection } from "./correction-overlay";
+ export type SessionState = {
+   partialAcknowledged: boolean;
++  pendingCorrections: PendingCorrection[];
++  correctionMessage: string;
+   replacement?: boolean;
+   busy: string;
+   view?: View;
+@@ -14,6 +16,7 @@ export type SessionState = {
+ };
+ export class Session {
+   private corrections: Correction[] = [];
++  private applyingCorrections?: Correction[];
+   private replacement?: { file: File; delimiter: "auto" | "," | ";" | "\t"; options: { workflow?: Workflow; worksheet?: string } };
+   private worker?: Worker;
+   private sequence = 0;
+@@ -29,7 +32,7 @@ export class Session {
+   private selection?: { file: File; delimiter: "auto" | "," | ";" | "\t"; options: { template?: boolean; workflow?: Workflow; worksheet?: string } };
+   private workflow?: Workflow;
+   private revision = 0;
+-  state: SessionState = { partialAcknowledged: false, busy: "", error: "", recoverable: false };
++  state: SessionState = { pendingCorrections: [], correctionMessage: "", partialAcknowledged: false, busy: "", error: "", recoverable: false };
+   onState: (state: SessionState) => void = () => {};
+   onTemplate: (headers: string[]) => void = () => {};
+   onWorkflow: (workflow: Workflow) => void = () => {};
+@@ -73,14 +76,23 @@ export class Session {
+       this.selection = undefined;
+       if (m.kind === "error") {
+         this.candidate = undefined;
++        this.applyingCorrections = undefined;
++        if (pending.kind === "correct-batch") this.revision = pending.revision - 1;
+         this.update({ busy: "", error: m.message });
+         return;
+       }
+       if (m.kind === "view") {
++        if (pending.kind === "correct-batch" && this.applyingCorrections) {
++          this.corrections = this.applyingCorrections;
++          this.applyingCorrections = undefined;
++          this.update({pendingCorrections:[], correctionMessage:`Applied ${pending.edits.length} corrections. Results and counts updated.`});
++        }
+         if (this.candidate) {
+           const { workflow: replacementWorkflow, ...active } = this.candidate;
+           const format = active.file.name.toLowerCase().endsWith(".xlsx") ? "xlsx" : "csv";
+-          if (active.dataset !== this.active?.dataset) this.corrections = [];
++          if (active.dataset !== this.active?.dataset) {
++            this.corrections = []; this.update({pendingCorrections:[], correctionMessage:""});
++          }
+           this.active = { ...active, worksheet: m.view.worksheet };
+           this.onSourcePolicy(active.delimiter, format, m.view.worksheet);
+           this.candidate = undefined;
+@@ -104,7 +116,7 @@ export class Session {
+     this.pending = m;
+     this.update({
+       busy, error: "", recoverable: false,
+-      partialAcknowledged: m.kind === "page" || m.kind === "export"
++      partialAcknowledged: m.kind === "page" || m.kind === "source-page" || m.kind === "export"
+         ? this.state.partialAcknowledged : false,
+     });
+     clearTimeout(this.timer);
+@@ -128,7 +140,7 @@ export class Session {
+   ) {
+     if (this.state.busy || this.state.replacement) return;
+     this.acknowledgePartial(false);
+-    if (!options.template && this.corrections.length && !recovery && !approved) {
++    if (!options.template && (this.corrections.length || this.state.pendingCorrections.length) && !recovery && !approved) {
+       this.replacement = { file, delimiter, options };
+       this.update({ replacement: true });
+       return;
+@@ -206,11 +218,29 @@ export class Session {
+     this.replacement = undefined;
+     this.update({ replacement: false });
+   }
+-  correct(row: string, column: string, value: string, revert = false) {
++  stageCorrection(row: string, column: string, value: string, revert = false) {
++    if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable) return;
++    const current = this.state.view?.sourceRows.find(r => r.id === row);
++    const position = this.state.view?.columns.find(c => c.key === column)?.position;
++    if (!current || position === undefined) return;
++    const cell = current.cells[position];
++    const pending = this.state.pendingCorrections.filter(e => e.row !== row || e.column !== column);
++    if (revert ? Boolean(cell?.original) : value !== (cell?.raw ?? "")) pending.push({row,column,value,...(revert ? {revert:true} : {})});
++    this.update({pendingCorrections:pending, partialAcknowledged:false, correctionMessage:""});
++  }
++  discardPending() {
++    if (this.state.busy) return;
++    this.update({pendingCorrections:[], correctionMessage:"Pending changes discarded."});
++  }
++  applyCorrections() {
++    if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable || !this.state.pendingCorrections.length) return;
++    // The visible page is only a slice; the worker validates all batch coordinates.
++    this.applyingCorrections = mergeCorrections(this.corrections, this.state.pendingCorrections);
++    this.send({kind:"correct-batch", edits:this.state.pendingCorrections, request:++this.sequence, dataset:this.active.dataset, revision:++this.revision}, "Applying corrections and checking all rows…");
++  }
++  sourcePage(page: number, filter: SourceFilter, target?: string, nextAfter?: string, column?:string) {
+     if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable) return;
+-    this.corrections = this.corrections.filter(e => e.row !== row || e.column !== column);
+-    if (!revert) this.corrections.push({row, column, value});
+-    this.send({kind: "correct", correction: {row, column, value}, revert, request: ++this.sequence, dataset: this.active.dataset, revision: ++this.revision}, "Rechecking corrected row…");
++    this.send({kind:"source-page",page,filter,target,nextAfter,column,request:++this.sequence,dataset:this.active.dataset,revision:this.revision}, "Loading source rows…");
+   }
+   selectWorksheet(worksheet: string) {
+     const selection = this.selection;
+@@ -260,13 +290,13 @@ export class Session {
+     const view = this.state.view;
+     this.update({ partialAcknowledged: Boolean(acknowledged && view && !this.state.busy &&
+       !this.state.worksheets && !this.state.replacement && !this.state.recoverable &&
+-      !view.workflowIssues.length && view.summary.invalid &&
++      !this.state.pendingCorrections.length && !view.workflowIssues.length && view.summary.invalid &&
+       view.summary.valid + view.summary.warningOnly > 0) });
+   }
+   export(choice: SafetyChoice) {
+     if (!this.active || this.state.busy || this.state.worksheets || this.state.replacement || this.state.recoverable) return;
+     const view = this.state.view;
+-    if (!view || view.workflowIssues.length || !(view.summary.valid + view.summary.warningOnly) ||
++    if (this.state.pendingCorrections.length || !view || view.workflowIssues.length || !(view.summary.valid + view.summary.warningOnly) ||
+       (view.summary.invalid && !this.state.partialAcknowledged)) return;
+     this.send(
+       {
+@@ -286,6 +316,7 @@ export class Session {
+     this.worker = undefined;
+     this.pending = undefined;
+     this.candidate = undefined;
++    this.applyingCorrections = undefined;
+     this.selection = undefined;
+     clearTimeout(this.timer);
+     this.update({
+@@ -311,6 +342,7 @@ export class Session {
+     this.stop("");
+     this.active = undefined;
+     this.corrections = [];
++    this.update({pendingCorrections:[], correctionMessage:""});
+     this.cancelReplacement();
+     this.workflow = undefined;
+     this.update({ recoverable: false, error: "" });
+diff --git a/src/session/correction-overlay.ts b/src/session/correction-overlay.ts
+index 8975686..f92fe7f 100644
+--- a/src/session/correction-overlay.ts
++++ b/src/session/correction-overlay.ts
+@@ -2,6 +2,21 @@ import { evaluate, countResult, type Run } from "../engine/recipes";
+ import type { Workflow } from "../engine/workflow";
+ import type { SourceRow, SourceTable } from "../engine/values";
+ export type Correction = { row: string; column: string; value: string };
++export type PendingCorrection = Correction & { revert?: boolean };
++export function applyCorrectionBatch(source: SourceTable, current: Correction[], edits: PendingCorrection[]): Correction[] {
++  const rows = new Set(source.rows.map(r => r.id)), columns = new Set(source.columns.map(c => c.key));
++  for (const edit of edits)
++    if (!rows.has(edit.row) || !columns.has(edit.column)) throw new Error("Select a current source cell.");
++  return mergeCorrections(current, edits);
++}
++export function mergeCorrections(current: Correction[], edits: PendingCorrection[]): Correction[] {
++  const next = new Map(current.map(edit => [JSON.stringify([edit.row, edit.column]), edit]));
++  for (const {revert, ...edit} of edits) {
++    const key = JSON.stringify([edit.row, edit.column]);
++    if (revert) next.delete(key); else next.set(key, edit);
++  }
++  return [...next.values()];
++}
+ export function correctedRows(source: SourceTable, edits: Correction[], rows: SourceRow[] = source.rows): SourceRow[] {
+   const index = new Map<string, Map<string, string>>();
+   for (const edit of edits) {
+diff --git a/src/session/worker-protocol.ts b/src/session/worker-protocol.ts
+index 528b8e8..f665f2f 100644
+--- a/src/session/worker-protocol.ts
++++ b/src/session/worker-protocol.ts
+@@ -1,4 +1,4 @@
+-import type { Correction } from "./correction-overlay";
++import type { Correction, PendingCorrection } from "./correction-overlay";
+ import type { Workflow } from "../engine/workflow";
+ import type { SourceColumn, SourceRow } from "../engine/values";
+ import type { Run, ResultRow } from "../engine/recipes";
+@@ -21,14 +21,24 @@ export type Request = { request: number; dataset: string; revision: number } & (
+       worksheet?: string;
+       delimiter: "auto" | "," | ";" | "\t";
+     }
+-  | { kind: "correct"; correction: Correction; revert?: boolean }
++  | { kind: "correct-batch"; edits: PendingCorrection[] }
++  | { kind: "source-page"; page: number; filter: SourceFilter; target?: string; nextAfter?: string; column?:string }
+   | { kind: "run"; workflow: Workflow }
+   | { kind: "page"; page: number; exceptions: boolean; invalidOnly?: boolean }
+   | { kind: "export"; choice: SafetyChoice; partialAcknowledged?: boolean }
+ );
++export type SourceFilter = "all" | "exceptions" | "invalid";
+ export type View = {
+   columns: SourceColumn[];
+   sourceRows: SourceRow[];
++  sourceResults: ResultRow[];
++  sourcePage: number;
++  sourceTotalPages: number;
++  sourceFilter: SourceFilter;
++  sourceCount: number;
++  sourceTarget?: string;
++  sourceColumn?: string;
++  sourceNavigation: number;
+   rows: ResultRow[];
+   workflowIssues: Issue[];
+   summary: Run["summary"];
+diff --git a/src/ui/SourceCorrection.tsx b/src/ui/SourceCorrection.tsx
+index f65dc6e..bc67506 100644
+--- a/src/ui/SourceCorrection.tsx
++++ b/src/ui/SourceCorrection.tsx
+@@ -1,23 +1,27 @@
+-import { useState } from "react";
++import { useEffect, useRef, useState } from "react";
+ import type { SourceCell } from "../engine/values";
++import type { PendingCorrection } from "../session/correction-overlay";
+ import ExcelCellDetails from "./ExcelCellDetails";
+-export default function SourceCorrection({ cell, header, record, disabled, onSave, onRevert }: {
++export default function SourceCorrection({ cell, header, record, disabled, pending, target, navigation, onSave, onRevert }: {
+   cell: SourceCell; header: string; record: number; disabled: boolean;
++  pending?: PendingCorrection; target?: boolean;
++  navigation: number;
+   onSave: (value: string) => void; onRevert: () => void;
+ }) {
+   const [editing, setEditing] = useState(false);
+-  const [value, setValue] = useState(cell.raw);
++  const input = useRef<HTMLTextAreaElement>(null);
++  useEffect(() => { if (target) input.current?.focus(); }, [target, navigation]);
+   const original = cell.original ?? cell;
+   return <div>
+     <span>{cell.display || "(blank)"}</span>
+     {cell.original && <p>Corrected in this session · Original: {original.display || "(blank)"}</p>}
+     {original.excel && <ExcelCellDetails cell={original.excel} />}
+-    {editing ? <form onSubmit={e => { e.preventDefault(); onSave(value); setEditing(false); }}>
+-      <label>Replacement for {header}, record {record}<textarea aria-label={`Replacement for ${header}, record ${record}`} value={value} onChange={e => setValue(e.target.value)} disabled={disabled} /></label>
++    {pending && <p className="pending-marker">Pending change{pending.revert ? " · revert to original" : ""}</p>}
++    {editing || pending || target ? <div>
++      <label>Replacement for {header}, record {record}<textarea ref={input} aria-label={`Replacement for ${header}, record ${record}`} value={pending ? pending.revert ? original.raw : pending.value : cell.raw} onChange={e => onSave(e.target.value)} disabled={disabled} /></label>
+       <p>Literal text replacement. Numeric rules still apply. For Excel date rules, enter YYYY-MM-DD.</p>
+-      <button disabled={disabled}>Apply correction</button>
+-      <button type="button" onClick={() => setEditing(false)}>Cancel edit</button>
+-    </form> : <button disabled={disabled} onClick={() => { setValue(cell.raw); setEditing(true); }}>Correct {header}, record {record}</button>}
++      <button type="button" disabled={disabled} onClick={() => { onSave(cell.raw); setEditing(false); }}>Cancel edit</button>
++    </div> : <button disabled={disabled} onClick={() => setEditing(true)}>Correct {header}, record {record}</button>}
+     {cell.original && <button disabled={disabled} onClick={onRevert}>Revert {header}, record {record}</button>}
+   </div>;
+ }
+diff --git a/src/ui/Workspace.tsx b/src/ui/Workspace.tsx
+index 5422243..f5f8f2c 100644
+--- a/src/ui/Workspace.tsx
++++ b/src/ui/Workspace.tsx
+@@ -10,7 +10,8 @@ import {
+ import { displayValue } from "../engine/values";
+ import { exportText, type SafetyChoice } from "../formats/spreadsheet-safety";
+ import MappingRows from "./MappingRows";
+-import SourceCorrection from "./SourceCorrection";
++import SourceInspector from "./SourceInspector";
++import { reviewIssues } from "../engine/issues";
+ import SavedWorkflows from "./SavedWorkflows";
+ import { snapshotWorkflow, encodeWorkflow } from "../workflows/codec";
+ import type { StoredWorkflow } from "../workflows/indexeddb-store";
+@@ -37,7 +38,8 @@ export default function Workspace() {
+   const [choice, setChoice] = useState<SafetyChoice>();
+   const [exceptions, setExceptions] = useState(false);
+   const [worksheet, setWorksheet] = useState("");
+-  const [inspectSource, setInspectSource] = useState(false);
++  const [canReturnToRepeat, setCanReturnToRepeat] = useState(false);
++  const [ruleTarget,setRuleTarget] = useState<string>();
+   const draftGeneration = useRef(0);
+   const pendingGeneration = useRef<number | undefined>(undefined);
+   const failedGeneration = useRef<number | undefined>(undefined);
+@@ -55,7 +57,7 @@ export default function Workspace() {
+   useEffect(() => {
+     session.onState = (s) => {
+       setState(s);
+-      if (!s.view) setInspectSource(false);
++
+       if (!s.busy) {
+         setExceptions(s.view?.exceptions ?? false);
+         const completed = pendingGeneration.current;
+@@ -66,7 +68,7 @@ export default function Workspace() {
+           else if (completed === draftGeneration.current) setDirty(false);
+         }
+       }
+-      if (s.error) { samplePending.current = false; statusRef.current?.focus(); }
++      if (s.error) { samplePending.current = false; statusRef.current?.focus({preventScroll:true}); }
+     };
+     session.onDownload = saveDownload;
+     session.onSourcePolicy = (policy, format = "csv", worksheet) => {
+@@ -78,7 +80,7 @@ export default function Workspace() {
+         samplePending.current = false;
+         setBaseline(undefined);
+         durableID.current = undefined;
+-        setRepeat(false);
++        setRepeat(false); setCanReturnToRepeat(false);
+       }
+       draftGeneration.current++;
+       pendingGeneration.current = undefined;
+@@ -153,7 +155,7 @@ export default function Workspace() {
+     try { unsaved = encodeWorkflow({ ...workflow, source: { ...workflow.source, delimiter: activePolicy.current } }) !== baseline.json; }
+     catch { unsaved = true; }
+   }
+-  const confirmReplacement = () => !(unsaved || view || state.recoverable) || window.confirm("Replace the current conversion? Unsaved configuration and source data in this session will be discarded.");
++  const confirmReplacement = () => !(unsaved || view || state.recoverable || state.pendingCorrections.length) || window.confirm("Replace the current conversion? Unsaved configuration, pending corrections and source data in this session will be discarded.");
+   const resetWorking = () => {
+     samplePending.current = false;
+     setOpening(false);
+@@ -171,6 +173,7 @@ export default function Workspace() {
+     if (!confirmReplacement()) return false;
+     resetWorking();
+     setRepeat(true);
++    setCanReturnToRepeat(true);
+     setBaseline(record);
+     session.activate(next);
+     return true;
+@@ -182,7 +185,7 @@ export default function Workspace() {
+     setDelimiter("auto");
+     setWorkflow(makeWorkflow([]));
+     setDirty(true);
+-    setRepeat(false);
++    setRepeat(false); setCanReturnToRepeat(false);
+   };
+   const snapshot = (copy = false) => {
+     const current = currentWorkflow.current;
+@@ -220,10 +223,23 @@ export default function Workspace() {
+   );
+   const canExport = Boolean(
+     validPreview &&
++      !state.pendingCorrections.length &&
+       eligibleCount > 0 &&
+       (!view.summary.invalid || state.partialAcknowledged) &&
+       (!risk || choice),
+   );
++  useEffect(() => {
++    if (!state.pendingCorrections.length) return;
++    const warn = (event: BeforeUnloadEvent) => {event.preventDefault();};
++    window.addEventListener("beforeunload",warn);
++    return () => window.removeEventListener("beforeunload",warn);
++  },[state.pendingCorrections.length]);
++  useEffect(() => {
++    if (!ruleTarget || repeat || !view) return;
++    const card = [...document.querySelectorAll<HTMLElement>(".matching [data-field-id]")].find(node=>node.dataset.fieldId===ruleTarget);
++    card?.querySelector<HTMLButtonElement>("button.edit")?.click();
++    setRuleTarget(undefined);
++  },[ruleTarget,repeat,view]);
+   const outputDelimiterLabel = { ",": "comma", ";": "semicolon", "\t": "tab" }[workflow.output.delimiter];
+   return (
+     <main>
+@@ -252,11 +268,16 @@ export default function Workspace() {
+         <h2>{workflow.name || "Imported workflow"}</h2>
+         <p>{workflow.fields.length} output columns. Upload a compatible source CSV or Excel file, review the current results, then download.</p>
+         <p>{workflow.output.format === "xlsx" ? `Excel output · ${workflow.output.dateSystem} date system` : `CSV output: ${outputDelimiterLabel} · ${workflow.output.bom ? "with BOM" : "no BOM"}`} · {workflow.output.header ? "with header" : "no header"}</p>
+-        <button onClick={() => setRepeat(false)}>Edit workflow</button>
++        {unsaved && <p><strong>Unsaved workflow changes retained.</strong> Save explicitly to update this browser.</p>}
++        <button disabled={busy || opening} onClick={() => setRepeat(false)}>Edit workflow</button>
++      </section>}
++      {!repeat && (canReturnToRepeat || baseline) && <section className="panel editing-summary" aria-label="Editing workflow">
++        <button onClick={()=>setRepeat(true)}>Done editing</button>
++        <p>{unsaved ? "Unsaved workflow changes retained. Save explicitly when ready." : "Workflow changes are saved."} Validation and download checks still apply.</p>
+       </section>}
+       {state.replacement && <section className="panel" role="alertdialog" aria-label="Replace source file" aria-describedby="replacement-warning">
+         <h2>Discard session corrections?</h2>
+-        <p id="replacement-warning">Replacing the source discards your session corrections after the new file loads successfully. Cancel keeps the current source and corrections.</p>
++        <p id="replacement-warning">Replacing the source discards your pending and applied session corrections after the new file loads successfully. Cancel keeps the current source and corrections.</p>
+         <button onClick={() => void session.confirmReplacement()}>Replace source and discard corrections</button>
+         <button onClick={() => session.cancelReplacement()}>Keep current source</button>
+       </section>}
+@@ -314,7 +335,9 @@ export default function Workspace() {
+             <button
+               disabled={busy || saving || opening}
+               onClick={() => {
++                if (state.pendingCorrections.length && !window.confirm("End session and discard pending corrections?")) return;
+                 resetWorking();
++                setCanReturnToRepeat(false);
+                 setWorkflow(makeWorkflow([]));
+                 activePolicy.current = "auto";
+                 setDelimiter("auto");
+@@ -375,59 +398,7 @@ export default function Workspace() {
+       </div>
+       {view && (
+         <div className="workspace">
+-          <details className="panel source-inspection" onToggle={(event) => {
+-            if (event.target === event.currentTarget) setInspectSource(event.currentTarget.open);
+-          }}>
+-            <summary>Inspect original source table</summary>
+-            {inspectSource && <section aria-labelledby="source-title">
+-              <h2 id="source-title">Source table</h2>
+-              <p>
+-                Current source values · {view.sourceRows.length} rows on this preview page. Corrections stay in this session; originals remain inspectable.
+-              </p>
+-              <div
+-                className="table-scroll"
+-                tabIndex={0}
+-                role="region"
+-                aria-label="Source table, scroll horizontally"
+-              >
+-                <table>
+-                  <caption>
+-                    {view.worksheet ? `Worksheet ${view.worksheet} · ` : ""}Uploaded source columns and original record references
+-                  </caption>
+-                  <thead>
+-                    <tr>
+-                      <th>Source record / line</th>
+-                      {view.columns.map((c) => (
+-                        <th key={c.key}>{c.header}</th>
+-                      ))}
+-                    </tr>
+-                  </thead>
+-                  <tbody>
+-                    {view.sourceRows.map((r) => (
+-                      <tr key={r.id}>
+-                        <th>
+-                          {view.worksheet ? `${view.worksheet} · ` : ""}{r.record} / {r.line}
+-                        </th>
+-                        {view.columns.map((c) => (
+-                          <td key={c.key}>
+-                            <SourceCorrection
+-                              key={r.id + c.key}
+-                              cell={r.cells[c.position] ?? {kind:"text",raw:"",display:""}}
+-                              header={c.header}
+-                              record={r.record}
+-                              disabled={busy || dirty || state.recoverable}
+-                              onSave={value => { setChoice(undefined); session.correct(r.id, c.key, value); }}
+-                              onRevert={() => { setChoice(undefined); session.correct(r.id, c.key, "", true); }}
+-                            />
+-                          </td>
+-                        ))}
+-                      </tr>
+-                    ))}
+-                  </tbody>
+-                </table>
+-              </div>
+-            </section>}
+-          </details>
++          <SourceInspector session={session} state={state} disabled={busy || dirty || opening || state.recoverable} clearChoice={()=>setChoice(undefined)} />
+           {!repeat && <MappingRows key={activation}
+             view={view}
+             fields={workflow.fields}
+@@ -690,19 +661,22 @@ export default function Workspace() {
+                     </div>
+                     {view.rows.some(row => row.issues.length) && (
+                       <ul className="issues" aria-label="Exception details">
+-                        {view.rows
+-                          .flatMap((r) => r.issues)
+-                          .map((issue, i) => (
+-                            <li key={i}>
+-                              <strong>
+-                                {view.worksheet ? `${view.worksheet} · ` : ""}Record {issue.record}, line {issue.line}:
+-                              </strong>{" "}
+-                              {issue.reason} {issue.action}{" "}
+-                              <span className="small">Field: {workflow.fields.find(field => field.id === issue.field)?.header ?? issue.field} · {issue.severity}</span>
+-                            </li>
+-                          ))}
++                        {view.rows.flatMap(row => reviewIssues(row.issues).map(item => <li key={item.key}>
++                          <strong>{view.worksheet ? `${view.worksheet} · ` : ""}Record {item.issue.record}, line {item.issue.line}:</strong>{" "}
++                          {item.issue.reason} {item.issue.action}{" "}
++                          <span className="small">Affected outputs: {item.fields.map(id=>workflow.fields.find(f=>f.id===id)?.header ?? id).join(", ")} · {item.issue.severity}</span>
++                          <div className="issue-actions">{item.sources.map(source=><button key={JSON.stringify(source)} disabled={busy || dirty || opening} onClick={()=>session.sourcePage(0,"all",row.id,undefined,source.source)}>
++                            Inspect {view.columns.find(c=>c.key===source.source)?.header ?? source.source}, record {row.record}
++                          </button>)}
++                          {(item.rule || !item.sources.length) && <button disabled={busy || opening} onClick={()=>{setRepeat(false);setRuleTarget(item.rule ?? item.issue.field);}}>Review {workflow.fields.find(f=>f.id===(item.rule ?? item.issue.field))?.header ?? "workflow"} settings</button>}
++                          </div>
++                        </li>))}
++
+                       </ul>
+                     )}
++                    <details className="diagnostics"><summary>Full issue diagnostics (including dependent effects)</summary>
++                      <ul>{view.rows.flatMap(r=>r.issues).map((issue,i)=><li key={i}>Record {issue.record}, line {issue.line}: {issue.code} · {issue.reason} {issue.action}</li>)}</ul>
++                    </details>
+                   </>
+                 )}
+               </>
+diff --git a/src/ui/styles.css b/src/ui/styles.css
+index 7424775..3dd7dfb 100644
+--- a/src/ui/styles.css
++++ b/src/ui/styles.css
+@@ -914,6 +914,17 @@ h3 {
+ .workflow-actions span { font-size: 12px; padding: 10px; }
+ .repeat-summary { margin-bottom: 16px; }
+ .repeat-summary p { font-size: 13px; }
++.editing-summary { margin-bottom: 16px; }
++.source-actions, .issue-actions { display:flex; flex-wrap:wrap; align-items:end; gap:8px; margin:12px 0; }
++.source-actions label { flex:1 1 220px; }
++.source-inspection td { min-width:180px; vertical-align:top; }
++.source-inspection textarea { width:100%; min-height:72px; }
++.source-error { background:#fff0ed; border-left:4px solid #a32c18; }
++.source-error > strong { color:#84200f; }
++.source-warning { background:#fff8df; border-left:4px solid #85620a; }
++.source-pending { outline:2px dashed #345b9e; outline-offset:-3px; }
++.pending-marker { color:#24467d; font-weight:700; }
++.diagnostics { margin:12px 0; overflow-wrap:anywhere; }
+ @media (max-width: 700px) { .workflow-actions label { max-width: 100%; flex-basis: 100%; } }
+ 
+ .suggestions {

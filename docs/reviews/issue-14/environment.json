@@ -1,0 +1,8 @@
+{
+  "node": "v24.19.0",
+  "chromium": "Chromium 154.0.8037.57 built on Debian GNU/Linux 13 (trixie)",
+  "platform": "Linux x86_64",
+  "reference_laptop": false,
+  "base": "93ec73403b26aeddb5044c80534d30cca871dc96",
+  "branch": "fix/issue-14-ux-acceptance"
+}

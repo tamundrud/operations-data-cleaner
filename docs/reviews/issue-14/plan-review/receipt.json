@@ -1,0 +1,59 @@
+{
+  "skill": "ce-doc-review",
+  "mode": "non-interactive",
+  "document_type": "unified-plan",
+  "document_path": "docs/plans/2026-10-20-issue-14-acceptance-plan.md",
+  "document_sha256": "d2423f1353218ba3578dee248b91e8d18f91b7283d7f14ecc6cb7711f62be443",
+  "base_commit": "93ec73403b26aeddb5044c80534d30cca871dc96",
+  "completed": true,
+  "coverage": [
+    {
+      "reviewer": "coherence",
+      "status": "completed",
+      "findings": 0
+    },
+    {
+      "reviewer": "feasibility",
+      "status": "completed",
+      "findings": 0
+    },
+    {
+      "reviewer": "design-lens",
+      "status": "completed",
+      "findings": 0
+    },
+    {
+      "reviewer": "scope-guardian",
+      "status": "completed",
+      "findings": 0
+    },
+    {
+      "reviewer": "adversarial",
+      "status": "completed",
+      "findings": 0
+    },
+    {
+      "reviewer": "security-lens",
+      "status": "completed",
+      "findings": 0
+    }
+  ],
+  "findings": [],
+  "fixes_applied": 0,
+  "proposed_fixes_count": 0,
+  "decisions_count": 0,
+  "fyi_count": 0,
+  "residual_risks": [],
+  "deferred_questions": [],
+  "cross_model": {
+    "status": "not_run",
+    "reason": "No installed attested-different provider route: claude, grok, cursor-agent and opencode command probes returned absent; no peer job started and no third-party egress occurred."
+  },
+  "packs": {
+    "roots": [],
+    "warnings": [],
+    "errors": []
+  },
+  "confidence_check": "passed: concrete local integration patterns, required state transitions and per-unit tests sufficiently grounded; no sections need strengthening",
+  "implementation_handoff": "ready; implementation and draft PR are already authorized; user retains UX acceptance"
+}

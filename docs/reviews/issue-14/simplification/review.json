@@ -1,0 +1,66 @@
+{
+  "workflow": "ce-simplify-code",
+  "skill": "/home/agent/.agents/skills/ce-simplify-code/SKILL.md",
+  "baseline": "93ec73403b26aeddb5044c80534d30cca871dc96",
+  "scope": "Substantive src changes plus new src/ui/SourceInspector.tsx",
+  "coverage": {
+    "reuse": "complete",
+    "quality": "complete",
+    "efficiency": "complete"
+  },
+  "findings": {
+    "reuse": [
+      {
+        "id": "reuse-1",
+        "location": "src/processing.worker.ts:131",
+        "finding": "Next-unresolved navigation recomputes run.rows.filter(r => r.issues.length), identical to exceptionRows maintained by setRun.",
+        "suggestion": "Use exceptionRows for ordered find and fallback."
+      }
+    ],
+    "quality": [
+      {
+        "id": "quality-1",
+        "location": "src/session/controller.ts:241",
+        "finding": "sourcePage has five positional parameters, requiring undefined placeholders for navigation modes.",
+        "suggestion": "Use a shared named source-query object and spread it into the worker request; update SourceInspector and Workspace callers."
+      }
+    ],
+    "efficiency": [
+      {
+        "id": "efficiency-1",
+        "location": "src/processing.worker.ts:46",
+        "finding": "view rebuilds a full result-row map on each pagination request.",
+        "suggestion": "Build resultById in setRun alongside exceptionRows, then reuse it in view."
+      },
+      {
+        "id": "efficiency-2",
+        "location": "src/ui/SourceInspector.tsx:51",
+        "finding": "Each visible cell scans every pending correction on each keystroke.",
+        "suggestion": "Index unique row/column coordinates once per render and retrieve each pending edit."
+      },
+      {
+        "id": "efficiency-3",
+        "location": "src/engine/recipes.ts:364",
+        "finding": "Every evaluated field filters/maps fieldIssues even when no required-blank issue is emitted.",
+        "suggestion": "Compute upstream cause keys only within the required-blank branch."
+      }
+    ]
+  },
+  "applied": {
+    "reuse": 0,
+    "quality": 0,
+    "efficiency": 0
+  },
+  "skipped": 0,
+  "apply_and_verification_owner": "root",
+  "status": "review-complete-awaiting-root-application-and-verification",
+  "checks_run_by_reviewers": [],
+  "application": {
+    "reuse_applied": 1,
+    "quality_applied": 1,
+    "efficiency_applied": 3,
+    "skipped": 0,
+    "owner": "root",
+    "verification": "Typecheck/lint passed after all five changes; 297 unit tests passed in a subsequent isolated run; full Chromium regression and review-fix checks recorded in ../verification.md."
+  }
+}

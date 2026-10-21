@@ -1,0 +1,76 @@
+{
+  "branch": "fix/issue-14-ux-acceptance",
+  "completed_at": "2026-10-21T05:46:28.466415+00:00",
+  "cost": {
+    "host": "codex",
+    "scope": {
+      "changed_lines": 992,
+      "depth": "full",
+      "exec_nontest_lines": 434,
+      "size_band": "large",
+      "unclassified_lines": "css:11,md:202"
+    },
+    "stages": [
+      {
+        "elapsed_seconds": 32.809,
+        "ended_at": "2026-10-21T00:51:26.849011+00:00",
+        "facts": {
+          "changed_lines": 992,
+          "depth": "full",
+          "exec_nontest_lines": 434,
+          "size_band": "large",
+          "unclassified_lines": "css:11,md:202"
+        },
+        "stage": "scope",
+        "started_at": "2026-10-21T00:50:54.040369+00:00"
+      },
+      {
+        "elapsed_seconds": 37.22,
+        "ended_at": "2026-10-21T00:52:04.068684+00:00",
+        "reviewers": 10,
+        "stage": "select",
+        "started_at": "2026-10-21T00:51:26.849011+00:00"
+      },
+      {
+        "candidates": 6,
+        "elapsed_seconds": 17323.505,
+        "ended_at": "2026-10-21T05:40:47.573562+00:00",
+        "reviewers": 10,
+        "stage": "dispatch",
+        "started_at": "2026-10-21T00:52:04.068684+00:00"
+      },
+      {
+        "candidates": 0,
+        "elapsed_seconds": 65.17,
+        "ended_at": "2026-10-21T05:43:21.398539+00:00",
+        "stage": "merge",
+        "started_at": "2026-10-21T05:42:16.228130+00:00"
+      },
+      {
+        "candidates": 0,
+        "elapsed_seconds": 0.039,
+        "ended_at": "2026-10-21T05:43:43.426116+00:00",
+        "stage": "validate",
+        "started_at": "2026-10-21T05:43:43.386721+00:00"
+      },
+      {
+        "candidates": 0,
+        "elapsed_seconds": 0.042,
+        "ended_at": "2026-10-21T05:46:28.501959+00:00",
+        "stage": "report",
+        "started_at": "2026-10-21T05:46:28.460261+00:00"
+      }
+    ],
+    "status": "complete",
+    "totals": {
+      "artifact_bytes": 831294,
+      "candidates": 6,
+      "elapsed_seconds": 17458.785,
+      "reviewers": 20
+    },
+    "truncated_events": 0
+  },
+  "head_sha": "618f30ae9acd3a1d54734443b58b4cca7ed027ba",
+  "run_id": "20261021-005053-7f6a13f0",
+  "verdict": "Ready to merge"
+}

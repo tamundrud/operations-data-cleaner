@@ -1,0 +1,26 @@
+[WebServer] (node:21457) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 17 tests using 1 worker
+
+(node:21469) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › tests/e2e/acceptance-corrections.spec.ts:25:1 › Done editing retains unsaved configuration across repeat mode and portable workflows (2.8s)
+  ✓   2 [chromium] › tests/e2e/acceptance-corrections.spec.ts:49:1 › one address root cause navigates and highlights the original cell; diagnostics and independent errors remain (3.1s)
+  ✓   3 [chromium] › tests/e2e/acceptance-corrections.spec.ts:79:1 › independent filters retain multi-page drafts and apply once without changing output pages (7.8s)
+  ✓   4 [chromium] › tests/e2e/acceptance-corrections.spec.ts:130:1 › pending changes survive cancelled loss, failed replacement and inspection, with explicit discard (1.7s)
+  ✓   5 [chromium] › tests/e2e/acceptance-corrections.spec.ts:157:1 › rule failures open settings instead of highlighting valid source data (1.5s)
+  ✓   6 [chromium] › tests/e2e/acceptance-corrections.spec.ts:170:1 › off-page Excel exception navigation preserves worksheet provenance and reaches the next unresolved record (1.8s)
+  ✓   7 [chromium] › tests/e2e/accessibility.spec.ts:4:1 › labelled keyboard controls, laptop/mobile layouts and automated accessibility (4.6s)
+  ✓   8 [chromium] › tests/e2e/accessibility.spec.ts:35:1 › U3 fixed fields, CSV options and contextual trim controls remain accessible (4.0s)
+  ✓   9 [chromium] › tests/e2e/accessibility.spec.ts:48:1 › workflow metadata stays literal and keyboard collision cancellation restores focus (2.2s)
+  ✓  10 [chromium] › tests/e2e/correction-reupload.spec.ts:10:1 › source corrections repair dependents, revert, preserve replacement failures and recover cancelled parsing privately (5.3s)
+  ✓  11 [chromium] › tests/e2e/correction-reupload.spec.ts:84:1 › 10000 rows retain identity after clearing and correcting a later preview page (2.2s)
+  ✓  12 [chromium] › tests/e2e/correction-reupload.spec.ts:99:1 › filtered exception correction targets the matching source identity (2.5s)
+  ✓  13 [chromium] › tests/e2e/correction-reupload.spec.ts:120:1 › production worker rejects stale correction requests after a newer rule revision (763ms)
+  ✓  14 [chromium] › tests/e2e/correction-reupload.spec.ts:150:1 › cancelling replacement in the parsing worker restores corrected provenance and exports (6.6s)
+  ✓  15 [chromium] › tests/e2e/correction-reupload.spec.ts:169:1 › missing trailing source cells can be corrected and reverted (2.1s)
+  ✓  16 [chromium] › tests/e2e/correction-reupload.spec.ts:181:1 › Excel source corrections retain original typed details and export literal IDs and calendar dates (3.3s)
+  ✓  17 [chromium] › tests/e2e/privacy.spec.ts:4:1 › production journey sends no customer values, file names or IDs and stores no source data (8.7s)
+
+  17 passed (1.1m)

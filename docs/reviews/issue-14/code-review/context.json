@@ -1,0 +1,39 @@
+{
+  "mode": "agent",
+  "depth": "full",
+  "base": "93ec73403b26aeddb5044c80534d30cca871dc96",
+  "scope_mode": "local-aligned",
+  "plan_path": "docs/plans/2026-10-20-issue-14-acceptance-plan.md",
+  "plan_source": "explicit",
+  "root": "docs",
+  "cross_model": {
+    "status": "not_run",
+    "reason": "Only Codex CLI installed on attested Codex host; no different-provider route available"
+  },
+  "criteria_map": {
+    "AGENTS.md": [
+      "docs/plans/2026-10-20-issue-14-acceptance-plan.md",
+      "src/engine/issues.ts",
+      "src/engine/recipes.ts",
+      "src/processing.worker.ts",
+      "src/session/controller.ts",
+      "src/session/correction-overlay.ts",
+      "src/session/worker-protocol.ts",
+      "src/ui/SourceCorrection.tsx",
+      "src/ui/SourceInspector.tsx",
+      "src/ui/Workspace.tsx",
+      "src/ui/styles.css",
+      "tests/e2e/acceptance-corrections.spec.ts",
+      "tests/e2e/constants.spec.ts",
+      "tests/e2e/correction-reupload.spec.ts",
+      "tests/e2e/dates.spec.ts",
+      "tests/e2e/partial-export.spec.ts",
+      "tests/e2e/release.spec.ts",
+      "tests/unit/corrections.test.ts",
+      "tests/unit/issue-review.test.ts",
+      "tests/unit/session.test.ts"
+    ]
+  },
+  "excluded_generated": "docs/reviews/u*/ screenshots; caller will restore",
+  "no_checks": "Root owns tests/build/server; reviewers read-only"
+}

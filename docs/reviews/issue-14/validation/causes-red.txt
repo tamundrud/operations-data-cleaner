@@ -1,0 +1,65 @@
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+ ❯ tests/unit/issue-review.test.ts (4 tests | 4 failed) 82ms
+   × four split outputs share one actionable cause while all diagnostics and invalidity remain 66ms
+   × arithmetic identifies every bad source operand and independent required blanks remain 4ms
+   × numeric policy failure identifies the rule rather than blaming valid source operands 4ms
+   × same-text independent failures and warnings are never accidentally grouped 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/issue-review.test.ts > four split outputs share one actionable cause while all diagnostics and invalidity remain
+TypeError: reviewIssues is not a function
+ ❯ tests/unit/issue-review.test.ts:16:17
+     14|   const run = evaluate(w, source('Address\n"Street,City,Province,Posta…
+     15|   expect(run.summary).toMatchObject({ invalid: 1, errorIssues: 8 });
+     16|   const items = reviewIssues(run.rows[0].issues);
+       |                 ^
+     17|   expect(items).toHaveLength(1);
+     18|   expect(items[0].fields).toEqual(w.fields.map(f => f.id));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/unit/issue-review.test.ts > arithmetic identifies every bad source operand and independent required blanks remain
+TypeError: reviewIssues is not a function
+ ❯ tests/unit/issue-review.test.ts:32:17
+     30|   w.fields[1].required = true; w.fields[1].recipe = {kind:"copy",sourc…
+     31|   const run = evaluate(w, source("Units,Factor,Empty\nTwelve,Bad,"));
+     32|   const items = reviewIssues(run.rows[0].issues);
+       |                 ^
+     33|   expect(items).toHaveLength(2);
+     34|   expect(items[0].sources).toEqual([{source:"units",operand:"left"},{s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/unit/issue-review.test.ts > numeric policy failure identifies the rule rather than blaming valid source operands
+TypeError: reviewIssues is not a function or its return value is not iterable
+ ❯ tests/unit/issue-review.test.ts:44:18
+     42|   w.fields[0].type = "number"; w.fields[0].required = true;
+     43|   w.fields[0].recipe = {kind:"calculate",operation:"divide",left:{kind…
+     44|   const [item] = reviewIssues(evaluate(w, source("Units\n1")).rows[0].…
+       |                  ^
+     45|   expect(item.issue.code).toBe("nonterminating-division");
+     46|   expect(item.sources).toEqual([]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/unit/issue-review.test.ts > same-text independent failures and warnings are never accidentally grouped
+TypeError: reviewIssues is not a function
+ ❯ tests/unit/issue-review.test.ts:55:17
+     53|   w.fields[1].recipe = {kind:"copy",source:"two"}; w.fields[1].maxLeng…
+     54|   const run = evaluate(w, source("One,Two\n=RISK,=RISK"));
+     55|   const items = reviewIssues(run.rows[0].issues);
+       |                 ^
+     56|   expect(items).toHaveLength(4);
+     57|   expect(items.filter(item => item.issue.severity === "warning")).toHa…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  00:38:07
+   Duration  1.32s (import 55%, transform 31%, tests 9%, worker 5%)
+

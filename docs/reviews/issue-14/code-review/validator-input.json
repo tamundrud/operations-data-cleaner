@@ -1,0 +1,123 @@
+{
+  "findings": [],
+  "selected_findings": [],
+  "selected": [],
+  "skip_count": 0,
+  "shortcut_skipped": 0,
+  "skip_evidence_basis": [],
+  "reason": "Empty retained primary set after current-source reconciliation; no validator launch selected.",
+  "scope": {
+    "mode": "standalone",
+    "base": "93ec73403b26aeddb5044c80534d30cca871dc96",
+    "diff_a": "93ec73403b26aeddb5044c80534d30cca871dc96",
+    "diff_b": null,
+    "pr": {
+      "number": null,
+      "url": null,
+      "title": null,
+      "body": null,
+      "base_ref_name": null,
+      "head_ref_oid": null,
+      "head_ref": null,
+      "base_ref": null,
+      "has_prior_comments": false
+    },
+    "branch": "fix/issue-14-ux-acceptance",
+    "head_sha": "618f30ae9acd3a1d54734443b58b4cca7ed027ba",
+    "files": "/tmp/compound-engineering-1000/ce-code-review/20261021-005053-7f6a13f0/files.txt",
+    "diff": "/tmp/compound-engineering-1000/ce-code-review/20261021-005053-7f6a13f0/full.diff",
+    "tree_is_reviewed_head": true,
+    "untracked_excluded": [
+      "docs/reviews/issue-14/ (untracked evidence only; full paths in untracked.txt)"
+    ]
+  },
+  "run_dir": "/tmp/compound-engineering-1000/ce-code-review/20261021-005053-7f6a13f0",
+  "run_id": "20261021-005053-7f6a13f0",
+  "skill_dir": "/home/agent/.agents/skills/ce-code-review",
+  "mode": {
+    "agent": true,
+    "apply_local": false,
+    "grouping": "auto",
+    "depth": "full"
+  },
+  "intent": {
+    "summary": "Implement all five issue #14 acceptance fixes from U13: Done editing retaining unsaved rules; structured actionable root causes while preserving raw validation; accurate source/rule navigation; independent whole-dataset source filters/pages; atomic multi-page staged correction batches. Preserve source fidelity/privacy, row counts, workflow schema/portability, export gates and all existing behavior; leave a draft for UX acceptance with no merge/deployment/publication.\n",
+    "confidence": "explicit"
+  },
+  "plan": {
+    "path": "docs/plans/2026-10-20-issue-14-acceptance-plan.md",
+    "source": "explicit",
+    "requirements": [
+      {
+        "id": "R1",
+        "text": "- R1. Saved/imported workflows offer Done editing, returning to repeat mode while retaining unsaved rules and ordinary validation/export gates; leaving editing does not save to IndexedDB."
+      },
+      {
+        "id": "R2",
+        "text": "- R2. Present root causes with affected output fields using structured source, operand, and rule provenance; only required-blank presentation symptoms explicitly caused by an upstream failure are suppressed."
+      },
+      {
+        "id": "R3",
+        "text": "- R3. Preserve complete raw diagnostics, invalid-row semantics, warning behavior, full-dataset counts, exclusion references, and export eligibility."
+      },
+      {
+        "id": "R4",
+        "text": "- R4. Exception actions open inspection, locate the original record/page, and focus/highlight implicated source cells with worksheet/record/line provenance; configuration failures identify or navigate to the relevant workflow setting."
+      },
+      {
+        "id": "R5",
+        "text": "- R5. Source inspection independently filters All source rows, Rows with exceptions, and Invalid rows only across the whole dataset, with separate pagination from output preview."
+      },
+      {
+        "id": "R6",
+        "text": "- R6. Keep original/current/session-corrected values inspectable, retain recently resolved records long enough to confirm the result, and make the next unresolved record reachable."
+      },
+      {
+        "id": "R7",
+        "text": "- R7. Cell edits stage across filtering and pagination without individual apply actions, with pending markers, Apply N corrections, and Discard pending changes near the source-table heading."
+      },
+      {
+        "id": "R8",
+        "text": "- R8. Apply one coherent correction batch with one revalidation; stale replies, failed batches, cancellation, and recovery cannot partially apply or overwrite newer state."
+      },
+      {
+        "id": "R9",
+        "text": "- R9. Pending edits block download, loss requires confirmation, and applying edits revokes partial-export acknowledgement and formula choice; successful application preserves correction context without forced scrolling."
+      },
+      {
+        "id": "R10",
+        "text": "- R10. Corrections remain session-only, preserve original file data and revert behavior, and do not enter workflow storage or portable JSON."
+      },
+      {
+        "id": "R11",
+        "text": "- R11. Unit and end-to-end regressions cover all acceptance examples, cross-browser CI, privacy interception, keyboard/mobile accessibility, exact exported data/bytes, and screenshots."
+      }
+    ],
+    "implementation_units": [
+      {
+        "id": "U1",
+        "title": "Explain actionable exception causes"
+      },
+      {
+        "id": "U2",
+        "title": "Make source batches atomic and independently paged"
+      },
+      {
+        "id": "U3",
+        "title": "Integrate editor and correction journeys"
+      },
+      {
+        "id": "U4",
+        "title": "Qualify the draft for UX acceptance"
+      }
+    ],
+    "settled_decisions": []
+  },
+  "source_detail_map": "/tmp/compound-engineering-1000/ce-code-review/20261021-005053-7f6a13f0/source-detail-map.json",
+  "selection_counts": {
+    "primary": 0,
+    "selected": 0,
+    "shortcut_skipped": 0
+  },
+  "reconciliation": "/tmp/compound-engineering-1000/ce-code-review/20261021-005053-7f6a13f0/synthesized-findings.json"
+}

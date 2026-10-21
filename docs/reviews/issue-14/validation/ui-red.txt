@@ -1,0 +1,118 @@
+[WebServer] (node:2358) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:2371) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:2383) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/acceptance-corrections.spec.ts:23:1 › Done editing retains unsaved configuration across repeat mode and portable workflows (30.2s)
+(node:2623) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [chromium] › tests/e2e/acceptance-corrections.spec.ts:47:1 › one address root cause navigates and highlights the original cell; diagnostics and independent errors remain (6.8s)
+(node:2797) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [chromium] › tests/e2e/acceptance-corrections.spec.ts:67:1 › independent filters retain multi-page drafts and apply once without changing output pages (30.3s)
+
+
+  1) [chromium] › tests/e2e/acceptance-corrections.spec.ts:23:1 › Done editing retains unsaved configuration across repeat mode and portable workflows 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Done editing', exact: true })
+
+
+      29 |   await page.getByLabel("Output column name",{exact:true}).fill("Unsaved reference");
+      30 |   await closeSettings(page);
+    > 31 |   await page.getByRole("button",{name:"Done editing",exact:true}).click();
+         |                                                                   ^
+      32 |   await expect(page.getByLabel("Repeat workflow")).toContainText("Unsaved");
+      33 |   expect((await download(page)).toString()).toBe("Unsaved reference,ConvertedCases\r\n001234,3\r\n");
+      34 |   await page.getByRole("button",{name:"Edit workflow",exact:true}).click();
+        at /workspace/operations-data-cleaner/tests/e2e/acceptance-corrections.spec.ts:31:67
+
+    Error Context: test-results/acceptance-corrections-Don-b4db4-mode-and-portable-workflows-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/acceptance-corrections-Don-b4db4-mode-and-portable-workflows-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/acceptance-corrections-Don-b4db4-mode-and-portable-workflows-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests/e2e/acceptance-corrections.spec.ts:47:1 › one address root cause navigates and highlights the original cell; diagnostics and independent errors remain 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByLabel('Exception details').locator(':scope > li')
+    Expected: 2
+    Received: 9
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" getByLabel('Exception details').locator(':scope > li') with timeout 5000ms
+      - waiting for getByLabel('Exception details').locator(':scope > li')
+        14 × locator resolved to 9 elements
+           - unexpected value "9"
+
+
+      51 |   await open(page,w,'Address,Empty\n"Street,City,Province,Postal,Extra",');
+      52 |   const review=page.getByLabel("Exception details");
+    > 53 |   await expect(review.locator(":scope > li")).toHaveCount(2);
+         |                                               ^
+      54 |   await expect(review).toContainText("Street, City, Province, PostalCode");
+      55 |   await review.getByRole("button",{name:"Inspect Address, record 2",exact:true}).click();
+      56 |   const input=page.getByLabel("Replacement for Address, record 2",{exact:true});
+        at /workspace/operations-data-cleaner/tests/e2e/acceptance-corrections.spec.ts:53:47
+
+    Error Context: test-results/acceptance-corrections-one-6b2fc-d-independent-errors-remain-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/acceptance-corrections-one-6b2fc-d-independent-errors-remain-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/acceptance-corrections-one-6b2fc-d-independent-errors-remain-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › tests/e2e/acceptance-corrections.spec.ts:67:1 › independent filters retain multi-page drafts and apply once without changing output pages 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.selectOption: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByLabel('Source row filter', { exact: true })
+
+
+      73 |   await expect(page.getByRole("region",{name:"Output preview, scroll horizontally"})).toContainText("000050");
+      74 |   await page.getByText("Inspect original source table",{exact:true}).click();
+    > 75 |   await page.getByLabel("Source row filter",{exact:true}).selectOption("invalid");
+         |                                                           ^
+      76 |   const source=page.getByRole("region",{name:"Source table, scroll horizontally"});
+      77 |   await expect(source.locator("tbody tr")).toHaveCount(50);
+      78 |   await page.getByRole("button",{name:"Correct Units, record 3",exact:true}).click();
+        at /workspace/operations-data-cleaner/tests/e2e/acceptance-corrections.spec.ts:75:59
+
+    Error Context: test-results/acceptance-corrections-ind-11a6a-thout-changing-output-pages-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/acceptance-corrections-ind-11a6a-thout-changing-output-pages-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/acceptance-corrections-ind-11a6a-thout-changing-output-pages-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [chromium] › tests/e2e/acceptance-corrections.spec.ts:23:1 › Done editing retains unsaved configuration across repeat mode and portable workflows 
+    [chromium] › tests/e2e/acceptance-corrections.spec.ts:47:1 › one address root cause navigates and highlights the original cell; diagnostics and independent errors remain 
+    [chromium] › tests/e2e/acceptance-corrections.spec.ts:67:1 › independent filters retain multi-page drafts and apply once without changing output pages 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

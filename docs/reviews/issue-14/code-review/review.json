@@ -1,0 +1,249 @@
+{
+  "status": "complete",
+  "verdict": "Ready to merge",
+  "verdict_reason": "No actionable code-review findings remain in the current working tree. This review verdict does not authorize merging; leave the draft for final CI and user UX acceptance.",
+  "scope": {
+    "base": "93ec73403b26aeddb5044c80534d30cca871dc96",
+    "branch": "fix/issue-14-ux-acceptance",
+    "head_sha": "618f30ae9acd3a1d54734443b58b4cca7ed027ba",
+    "pr_url": null,
+    "files_changed": 22,
+    "reviewed_tree": "Current working tree including staged and unstaged changes; source hashes in current-source.json"
+  },
+  "intent": "Implement all five issue #14 acceptance fixes from U13: Done editing retaining unsaved rules; structured actionable root causes while preserving raw validation; accurate source/rule navigation; independent whole-dataset source filters/pages; atomic multi-page staged correction batches. Preserve source fidelity/privacy, row counts, workflow schema/portability, export gates and all existing behavior; leave a draft for UX acceptance with no merge/deployment/publication.",
+  "intent_confidence": "explicit",
+  "reviewers": [
+    "correctness",
+    "project-standards",
+    "testing",
+    "maintainability",
+    "learnings",
+    "security",
+    "performance",
+    "reliability",
+    "adversarial",
+    "julik-frontend-races"
+  ],
+  "findings": [],
+  "actionable_findings": [],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "requirements_completeness": {
+    "plan": "docs/plans/2026-10-20-issue-14-acceptance-plan.md",
+    "source": "explicit",
+    "requirements": [
+      {
+        "id": "R1",
+        "status": "met",
+        "evidence": [
+          "src/ui/Workspace.tsx:269",
+          "tests/e2e/acceptance-corrections.spec.ts:25"
+        ]
+      },
+      {
+        "id": "R2",
+        "status": "met",
+        "evidence": [
+          "src/engine/issues.ts:19",
+          "src/engine/recipes.ts:247",
+          "tests/unit/issue-review.test.ts"
+        ]
+      },
+      {
+        "id": "R3",
+        "status": "met",
+        "evidence": [
+          "src/engine/recipes.ts",
+          "tests/e2e/dates.spec.ts",
+          "tests/unit/issue-review.test.ts"
+        ]
+      },
+      {
+        "id": "R4",
+        "status": "met",
+        "evidence": [
+          "src/ui/SourceInspector.tsx:52",
+          "src/ui/SourceCorrection.tsx:13",
+          "src/ui/Workspace.tsx:237",
+          "tests/e2e/acceptance-corrections.spec.ts"
+        ]
+      },
+      {
+        "id": "R5",
+        "status": "met",
+        "evidence": [
+          "src/processing.worker.ts:39",
+          "tests/unit/worker-view.test.ts",
+          "tests/e2e/acceptance-corrections.spec.ts:89"
+        ]
+      },
+      {
+        "id": "R6",
+        "status": "met",
+        "evidence": [
+          "src/processing.worker.ts:40",
+          "src/ui/SourceInspector.tsx:35",
+          "tests/e2e/correction-reupload.spec.ts:107"
+        ]
+      },
+      {
+        "id": "R7",
+        "status": "met",
+        "evidence": [
+          "src/session/controller.ts:220",
+          "src/ui/SourceInspector.tsx:33",
+          "tests/e2e/acceptance-corrections.spec.ts:101"
+        ]
+      },
+      {
+        "id": "R8",
+        "status": "met",
+        "evidence": [
+          "src/session/correction-overlay.ts:6",
+          "src/processing.worker.ts:109",
+          "src/session/controller.ts:86",
+          "tests/unit/session.test.ts",
+          "tests/e2e/correction-reupload.spec.ts:121"
+        ]
+      },
+      {
+        "id": "R9",
+        "status": "met",
+        "evidence": [
+          "src/ui/Workspace.tsx:223",
+          "src/ui/Workspace.tsx:231",
+          "src/ui/Workspace.tsx:338",
+          "src/session/controller.ts:220",
+          "tests/e2e/acceptance-corrections.spec.ts"
+        ]
+      },
+      {
+        "id": "R10",
+        "status": "met",
+        "evidence": [
+          "src/session/correction-overlay.ts:33",
+          "src/ui/SourceCorrection.tsx:20",
+          "tests/e2e/correction-reupload.spec.ts"
+        ]
+      },
+      {
+        "id": "R11",
+        "status": "met",
+        "evidence": [
+          "tests/e2e/acceptance-corrections.spec.ts",
+          "tests/unit/issue-review.test.ts",
+          "tests/unit/session.test.ts",
+          ".github/workflows/u2.yml",
+          "docs/reviews/issue-14/verification.md"
+        ]
+      }
+    ],
+    "implementation_units": [
+      {
+        "id": "U1",
+        "status": "met",
+        "evidence": [
+          "src/engine/issues.ts",
+          "src/engine/recipes.ts",
+          "tests/unit/issue-review.test.ts"
+        ]
+      },
+      {
+        "id": "U2",
+        "status": "met",
+        "evidence": [
+          "src/session/controller.ts",
+          "src/processing.worker.ts",
+          "tests/unit/session.test.ts",
+          "tests/unit/worker-view.test.ts"
+        ]
+      },
+      {
+        "id": "U3",
+        "status": "met",
+        "evidence": [
+          "src/ui/SourceInspector.tsx",
+          "src/ui/Workspace.tsx",
+          "tests/e2e/acceptance-corrections.spec.ts"
+        ]
+      },
+      {
+        "id": "U4",
+        "status": "met",
+        "evidence": [
+          ".github/workflows/u2.yml",
+          "docs/reviews/issue-14/verification.md",
+          "docs/reviews/issue-14/screenshots/"
+        ]
+      }
+    ],
+    "unrequested_behavior_rules": [],
+    "note": "All required implementation and regression surfaces are present. Final check completion, cross-browser CI and UX acceptance are caller-owned gates, not claimed complete by this review."
+  },
+  "learnings": [
+    {
+      "type": "known_pattern",
+      "title": "Preserve typed Excel originals through session overlays",
+      "citation": "docs/solutions/xlsx-qualification.md",
+      "note": "Correction overlays retain original SourceCell metadata and SourceCorrection displays original values/Excel details; do not flatten this boundary during later changes."
+    }
+  ],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [],
+  "testing_gaps": [],
+  "coverage": {
+    "depth": "full",
+    "mode": "agent report-only",
+    "reviewers_completed": 10,
+    "failed_reviewers": [],
+    "suppressed_by_confidence": {},
+    "mode_aware_demotion_count": 0,
+    "first_evidence_backfilled": 0,
+    "missing_first_evidence_demotions": 0,
+    "malformed_candidates": 0,
+    "standards": "AGENTS.md instruction-file fallback; no designated CODING_STANDARDS.md or CLAUDE.md.",
+    "compound_packs": {
+      "roots": [],
+      "warnings": [],
+      "errors": []
+    },
+    "cross_model": "Cross-model pass: not run; only Codex CLI installed on attested Codex host. Native adversarial reviewer completed; no different-provider independence claimed.",
+    "validator": {
+      "outcome": "empty-batch",
+      "selected": 0,
+      "confirmed": 0,
+      "rejected": 0,
+      "unresolved": 0,
+      "malformed": 0,
+      "failed": 0,
+      "shortcut_skipped": 0,
+      "reason": "Merge leaf reconciled all six raw candidates against current source and tests; no retained primary finding selected for validator.",
+      "launched": false
+    },
+    "reconciliation": {
+      "original_candidates": 6,
+      "resolved_before_synthesis": 4,
+      "rejected_before_validation": 2,
+      "remaining": 0,
+      "audit": "/tmp/compound-engineering-1000/ce-code-review/20261021-005053-7f6a13f0/synthesized-findings.json"
+    },
+    "verification": [
+      "Caller reports complete Chromium suite 119/119 passed; review did not run checks.",
+      "Final isolated 299-unit/typecheck/lint/build and focused browser checks on the review-fix tree were still running at receipt creation.",
+      "Firefox/WebKit local installation was blocked by HTTP 403; the required three-browser PR CI matrix is retained.",
+      "Desktop/mobile screenshots, privacy interception and accessibility assertions are present in the focused acceptance tests."
+    ],
+    "notes": [
+      "Environment steering interrupted the initial reviewer processes; the completed security artifact was preserved and every remaining reviewer was restarted and collected.",
+      "Four source/test concerns were resolved by the caller before synthesis and inspected in the current tree; two unsupported performance/structure claims were rejected, not carried as risks.",
+      "All raw reviewer returns and candidate dispositions are retained in the run directory.",
+      "Current scope includes staged/unstaged working-tree changes; dispatch HEAD alone does not identify their bytes.",
+      "Untracked issue-14 evidence was excluded from substantive code scope; historical generated screenshot churn is excluded and caller restores it.",
+      "No independent cross-model review or standalone validator execution is claimed.",
+      "No merge, deployment, publication or release is authorized by this code-review receipt. User UX acceptance and final CI remain separate gates."
+    ]
+  },
+  "artifact_path": "/tmp/compound-engineering-1000/ce-code-review/20261021-005053-7f6a13f0",
+  "run_id": "20261021-005053-7f6a13f0"
+}

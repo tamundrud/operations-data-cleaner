@@ -1,0 +1,9 @@
+
+ RUN  v5.0.4 /workspace/operations-data-cleaner
+
+
+ Test Files  2 passed (2)
+      Tests  7 passed (7)
+   Start at  05:38:47
+   Duration  1.07s (import 46%, tests 31%, transform 21%, worker 2%)
+

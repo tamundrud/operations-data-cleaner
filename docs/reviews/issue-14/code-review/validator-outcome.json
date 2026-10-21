@@ -1,0 +1,5 @@
+{
+  "outcome": "empty-batch",
+  "reason": "Merge leaf reconciled all six raw candidates against current source and tests; no retained primary finding selected for validator.",
+  "verdicts": null
+}

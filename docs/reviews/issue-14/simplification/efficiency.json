@@ -1,0 +1,26 @@
+{
+  "reviewer": "efficiency",
+  "status": "complete",
+  "findings": [
+    {
+      "id": "efficiency-1",
+      "location": "src/processing.worker.ts:46",
+      "finding": "view rebuilds a full result-row map on each pagination request.",
+      "suggestion": "Build resultById in setRun alongside exceptionRows, then reuse it in view."
+    },
+    {
+      "id": "efficiency-2",
+      "location": "src/ui/SourceInspector.tsx:51",
+      "finding": "Each visible cell scans every pending correction on each keystroke.",
+      "suggestion": "Index unique row/column coordinates once per render and retrieve each pending edit."
+    },
+    {
+      "id": "efficiency-3",
+      "location": "src/engine/recipes.ts:364",
+      "finding": "Every evaluated field filters/maps fieldIssues even when no required-blank issue is emitted.",
+      "suggestion": "Compute upstream cause keys only within the required-blank branch."
+    }
+  ],
+  "read_only": true,
+  "checks_run": []
+}

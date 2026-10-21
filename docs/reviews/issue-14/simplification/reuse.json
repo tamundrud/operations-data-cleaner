@@ -1,0 +1,14 @@
+{
+  "reviewer": "reuse",
+  "status": "complete",
+  "findings": [
+    {
+      "id": "reuse-1",
+      "location": "src/processing.worker.ts:131",
+      "finding": "Next-unresolved navigation recomputes run.rows.filter(r => r.issues.length), identical to exceptionRows maintained by setRun.",
+      "suggestion": "Use exceptionRows for ordered find and fallback."
+    }
+  ],
+  "read_only": true,
+  "checks_run": []
+}
