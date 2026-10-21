@@ -57,3 +57,12 @@ test("same-text independent failures and warnings are never accidentally grouped
   expect(items.filter(item => item.issue.severity === "warning")).toHaveLength(2);
   expect(run.summary).toMatchObject({invalid:1,warningIssues:2,errorIssues:2});
 });
+
+test("constant zero divisor and copy precision failures target explicit settings", () => {
+  const w=makeWorkflow(["Division","Quantity"]);
+  w.fields[0].type="number";w.fields[0].recipe={kind:"calculate",operation:"divide",left:{kind:"source",source:"units"},right:{kind:"number",decimal:"0"}};
+  w.fields[1].type="number";w.fields[1].scale=0;w.fields[1].recipe={kind:"copy",source:"units"};
+  const items=reviewIssues(evaluate(w,source("Units\n1.5")).rows[0].issues);
+  expect(items.map(i=>i.sources)).toEqual([[],[]]);
+  expect(items.map(i=>i.rule)).toEqual(w.fields.map(f=>f.id));
+});

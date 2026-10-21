@@ -336,6 +336,8 @@ export function evaluate(workflow: Workflow, source: SourceTable): Run {
             "error",
             `${f.header}: ${error.message}`,
             "Correct the numeric value or change the explicit numeric settings.",
+            sourceKey,
+            cause(error.code, ["numeric-input", "missing-operand", "numeric-limit"].includes(error.code) ? recipeSources : []),
           );
           value = { kind: "blank" };
         }
